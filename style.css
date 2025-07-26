@@ -6,8 +6,8 @@
      font-family: "Inter", sans-serif;
 }
 
-.section-p1{
-  padding: 40px 80px;
+.spacing{
+  margin-top: 4rem;
 }
 .section-m1{
   padding: 40px 0;
@@ -15,6 +15,7 @@
 .container{
   max-width: 1110px;
   margin-inline:auto ;
+ 
   box-sizing: border-box;
 
 }
@@ -214,6 +215,90 @@
 .icon {
   margin-left: 10px; 
 }
+
+
+.title{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+}
+ .title h2{
+  font-size: 2rem;
+ }
+
+ .title p{
+  font-size: 1rem;
+
+ }
+
+ .pro-container{
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3 , 1fr);
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+ }
+
+ .card{
+
+ box-shadow: 2px 3px 10px rgba(0, 0, 0,0.2);
+ width: 380px;
+ height: 440px;
+ border-radius: 8px;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ margin-top: 2.5rem;
+
+ }
+
+
+ .card img{
+  width: 300px;
+  height: 225px;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  object-fit:contain;
+ 
+  
+
+
+ }
+
+.card-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1rem;
+
+}
+
+.card-content p{
+  color: #8f8f8f;
+  font-weight: 400;
+}
+.card-content .btn{
+  margin-top: 0.25rem;
+ font-weight: 600;
+  border: none;
+  font-size: 1rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  background-color:rgb(255, 231, 187);
+  color: black;
+}
+
+
+
+
+
 #product1 {
   text-align: center;
 }
@@ -237,9 +322,9 @@
   margin:15px 0;
   transition: 0.2s ease;
   position: relative;
-  
-  
  
+  
+  
 }
 #product1 .pro:hover{
   box-shadow: 20px 20px 30px rgba(0,0,0,0.08);

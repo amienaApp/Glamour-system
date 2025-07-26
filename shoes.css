@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Libertinus+Mono&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    margin: 0;
+    padding:0 ;
+    box-sizing: border-box;
+     font-family: "Inter", sans-serif;
+}
+
+.spacing{
+  margin-top: 4rem;
+}
+.section-m1{
+  padding: 40px 0;
+}
+.container{
+  max-width: 1110px;
+  margin-inline:auto ;
+ 
+  box-sizing: border-box;
+
+}
