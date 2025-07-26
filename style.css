@@ -19,7 +19,7 @@
   box-sizing: border-box;
 
 }
-/* header */
+/* header 
 #header{
     background-color: lightgrey;
     display: flex;
@@ -71,7 +71,7 @@
     padding: 20px 80px;
     background-color: rgb(205, 201, 201);
     border-top: 1px solid #ddd;
-    display: none; /* Initially hidden */
+    display: none; /* Initially hidden 
     
     
 }
@@ -97,7 +97,7 @@
 
 .category-list li a:hover {
     text-decoration: underline;
-}
+}/*
 
 
 /* dashboard */
