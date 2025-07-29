@@ -1,3 +1,6 @@
+
+
+
 <!-- Main Content Section -->
 <main class="main-content">
     <div class="content-header">
@@ -23,179 +26,228 @@
     </div>
 
     <div class="product-grid">
-        <!-- Product 1 -->
-        <div class="product-card">
+        <!-- Product 1 - Reference Design -->
+        <div class="product-card" data-product-id="1">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Lulus Lilja Cream Floral Print Maxi Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/11.avif" alt="Lulus Magalie Black Backless Boat Neck Mini Dress - Front" class="active" data-color="green">
+                    <img src="../img/women/dresses/11.1.avif" alt="Lulus Magalie Black Backless Boat Neck Mini Dress - Back" data-color="green">
+                    <img src="../img/women/dresses/11.2.avif" alt="Lulus Magalie Red Backless Boat Neck Mini Dress - Front" data-color="blue">
+                    <img src="../img/women/dresses/11.3.avif" alt="Lulus Magalie Red Backless Boat Neck Mini Dress - Back" data-color="blue">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #f5f5dc;" title="Beige"></span>
-                    <span class="color-circle" style="background-color: #87ceeb;" title="Light Blue"></span>
+                   
+                    <span class="color-circle" style="background-color: #276c37ff;" title="green" data-color="green"></span>
+                    <span class="color-circle" style="background-color: #0066cc;" title="Blue" data-color="blue"></span>
                 </div>
-                <h3 class="product-name">Lulus Lilja Cream Floral Print Maxi Dress</h3>
-                <div class="product-price">$99</div>
-            </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
+                <h3 class="product-name">Lulus Magalie Black Backless Boat Neck Mini Dress</h3>
+                <div class="product-price">$34</div>
             </div>
         </div>
 
         <!-- Product 2 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="2">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/10.avif" alt="Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress - Front" class="active" data-color="black">
+                    <img src="../img/women/dresses/10.1.avif" alt="Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress - Back" data-color="black">
+                    <img src="../img/women/dresses/10.2.avif" alt="Lulus My Favorite Day Black Floral Print Tulip Skirt Midi Dress - Front" data-color="maroon">
+                    <img src="../img/women/dresses/10.3.avif" alt="Lulus My Favorite Day Black Floral Print Tulip Skirt Midi Dress - Back" data-color="maroon">
+                    <img src="../img/women/dresses/10.4.avif" alt="Lulus My Favorite Day Red Floral Print Tulip Skirt Midi Dress - Front" data-color="pink">
+                    <img src="../img/women/dresses/10.5.avif" alt="Lulus My Favorite Day Red Floral Print Tulip Skirt Midi Dress - Back" data-color="pink">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000080;" title="Navy"></span>
-                    <span class="color-circle" style="background-color: #000;" title="Black"></span>
-                    <span class="color-circle" style="background-color: #ff0000;" title="Red"></span>
+                    <span class="color-circle active" style="background-color:#060606ff;" title="black" data-color="black"></span>
+                    <span class="color-circle" style="background-color: #812d2dff ;" title="maroon" data-color="maroon"></span>
+                    <span class="color-circle" style="background-color: #ff0095ff ;" title="pink" data-color="pink"></span>
                 </div>
                 <h3 class="product-name">Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress</h3>
                 <div class="product-price">$72</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 3 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="3">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/12.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Front" class="active" data-color="black">
+                    <img src="../img/women/dresses/12.1.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Back" data-color="black">
+                         <img src="../img/women/dresses/13.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Front" data-color="brown">
+                    <img src="../img/women/dresses/13.1.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Back" data-color="brown">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black"></span>
-                    <span class="color-circle" style="background-color: #ffc0cb;" title="Pink"></span>
+                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
+                    <span class="color-circle" style="background-color: #634145ff;" title="Pink" data-color="brown"></span>
                 </div>
                 <h3 class="product-name">Lulus Kaori Black Cutout Strapless Tulip Maxi Dress</h3>
                 <div class="product-price">$89</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 4 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="4">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Lulus Vivacious Champagne Lace-Up Strapless Mini Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/16.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Front" class="active" data-color="light-blue">
+                    <img src="../img/women/dresses/16.1.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Back" data-color="light-blue">
+                    <img src="../img/women/dresses/16.2.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Front" data-color="black">
+                    <img src="../img/women/dresses/16.3.avif" alt="Lulus Kaori Black Cutout Strapless Tulip Maxi Dress - Back" data-color="black">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #f4e4bc;" title="Champagne"></span>
+                    <span class="color-circle active" style="background-color: #78bce1ff;" title="Champagne" data-color="light-blue"></span>
+                      <span class="color-circle active" style="background-color: #000000ff;" title="Champagne" data-color="black"></span>
                 </div>
                 <h3 class="product-name">Lulus Vivacious Champagne Lace-Up Strapless Mini Dress</h3>
                 <div class="product-price">$98</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 5 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="5">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Black Strapless Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/22.1.jpg" alt="Black Strapless Dress - Front" class="active" data-color="creamy">
+                    <img src="../img/women/dresses/22.1.webp" alt="Black Strapless Dress - Back" data-color="creamy">
+                    <img src="../img/women/dresses/22.2.webp" alt="White Strapless Dress - Front" data-color="maroon">
+                    <img src="../img/women/dresses/22.3.webp" alt="White Strapless Dress - Back" data-color="maroon">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black"></span>
-                    <span class="color-circle" style="background-color: #fff; border: 1px solid #ddd;" title="White"></span>
+                    <span class="color-circle active" style="background-color: #917491ff;" title="Black" data-color="creamy"></span>
+                    <span class="color-circle" style="background-color: #642525ff; border: 1px solid #ddd;" title="White" data-color="maroon"></span>
                 </div>
                 <h3 class="product-name">Black Strapless Dress</h3>
                 <div class="product-price">$85</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 6 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="6">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Red Satin Slip Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/24.jpg" alt="Red Satin Slip Dress - Front" class="active" data-color="maroon">
+                    <img src="../img/women/dresses/24.jpg "alt="Red Satin Slip Dress - Back " data-color="maroon">
+                      <img src="../img/women/dresses/24.1.jpg" alt="Red Satin Slip Dress - Front"data-color="maroon">
+                    <img src="../img/women/dresses/24.1.jpg "alt="Red Satin Slip Dress - Back" data-color="silver">
+                    
+                    
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ff0000;" title="Red"></span>
-                    <span class="color-circle" style="background-color: #000;" title="Black"></span>
+                    <span class="color-circle active" style="background-color: #7311118e;" title="Red" data-color= "maroon"></span>
+                    <span class="color-circle" style="background-color: #9e95958e;;" title="Black" data-color= "silver"></span>
                 </div>
                 <h3 class="product-name">Red Satin Slip Dress</h3>
                 <div class="product-price">$76</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 7 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="7">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Black Satin Slip Dress">
+                <div class="image-slider">
+                    <img src="../img/women//dresses/25.avif" alt="Black Satin Slip Dress - Front" class="active" data-color="white">
+                    <img src="../img/women//dresses/25.1.jpg" alt="Black Satin Slip Dress - Back" data-color="black">
+                    <img src="../img/women//dresses/25.2.jpg" alt="Red Satin Slip Dress - Front" data-color="brown">
+                    <img src="../img/women//dresses/25.3.jpg" alt="Red Satin Slip Dress - Back" data-color="blue">
+                  
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black"></span>
-                    <span class="color-circle" style="background-color: #ff0000;" title="Red"></span>
+                    <span class="color-circle active" style="background-color: #ffffffff;" title="Black" data-color="white"></span>
+                    <span class="color-circle" style="background-color: #050505ff;" title="Red" data-color="black"></span>
+                    <span class="color-circle active" style="background-color: #713a3aff ;" title="Black" data-color="brown"></span>
+                    <span class="color-circle" style="background-color: #3c5fdbff;" title="Red" data-color="blue"></span>
                 </div>
                 <h3 class="product-name">Black Satin Slip Dress</h3>
                 <div class="product-price">$76</div>
             </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
-            </div>
         </div>
 
         <!-- Product 8 -->
-        <div class="product-card">
+        <div class="product-card" data-product-id="8">
             <div class="product-image">
-                <img src="../img/women/1.jpg" alt="Green Blue Floral Print Dress">
+                <div class="image-slider">
+                    <img src="../img/women/dresses/9.avif" alt="Green Blue Floral Print Dress - Front" class="active" data-color="pink">
+                    <img src="../img/women/dresses/9.1.avif" alt="Green Blue Floral Print Dress - Back" data-color="pink">
+                    <img src="../img/women/dresses/9.2.avif" alt="Blue Floral Print Dress - Front" data-color="blue">
+                    <img src="../img/women/dresses/9.3.avif" alt="Blue Floral Print Dress - Back" data-color="blue">
+                </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
+                <div class="product-actions">
+                    <button class="quick-view">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #228b22;" title="Green"></span>
-                    <span class="color-circle" style="background-color: #0066cc;" title="Blue"></span>
+                    <span class="color-circle active" style="background-color: #e766b8ff;" title="Green" data-color="pink"></span>
+                    <span class="color-circle" style="background-color: #83bcf5ff;" title="Blue" data-color="blue"></span>
                 </div>
                 <h3 class="product-name">Green Blue Floral Print Dress</h3>
                 <div class="product-price">$92</div>
-            </div>
-            <div class="product-actions">
-                <button class="quick-view">Quick View</button>
-                <button class="add-to-bag">Add To Bag</button>
             </div>
         </div>
     </div>
