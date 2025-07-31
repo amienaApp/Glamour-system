@@ -21,3 +21,9 @@ document.getElementById('categoryLink').addEventListener('click', function(event
   const categories = document.getElementById('categories');
   categories.style.display = categories.style.display === 'none' || categories.style.display === '' ? 'block' : 'none';
 });
+
+// Mobile menu toggle
+    document.getElementById('menu-btn').addEventListener('click', function() {
+      var menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    });
