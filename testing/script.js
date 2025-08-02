@@ -224,6 +224,428 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Quick View Sidebar Functionality
+    const quickViewSidebar = document.getElementById('quick-view-sidebar');
+    const quickViewOverlay = document.getElementById('quick-view-overlay');
+    const closeQuickView = document.getElementById('close-quick-view');
+    const quickViewButtons = document.querySelectorAll('.quick-view');
+    
+    // Product data for quick view
+    const productData = {
+        1: {
+            name: "Lulus Magalie Black Backless Boat Neck Mini Dress",
+            price: "$34",
+            images: [
+                { src: "../img/women/dresses/11.avif", color: "green" },
+                { src: "../img/women/dresses/11.1.avif", color: "green" },
+                { src: "../img/women/dresses/11.2.avif", color: "blue" },
+                { src: "../img/women/dresses/11.3.avif", color: "blue" }
+            ],
+            colors: [
+                { name: "Green", value: "green", hex: "#276c37ff" },
+                { name: "Blue", value: "blue", hex: "#0066cc" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["XS"]
+        },
+        2: {
+            name: "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
+            price: "$72",
+            images: [
+                { src: "../img/women/dresses/10.avif", color: "black" },
+                { src: "../img/women/dresses/10.1.avif", color: "black" },
+                { src: "../img/women/dresses/10.2.avif", color: "maroon" },
+                { src: "../img/women/dresses/10.3.avif", color: "maroon" },
+                { src: "../img/women/dresses/10.4.avif", color: "pink" },
+                { src: "../img/women/dresses/10.5.avif", color: "pink" }
+            ],
+            colors: [
+                { name: "Black", value: "black", hex: "#060606ff" },
+                { name: "Maroon", value: "maroon", hex: "#812d2dff" },
+                { name: "Pink", value: "pink", hex: "#ff0095ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        3: {
+            name: "Lulus Kaori Black Cutout Strapless Tulip Maxi Dress",
+            price: "$89",
+            images: [
+                { src: "../img/women/dresses/12.avif", color: "black" },
+                { src: "../img/women/dresses/12.1.avif", color: "black" },
+                { src: "../img/women/dresses/13.avif", color: "brown" },
+                { src: "../img/women/dresses/13.1.avif", color: "brown" }
+            ],
+            colors: [
+                { name: "Black", value: "black", hex: "#000" },
+                { name: "Brown", value: "brown", hex: "#634145ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["L"]
+        },
+        4: {
+            name: "Lulus Vivacious Champagne Lace-Up Strapless Mini Dress",
+            price: "$98",
+            images: [
+                { src: "../img/women/dresses/16.avif", color: "light-blue" },
+                { src: "../img/women/dresses/16.1.avif", color: "light-blue" },
+                { src: "../img/women/dresses/16.2.avif", color: "black" },
+                { src: "../img/women/dresses/16.3.avif", color: "black" }
+            ],
+            colors: [
+                { name: "Light Blue", value: "light-blue", hex: "#78bce1ff" },
+                { name: "Black", value: "black", hex: "#000000ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["XL"]
+        },
+        5: {
+            name: "Black Strapless Dress",
+            price: "$85",
+            images: [
+                { src: "../img/women/dresses/22.1.jpg", color: "creamy" },
+                { src: "../img/women/dresses/22.1.webp", color: "creamy" },
+                { src: "../img/women/dresses/22.2.webp", color: "maroon" },
+                { src: "../img/women/dresses/22.3.webp", color: "maroon" }
+            ],
+            colors: [
+                { name: "Creamy", value: "creamy", hex: "#917491ff" },
+                { name: "Maroon", value: "maroon", hex: "#642525ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        6: {
+            name: "Red Satin Slip Dress",
+            price: "$76",
+            images: [
+                { src: "../img/women/dresses/24.jpg", color: "maroon" },
+                { src: "../img/women/dresses/24.1.jpg", color: "maroon" },
+                { src: "../img/women/dresses/24.1.jpg", color: "silver" }
+            ],
+            colors: [
+                { name: "Maroon", value: "maroon", hex: "#7311118e" },
+                { name: "Silver", value: "silver", hex: "#9e95958e" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["S"]
+        },
+        7: {
+            name: "Black Satin Slip Dress",
+            price: "$76",
+            images: [
+                { src: "../img/women/dresses/25.avif", color: "white" },
+                { src: "../img/women/dresses/25.1.jpg", color: "black" },
+                { src: "../img/women/dresses/25.2.jpg", color: "brown" },
+                { src: "../img/women/dresses/25.3.jpg", color: "blue" }
+            ],
+            colors: [
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Black", value: "black", hex: "#050505ff" },
+                { name: "Brown", value: "brown", hex: "#713a3aff" },
+                { name: "Blue", value: "blue", hex: "#3c5fdbff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["M"]
+        },
+        8: {
+            name: "Green Blue Floral Print Dress",
+            price: "$92",
+            images: [
+                { src: "../img/women/dresses/9.avif", color: "pink" },
+                { src: "../img/women/dresses/9.1.avif", color: "pink" },
+                { src: "../img/women/dresses/9.2.avif", color: "blue" },
+                { src: "../img/women/dresses/9.3.avif", color: "blue" }
+            ],
+            colors: [
+                { name: "Pink", value: "pink", hex: "#e766b8ff" },
+                { name: "Blue", value: "blue", hex: "#83bcf5ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        9: {
+            name: "Orange Floral Summer Dress",
+            price: "$78",
+            images: [
+                { src: "../img/women/NEW/1.webp", color: "orange" },
+                { src: "../img/women/NEW/1.1.webp", color: "orange" },
+                { src: "../img/women/NEW/1.2.webp", color: "orange" },
+                { src: "../img/women/NEW/1.3.webp", color: "orange" }
+            ],
+            colors: [
+                { name: "Orange", value: "orange", hex: "#e66909ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        10: {
+            name: "Purple Evening Gown",
+            price: "$120",
+            images: [
+                { src: "../img/women/NEW/7.1.webp", color: "purple" },
+                { src: "../img/women/NEW/7.webp", color: "purple" },
+                { src: "../img/women/NEW/7.3.jpg", color: "purple" }
+            ],
+            colors: [
+                { name: "Purple", value: "purple", hex: "#541654ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["XS"]
+        },
+        11: {
+            name: "Maroon Cocktail Dress",
+            price: "$95",
+            images: [
+                { src: "../img/women/NEW/2.1.webp", color: "maroon" },
+                { src: "../img/women/NEW/2.3.webp", color: "maroon" },
+                { src: "../img/women/NEW/2.webp", color: "maroon" }
+            ],
+            colors: [
+                { name: "Maroon", value: "maroon", hex: "#54162bff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        12: {
+            name: "Multi-Color Party Dress",
+            price: "$88",
+            images: [
+                { src: "../img/women/NEW/3.webp", color: "apricot" },
+                { src: "../img/women/NEW/3.1.webp", color: "pink" },
+                { src: "../img/women/NEW/3.2.webp", color: "black" }
+            ],
+            colors: [
+                { name: "Apricot", value: "apricot", hex: "#db8e09ff" },
+                { name: "Pink", value: "pink", hex: "#e683a4ff" },
+                { name: "Black", value: "black", hex: "#050505ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["L"]
+        },
+        13: {
+            name: "Grey Casual Dress",
+            price: "$65",
+            images: [
+                { src: "../img/women/NEW/10.1.jpg", color: "grey" },
+                { src: "../img/women/NEW/10.webp", color: "brown" }
+            ],
+            colors: [
+                { name: "Grey", value: "grey", hex: "#d2cfcdeb" },
+                { name: "Brown", value: "brown", hex: "#54162bff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: []
+        },
+        14: {
+            name: "Classic Black Dress",
+            price: "$110",
+            images: [
+                { src: "../img/women/NEW/11.webp", color: "black" },
+                { src: "../img/women/NEW/11.2.jpg", color: "grey" },
+                { src: "../img/women/NEW/11.4.jpg", color: "beige" }
+            ],
+            colors: [
+                { name: "Black", value: "black", hex: "#000000ff" },
+                { name: "Grey", value: "grey", hex: "#cec6c9ff" },
+                { name: "Beige", value: "beige", hex: "#e3c880ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["M"]
+        },
+        15: {
+            name: "Maroon Evening Dress",
+            price: "$135",
+            images: [
+                { src: "../img/women/NEW/8.1.webp", color: "maroon" },
+                { src: "../img/women/NEW/8.webp", color: "black" }
+            ],
+            colors: [
+                { name: "Maroon", value: "maroon", hex: "#54162bff" },
+                { name: "Black", value: "black", hex: "#020202ff" }
+            ],
+            sizes: ["XS", "S", "M", "L", "XL"],
+            soldOutSizes: ["XL"]
+        }
+
+        
+
+        
+    };
+
+    // Open Quick View
+    quickViewButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            openQuickView(productId);
+        });
+    });
+
+    // Close Quick View
+    if (closeQuickView) {
+        closeQuickView.addEventListener('click', closeQuickViewSidebar);
+    }
+
+    if (quickViewOverlay) {
+        quickViewOverlay.addEventListener('click', closeQuickViewSidebar);
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && quickViewSidebar.classList.contains('active')) {
+            closeQuickViewSidebar();
+        }
+    });
+
+    function openQuickView(productId) {
+        const product = productData[productId];
+        if (!product) return;
+
+        // Populate product data
+        document.getElementById('quick-view-title').textContent = product.name;
+        document.getElementById('quick-view-price').textContent = product.price;
+        
+        // Set main image
+        const mainImage = document.getElementById('quick-view-main-image');
+        mainImage.src = product.images[0].src;
+        mainImage.alt = product.name;
+
+        // Populate thumbnails
+        const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+        thumbnailsContainer.innerHTML = '';
+        
+        product.images.forEach((image, index) => {
+            const thumbnail = document.createElement('div');
+            thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+            thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
+            
+            thumbnail.addEventListener('click', () => {
+                // Update main image
+                mainImage.src = image.src;
+                
+                // Update active thumbnail
+                thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                thumbnail.classList.add('active');
+            });
+            
+            thumbnailsContainer.appendChild(thumbnail);
+        });
+
+        // Populate colors
+        const colorSelection = document.getElementById('quick-view-color-selection');
+        colorSelection.innerHTML = '';
+        
+        product.colors.forEach((color, index) => {
+            const colorCircle = document.createElement('div');
+            colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
+            colorCircle.style.backgroundColor = color.hex;
+            colorCircle.setAttribute('data-color', color.value);
+            colorCircle.title = color.name;
+            
+            colorCircle.addEventListener('click', () => {
+                // Update active color
+                colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
+                colorCircle.classList.add('active');
+                
+                // Filter images by color
+                const selectedColor = color.value;
+                const colorImages = product.images.filter(img => img.color === selectedColor);
+                
+                if (colorImages.length > 0) {
+                    // Update main image and thumbnails
+                    mainImage.src = colorImages[0].src;
+                    
+                    // Update thumbnails
+                    thumbnailsContainer.innerHTML = '';
+                    colorImages.forEach((image, imgIndex) => {
+                        const thumbnail = document.createElement('div');
+                        thumbnail.className = `thumbnail-item ${imgIndex === 0 ? 'active' : ''}`;
+                        thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${imgIndex}">`;
+                        
+                        thumbnail.addEventListener('click', () => {
+                            mainImage.src = image.src;
+                            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                            thumbnail.classList.add('active');
+                        });
+                        
+                        thumbnailsContainer.appendChild(thumbnail);
+                    });
+                }
+            });
+            
+            colorSelection.appendChild(colorCircle);
+        });
+
+        // Populate sizes
+        const sizeSelection = document.getElementById('quick-view-size-selection');
+        sizeSelection.innerHTML = '';
+        
+        product.sizes.forEach(size => {
+            const sizeBtn = document.createElement('button');
+            sizeBtn.className = 'quick-view-size-btn';
+            sizeBtn.textContent = size;
+            
+            if (product.soldOutSizes.includes(size)) {
+                sizeBtn.classList.add('sold-out');
+            } else {
+                sizeBtn.addEventListener('click', () => {
+                    sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
+                    sizeBtn.classList.add('active');
+                });
+            }
+            
+            sizeSelection.appendChild(sizeBtn);
+        });
+
+        // Show sidebar
+        quickViewSidebar.classList.add('active');
+        quickViewOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeQuickViewSidebar() {
+        quickViewSidebar.classList.remove('active');
+        quickViewOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    // Add to bag functionality for quick view
+    const addToBagQuick = document.getElementById('add-to-bag-quick');
+    if (addToBagQuick) {
+        addToBagQuick.addEventListener('click', function() {
+            const selectedSize = document.querySelector('.quick-view-size-btn.active');
+            if (!selectedSize) {
+                alert('Please select a size');
+                return;
+            }
+            
+            const productName = document.getElementById('quick-view-title').textContent;
+            const selectedColor = document.querySelector('.quick-view-color-circle.active');
+            const colorName = selectedColor ? selectedColor.title : '';
+            
+            console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
+            alert(`Added to cart: ${productName}`);
+            
+            // Update cart count (you can implement this)
+            const cartCount = document.querySelector('.cart-count');
+            if (cartCount) {
+                const currentCount = parseInt(cartCount.textContent) || 0;
+                cartCount.textContent = currentCount + 1;
+            }
+        });
+    }
+
+    // Add to wishlist functionality for quick view
+    const addToWishlistQuick = document.getElementById('add-to-wishlist-quick');
+    if (addToWishlistQuick) {
+        addToWishlistQuick.addEventListener('click', function() {
+            const productName = document.getElementById('quick-view-title').textContent;
+            console.log(`Added to wishlist: ${productName}`);
+            alert(`Added to wishlist: ${productName}`);
+        });
+    }
+
     // Modal Functionality
     const somaliaFlag = document.getElementById('somalia-flag');
     const userIcon = document.getElementById('user-icon');
@@ -354,10 +776,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Quick view functionality
-    const quickViewButtons = document.querySelectorAll('.quick-view');
+    // Quick view functionality (old version - keeping for compatibility)
+    const quickViewButtonsOld = document.querySelectorAll('.quick-view');
     
-    quickViewButtons.forEach(button => {
+    quickViewButtonsOld.forEach(button => {
         button.addEventListener('click', function() {
             // Add your quick view functionality here
             console.log('Quick view:', this.closest('.product-card').querySelector('.product-name').textContent);

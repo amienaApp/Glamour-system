@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Dresses - Lulus';
+$page_title = 'Galamor palace';
 ?>
 <!DOCTYPE html>
 <html lang="en">
