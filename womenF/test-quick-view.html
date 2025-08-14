@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick View Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .quick-view {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quick-view:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Quick View Test</h1>
+        <p>This page tests the simple quick view functionality.</p>
+        
+        <!-- Test Product Cards -->
+        <div class="product-card" data-product-id="test1">
+            <div class="product-name">Test Dress 1</div>
+            <div class="product-price">$89.99</div>
+            <button class="quick-view" data-product-id="test1">Quick View</button>
+        </div>
+        
+        <div class="product-card" data-product-id="test2">
+            <div class="product-name">Test Dress 2</div>
+            <div class="product-price">$129.99</div>
+            <button class="quick-view" data-product-id="test2">Quick View</button>
+        </div>
+        
+        <div class="product-card" data-product-id="test3">
+            <div class="product-name">Test Dress 3</div>
+            <div class="product-price">$79.99</div>
+            <button class="quick-view" data-product-id="test3">Quick View</button>
+        </div>
+    </div>
+
+    <!-- Quick View Sidebar -->
+    <div class="quick-view-sidebar" id="quick-view-sidebar">
+        <div class="quick-view-header">
+            <button class="close-quick-view" id="close-quick-view">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="quick-view-content">
+            <div class="quick-view-details">
+                <h2 id="quick-view-title">Product Name</h2>
+                <div class="quick-view-price" id="quick-view-price">$0.00</div>
+                <div class="quick-view-description">
+                    <p>Product description will appear here.</p>
+                </div>
+                <div class="quick-view-actions">
+                    <button class="add-to-bag-quick" id="add-to-bag-quick">
+                        <i class="fas fa-shopping-bag"></i>
+                        Add to Bag
+                    </button>
+                    <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
+                        <i class="fas fa-heart"></i>
+                        + Wishlist
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Overlay -->
+    <div class="quick-view-overlay" id="quick-view-overlay"></div>
+
+    <script src="quick-view.js"></script>
+</body>
+</html>
