@@ -1,0 +1,125 @@
+[
+    {
+        "name": "meniss",
+        "price": 34,
+        "color": "#d0e0ec",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "images": {
+            "front": "uploads\/products\/1754682135_front_1_3.avif",
+            "back": "uploads\/products\/1754682135_back_1_3.1.avif"
+        },
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "salePrice": 0,
+        "createdAt": "2025-08-08 21:42:15",
+        "updatedAt": "2025-08-08 21:57:23",
+        "_id": "689653177b93f"
+    },
+    {
+        "name": "mines",
+        "price": 34,
+        "color": "#000000",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "images": {
+            "front": "uploads\/products\/1754682135_front_2_4.2.avif",
+            "back": "uploads\/products\/1754682135_back_2_4.1.avif"
+        },
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "salePrice": 0,
+        "createdAt": "2025-08-08 21:42:15",
+        "updatedAt": "2025-08-08 21:42:15",
+        "_id": "689653177c8c0"
+    },
+    {
+        "name": "Lulus Unstoppable Glow Light Blue Sequin Strapless Mini Dress",
+        "price": 69,
+        "color": "#87CEEB",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "images": {
+            "front": "img\/sample-dress-front.jpg",
+            "back": "img\/sample-dress-back.jpg"
+        },
+        "description": "A stunning light blue sequin dress perfect for special occasions.",
+        "featured": true,
+        "sale": false,
+        "createdAt": "2025-08-08 22:43:23",
+        "updatedAt": "2025-08-08 22:43:23",
+        "_id": "6896616b47f11"
+    },
+    {
+        "name": "Elegant Black Evening Gown",
+        "price": 129,
+        "color": "#000000",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "images": {
+            "front": "img\/black-gown-front.jpg",
+            "back": "img\/black-gown-back.jpg"
+        },
+        "description": "Classic black evening gown for formal events.",
+        "featured": false,
+        "sale": true,
+        "salePrice": 99,
+        "createdAt": "2025-08-08 22:43:23",
+        "updatedAt": "2025-08-08 22:43:23",
+        "_id": "6896616b482a2"
+    },
+    {
+        "name": "Summer Yellow Floral Dress",
+        "price": 89,
+        "color": "#FFFF00",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "images": {
+            "front": "img\/yellow-dress-front.jpg",
+            "back": "img\/yellow-dress-back.jpg"
+        },
+        "description": "Bright yellow floral dress perfect for summer days.",
+        "featured": true,
+        "sale": false,
+        "createdAt": "2025-08-08 22:43:23",
+        "updatedAt": "2025-08-08 22:43:23",
+        "_id": "6896616b4841e"
+    },
+    {
+        "name": "Casual White Blouse",
+        "price": 45,
+        "color": "#FFFFFF",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "images": {
+            "front": "img\/white-blouse-front.jpg",
+            "back": "img\/white-blouse-back.jpg"
+        },
+        "description": "Versatile white blouse for everyday wear.",
+        "featured": false,
+        "sale": false,
+        "createdAt": "2025-08-08 22:43:23",
+        "updatedAt": "2025-08-08 22:43:23",
+        "_id": "6896616b4856e"
+    },
+    {
+        "name": "Classic Blue Jeans",
+        "price": 79,
+        "color": "#000080",
+        "category": "Women's Clothing",
+        "subcategory": "Bottoms",
+        "images": {
+            "front": "img\/blue-jeans-front.jpg",
+            "back": "img\/blue-jeans-back.jpg"
+        },
+        "description": "High-quality blue jeans with perfect fit.",
+        "featured": false,
+        "sale": true,
+        "salePrice": 59,
+        "createdAt": "2025-08-08 22:43:23",
+        "updatedAt": "2025-08-08 22:43:23",
+        "_id": "6896616b4b674"
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "name": "ADMIN 1",
+        "email": "kalimnav@gmail.com",
+        "password": "$2y$10$42W1Xi323zOH8mJExnttbuJEZdkMzJXDeG2n8FwuDANPWZUMSF7Pi",
+        "created_at": "2025-08-12 23:02:11",
+        "role": "admin",
+        "_id": "689babd30f27fca3f0c73",
+        "createdAt": "2025-08-12 23:02:11",
+        "updatedAt": "2025-08-12 23:02:11"
+    }
+]

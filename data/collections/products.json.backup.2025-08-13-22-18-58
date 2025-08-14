@@ -1,0 +1,745 @@
+[
+    {
+        "name": "AMINE ",
+        "price": 67,
+        "color": "#ea6695",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "",
+        "featured": true,
+        "sale": true,
+        "front_image": "uploads\/products\/1755024822_front_5.2.webp",
+        "back_image": "uploads\/products\/1755024822_back_5.1.webp",
+        "_id": "689b8db66464272d73123",
+        "createdAt": "2025-08-12 20:53:42",
+        "updatedAt": "2025-08-12 22:05:02",
+        "salePrice": 12,
+        "color_variants": [
+            {
+                "name": "yellow",
+                "color": "#fffed6",
+                "price": null,
+                "stock": null,
+                "front_image": "uploads\/products\/689b9e6e3ad7d_variant_0_front_12.webp",
+                "back_image": "uploads\/products\/689b9e6e3bf86_variant_0_back_12.webp"
+            }
+        ]
+    },
+    {
+        "name": "aminie",
+        "price": 56,
+        "color": "#917e7e",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+        "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+        "color_variants": [
+            {
+                "name": "beybet",
+                "color": "#92c9be",
+                "front_image": "",
+                "back_image": ""
+            }
+        ],
+        "_id": "689b9ebf879815ae7e6bf",
+        "createdAt": "2025-08-12 22:06:23",
+        "updatedAt": "2025-08-13 01:01:19",
+        "salePrice": null
+    },
+    {
+        "name": "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
+        "price": 72,
+        "description": "Beautiful floral print midi dress with tulip skirt design",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/10.avif",
+        "image_back": "img\/women\/dresses\/10.1.avif",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Black",
+                "color": "#060606ff",
+                "front_image": "img\/women\/dresses\/10.avif",
+                "back_image": "img\/women\/dresses\/10.1.avif"
+            },
+            {
+                "name": "Maroon",
+                "color": "#812d2dff",
+                "front_image": "img\/women\/dresses\/10.2.avif",
+                "back_image": "img\/women\/dresses\/10.3.avif"
+            },
+            {
+                "name": "Pink",
+                "color": "#ff0095ff",
+                "front_image": "img\/women\/dresses\/10.4.avif",
+                "back_image": "img\/women\/dresses\/10.5.avif"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa4a5fade0abe1b",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "Lulus Kaori Black Cutout Strapless Tulip Maxi Dress",
+        "price": 89,
+        "description": "Stunning black cutout strapless maxi dress with tulip design",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/12.avif",
+        "image_back": "img\/women\/dresses\/12.1.avif",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Brown",
+                "color": "#000000",
+                "front_image": "",
+                "back_image": ""
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa5863eaaa9ee59",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:47:51",
+        "color": "#1b6435",
+        "salePrice": null,
+        "front_image": "uploads\/products\/689bc35b73ca4_11.4.avif",
+        "back_image": "uploads\/products\/689bc35b74d7b_11.1.avif"
+    },
+    {
+        "name": "Lulus Vivacious Champagne Lace-Up Strapless Mini Dress",
+        "price": 98,
+        "description": "Elegant champagne lace-up strapless mini dress",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/16.avif",
+        "image_back": "img\/women\/dresses\/16.1.avif",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Light Blue",
+                "color": "#78bce1ff",
+                "front_image": "img\/women\/dresses\/16.avif",
+                "back_image": "img\/women\/dresses\/16.1.avif"
+            },
+            {
+                "name": "Black",
+                "color": "#000000ff",
+                "front_image": "img\/women\/dresses\/16.2.avif",
+                "back_image": "img\/women\/dresses\/16.3.avif"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa5ff8e53562da7",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "Black Strapless Dress",
+        "price": 85,
+        "description": "Classic black strapless dress for formal occasions",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/22.1.jpg",
+        "image_back": "img\/women\/dresses\/22.1.webp",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Creamy",
+                "color": "#917491ff",
+                "front_image": "img\/women\/dresses\/22.1.jpg",
+                "back_image": "img\/women\/dresses\/22.1.webp"
+            },
+            {
+                "name": "Maroon",
+                "color": "#642525ff",
+                "front_image": "img\/women\/dresses\/22.2.webp",
+                "back_image": "img\/women\/dresses\/22.3.webp"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa68f78312ea332",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "Red Satin Slip Dress",
+        "price": 76,
+        "description": "Elegant red satin slip dress with smooth finish",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/24.jpg",
+        "image_back": "img\/women\/dresses\/24.jpg",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Maroon",
+                "color": "#7311118e",
+                "front_image": "img\/women\/dresses\/24.jpg",
+                "back_image": "img\/women\/dresses\/24.jpg"
+            },
+            {
+                "name": "Silver",
+                "color": "#9e95958e",
+                "front_image": "img\/women\/dresses\/24.1.jpg",
+                "back_image": "img\/women\/dresses\/24.1.jpg"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa6e702eb447f87",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "Black Satin Slip Dress",
+        "price": 76,
+        "description": "Sophisticated black satin slip dress",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/25.avif",
+        "image_back": "img\/women\/dresses\/25.1.jpg",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "White",
+                "color": "#ffffffff",
+                "front_image": "img\/women\/dresses\/25.avif",
+                "back_image": "img\/women\/dresses\/25.1.jpg"
+            },
+            {
+                "name": "Black",
+                "color": "#050505ff",
+                "front_image": "img\/women\/dresses\/25.avif",
+                "back_image": "img\/women\/dresses\/25.1.jpg"
+            },
+            {
+                "name": "Brown",
+                "color": "#713a3aff",
+                "front_image": "img\/women\/dresses\/25.2.jpg",
+                "back_image": "img\/women\/dresses\/25.3.jpg"
+            },
+            {
+                "name": "Blue",
+                "color": "#3c5fdbff",
+                "front_image": "img\/women\/dresses\/25.2.jpg",
+                "back_image": "img\/women\/dresses\/25.3.jpg"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa770fc4b1a7134",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "Green Blue Floral Print Dress",
+        "price": 92,
+        "description": "Beautiful floral print dress in green and blue tones",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "image_front": "img\/women\/dresses\/9.avif",
+        "image_back": "img\/women\/dresses\/9.1.avif",
+        "featured": true,
+        "sale": false,
+        "color_variants": [
+            {
+                "name": "Pink",
+                "color": "#e766b8ff",
+                "front_image": "img\/women\/dresses\/9.avif",
+                "back_image": "img\/women\/dresses\/9.1.avif"
+            },
+            {
+                "name": "Blue",
+                "color": "#83bcf5ff",
+                "front_image": "img\/women\/dresses\/9.2.avif",
+                "back_image": "img\/women\/dresses\/9.3.avif"
+            }
+        ],
+        "created_at": "2025-08-13 00:14:02",
+        "updated_at": "2025-08-13 00:14:02",
+        "_id": "689bbcaa7dd1a09f5779e",
+        "createdAt": "2025-08-13 00:14:02",
+        "updatedAt": "2025-08-13 00:14:02"
+    },
+    {
+        "name": "leiley dress",
+        "price": 54,
+        "color": "#d1f5ef",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "front_image": "uploads\/products\/1755065309_front_18.1.avif",
+        "back_image": "uploads\/products\/1755065309_back_18.avif",
+        "color_variants": [
+            {
+                "name": "qwerty",
+                "color": "#fcfcfc",
+                "front_image": "uploads\/products\/689c2c973e3c0_variant_0_front_19.1.avif",
+                "back_image": "uploads\/products\/689c2c973ef75_variant_0_back_19.avif"
+            }
+        ],
+        "_id": "689c2bdd938a92195530e",
+        "createdAt": "2025-08-13 08:08:29",
+        "updatedAt": "2025-08-13 08:11:35",
+        "salePrice": null
+    },
+    {
+        "name": "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
+        "price": 72,
+        "color": "#060606",
+        "category": "Women's Clothing",
+        "subcategory": "",
+        "description": "Beautiful floral print midi dress with tulip skirt design",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/10.avif",
+        "back_image": "img\/women\/dresses\/10.1.avif",
+        "color_variants": [
+            {
+                "name": "Black",
+                "color": "#060606",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "",
+                "back_image": ""
+            },
+            {
+                "name": "Maroon",
+                "color": "#812d2d",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "",
+                "back_image": ""
+            },
+            {
+                "name": "Pink",
+                "color": "#ff0095",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "",
+                "back_image": ""
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:59:18",
+        "_id": "689ce80194f06e8da3ab2",
+        "salePrice": null,
+        "size_category": "",
+        "selected_sizes": ""
+    },
+    {
+        "name": "Lulus Kaori Black Cutout Strapless Tulip Maxi Dress",
+        "price": 89,
+        "color": "#000000",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Stunning black cutout strapless maxi dress with tulip design",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/12.avif",
+        "back_image": "img\/women\/dresses\/12.1.avif",
+        "color_variants": [
+            {
+                "name": "Black",
+                "color": "#000000",
+                "front_image": "img\/women\/dresses\/12.avif",
+                "back_image": "img\/women\/dresses\/12.1.avif"
+            },
+            {
+                "name": "Brown",
+                "color": "#634145",
+                "front_image": "img\/women\/dresses\/13.avif",
+                "back_image": "img\/women\/dresses\/13.1.avif"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce80199fde732352c0"
+    },
+    {
+        "name": "Lulus Vivacious Champagne Lace-Up Strapless Mini Dress",
+        "price": 98,
+        "color": "#78bce1",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Elegant champagne lace-up strapless mini dress",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/16.avif",
+        "back_image": "img\/women\/dresses\/16.1.avif",
+        "color_variants": [
+            {
+                "name": "Light Blue",
+                "color": "#78bce1",
+                "front_image": "img\/women\/dresses\/16.avif",
+                "back_image": "img\/women\/dresses\/16.1.avif"
+            },
+            {
+                "name": "Black",
+                "color": "#000000",
+                "front_image": "img\/women\/dresses\/16.2.avif",
+                "back_image": "img\/women\/dresses\/16.3.avif"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce8019f22c745ada19"
+    },
+    {
+        "name": "Black Strapless Dress",
+        "price": 85,
+        "color": "#917491",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Classic black strapless dress for elegant occasions",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/22.1.jpg",
+        "back_image": "img\/women\/dresses\/22.1.webp",
+        "color_variants": [
+            {
+                "name": "Creamy",
+                "color": "#917491",
+                "front_image": "img\/women\/dresses\/22.1.jpg",
+                "back_image": "img\/women\/dresses\/22.1.webp"
+            },
+            {
+                "name": "Maroon",
+                "color": "#642525",
+                "front_image": "img\/women\/dresses\/22.2.webp",
+                "back_image": "img\/women\/dresses\/22.3.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801a320c16b0489a"
+    },
+    {
+        "name": "Red Satin Slip Dress",
+        "price": 76,
+        "color": "#731111",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Elegant red satin slip dress for evening wear",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/24.jpg",
+        "back_image": "img\/women\/dresses\/24.jpg",
+        "color_variants": [
+            {
+                "name": "Maroon",
+                "color": "#731111",
+                "front_image": "img\/women\/dresses\/24.jpg",
+                "back_image": "img\/women\/dresses\/24.jpg"
+            },
+            {
+                "name": "Silver",
+                "color": "#9e9595",
+                "front_image": "img\/women\/dresses\/24.1.jpg",
+                "back_image": "img\/women\/dresses\/24.1.jpg"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801a74c66ab2fb52"
+    },
+    {
+        "name": "Black Satin Slip Dress",
+        "price": 76,
+        "color": "#ffffff",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Sophisticated black satin slip dress",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/25.avif",
+        "back_image": "img\/women\/dresses\/25.1.jpg",
+        "color_variants": [
+            {
+                "name": "White",
+                "color": "#ffffff",
+                "front_image": "img\/women\/dresses\/25.avif",
+                "back_image": "img\/women\/dresses\/25.1.jpg"
+            },
+            {
+                "name": "Black",
+                "color": "#050505",
+                "front_image": "img\/women\/dresses\/25.avif",
+                "back_image": "img\/women\/dresses\/25.1.jpg"
+            },
+            {
+                "name": "Brown",
+                "color": "#713a3a",
+                "front_image": "img\/women\/dresses\/25.2.jpg",
+                "back_image": "img\/women\/dresses\/25.3.jpg"
+            },
+            {
+                "name": "Blue",
+                "color": "#3c5fdb",
+                "front_image": "img\/women\/dresses\/25.2.jpg",
+                "back_image": "img\/women\/dresses\/25.3.jpg"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801abd1fd777261d"
+    },
+    {
+        "name": "Green Blue Floral Print Dress",
+        "price": 92,
+        "color": "#e766b8",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Beautiful floral print dress in green and blue tones",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/dresses\/9.avif",
+        "back_image": "img\/women\/dresses\/9.1.avif",
+        "color_variants": [
+            {
+                "name": "Pink",
+                "color": "#e766b8",
+                "front_image": "img\/women\/dresses\/9.avif",
+                "back_image": "img\/women\/dresses\/9.1.avif"
+            },
+            {
+                "name": "Blue",
+                "color": "#83bcf5",
+                "front_image": "img\/women\/dresses\/9.2.avif",
+                "back_image": "img\/women\/dresses\/9.3.avif"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801b01b7e2b3fe24"
+    },
+    {
+        "name": "Orange Floral Summer Dress",
+        "price": 78,
+        "color": "#e66909",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Vibrant orange floral summer dress perfect for warm days",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/1.webp",
+        "back_image": "img\/women\/NEW\/1.1.webp",
+        "color_variants": [
+            {
+                "name": "Orange",
+                "color": "#e66909",
+                "front_image": "img\/women\/NEW\/1.webp",
+                "back_image": "img\/women\/NEW\/1.1.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801b441200f80862"
+    },
+    {
+        "name": "Purple Evening Gown",
+        "price": 120,
+        "color": "#541654",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Elegant purple evening gown for formal occasions",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/7.1.webp",
+        "back_image": "img\/women\/NEW\/7.webp",
+        "color_variants": [
+            {
+                "name": "Purple",
+                "color": "#541654",
+                "front_image": "img\/women\/NEW\/7.1.webp",
+                "back_image": "img\/women\/NEW\/7.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801b86d13a5da738"
+    },
+    {
+        "name": "Maroon Cocktail Dress",
+        "price": 95,
+        "color": "#54162b",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Sophisticated maroon cocktail dress for evening events",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/2.1.webp",
+        "back_image": "img\/women\/NEW\/2.3.webp",
+        "color_variants": [
+            {
+                "name": "Maroon",
+                "color": "#54162b",
+                "front_image": "img\/women\/NEW\/2.1.webp",
+                "back_image": "img\/women\/NEW\/2.3.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801bcb8a918f24ac"
+    },
+    {
+        "name": "Multi-Color Party Dress",
+        "price": 88,
+        "color": "#db8e09",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Vibrant multi-color party dress for celebrations",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/3.webp",
+        "back_image": "img\/women\/NEW\/3.1.webp",
+        "color_variants": [
+            {
+                "name": "Apricot",
+                "color": "#db8e09",
+                "front_image": "img\/women\/NEW\/3.webp",
+                "back_image": "img\/women\/NEW\/3.1.webp"
+            },
+            {
+                "name": "Pink",
+                "color": "#e683a4",
+                "front_image": "img\/women\/NEW\/3.webp",
+                "back_image": "img\/women\/NEW\/3.1.webp"
+            },
+            {
+                "name": "Black",
+                "color": "#050505",
+                "front_image": "img\/women\/NEW\/3.2.webp",
+                "back_image": "img\/women\/NEW\/3.2.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801c161f04f991d9"
+    },
+    {
+        "name": "Grey Casual Dress",
+        "price": 65,
+        "color": "#d2cfcd",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Comfortable grey casual dress for everyday wear",
+        "featured": false,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/10.1.jpg",
+        "back_image": "img\/women\/NEW\/10.webp",
+        "color_variants": [
+            {
+                "name": "Grey",
+                "color": "#d2cfcd",
+                "front_image": "img\/women\/NEW\/10.1.jpg",
+                "back_image": "img\/women\/NEW\/10.webp"
+            },
+            {
+                "name": "Brown",
+                "color": "#54162b",
+                "front_image": "img\/women\/NEW\/10.1.jpg",
+                "back_image": "img\/women\/NEW\/10.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801c62744086acf0"
+    },
+    {
+        "name": "Classic Black Dress",
+        "price": 110,
+        "color": "#000000",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Timeless classic black dress for any occasion",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/11.webp",
+        "back_image": "img\/women\/NEW\/11.2.jpg",
+        "color_variants": [
+            {
+                "name": "Black",
+                "color": "#000000",
+                "front_image": "img\/women\/NEW\/11.webp",
+                "back_image": "img\/women\/NEW\/11.2.jpg"
+            },
+            {
+                "name": "Grey",
+                "color": "#cec6c9",
+                "front_image": "img\/women\/NEW\/11.webp",
+                "back_image": "img\/women\/NEW\/11.2.jpg"
+            },
+            {
+                "name": "Beige",
+                "color": "#e3c880",
+                "front_image": "img\/women\/NEW\/11.4.jpg",
+                "back_image": "img\/women\/NEW\/11.4.jpg"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801ca211e7f37907"
+    },
+    {
+        "name": "Maroon Evening Dress",
+        "price": 135,
+        "color": "#54162b",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Elegant maroon evening dress for formal events",
+        "featured": true,
+        "sale": false,
+        "front_image": "img\/women\/NEW\/8.1.webp",
+        "back_image": "img\/women\/NEW\/8.webp",
+        "color_variants": [
+            {
+                "name": "Maroon",
+                "color": "#54162b",
+                "front_image": "img\/women\/NEW\/8.1.webp",
+                "back_image": "img\/women\/NEW\/8.webp"
+            },
+            {
+                "name": "Black",
+                "color": "#020202",
+                "front_image": "img\/women\/NEW\/8.1.webp",
+                "back_image": "img\/women\/NEW\/8.webp"
+            }
+        ],
+        "createdAt": "2025-08-13 21:31:13",
+        "updatedAt": "2025-08-13 21:31:13",
+        "_id": "689ce801ce710a41935b3"
+    },
+    {
+        "name": "Test Product",
+        "price": 99.99,
+        "color": "#ff0000",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "Test product description",
+        "featured": false,
+        "sale": false,
+        "front_image": "test.jpg",
+        "back_image": "test_back.jpg",
+        "color_variants": [],
+        "createdAt": "2025-08-13 21:48:58",
+        "updatedAt": "2025-08-13 21:48:58",
+        "_id": "689cec2a566d0f99a5369"
+    }
+]
