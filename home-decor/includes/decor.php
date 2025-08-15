@@ -480,7 +480,7 @@
                 <div class="color-options">
                     <span class="color-circle active" style="background-color: #795c79ff;" title="Walnut" data-color="walnut"></span>
                 </div>
-                <h3 class="product-name">Elegant Dining Room Chairs Set</h3>
+                <h3 class="product-name">Elegant Dinin g Room Chairs Set</h3>
                 <div class="product-price">$900</div>
             </div>
     </div>
