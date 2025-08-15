@@ -508,6 +508,7 @@ h2.section-title::before,
   margin-bottom: 0;
   object-fit: cover;
   display: block;
+  
  }
 
 .feature-content{
