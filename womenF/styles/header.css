@@ -23,15 +23,14 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Logo Container - Left Edge */
+/* Logo Container - Left Side */
 .logo-container {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    transition: all 0.3s ease;
+    padding: 8px 15px;
 }
 
 .logo {
@@ -40,17 +39,28 @@ body {
 
 .logo-text {
     text-decoration: none;
-    color: #000000;
-    font-size: 20px;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
 }
 
-.logo-text:hover {
-    color: #333333;
-    transform: scale(1.05);
+.logo-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.logo-accent {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: #7f8c8d;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 /* Navigation Menu Container - Center */
@@ -66,13 +76,12 @@ body {
     list-style: none;
     gap: 30px;
     padding: 15px 0;
-    overflow-x: auto;
-    white-space: nowrap;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 }
 
-/* Navigation Links - Beautiful Styling */
+/* Navigation Links - Professional Styling */
 .nav-link {
     text-decoration: none;
     color: #000000;
@@ -111,26 +120,123 @@ body {
     width: 100%;
 }
 
-/* Right Side Elements Container - Right Edge */
+/* Category Modal Styles */
+.nav-item-modal {
+    position: relative;
+}
+
+.category-modal {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    min-width: 400px;
+    max-width: 600px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.nav-item-modal:hover .category-modal {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+
+.category-modal .modal-header {
+    padding: 0 0 15px 0;
+}
+
+.category-modal .modal-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.category-modal .modal-header p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+.category-modal .modal-content {
+    padding: 15px 0 0 0;
+}
+
+.subcategories-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.subcategory-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.subcategory-item:hover {
+    color: #333;
+}
+
+.subcategory-icon {
+    margin-right: 8px;
+}
+
+.subcategory-icon i {
+    color: #666;
+    font-size: 0.7rem;
+}
+
+.subcategory-item:hover .subcategory-icon i {
+    color: #666;
+}
+
+.subcategory-info h4 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    color: #333;
+}
+
+.subcategory-info span {
+    font-size: 0.75rem;
+    color: #666;
+    display: none;
+}
+
+/* Right Side Elements Container - More Space */
 .nav-right-container {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
     flex-shrink: 0;
     transition: all 0.3s ease;
 }
 
-/* Search Box */
+/* Search Box - More Space */
 .search-container {
     position: relative;
     display: flex;
     align-items: center;
     background: #f8f9fa;
-    border-radius: 20px;
-    padding: 6px 12px;
+    border-radius: 25px;
+    padding: 10px 18px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
     transition: all 0.3s ease;
+    min-width: 220px;
 }
 
 .search-container:hover {
@@ -141,8 +247,8 @@ body {
 }
 
 .search-input {
-    width: 150px;
-    padding: 6px 30px 6px 6px;
+    width: 100%;
+    padding: 0 0 0 8px;
     border: none;
     background: transparent;
     font-size: 13px;
@@ -155,10 +261,8 @@ body {
 }
 
 .search-icon {
-    position: absolute;
-    right: 12px;
     color: #6c757d;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     transition: color 0.3s ease;
 }
@@ -167,47 +271,27 @@ body {
     color: #1976d2;
 }
 
-/* Somalia Flag */
-.flag-container {
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 6px;
-    background: #f8f9fa;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
+/* User Actions - More Space */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.flag-container:hover {
-    background: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    border-color: #d1d5db;
-}
-
-.flag {
-    width: 28px;
-    height: 19px;
-    border: 1px solid #dee2e6;
-    object-fit: cover;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-
-.flag-container:hover .flag {
-    border-color: #90caf9;
-}
-
-/* Icons */
 .user-icon, .heart-icon, .shopping-cart {
     cursor: pointer;
-    padding: 8px;
+    padding: 10px;
     border-radius: 50%;
     transition: all 0.3s ease;
     position: relative;
     background: #f8f9fa;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e9ecef;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .user-icon:hover, .heart-icon:hover, .shopping-cart:hover {
@@ -218,7 +302,7 @@ body {
 }
 
 .user-icon i, .heart-icon i {
-    font-size: 18px;
+    font-size: 16px;
     color: #495057;
     transition: color 0.3s ease;
 }
@@ -227,7 +311,7 @@ body {
     color: #333333;
 }
 
-/* Shopping Cart */
+/* Shopping Cart - Compact */
 .shopping-cart {
     background: #f0f8ff !important;
     border: 1px solid #e6f3ff !important;
@@ -240,7 +324,7 @@ body {
 }
 
 .shopping-cart i {
-    font-size: 18px;
+    font-size: 16px;
     color: #4a90e2;
     transition: color 0.3s ease;
 }
@@ -251,18 +335,178 @@ body {
 
 .cart-count {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -2px;
+    right: -2px;
     background: #ff4757;
     color: #fff;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
-    padding: 2px 6px;
+    padding: 1px 4px;
     border-radius: 50%;
-    min-width: 16px;
+    min-width: 14px;
     text-align: center;
     box-shadow: 0 1px 3px rgba(255, 71, 87, 0.3);
-    border: 2px solid #fff;
+    border: 1px solid #fff;
+}
+
+/* Somalia Flag - More Space */
+.flag-container {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flag-container:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+}
+
+.flag {
+    width: 24px;
+    height: 16px;
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.flag-container:hover .flag {
+    border-color: #90caf9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 20px;
+        padding: 10px 0;
+    }
+    
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 6px 0;
+    }
+    
+    .category-modal {
+        min-width: 300px;
+        left: 0;
+        transform: translateX(0);
+    }
+    
+    .nav-item-modal:hover .category-modal {
+        transform: translateX(0) translateY(0);
+    }
+    
+    .subcategories-grid {
+        gap: 15px;
+    }
+    
+    .search-container {
+        min-width: 150px;
+    }
+    
+    .user-actions {
+        gap: 6px;
+    }
+    
+    .user-icon, .heart-icon, .shopping-cart {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+    
+    .user-icon i, .heart-icon i, .shopping-cart i {
+        font-size: 12px;
+    }
+    
+    .logo-container {
+        padding: 6px 12px;
+    }
+    
+    .logo-main {
+        font-size: 16px;
+    }
+    
+    .logo-accent {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-menu {
+        gap: 15px;
+        padding: 8px 0;
+    }
+    
+    .nav-link {
+        font-size: 0.75rem;
+        padding: 5px 0;
+    }
+    
+    .category-modal {
+        min-width: 280px;
+    }
+    
+    .subcategories-grid {
+        gap: 10px;
+    }
+    
+    .search-container {
+        min-width: 120px;
+        padding: 6px 12px;
+    }
+    
+    .search-input {
+        font-size: 12px;
+    }
+    
+    .user-actions {
+        gap: 4px;
+    }
+    
+    .user-icon, .heart-icon, .shopping-cart {
+        width: 28px;
+        height: 28px;
+        padding: 5px;
+    }
+    
+    .user-icon i, .heart-icon i, .shopping-cart i {
+        font-size: 11px;
+    }
+    
+    .flag-container {
+        width: 28px;
+        height: 28px;
+        padding: 4px;
+    }
+    
+    .flag {
+        width: 16px;
+        height: 12px;
+    }
+    
+    .logo-container {
+        padding: 5px 10px;
+    }
+    
+    .logo-main {
+        font-size: 14px;
+    }
+    
+    .logo-accent {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
 }
 
 /* Modal Styles */
@@ -290,7 +534,354 @@ body {
     max-width: 400px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* User Registration Modal Styles */
+.user-registration-modal {
+    max-width: 650px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+.user-registration-modal .modal-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 30px 40px;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-header .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.modal-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.modal-subtitle {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+.user-registration-modal .modal-body {
+    padding: 40px;
+    background: white;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Form Container */
+.user-registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+
+/* Radio Button Styles */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1e293b;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.radio-label:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.radio-label input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.radio-label input[type="radio"]:checked {
+    border-color: #667eea;
+    background: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.radio-label input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radio-label input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+/* Form Groups */
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: none;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #1e293b;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-input:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+.form-input::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Password Container */
+.password-container {
+    position: relative;
+}
+
+.show-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.show-password:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    margin-bottom: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1e293b;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.checkbox-label:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: #667eea;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.terms-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.terms-link:hover {
+    color: #5a67d8;
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.submit-btn:hover::before {
+    left: 100%;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(14, 165, 233, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(-1px);
+}
+
+.submit-btn i {
+    font-size: 18px;
+}
+
+/* Responsive Design for Modal */
+@media (max-width: 768px) {
+    .user-registration-modal {
+        max-width: 95%;
+        margin: 20px;
+    }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .user-registration-modal .modal-header {
+        padding: 25px 20px;
+    }
+    
+    .user-registration-modal .modal-body {
+        padding: 20px;
+    }
+    
+    .form-section {
+        padding: 20px;
+    }
 }
 
 .modal-header {

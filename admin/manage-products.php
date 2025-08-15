@@ -29,6 +29,15 @@ if ($highlightProductId && $highlightAction) {
     }
 }
 
+// Check for bulk addition success message
+if ($highlightAction === 'bulk_added') {
+    $count = (int)($_GET['count'] ?? 0);
+    if ($count > 0) {
+        $message = "Successfully added $count product(s)!";
+        $messageType = 'success';
+    }
+}
+
 // Check for import success message
 if (isset($_GET['imported'])) {
     $importedCount = (int)$_GET['imported'];

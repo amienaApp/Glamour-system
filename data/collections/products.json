@@ -12,18 +12,13 @@
         "back_image": "uploads\/products\/1755024822_back_5.1.webp",
         "_id": "689b8db66464272d73123",
         "createdAt": "2025-08-12 20:53:42",
-        "updatedAt": "2025-08-12 22:05:02",
+        "updatedAt": "2025-08-14 17:31:06",
         "salePrice": 12,
-        "color_variants": [
-            {
-                "name": "yellow",
-                "color": "#fffed6",
-                "price": null,
-                "stock": null,
-                "front_image": "uploads\/products\/689b9e6e3ad7d_variant_0_front_12.webp",
-                "back_image": "uploads\/products\/689b9e6e3bf86_variant_0_back_12.webp"
-            }
-        ]
+        "color_variants": [],
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": ""
     },
     {
         "name": "aminie",
@@ -40,14 +35,20 @@
             {
                 "name": "beybet",
                 "color": "#92c9be",
-                "front_image": "",
-                "back_image": ""
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
             }
         ],
         "_id": "689b9ebf879815ae7e6bf",
         "createdAt": "2025-08-12 22:06:23",
-        "updatedAt": "2025-08-13 01:01:19",
-        "salePrice": null
+        "updatedAt": "2025-08-14 17:06:53",
+        "salePrice": null,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": ""
     },
     {
         "name": "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
@@ -98,50 +99,68 @@
         "color_variants": [
             {
                 "name": "Brown",
-                "color": "#000000",
-                "front_image": "",
-                "back_image": ""
+                "color": "#2c34a5",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755184122_variant_0_front_11.2.avif",
+                "back_image": "uploads\/products\/1755184122_variant_0_back_11.3.avif"
             }
         ],
         "created_at": "2025-08-13 00:14:02",
         "updated_at": "2025-08-13 00:14:02",
         "_id": "689bbcaa5863eaaa9ee59",
         "createdAt": "2025-08-13 00:14:02",
-        "updatedAt": "2025-08-13 00:47:51",
+        "updatedAt": "2025-08-14 17:08:42",
         "color": "#1b6435",
         "salePrice": null,
         "front_image": "uploads\/products\/689bc35b73ca4_11.4.avif",
-        "back_image": "uploads\/products\/689bc35b74d7b_11.1.avif"
+        "back_image": "uploads\/products\/689bc35b74d7b_11.1.avif",
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": ""
     },
     {
-        "name": "Lulus Vivacious Champagne Lace-Up Strapless Mini Dress",
+        "name": "sioes  blue dress",
         "price": 98,
-        "description": "Elegant champagne lace-up strapless mini dress",
+        "description": "Elegant  dress",
         "category": "Women's Clothing",
         "subcategory": "Dresses",
         "image_front": "img\/women\/dresses\/16.avif",
         "image_back": "img\/women\/dresses\/16.1.avif",
-        "featured": true,
+        "featured": false,
         "sale": false,
         "color_variants": [
             {
-                "name": "Light Blue",
-                "color": "#78bce1ff",
-                "front_image": "img\/women\/dresses\/16.avif",
-                "back_image": "img\/women\/dresses\/16.1.avif"
+                "name": "dark borown dress",
+                "color": "#612e2e",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755184057_variant_0_front_13.1.avif",
+                "back_image": "uploads\/products\/1755184057_variant_0_back_13.avif"
             },
             {
-                "name": "Black",
-                "color": "#000000ff",
-                "front_image": "img\/women\/dresses\/16.2.avif",
-                "back_image": "img\/women\/dresses\/16.3.avif"
+                "name": "black  dress",
+                "color": "#000000",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755184057_variant_1_front_16.3.avif",
+                "back_image": "uploads\/products\/1755184057_variant_1_back_16.2.avif"
             }
         ],
         "created_at": "2025-08-13 00:14:02",
         "updated_at": "2025-08-13 00:14:02",
         "_id": "689bbcaa5ff8e53562da7",
         "createdAt": "2025-08-13 00:14:02",
-        "updatedAt": "2025-08-13 00:14:02"
+        "updatedAt": "2025-08-14 17:07:37",
+        "color": "#6d79ab",
+        "available": true,
+        "stock": 0,
+        "salePrice": null,
+        "size_category": "",
+        "selected_sizes": "[\"L\",\"M\",\"S\",\"X\",\"XL\",\"XXL\"]",
+        "front_image": "uploads\/products\/689dcfc07a360_16.avif",
+        "back_image": "uploads\/products\/689dcfc07ad21_16.1.avif"
     },
     {
         "name": "Black Strapless Dress",
@@ -246,7 +265,7 @@
         "updatedAt": "2025-08-13 00:14:02"
     },
     {
-        "name": "Green Blue Floral Print Dress",
+        "name": "pink Blue Floral Print Dress",
         "price": 92,
         "description": "Beautiful floral print dress in green and blue tones",
         "category": "Women's Clothing",
@@ -257,23 +276,26 @@
         "sale": false,
         "color_variants": [
             {
-                "name": "Pink",
-                "color": "#e766b8ff",
-                "front_image": "img\/women\/dresses\/9.avif",
-                "back_image": "img\/women\/dresses\/9.1.avif"
-            },
-            {
-                "name": "Blue",
-                "color": "#83bcf5ff",
-                "front_image": "img\/women\/dresses\/9.2.avif",
-                "back_image": "img\/women\/dresses\/9.3.avif"
+                "name": "blue",
+                "color": "#99d8ff",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755189078_variant_0_front_9.2.avif",
+                "back_image": "uploads\/products\/1755189078_variant_0_back_9.3.avif"
             }
         ],
         "created_at": "2025-08-13 00:14:02",
         "updated_at": "2025-08-13 00:14:02",
         "_id": "689bbcaa7dd1a09f5779e",
         "createdAt": "2025-08-13 00:14:02",
-        "updatedAt": "2025-08-13 00:14:02"
+        "updatedAt": "2025-08-14 18:31:18",
+        "color": "#ffccea",
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755188985_front_9.1.avif",
+        "back_image": "uploads\/products\/1755188985_back_9.avif"
     },
     {
         "name": "leiley dress",
@@ -363,7 +385,7 @@
         "back_image": "uploads\/products\/1755161297_back_12.1.avif",
         "_id": "689da2d12a25a8c166a4e",
         "createdAt": "2025-08-14 10:48:17",
-        "updatedAt": "2025-08-14 10:48:41",
+        "updatedAt": "2025-08-15 15:54:16",
         "salePrice": null,
         "color_variants": []
     },
@@ -414,5 +436,245 @@
         "_id": "689db02ba9d78679bada9",
         "createdAt": "2025-08-14 11:45:15",
         "updatedAt": "2025-08-14 11:45:15"
+    },
+    {
+        "name": "guest dress",
+        "price": 65,
+        "color": "#b4e5fe",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "clothing",
+        "selected_sizes": "[\"L\",\"M\",\"S\",\"X\",\"XL\",\"XXL\"]",
+        "front_image": "uploads\/products\/1755185873_front_3.avif",
+        "back_image": "uploads\/products\/1755185873_back_3.1.avif",
+        "_id": "689e021d2d4598849f8f0",
+        "createdAt": "2025-08-14 17:34:53",
+        "updatedAt": "2025-08-14 17:37:53",
+        "color_variants": [
+            {
+                "name": "guest dress",
+                "color": "#f5e0e0",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755185873_variant_0_front_3.2.avif",
+                "back_image": "uploads\/products\/1755185873_variant_0_back_3.2.avif"
+            }
+        ]
+    },
+    {
+        "name": "Mood Setter Black Ruched Long Sleeve Top",
+        "price": 67,
+        "color": "#362b2b",
+        "category": "Women's Clothing",
+        "subcategory": "Dresses",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755195843_front_1.mp4",
+        "back_image": "uploads\/products\/1755195843_back_1.mp4",
+        "_id": "689e1f99484f65138a09b",
+        "createdAt": "2025-08-14 19:40:41",
+        "updatedAt": "2025-08-14 20:24:03",
+        "color_variants": []
+    },
+    {
+        "name": "top",
+        "price": 20,
+        "color": "#faf3f8",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "clothing",
+        "selected_sizes": "[\"S\"]",
+        "front_image": "uploads\/products\/1755201213_front_12.webp",
+        "back_image": "uploads\/products\/1755201213_back_12.1.webp",
+        "_id": "689e3ebd66e578dcf4d95",
+        "createdAt": "2025-08-14 21:53:33",
+        "updatedAt": "2025-08-15 15:57:14",
+        "color_variants": []
+    },
+    {
+        "name": "Fabulous Option Blush Pink Faux Fur Coat",
+        "price": 28,
+        "color": "#eed3d3",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 12,
+        "size_category": "none",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_0_front_10.2.jpg",
+        "back_image": "uploads\/products\/1755202922_product_0_back_10.3.webp",
+        "color_variants": [
+            {
+                "name": "Fabulous Option Blush Pink Faux Fur Coat",
+                "color": "#000000",
+                "size_category": "",
+                "selected_sizes": ""
+            }
+        ],
+        "_id": "689e456a00ca8b8c59275",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-14 22:22:02"
+    },
+    {
+        "name": "Cozy Legend Tan Leopard Print Faux Fur Coat",
+        "price": 23,
+        "color": "#5e331c",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_1_front_11.webp",
+        "back_image": "uploads\/products\/1755202922_product_1_back_11.1.webp",
+        "_id": "689e456a01837b63021fb",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-14 22:22:02"
+    },
+    {
+        "name": "Dreamy Impression Ivory Textured Cap Sleeve Top",
+        "price": 56,
+        "color": "#e9e0de",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_2_front_1.webp",
+        "back_image": "uploads\/products\/1755202922_product_2_back_1.1.webp",
+        "_id": "689e456a06b6cd0c3b0ee",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-14 22:22:02"
+    },
+    {
+        "name": "Cute Allure Mint Blue Mesh Backless Ruched Top",
+        "price": 34,
+        "color": "#4b1924",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_3_front_16.webp",
+        "back_image": "uploads\/products\/1755202922_product_3_back_16.1.webp",
+        "color_variants": [
+            {
+                "name": "Cute Allure Mint Blue Mesh Backless Ruched Top",
+                "color": "#d2efe0",
+                "size_category": "",
+                "selected_sizes": "",
+                "front_image": "uploads\/products\/1755265636_variant_0_front_16.2.webp",
+                "back_image": "uploads\/products\/1755265636_variant_0_back_16.3.webp"
+            }
+        ],
+        "_id": "689e456a0b879c3781216",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-15 15:47:56"
+    },
+    {
+        "name": "Prettiest Allure Black Floral Sheer Mesh Mock Neck Top",
+        "price": 46,
+        "color": "#473c3f",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_4_front_17.webp",
+        "back_image": "uploads\/products\/1755202922_product_4_back_17.1.webp",
+        "_id": "689e456a100478b388465",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-14 22:22:02"
+    },
+    {
+        "name": "Fierce Outfit Dark Brown Satin Jacquard Long Sleeve Top",
+        "price": 45,
+        "color": "#754640",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "",
+        "selected_sizes": "",
+        "front_image": "uploads\/products\/1755202922_product_5_front_18.webp",
+        "back_image": "uploads\/products\/1755202922_product_5_back_18.1.webp",
+        "_id": "689e456a1491ef45efcfe",
+        "createdAt": "2025-08-14 22:22:02",
+        "updatedAt": "2025-08-14 22:22:02"
+    },
+    {
+        "name": "Rossana Black Vegan Leather Collared Jacket",
+        "price": 23,
+        "color": "#0d0d0d",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": false,
+        "stock": 23,
+        "size_category": "clothing",
+        "selected_sizes": "[\"L\",\"M\",\"S\",\"X\",\"XL\",\"XXL\"]",
+        "front_image": "uploads\/products\/1755265272_front_19.webp",
+        "back_image": "uploads\/products\/1755265272_back_19,1.webp",
+        "_id": "689f38f8a08153ced4d1d",
+        "createdAt": "2025-08-15 15:41:12",
+        "updatedAt": "2025-08-15 15:41:41",
+        "color_variants": []
+    },
+    {
+        "name": " Vegan Leather Collared Jacket",
+        "price": 23,
+        "color": "#b9ba95",
+        "category": "Women's Clothing",
+        "subcategory": "Tops",
+        "description": "",
+        "featured": false,
+        "sale": false,
+        "available": true,
+        "stock": 0,
+        "size_category": "clothing",
+        "selected_sizes": "[\"L\",\"M\",\"S\",\"X\",\"XL\",\"XXL\"]",
+        "front_image": "uploads\/products\/1755266162_front_9.webp",
+        "back_image": "uploads\/products\/1755266162_back_9.1.webp",
+        "_id": "689f3c72b13373ee4a53e",
+        "createdAt": "2025-08-15 15:56:02",
+        "updatedAt": "2025-08-15 15:56:02"
     }
 ]

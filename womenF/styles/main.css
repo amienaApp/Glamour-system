@@ -98,6 +98,26 @@
     overflow: hidden;
 }
 
+/* View indicator */
+.view-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-slider:hover .view-indicator {
+    opacity: 1;
+}
+
 .image-slider {
     position: relative;
     width: 100%;
@@ -105,7 +125,8 @@
     cursor: pointer;
 }
 
-.image-slider img {
+.image-slider img,
+.image-slider video {
     position: absolute;
     top: 0;
     left: 0;
@@ -113,11 +134,37 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 1;
 }
 
-.image-slider img.active {
+.image-slider img.active,
+.image-slider video.active {
     opacity: 1;
+    z-index: 2;
+}
+
+/* Auto-play videos when they become active */
+.image-slider video.active {
+    animation: fadeInVideo 0.3s ease-in-out;
+}
+
+@keyframes fadeInVideo {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+.image-slider img:hover,
+.image-slider video:hover {
+    transform: scale(1.02);
 }
 
 /* Add subtle hover effect to indicate interactivity */
@@ -132,9 +179,10 @@
     padding: 8px 12px;
     border-radius: 20px;
     font-size: 12px;
-    opacity: 0;
-    animation: fadeInOut 2s ease-in-out;
+    opacity: 1;
+    transition: opacity 0.2s ease;
     pointer-events: none;
+    z-index: 10;
 }
 
 @keyframes fadeInOut {
@@ -190,6 +238,7 @@
     opacity: 0;
     transition: all 0.3s ease;
     min-width: 120px;
+    z-index: 15;
 }
 
 .product-card:hover .product-actions {
@@ -265,6 +314,8 @@
     box-shadow: 0 0 0 1px #ddd;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
 }
 
 .color-circle:hover {
@@ -353,14 +404,16 @@
     border-radius: 8px;
 }
 
-#quick-view-main-image {
+#quick-view-main-image,
+#quick-view-main-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-#quick-view-main-image:hover {
+#quick-view-main-image:hover,
+#quick-view-main-video:hover {
     transform: scale(1.05);
 }
 
@@ -386,7 +439,8 @@
     border-color: #000;
 }
 
-.thumbnail-item img {
+.thumbnail-item img,
+.thumbnail-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -444,33 +498,37 @@
 }
 
 .quick-view-color-circle {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2px solid #ddd;
     transition: all 0.3s ease;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .quick-view-color-circle:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .quick-view-color-circle.active {
     border-color: #000;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
 }
 
 .quick-view-color-circle::after {
     content: '';
     position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
     border: 2px solid transparent;
     border-radius: 50%;
     transition: border-color 0.3s ease;
+    pointer-events: none;
 }
 
 .quick-view-color-circle.active::after {

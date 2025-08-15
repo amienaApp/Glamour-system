@@ -277,7 +277,7 @@ function renderProductCard($product) {
         // Add to cart functionality
         function addToCart(productId) {
             // Add your cart logic here
-            console.log('Adding product to cart:', productId);
+    
             
             // Show notification
             showNotification('Product added to cart!', 'success');
@@ -288,7 +288,7 @@ function renderProductCard($product) {
         
         // Toggle wishlist
         function toggleWishlist(productId) {
-            console.log('Toggling wishlist for product:', productId);
+    
             
             const btn = event.target.closest('.wishlist-btn');
             btn.classList.toggle('active');
@@ -302,7 +302,7 @@ function renderProductCard($product) {
         
         // Quick view functionality
         function quickView(productId) {
-            console.log('Quick view for product:', productId);
+    
             // Implement quick view modal
             showNotification('Quick view coming soon!', 'info');
         }
@@ -344,7 +344,7 @@ function renderProductCard($product) {
         // Update cart count
         function updateCartCount() {
             // Implement cart count update logic
-            console.log('Updating cart count...');
+    
         }
         
         // Add CSS animation
