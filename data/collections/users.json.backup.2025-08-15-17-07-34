@@ -1,0 +1,18 @@
+[
+    {
+        "username": "fatima",
+        "email": "fatima@gmail.com",
+        "contact_number": "+252906041037",
+        "gender": "female",
+        "region": "mudug",
+        "city": "galkayo",
+        "password": "$2y$10$mnqm8FwGJIJO9\/ihV\/0\/t.b0geP0zG9wcpKsfy.gP6UOAMP5j2PZC",
+        "status": "active",
+        "role": "user",
+        "created_at": "2025-08-15 17:02:05",
+        "updated_at": "2025-08-15 17:02:05",
+        "_id": "689f4bed0be7b3e4c957c",
+        "createdAt": "2025-08-15 17:02:05",
+        "updatedAt": "2025-08-15 17:02:05"
+    }
+]

@@ -143,88 +143,156 @@ $categories = $categoryModel->getAll();
     </div>
 </div>
 
-<!-- User Registration Modal -->
-<div class="modal" id="user-modal">
-    <div class="modal-content user-registration-modal">
-                            <div class="modal-header">
-                        <button class="close-btn" id="close-user-modal">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <h2 class="modal-title">Create Account</h2>
-                        <p class="modal-subtitle">Join Glamour Palace and start shopping with style</p>
-                    </div>
-                            <div class="modal-body">
-                        <form class="user-registration-form">
-                            <div class="form-group">
-                                <input type="text" id="username" class="form-input" placeholder="Username *" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" id="email" class="form-input" placeholder="Email Address *" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="tel" id="contact-number" class="form-input" placeholder="Contact Number * (+252 XXX XXX XXX)" required>
-                            </div>
-                            <div class="form-group">
-                                <div class="radio-group">
-                                    <label class="radio-label">
-                                        <input type="radio" name="gender" value="male" required>
-                                        Male
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="gender" value="female" required>
-                                        Female
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <select id="region" class="form-input" required>
-                                    <option value="">Select Region *</option>
-                                    <option value="banadir">Banadir</option>
-                                    <option value="bari">Bari</option>
-                                    <option value="bay">Bay</option>
-                                    <option value="galguduud">Galguduud</option>
-                                    <option value="gedo">Gedo</option>
-                                    <option value="hiran">Hiran</option>
-                                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
-                                    <option value="jubbada-hoose">Jubbada Hoose</option>
-                                    <option value="mudug">Mudug</option>
-                                    <option value="nugaal">Nugaal</option>
-                                    <option value="sanaag">Sanaag</option>
-                                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
-                                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
-                                    <option value="sool">Sool</option>
-                                    <option value="togdheer">Togdheer</option>
-                                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select id="city" class="form-input" required disabled>
-                                    <option value="">Select Region First</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <div class="password-container">
-                                    <input type="password" id="password" class="form-input" placeholder="Password *" required>
-                                    <span class="show-password">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="password-container">
-                                    <input type="password" id="confirm-password" class="form-input" placeholder="Confirm Password *" required>
-                                    <span class="show-password">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                            </div>
+<!-- Success Notification -->
+<div class="success-notification" id="success-notification">
+    <div class="notification-content">
+        <i class="fas fa-check-circle"></i>
+        <span class="notification-text">Registration Successful!</span>
+    </div>
+</div>
 
-                            <button type="submit" class="submit-btn">
-                                <i class="fas fa-user-plus"></i>
-                                Create Account
-                            </button>
-                        </form>
+<!-- Validation Modal -->
+<div class="validation-modal" id="validation-modal">
+    <div class="validation-content">
+        <div class="validation-header">
+            <i class="validation-icon" id="validation-icon"></i>
+            <h3 class="validation-title" id="validation-title">Validation Error</h3>
+        </div>
+        <div class="validation-body">
+            <p class="validation-message" id="validation-message">Please check your input and try again.</p>
+        </div>
+        <div class="validation-footer">
+            <button class="validation-btn" id="validation-btn">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- User Authentication Modal -->
+<div class="modal" id="user-modal">
+    <div class="modal-content user-auth-modal">
+        <!-- Login Form -->
+        <div class="auth-form" id="login-form">
+            <div class="modal-header">
+                <button class="close-btn" id="close-login-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 class="modal-title">Welcome Back</h2>
+                <p class="modal-subtitle">Sign in to your Glamour Palace account</p>
+            </div>
+            <div class="modal-body">
+                <form class="login-form">
+                    <div class="form-group">
+                        <input type="text" id="login-username" class="form-input" placeholder="Username or Email *" required>
                     </div>
+                    <div class="form-group">
+                        <div class="password-container">
+                            <input type="password" id="login-password" class="form-input" placeholder="Password *" required>
+                            <span class="show-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+                <div class="auth-switch">
+                    <p>Don't have an account? <a href="#" id="switch-to-register">Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="auth-form" id="register-form" style="display: none;">
+            <div class="modal-header">
+                <button class="close-btn" id="close-register-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 class="modal-title">Sign Up</h2>
+                <p class="modal-subtitle">Join Glamour Palace and start shopping with style</p>
+            </div>
+            <div class="modal-body">
+                <form class="user-registration-form">
+                    <div class="form-group">
+                        <input type="text" id="username" class="form-input" placeholder="Username *" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" class="form-input" placeholder="Email Address *" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="contact-input-container">
+                            <div class="flag-prefix">
+                                <img src="../img/flag.jpg" alt="Somali Flag" class="flag-icon">
+                                <span class="country-code">+252</span>
+                            </div>
+                            <input type="tel" id="contact-number" class="form-input contact-input" placeholder="XXX XXX XXX" maxlength="9" pattern="[0-9]{9}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="male" required>
+                                Male
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="female" required>
+                                Female
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select id="region" class="form-input" required>
+                            <option value="">Select Region *</option>
+                            <option value="banadir">Banadir</option>
+                            <option value="bari">Bari</option>
+                            <option value="bay">Bay</option>
+                            <option value="galguduud">Galguduud</option>
+                            <option value="gedo">Gedo</option>
+                            <option value="hiran">Hiran</option>
+                            <option value="jubbada-dhexe">Jubbada Dhexe</option>
+                            <option value="jubbada-hoose">Jubbada Hoose</option>
+                            <option value="mudug">Mudug</option>
+                            <option value="nugaal">Nugaal</option>
+                            <option value="sanaag">Sanaag</option>
+                            <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
+                            <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
+                            <option value="sool">Sool</option>
+                            <option value="togdheer">Togdheer</option>
+                            <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="city" class="form-input" required disabled>
+                            <option value="">Select Region First</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="password-container">
+                            <input type="password" id="password" class="form-input" placeholder="Password *" required>
+                            <span class="show-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="password-container">
+                            <input type="password" id="confirm-password" class="form-input" placeholder="Confirm Password *" required>
+                            <span class="show-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i>
+                       Sign Up
+                    </button>
+                </form>
+                <div class="auth-switch">
+                    <p>Already have an account? <a href="#" id="switch-to-login">Sign In</a></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

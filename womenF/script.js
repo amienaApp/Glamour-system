@@ -624,7 +624,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const flagContainer = document.querySelector('.flag-container');
         
         // Get close buttons
-        const closeUserModal = document.getElementById('close-user-modal');
+        const closeLoginModal = document.getElementById('close-login-modal');
+        const closeRegisterModal = document.getElementById('close-register-modal');
         
         // User Icon Click - Open User Modal
         if (userIcon) {
@@ -642,10 +643,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Close User Modal
-        if (closeUserModal) {
-            closeUserModal.addEventListener('click', function() {
+        // Close Login Modal
+        if (closeLoginModal) {
+            closeLoginModal.addEventListener('click', function() {
                 closeModal(userModal);
+                // Reset to login form when closing
+                switchToLoginForm();
+            });
+        }
+        
+        // Close Register Modal
+        if (closeRegisterModal) {
+            closeRegisterModal.addEventListener('click', function() {
+                closeModal(userModal);
+                // Reset to login form when closing
+                switchToLoginForm();
             });
         }
         
@@ -653,6 +665,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal')) {
                 closeModal(e.target);
+                // Reset to login form when closing
+                switchToLoginForm();
             }
         });
         
@@ -674,6 +688,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
+        // Contact Number Validation and Formatting
+        const contactInput = document.getElementById('contact-number');
+        if (contactInput) {
+            contactInput.addEventListener('input', function(e) {
+                // Remove any non-numeric characters
+                let value = this.value.replace(/\D/g, '');
+                
+                // Limit to 9 digits
+                if (value.length > 9) {
+                    value = value.substring(0, 9);
+                }
+                
+                // Update the input value
+                this.value = value;
+            });
+            
+            // Prevent non-numeric input
+            contactInput.addEventListener('keypress', function(e) {
+                const charCode = e.which ? e.which : e.keyCode;
+                if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    e.preventDefault();
+                }
+            });
+        }
+
         // Region-City Dynamic Dropdown
         const regionSelect = document.getElementById('region');
         const citySelect = document.getElementById('city');
@@ -697,6 +736,97 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Validation Modal Event Listeners
+        const validationBtn = document.getElementById('validation-btn');
+        if (validationBtn) {
+            validationBtn.addEventListener('click', hideValidationModal);
+        }
+
+        // Close validation modal when clicking outside
+        const validationModal = document.getElementById('validation-modal');
+        if (validationModal) {
+            validationModal.addEventListener('click', function(e) {
+                if (e.target === validationModal) {
+                    hideValidationModal();
+                }
+            });
+        }
+
+        // Authentication Form Switching
+        const switchToRegister = document.getElementById('switch-to-register');
+        const switchToLogin = document.getElementById('switch-to-login');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        
+        if (switchToRegister) {
+            switchToRegister.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'flex';
+            });
+        }
+        
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'flex';
+            });
+        }
+
+        // Login Form Submission
+        const loginFormElement = document.querySelector('.login-form');
+        
+        if (loginFormElement) {
+            loginFormElement.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = {
+                    username: document.getElementById('login-username').value,
+                    password: document.getElementById('login-password').value
+                };
+                
+                // Show loading state
+                const submitBtn = this.querySelector('.submit-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                submitBtn.disabled = true;
+                
+                // Send login request
+                fetch('login-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showValidationModal('success', 'Login Successful', data.message);
+                        setTimeout(() => {
+                            closeModal(userModal);
+                            loginFormElement.reset();
+                            // Update UI to show logged in state
+                            updateUserInterface(data.user);
+                        }, 1500);
+                    } else {
+                        showValidationModal('error', 'Login Failed', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showValidationModal('error', 'Connection Error', 'Login failed. Please check your connection and try again.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            });
+        }
+
         // User Registration Form Submission
         const registrationForm = document.querySelector('.user-registration-form');
         
@@ -705,48 +835,84 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 
                 // Get form data
+                const contactNumber = document.getElementById('contact-number').value;
                 const formData = {
                     username: document.getElementById('username').value,
                     email: document.getElementById('email').value,
-                    contactNumber: document.getElementById('contact-number').value,
+                    contact_number: '+252' + contactNumber,
                     gender: document.querySelector('input[name="gender"]:checked')?.value || '',
                     region: document.getElementById('region').value,
                     city: document.getElementById('city').value,
                     password: document.getElementById('password').value,
-                    confirmPassword: document.getElementById('confirm-password').value,
-                    terms: document.getElementById('terms').checked,
-                    newsletter: document.getElementById('newsletter').checked
+                    confirm_password: document.getElementById('confirm-password').value
                 };
                 
                 // Validation
-                if (!formData.terms) {
-                    alert('Please agree to the Terms of Service and Privacy Policy');
-                    return;
-                }
-                
-                if (formData.password !== formData.confirmPassword) {
-                    alert('Passwords do not match!');
+                if (formData.password !== formData.confirm_password) {
+                    showValidationModal('error', 'Password Mismatch', 'Passwords do not match! Please make sure both passwords are identical.');
                     return;
                 }
                 
                 if (!formData.gender) {
-                    alert('Please select your gender');
+                    showValidationModal('warning', 'Gender Required', 'Please select your gender to continue.');
                     return;
                 }
                 
-                if (formData.password.length < 6) {
-                    alert('Password must be at least 6 characters long');
+                if (formData.password.length < 1) {
+                    showValidationModal('error', 'Password Required', 'Please enter a password.');
                     return;
                 }
                 
-                console.log('Registration data:', formData);
-                alert('Account created successfully! Welcome to Glamour Palace!');
-                closeModal(userModal);
+                // Validate contact number (must be exactly 9 digits)
+                if (contactNumber.length !== 9) {
+                    showValidationModal('error', 'Invalid Contact Number', 'Contact number must be exactly 9 digits (e.g., 123456789).');
+                    return;
+                }
                 
-                // Reset form
-                registrationForm.reset();
-                citySelect.disabled = true;
-                citySelect.innerHTML = '<option value="">Select Region First</option>';
+                // Show loading state
+                const submitBtn = this.querySelector('.submit-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+                submitBtn.disabled = true;
+                
+                // Send registration request
+                fetch('register-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success notification
+                        showSuccessNotification();
+                        
+                        // Reset form
+                        registrationForm.reset();
+                        citySelect.disabled = true;
+                        citySelect.innerHTML = '<option value="">Select Region First</option>';
+                        
+                        // Close modal and redirect to login after 1.5 seconds
+                        setTimeout(() => {
+                            closeModal(userModal);
+                            // Switch to login form
+                            switchToLoginForm();
+                        }, 1500);
+                    } else {
+                        showValidationModal('error', 'Registration Failed', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showValidationModal('error', 'Connection Error', 'Registration failed. Please check your connection and try again.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
             });
         }
         
@@ -786,6 +952,122 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             
             return cityMap[region] || [];
+        }
+
+        // Update user interface after login/registration
+        function updateUserInterface(user) {
+            const userIcon = document.querySelector('.user-icon');
+            if (userIcon && user) {
+                // Change user icon to show logged in state
+                userIcon.innerHTML = `<i class="fas fa-user"></i>`;
+                userIcon.title = `Welcome, ${user.username}!`;
+                
+                // Add logout functionality
+                userIcon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Do you want to logout?')) {
+                        logout();
+                    }
+                });
+            }
+        }
+
+        // Show validation modal
+        function showValidationModal(type, title, message) {
+            const modal = document.getElementById('validation-modal');
+            const icon = document.getElementById('validation-icon');
+            const titleEl = document.getElementById('validation-title');
+            const messageEl = document.getElementById('validation-message');
+            
+            if (modal && icon && titleEl && messageEl) {
+                // Set icon based on type
+                icon.className = 'validation-icon';
+                if (type === 'error') {
+                    icon.classList.add('error');
+                    icon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                } else if (type === 'success') {
+                    icon.classList.add('success');
+                    icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                } else if (type === 'warning') {
+                    icon.classList.add('warning');
+                    icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                }
+                
+                // Set title and message
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                
+                // Show modal
+                modal.classList.add('show');
+            }
+        }
+
+        // Hide validation modal
+        function hideValidationModal() {
+            const modal = document.getElementById('validation-modal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Show success notification
+        function showSuccessNotification() {
+            const notification = document.getElementById('success-notification');
+            if (notification) {
+                notification.classList.add('show');
+                
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Switch to login form
+        function switchToLoginForm() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginForm && registerForm) {
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'flex';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            fetch('logout-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showValidationModal('success', 'Logged Out', data.message);
+                    setTimeout(() => {
+                        // Reset user interface
+                        const userIcon = document.querySelector('.user-icon');
+                        if (userIcon) {
+                            userIcon.innerHTML = `<i class="fas fa-user"></i>`;
+                            userIcon.title = 'Sign In / Register';
+                            
+                            // Remove logout event listener and restore original functionality
+                            userIcon.removeEventListener('click', logout);
+                            userIcon.addEventListener('click', function() {
+                                openModal(userModal);
+                            });
+                        }
+                    }, 1500);
+                } else {
+                    showValidationModal('error', 'Logout Failed', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showValidationModal('error', 'Connection Error', 'Logout failed. Please try again.');
+            });
         }
     }
 });
