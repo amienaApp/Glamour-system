@@ -39,6 +39,9 @@ try {
     // Attempt login
     $user = $userModel->login($input['username'], $input['password']);
 
+    // Update last login time
+    $userModel->updateLastLogin($user['_id']);
+
     // Start session and store user data
     session_start();
     $_SESSION['user_id'] = $user['_id'];

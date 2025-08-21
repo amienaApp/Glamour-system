@@ -1,0 +1,1011 @@
+[
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689e456a0b879c3781216",
+                "quantity": 1,
+                "added_at": "2025-08-19 17:57:20",
+                "product": {
+                    "name": "Cute Allure Mint Blue Mesh Backless Ruched Top",
+                    "price": 34,
+                    "color": "#4b1924",
+                    "category": "Women's Clothing",
+                    "subcategory": "Tops",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": "",
+                    "front_image": "uploads\/products\/1755202922_product_3_front_16.webp",
+                    "back_image": "uploads\/products\/1755202922_product_3_back_16.1.webp",
+                    "color_variants": [
+                        {
+                            "name": "Cute Allure Mint Blue Mesh Backless Ruched Top",
+                            "color": "#d2efe0",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755265636_variant_0_front_16.2.webp",
+                            "back_image": "uploads\/products\/1755265636_variant_0_back_16.3.webp"
+                        }
+                    ],
+                    "_id": "689e456a0b879c3781216",
+                    "createdAt": "2025-08-14 22:22:02",
+                    "updatedAt": "2025-08-15 15:47:56"
+                },
+                "subtotal": 34
+            },
+            {
+                "product_id": "689bbcaa4a5fade0abe1b",
+                "quantity": 1,
+                "added_at": "2025-08-19 19:33:18",
+                "product": {
+                    "name": "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
+                    "price": 72,
+                    "description": "Beautiful floral print midi dress with tulip skirt design",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/10.avif",
+                    "image_back": "img\/women\/dresses\/10.1.avif",
+                    "featured": true,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "Black",
+                            "color": "#060606ff",
+                            "front_image": "img\/women\/dresses\/10.avif",
+                            "back_image": "img\/women\/dresses\/10.1.avif"
+                        },
+                        {
+                            "name": "Maroon",
+                            "color": "#812d2dff",
+                            "front_image": "img\/women\/dresses\/10.2.avif",
+                            "back_image": "img\/women\/dresses\/10.3.avif"
+                        },
+                        {
+                            "name": "Pink",
+                            "color": "#ff0095ff",
+                            "front_image": "img\/women\/dresses\/10.4.avif",
+                            "back_image": "img\/women\/dresses\/10.5.avif"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa4a5fade0abe1b",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-13 00:14:02"
+                },
+                "subtotal": 72
+            }
+        ],
+        "total_amount": 106,
+        "item_count": 2,
+        "status": "pending",
+        "order_number": "ORD202508192102374242CF",
+        "shipping_address": "garawe",
+        "billing_address": "halgan",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:02:37",
+        "updated_at": "2025-08-19 21:02:37",
+        "_id": "68a4ca4d3b29893f1584d",
+        "createdAt": "2025-08-19 21:02:37",
+        "updatedAt": "2025-08-19 21:02:37"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689c2bdd938a92195530e",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:03:43",
+                "product": {
+                    "name": "leiley dress",
+                    "price": 54,
+                    "color": "#d1f5ef",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/1755065309_front_18.1.avif",
+                    "back_image": "uploads\/products\/1755065309_back_18.avif",
+                    "color_variants": [
+                        {
+                            "name": "qwerty",
+                            "color": "#fcfcfc",
+                            "front_image": "uploads\/products\/689c2c973e3c0_variant_0_front_19.1.avif",
+                            "back_image": "uploads\/products\/689c2c973ef75_variant_0_back_19.avif"
+                        }
+                    ],
+                    "_id": "689c2bdd938a92195530e",
+                    "createdAt": "2025-08-13 08:08:29",
+                    "updatedAt": "2025-08-13 08:11:35",
+                    "salePrice": null
+                },
+                "subtotal": 54
+            }
+        ],
+        "total_amount": 54,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819210451CA452F",
+        "shipping_address": "garowe",
+        "billing_address": "halgan",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:04:51",
+        "updated_at": "2025-08-19 21:04:51",
+        "_id": "68a4cad32f467c65c5c62",
+        "createdAt": "2025-08-19 21:04:51",
+        "updatedAt": "2025-08-19 21:04:51"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:05:15",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819210604B24DCD",
+        "shipping_address": "sdfgh",
+        "billing_address": "sdfbn",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:06:04",
+        "updated_at": "2025-08-19 21:06:04",
+        "_id": "68a4cb1cb3880e18d7244",
+        "createdAt": "2025-08-19 21:06:04",
+        "updatedAt": "2025-08-19 21:06:04"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:14:08",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025081921144493B6B3",
+        "shipping_address": "sdv",
+        "billing_address": "asdf",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:14:44",
+        "updated_at": "2025-08-19 21:14:44",
+        "_id": "68a4cd243bcc81ff7564c",
+        "createdAt": "2025-08-19 21:14:44",
+        "updatedAt": "2025-08-19 21:14:44"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689bbcaa4a5fade0abe1b",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:15:44",
+                "product": {
+                    "name": "Lulus My Favorite Day Navy Blue Floral Print Tulip Skirt Midi Dress",
+                    "price": 72,
+                    "description": "Beautiful floral print midi dress with tulip skirt design",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/10.avif",
+                    "image_back": "img\/women\/dresses\/10.1.avif",
+                    "featured": true,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "Black",
+                            "color": "#060606ff",
+                            "front_image": "img\/women\/dresses\/10.avif",
+                            "back_image": "img\/women\/dresses\/10.1.avif"
+                        },
+                        {
+                            "name": "Maroon",
+                            "color": "#812d2dff",
+                            "front_image": "img\/women\/dresses\/10.2.avif",
+                            "back_image": "img\/women\/dresses\/10.3.avif"
+                        },
+                        {
+                            "name": "Pink",
+                            "color": "#ff0095ff",
+                            "front_image": "img\/women\/dresses\/10.4.avif",
+                            "back_image": "img\/women\/dresses\/10.5.avif"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa4a5fade0abe1b",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-13 00:14:02"
+                },
+                "subtotal": 72
+            }
+        ],
+        "total_amount": 72,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819211632CF8AA7",
+        "shipping_address": "xcv",
+        "billing_address": "zxc",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:16:32",
+        "updated_at": "2025-08-19 21:16:32",
+        "_id": "68a4cd90d85e6bda72c75",
+        "createdAt": "2025-08-19 21:16:32",
+        "updatedAt": "2025-08-19 21:16:32"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:22:29",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819212443689766",
+        "shipping_address": "x",
+        "billing_address": "df",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:24:43",
+        "updated_at": "2025-08-19 21:24:43",
+        "_id": "68a4cf7b2b2d5ca840d2f",
+        "createdAt": "2025-08-19 21:24:43",
+        "updatedAt": "2025-08-19 21:24:43"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689bbcaa68f78312ea332",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:28:55",
+                "product": {
+                    "name": "Black Strapless Dress",
+                    "price": 85,
+                    "description": "Classic black strapless dress for formal occasions",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/22.1.jpg",
+                    "image_back": "img\/women\/dresses\/22.1.webp",
+                    "featured": true,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "Creamy",
+                            "color": "#917491ff",
+                            "front_image": "img\/women\/dresses\/22.1.jpg",
+                            "back_image": "img\/women\/dresses\/22.1.webp"
+                        },
+                        {
+                            "name": "Maroon",
+                            "color": "#642525ff",
+                            "front_image": "img\/women\/dresses\/22.2.webp",
+                            "back_image": "img\/women\/dresses\/22.3.webp"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa68f78312ea332",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-13 00:14:02"
+                },
+                "subtotal": 85
+            }
+        ],
+        "total_amount": 85,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD202508192130236DE29F",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:30:23",
+        "updated_at": "2025-08-19 21:30:23",
+        "_id": "68a4d0cf1fc4ee3219e9e",
+        "createdAt": "2025-08-19 21:30:23",
+        "updatedAt": "2025-08-19 21:30:23"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b8db66464272d73123",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:33:49",
+                "product": {
+                    "name": "AMINE ",
+                    "price": 67,
+                    "color": "#ea6695",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": true,
+                    "sale": true,
+                    "front_image": "uploads\/products\/1755024822_front_5.2.webp",
+                    "back_image": "uploads\/products\/1755024822_back_5.1.webp",
+                    "_id": "689b8db66464272d73123",
+                    "createdAt": "2025-08-12 20:53:42",
+                    "updatedAt": "2025-08-14 17:31:06",
+                    "salePrice": 12,
+                    "color_variants": [],
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 67
+            }
+        ],
+        "total_amount": 67,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD202508192134407A9955",
+        "shipping_address": "asd",
+        "billing_address": "zx",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:34:40",
+        "updated_at": "2025-08-19 21:34:40",
+        "_id": "68a4d1d0cb6d468b9ee6d",
+        "createdAt": "2025-08-19 21:34:40",
+        "updatedAt": "2025-08-19 21:34:40"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689e456a100478b388465",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:41:55",
+                "product": {
+                    "name": "Prettiest Allure Black Floral Sheer Mesh Mock Neck Top",
+                    "price": 46,
+                    "color": "#473c3f",
+                    "category": "Women's Clothing",
+                    "subcategory": "Tops",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": "",
+                    "front_image": "uploads\/products\/1755202922_product_4_front_17.webp",
+                    "back_image": "uploads\/products\/1755202922_product_4_back_17.1.webp",
+                    "_id": "689e456a100478b388465",
+                    "createdAt": "2025-08-14 22:22:02",
+                    "updatedAt": "2025-08-14 22:22:02"
+                },
+                "subtotal": 46
+            }
+        ],
+        "total_amount": 46,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819214234654AA1",
+        "shipping_address": "xc",
+        "billing_address": "c",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:42:34",
+        "updated_at": "2025-08-19 21:42:34",
+        "_id": "68a4d3aab23c23c34d5cc",
+        "createdAt": "2025-08-19 21:42:34",
+        "updatedAt": "2025-08-19 21:42:34"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:49:59",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819215056FE1C44",
+        "shipping_address": "c",
+        "billing_address": "c",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:50:56",
+        "updated_at": "2025-08-19 21:50:56",
+        "_id": "68a4d5a037100f467a26d",
+        "createdAt": "2025-08-19 21:50:56",
+        "updatedAt": "2025-08-19 21:50:56"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 21:54:56",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819215612B5A524",
+        "shipping_address": "fg",
+        "billing_address": "v",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:56:12",
+        "updated_at": "2025-08-19 21:56:12",
+        "_id": "68a4d6dc570f11a883cc5",
+        "createdAt": "2025-08-19 21:56:12",
+        "updatedAt": "2025-08-19 21:56:12"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b8db66464272d73123",
+                "quantity": 2,
+                "added_at": "2025-08-19 21:57:33",
+                "product": {
+                    "name": "AMINE ",
+                    "price": 67,
+                    "color": "#ea6695",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": true,
+                    "sale": true,
+                    "front_image": "uploads\/products\/1755024822_front_5.2.webp",
+                    "back_image": "uploads\/products\/1755024822_back_5.1.webp",
+                    "_id": "689b8db66464272d73123",
+                    "createdAt": "2025-08-12 20:53:42",
+                    "updatedAt": "2025-08-14 17:31:06",
+                    "salePrice": 12,
+                    "color_variants": [],
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 134
+            }
+        ],
+        "total_amount": 134,
+        "item_count": 2,
+        "status": "pending",
+        "order_number": "ORD202508192158439556E6",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 21:58:43",
+        "updated_at": "2025-08-19 21:58:43",
+        "_id": "68a4d773b28d283118901",
+        "createdAt": "2025-08-19 21:58:43",
+        "updatedAt": "2025-08-19 21:58:43"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b8db66464272d73123",
+                "quantity": 1,
+                "added_at": "2025-08-19 22:01:02",
+                "product": {
+                    "name": "AMINE ",
+                    "price": 67,
+                    "color": "#ea6695",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": true,
+                    "sale": true,
+                    "front_image": "uploads\/products\/1755024822_front_5.2.webp",
+                    "back_image": "uploads\/products\/1755024822_back_5.1.webp",
+                    "_id": "689b8db66464272d73123",
+                    "createdAt": "2025-08-12 20:53:42",
+                    "updatedAt": "2025-08-14 17:31:06",
+                    "salePrice": 12,
+                    "color_variants": [],
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 67
+            }
+        ],
+        "total_amount": 67,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025081922013599CD9E",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 22:01:35",
+        "updated_at": "2025-08-19 22:01:35",
+        "_id": "68a4d81fb134ea0256a77",
+        "createdAt": "2025-08-19 22:01:35",
+        "updatedAt": "2025-08-19 22:01:35"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689b9ebf879815ae7e6bf",
+                "quantity": 1,
+                "added_at": "2025-08-19 22:16:26",
+                "product": {
+                    "name": "aminie",
+                    "price": 56,
+                    "color": "#917e7e",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "front_image": "uploads\/products\/689ba13d99f1c_14.2.avif",
+                    "back_image": "uploads\/products\/689ba13d9a42b_14.3.avif",
+                    "color_variants": [
+                        {
+                            "name": "beybet",
+                            "color": "#92c9be",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184013_variant_0_front_15.2.avif",
+                            "back_image": "uploads\/products\/1755184013_variant_0_back_15.3.avif"
+                        }
+                    ],
+                    "_id": "689b9ebf879815ae7e6bf",
+                    "createdAt": "2025-08-12 22:06:23",
+                    "updatedAt": "2025-08-14 17:06:53",
+                    "salePrice": null,
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 56
+            }
+        ],
+        "total_amount": 56,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819221658D7DEEF",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 22:16:58",
+        "updated_at": "2025-08-19 22:16:58",
+        "_id": "68a4dbba51010edcd6e3b",
+        "createdAt": "2025-08-19 22:16:58",
+        "updatedAt": "2025-08-19 22:16:58"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689bbcaa5ff8e53562da7",
+                "quantity": 1,
+                "added_at": "2025-08-19 22:17:43",
+                "product": {
+                    "name": "sioes  blue dress",
+                    "price": 98,
+                    "description": "Elegant  dress",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/16.avif",
+                    "image_back": "img\/women\/dresses\/16.1.avif",
+                    "featured": false,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "dark borown dress",
+                            "color": "#612e2e",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184057_variant_0_front_13.1.avif",
+                            "back_image": "uploads\/products\/1755184057_variant_0_back_13.avif"
+                        },
+                        {
+                            "name": "black  dress",
+                            "color": "#000000",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184057_variant_1_front_16.3.avif",
+                            "back_image": "uploads\/products\/1755184057_variant_1_back_16.2.avif"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa5ff8e53562da7",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-14 17:07:37",
+                    "color": "#6d79ab",
+                    "available": true,
+                    "stock": 0,
+                    "salePrice": null,
+                    "size_category": "",
+                    "selected_sizes": "[\"L\",\"M\",\"S\",\"X\",\"XL\",\"XXL\"]",
+                    "front_image": "uploads\/products\/689dcfc07a360_16.avif",
+                    "back_image": "uploads\/products\/689dcfc07ad21_16.1.avif"
+                },
+                "subtotal": 98
+            }
+        ],
+        "total_amount": 98,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025081922182069DDE5",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 22:18:20",
+        "updated_at": "2025-08-19 22:18:20",
+        "_id": "68a4dc0c091d1daac2b18",
+        "createdAt": "2025-08-19 22:18:20",
+        "updatedAt": "2025-08-19 22:18:20"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689bbcaa68f78312ea332",
+                "quantity": 1,
+                "added_at": "2025-08-19 22:37:43",
+                "product": {
+                    "name": "Black Strapless Dress",
+                    "price": 85,
+                    "description": "Classic black strapless dress for formal occasions",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/22.1.jpg",
+                    "image_back": "img\/women\/dresses\/22.1.webp",
+                    "featured": true,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "Creamy",
+                            "color": "#917491ff",
+                            "front_image": "img\/women\/dresses\/22.1.jpg",
+                            "back_image": "img\/women\/dresses\/22.1.webp"
+                        },
+                        {
+                            "name": "Maroon",
+                            "color": "#642525ff",
+                            "front_image": "img\/women\/dresses\/22.2.webp",
+                            "back_image": "img\/women\/dresses\/22.3.webp"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa68f78312ea332",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-13 00:14:02"
+                },
+                "subtotal": 85
+            }
+        ],
+        "total_amount": 85,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD20250819223822E9D3E5",
+        "shipping_address": "c",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-19 22:38:22",
+        "updated_at": "2025-08-19 22:38:22",
+        "_id": "68a4e0beb3ab7f86c3f57",
+        "createdAt": "2025-08-19 22:38:22",
+        "updatedAt": "2025-08-19 22:38:22"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689bbcaa5863eaaa9ee59",
+                "quantity": 1,
+                "added_at": "2025-08-20 13:35:37",
+                "product": {
+                    "name": "Lulus Kaori Black Cutout Strapless Tulip Maxi Dress",
+                    "price": 89,
+                    "description": "Stunning black cutout strapless maxi dress with tulip design",
+                    "category": "Women's Clothing",
+                    "subcategory": "Dresses",
+                    "image_front": "img\/women\/dresses\/12.avif",
+                    "image_back": "img\/women\/dresses\/12.1.avif",
+                    "featured": true,
+                    "sale": false,
+                    "color_variants": [
+                        {
+                            "name": "Brown",
+                            "color": "#2c34a5",
+                            "size_category": "",
+                            "selected_sizes": "",
+                            "front_image": "uploads\/products\/1755184122_variant_0_front_11.2.avif",
+                            "back_image": "uploads\/products\/1755184122_variant_0_back_11.3.avif"
+                        }
+                    ],
+                    "created_at": "2025-08-13 00:14:02",
+                    "updated_at": "2025-08-13 00:14:02",
+                    "_id": "689bbcaa5863eaaa9ee59",
+                    "createdAt": "2025-08-13 00:14:02",
+                    "updatedAt": "2025-08-14 17:08:42",
+                    "color": "#1b6435",
+                    "salePrice": null,
+                    "front_image": "uploads\/products\/689bc35b73ca4_11.4.avif",
+                    "back_image": "uploads\/products\/689bc35b74d7b_11.1.avif",
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": ""
+                },
+                "subtotal": 89
+            }
+        ],
+        "total_amount": 89,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025082013362970F1DC",
+        "shipping_address": "HODANHILLS",
+        "billing_address": "HILL4",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-20 13:36:29",
+        "updated_at": "2025-08-20 13:36:29",
+        "_id": "68a5b33d6536196069b5a",
+        "createdAt": "2025-08-20 13:36:29",
+        "updatedAt": "2025-08-20 13:36:29"
+    },
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "507f1f77bcf86cd799439011",
+                "name": "Elegant Evening Dress",
+                "price": 89.99,
+                "quantity": 1
+            }
+        ],
+        "total_amount": 89.99,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025082013591793D8EC",
+        "shipping_address": "123 Main Street, Mogadishu, Somalia",
+        "billing_address": "123 Main Street, Mogadishu, Somalia",
+        "payment_method": "waafi",
+        "notes": "Please deliver in the morning",
+        "created_at": "2025-08-20 13:59:17",
+        "updated_at": "2025-08-20 13:59:18",
+        "_id": "68a5b895eecb823a4ccb5",
+        "createdAt": "2025-08-20 13:59:17",
+        "updatedAt": "2025-08-20 13:59:18"
+    },
+    {
+        "user_id": "demo_user_789",
+        "items": [
+            {
+                "product_id": "507f1f77bcf86cd799439013",
+                "name": "Luxury Perfume Set",
+                "price": 234.75,
+                "quantity": 1
+            }
+        ],
+        "total_amount": 234.75,
+        "item_count": 1,
+        "status": "processing",
+        "order_number": "ORD2025082013591888B4A6",
+        "shipping_address": "789 Beach Boulevard, Kismayo, Somalia",
+        "billing_address": "789 Beach Boulevard, Kismayo, Somalia",
+        "payment_method": "bank",
+        "notes": "Urgent delivery needed",
+        "created_at": "2025-08-20 13:59:18",
+        "updated_at": "2025-08-20 13:59:18",
+        "_id": "68a5b8962d024c25ebd72",
+        "createdAt": "2025-08-20 13:59:18",
+        "updatedAt": "2025-08-20 13:59:18"
+    },
+    {
+        "user_id": "demo_user_101",
+        "items": [
+            {
+                "product_id": "507f1f77bcf86cd799439014",
+                "name": "Silk Scarf Collection",
+                "price": 67.25,
+                "quantity": 1
+            }
+        ],
+        "total_amount": 67.25,
+        "item_count": 1,
+        "status": "cancelled",
+        "order_number": "ORD20250820135918DEA54B",
+        "shipping_address": "321 Garden Street, Bosaso, Somalia",
+        "billing_address": "321 Garden Street, Bosaso, Somalia",
+        "payment_method": "waafi",
+        "notes": "",
+        "created_at": "2025-08-20 13:59:18",
+        "updated_at": "2025-08-20 13:59:18",
+        "_id": "68a5b89649ebc798ae422",
+        "createdAt": "2025-08-20 13:59:18",
+        "updatedAt": "2025-08-20 13:59:18"
+    }
+]

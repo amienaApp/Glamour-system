@@ -1,0 +1,22 @@
+[
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689e456a0b879c3781216",
+                "quantity": 1,
+                "added_at": "2025-08-19 17:57:20"
+            },
+            {
+                "product_id": "689bbcaa4a5fade0abe1b",
+                "quantity": 1,
+                "added_at": "2025-08-19 19:33:18"
+            }
+        ],
+        "created_at": "2025-08-19 17:27:25",
+        "updated_at": "2025-08-19 19:33:42",
+        "_id": "68a497ddea8ff6a64ff28",
+        "createdAt": "2025-08-19 17:27:25",
+        "updatedAt": "2025-08-19 19:33:42"
+    }
+]

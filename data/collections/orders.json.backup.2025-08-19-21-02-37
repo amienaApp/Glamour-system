@@ -1,0 +1,53 @@
+[
+    {
+        "user_id": "demo_user_123",
+        "items": [
+            {
+                "product_id": "689e456a00ca8b8c59275",
+                "quantity": 1,
+                "added_at": "2025-08-19 17:27:25",
+                "product": {
+                    "name": "Fabulous Option Blush Pink Faux Fur Coat",
+                    "price": 28,
+                    "color": "#eed3d3",
+                    "category": "Women's Clothing",
+                    "subcategory": "Tops",
+                    "description": "",
+                    "featured": false,
+                    "sale": false,
+                    "available": true,
+                    "stock": 12,
+                    "size_category": "none",
+                    "selected_sizes": "",
+                    "front_image": "uploads\/products\/1755202922_product_0_front_10.2.jpg",
+                    "back_image": "uploads\/products\/1755202922_product_0_back_10.3.webp",
+                    "color_variants": [
+                        {
+                            "name": "Fabulous Option Blush Pink Faux Fur Coat",
+                            "color": "#000000",
+                            "size_category": "",
+                            "selected_sizes": ""
+                        }
+                    ],
+                    "_id": "689e456a00ca8b8c59275",
+                    "createdAt": "2025-08-14 22:22:02",
+                    "updatedAt": "2025-08-14 22:22:02"
+                },
+                "subtotal": 28
+            }
+        ],
+        "total_amount": 28,
+        "item_count": 1,
+        "status": "pending",
+        "order_number": "ORD2025081917282892D521",
+        "shipping_address": "garowe",
+        "billing_address": "garowe",
+        "payment_method": "cash_on_delivery",
+        "notes": "please keep it save",
+        "created_at": "2025-08-19 17:28:28",
+        "updated_at": "2025-08-19 17:28:28",
+        "_id": "68a4981c666f4d6665bfc",
+        "createdAt": "2025-08-19 17:28:28",
+        "updatedAt": "2025-08-19 17:28:28"
+    }
+]

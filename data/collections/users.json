@@ -46,6 +46,37 @@
         "_id": "689f4d8ed931b9526734f",
         "createdAt": "2025-08-15 17:09:02",
         "updatedAt": "2025-08-15 17:09:02"
+    },
+    {
+        "username": "demo_user",
+        "email": "demo@glamourpalace.com",
+        "contact_number": "+252 61 123 4567",
+        "gender": "female",
+        "region": "banadir",
+        "city": "mogadishu",
+        "password": "$2y$10$LpPi1QOClF6wkFVpIZ\/NfOvOxAdu4v4\/inPUjWS4WI72HwKMIMd7i",
+        "status": "active",
+        "role": "user",
+        "created_at": "2025-08-20 18:07:20",
+        "updated_at": "2025-08-20 18:07:20",
+        "_id": "68a5f2b8af038b3cfe3cf",
+        "createdAt": "2025-08-20 18:07:20",
+        "updatedAt": "2025-08-20 18:07:20"
+    },
+    {
+        "username": "amina",
+        "email": "mmshnuur@gmail.com",
+        "contact_number": "+252907166125",
+        "gender": "female",
+        "region": "nugaal",
+        "city": "burtinle",
+        "password": "$2y$10$DTDkwMYvpKWXMo9\/tutt1.TLQhhs5f.r5jamX2Gp8Jq7hC75aU5ha",
+        "status": "active",
+        "role": "user",
+        "created_at": "2025-08-20 20:23:03",
+        "updated_at": "2025-08-20 20:23:03",
+        "_id": "68a612879695579664042",
+        "createdAt": "2025-08-20 20:23:03",
+        "updatedAt": "2025-08-20 20:23:03"
     }
 ]
-

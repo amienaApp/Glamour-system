@@ -241,6 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product - Glamour Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="includes/admin-sidebar.css">
     <style>
         * {
             margin: 0;
@@ -256,164 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px 0;
-            box-shadow: 5px 0 25px rgba(62, 39, 35, 0.1);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
 
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid rgba(62, 39, 35, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #3E2723;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-logo i {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
-
-        .sidebar-nav {
-            padding: 0 20px;
-        }
-
-        .nav-section {
-            margin-bottom: 30px;
-        }
-
-        .nav-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #3E2723;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: #3E2723;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            background: rgba(41, 182, 246, 0.1);
-            color: #0288D1;
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.3);
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-
-        .logout-btn {
-            position: absolute;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
-        }
-        
-        .sidebar-actions {
-            margin-top: 30px;
-            padding: 0 20px;
-        }
-        
-        .sidebar-action-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(41, 182, 246, 0.3);
-            text-decoration: none;
-            color: white;
-        }
-        
-        .sidebar-action-btn.secondary {
-            background: linear-gradient(135deg, #3E2723, #5D4037);
-        }
-        
-        .sidebar-action-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.3);
-        }
-        
-        .sidebar-action-btn.success {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-        }
-        
-        .sidebar-action-btn.success:hover {
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
 
         /* Main Content */
         .main-content {
@@ -962,37 +806,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #feb2b2;
         }
 
-        .mobile-menu-btn {
-            display: none;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
             .main-content {
                 margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
-                background: rgba(255, 255, 255, 0.9);
-                border: none;
-                padding: 12px;
-                border-radius: 10px;
-                cursor: pointer;
-                box-shadow: 0 5px 15px rgba(62, 39, 35, 0.1);
             }
 
             .form-grid {
@@ -1329,11 +1146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <?php include 'includes/admin-sidebar.php'; ?>
 
     <!-- Main Content -->
@@ -1546,23 +1358,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     </div>
 
+    <script src="includes/admin-sidebar.js"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !mobileBtn.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
-        });
 
         // Existing JavaScript functions
         function loadSubcategories() {
