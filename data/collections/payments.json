@@ -1,0 +1,77 @@
+[
+    {
+        "order_id": "68a614c7955af3d6a5f38",
+        "user_id": "68a612879695579664042",
+        "user_email": "mmshnuur@gmail.com",
+        "user_name": "",
+        "amount": 34,
+        "currency": "USD",
+        "payment_method": "waafi",
+        "payment_details": {
+            "full_name": "amina",
+            "email": "mmshnuur@gmail.com",
+            "phone_number": "+2520907166125"
+        },
+        "status": "completed",
+        "created_at": "2025-08-20 20:32:39",
+        "updated_at": "2025-08-20 20:32:39",
+        "_id": "68a614c7a5222b033d373",
+        "createdAt": "2025-08-20 20:32:39",
+        "updatedAt": "2025-08-20 20:32:39",
+        "transaction_id": "WAAFI_SAHAL_1755714759_6814",
+        "phone_number": "+2520907166125",
+        "mobile_service": "sahal",
+        "processed_at": "2025-08-20 20:32:39"
+    },
+    {
+        "order_id": "68a61ebc9cf0423c6897c",
+        "user_id": "68a612879695579664042",
+        "user_email": "mmshnuur@gmail.com",
+        "user_name": "",
+        "amount": 76,
+        "currency": "USD",
+        "payment_method": "bank",
+        "payment_details": {
+            "full_name": "fatima",
+            "email": "fatima@gmail.com",
+            "bank_name": "fatima",
+            "account_number": "3456789876543",
+            "account_holder": "fatima mohamud nur"
+        },
+        "status": "pending",
+        "created_at": "2025-08-20 21:15:08",
+        "updated_at": "2025-08-20 21:15:08",
+        "_id": "68a61ebca37ac2e45ab27",
+        "createdAt": "2025-08-20 21:15:08",
+        "updatedAt": "2025-08-20 21:15:08",
+        "transaction_id": "BANK_1755717308_7175",
+        "bank_name": "fatima",
+        "account_number": "3456789876543",
+        "reference": "GLAMOUR_68a61ebc9cf0423c6897c",
+        "processed_at": "2025-08-20 21:15:08"
+    },
+    {
+        "order_id": "68a70048622301b1c8fcb",
+        "user_id": "68a6fe6e3deddfaff9313",
+        "user_email": "nimca@gmail.com",
+        "user_name": "",
+        "amount": 23,
+        "currency": "USD",
+        "payment_method": "waafi",
+        "payment_details": {
+            "full_name": "nimca",
+            "email": "nimca@gmail.com",
+            "phone_number": "+2520907010351"
+        },
+        "status": "completed",
+        "created_at": "2025-08-21 13:17:28",
+        "updated_at": "2025-08-21 13:17:28",
+        "_id": "68a7004876447494ad05a",
+        "createdAt": "2025-08-21 13:17:28",
+        "updatedAt": "2025-08-21 13:17:28",
+        "transaction_id": "WAAFI_SAHAL_1755775048_3214",
+        "phone_number": "+2520907010351",
+        "mobile_service": "sahal",
+        "processed_at": "2025-08-21 13:17:28"
+    }
+]

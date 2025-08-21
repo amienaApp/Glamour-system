@@ -57,26 +57,30 @@
         "updatedAt": "2025-08-08 16:18:04",
         "_id": "6896071cbac3e"
     },
-    {
-        "name": "Home & Living",
-        "subcategories": [
-            "Bedding",
-            "Bath",
-            "Kitchen",
-            "Decor",
-            "Furniture"
-        ],
-        "createdAt": "2025-08-08 16:18:04",
-        "updatedAt": "2025-08-08 16:18:04",
-        "_id": "6896071cbae06"
-    },
+
     {
         "name": "Perfumes",
         "subcategories": [
-            "Men's Fragrances",
-            "Women's Fragrances",
-            "Unisex",
-            "Gift Sets"
+            "Valentino",
+            "Chanel",
+            "Dior",
+            "Gucci",
+            "Yves Saint Laurent",
+            "Tom Ford",
+            "Versace",
+            "Prada",
+            "Bvlgari",
+            "Armani",
+            "Calvin Klein",
+            "Ralph Lauren",
+            "Balenciaga",
+            "Givenchy",
+            "Hermès",
+            "Jo Malone",
+            "Marc Jacobs",
+            "Viktor&Rolf",
+            "Maison Margiela",
+            "Byredo"
         ],
         "createdAt": "2025-08-08 22:43:23",
         "updatedAt": "2025-08-08 22:43:23",
@@ -154,18 +158,6 @@
         "createdAt": "2025-08-08 22:43:23",
         "updatedAt": "2025-08-08 22:43:23",
         "_id": "6896616b44253"
-    },
-    {
-        "name": "Electronics",
-        "subcategories": [
-            "Phones",
-            "Laptops",
-            "Tablets",
-            "Accessories",
-            "Smart Watches"
-        ],
-        "createdAt": "2025-08-08 22:43:23",
-        "updatedAt": "2025-08-08 22:43:23",
-        "_id": "6896616b44588"
     }
+   
 ]

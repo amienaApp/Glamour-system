@@ -29,6 +29,15 @@ if ($highlightProductId && $highlightAction) {
     }
 }
 
+// Check for bulk addition success message
+if ($highlightAction === 'bulk_added') {
+    $count = (int)($_GET['count'] ?? 0);
+    if ($count > 0) {
+        $message = "Successfully added $count product(s)!";
+        $messageType = 'success';
+    }
+}
+
 // Check for import success message
 if (isset($_GET['imported'])) {
     $importedCount = (int)$_GET['imported'];
@@ -50,8 +59,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Get all products without pagination
-$products = $productModel->getAll([], ['createdAt' => 1]);
+// Handle bulk delete action
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'bulk_delete') {
+    $productIds = $_POST['product_ids'] ?? [];
+    $successCount = 0;
+    $errorCount = 0;
+    
+    if (!empty($productIds)) {
+        foreach ($productIds as $productId) {
+            if ($productModel->delete($productId)) {
+                $successCount++;
+            } else {
+                $errorCount++;
+            }
+        }
+        
+        if ($successCount > 0) {
+            $message = "Successfully deleted $successCount product" . ($successCount !== 1 ? 's' : '') . "!";
+            if ($errorCount > 0) {
+                $message .= " Failed to delete $errorCount product" . ($errorCount !== 1 ? 's' : '') . ".";
+            }
+            $messageType = 'success';
+        } else {
+            $message = 'Failed to delete any products.';
+            $messageType = 'error';
+        }
+    } else {
+        $message = 'No products selected for deletion.';
+        $messageType = 'error';
+    }
+}
+
+// Get all products without pagination (newest first)
+$products = $productModel->getAll([], ['createdAt' => -1]);
 $totalProducts = count($products);
 ?>
 
@@ -62,122 +102,11 @@ $totalProducts = count($products);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Products - Glamour Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="includes/admin-sidebar.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Circular Std', 'Segoe UI', sans-serif; background: linear-gradient(135deg, #E3F2FD 0%, #B3E5FC 50%, #81D4FA 100%); min-height: 100vh; color: #3E2723; display: flex; }
         
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px 0;
-            box-shadow: 5px 0 25px rgba(62, 39, 35, 0.1);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid rgba(62, 39, 35, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #3E2723;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-logo i {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
-
-        .sidebar-nav {
-            padding: 0 20px;
-        }
-
-        .nav-section {
-            margin-bottom: 30px;
-        }
-        
-        .nav-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #3E2723;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: #3E2723;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            background: rgba(41, 182, 246, 0.1);
-            color: #0288D1;
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.3);
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-
-        .logout-btn {
-            position: absolute;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
-        }
-
         /* Main Content */
         .main-content {
             flex: 1;
@@ -210,7 +139,7 @@ $totalProducts = count($products);
             color: white;
             padding: 20px;
             display: grid;
-            grid-template-columns: 60px 2fr 1fr 1fr 80px 80px 80px 100px;
+            grid-template-columns: 40px 60px 2fr 1fr 1fr 80px 80px 80px 100px;
             gap: 15px;
             align-items: center;
             font-weight: 700;
@@ -224,7 +153,7 @@ $totalProducts = count($products);
         
         .product-row {
             display: grid;
-            grid-template-columns: 60px 2fr 1fr 1fr 80px 80px 80px 100px;
+            grid-template-columns: 40px 60px 2fr 1fr 1fr 80px 80px 80px 100px;
             gap: 15px;
             align-items: center;
             padding: 20px;
@@ -376,6 +305,89 @@ $totalProducts = count($products);
             transform: scale(1.05);
         }
 
+        /* Bulk Actions Styles */
+        .bulk-actions {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .bulk-actions-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bulk-actions-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-delete, .btn-clear {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 62, 62, 0.3);
+        }
+
+        .btn-clear {
+            background: rgba(62, 39, 35, 0.1);
+            color: #3E2723;
+        }
+
+        .btn-clear:hover {
+            background: rgba(62, 39, 35, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Checkbox Styles */
+        .product-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #29B6F6;
+        }
+
+        .header-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #selectAll {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #29B6F6;
+        }
+
 
         
         .btn { background: linear-gradient(135deg, #29B6F6, #0288D1); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; display: inline-block; box-shadow: 0 8px 25px rgba(41, 182, 246, 0.3); }
@@ -394,36 +406,9 @@ $totalProducts = count($products);
         .empty-state { text-align: center; padding: 60px 20px; color: #718096; }
         .empty-state i { font-size: 4rem; margin-bottom: 20px; color: #cbd5e0; }
 
-        .mobile-menu-btn {
-            display: none;
-        }
-
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
             .main-content {
                 margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
-                background: rgba(255, 255, 255, 0.9);
-                border: none;
-                padding: 12px;
-                border-radius: 10px;
-                cursor: pointer;
-                box-shadow: 0 5px 15px rgba(62, 39, 35, 0.1);
             }
 
             .products-grid { 
@@ -439,13 +424,13 @@ $totalProducts = count($products);
             }
             
             .table-header {
-                grid-template-columns: 50px 1fr 70px 70px 70px 50px 70px;
+                grid-template-columns: 30px 50px 1fr 70px 70px 70px 50px 70px;
                 gap: 8px;
                 padding: 12px;
             }
             
             .product-row {
-                grid-template-columns: 50px 1fr 70px 70px 70px 50px 70px;
+                grid-template-columns: 30px 50px 1fr 70px 70px 70px 50px 70px;
                 gap: 8px;
                 padding: 12px;
             }
@@ -615,11 +600,6 @@ $totalProducts = count($products);
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <?php include 'includes/admin-sidebar.php'; ?>
         
     <!-- Main Content -->
@@ -682,7 +662,9 @@ $totalProducts = count($products);
                 <div class="products-table">
                     <!-- Table Header -->
                     <div class="table-header">
-                        <h3><i class="fas fa-image"></i></h3>
+                        <div class="header-checkbox">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        </div>
                         <h3>Product</h3>
                         <h3>Category</h3>
                         <h3>Price</h3>
@@ -692,9 +674,28 @@ $totalProducts = count($products);
                         <h3>Actions</h3>
                 </div>
 
+                <!-- Bulk Actions Panel -->
+                <div id="bulk-actions" class="bulk-actions" style="display: none;">
+                    <div class="bulk-actions-content">
+                        <span id="selected-count">0 products selected</span>
+                        <div class="bulk-actions-buttons">
+                            <button type="button" class="btn-delete" onclick="deleteSelectedProducts()">
+                                <i class="fas fa-trash"></i> Delete Selected
+                            </button>
+                            <button type="button" class="btn-clear" onclick="clearSelection()">
+                                <i class="fas fa-times"></i> Clear Selection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                     <!-- Product Rows -->
                     <?php foreach ($products as $product): ?>
                         <div class="product-row" data-product-id="<?php echo $product['_id']; ?>">
+                            <!-- Checkbox -->
+                            <div class="product-checkbox">
+                                <input type="checkbox" class="product-select" value="<?php echo $product['_id']; ?>" onchange="updateBulkActions()">
+                            </div>
                             <!-- Product Image -->
                             <div class="product-image">
                                 <?php 
@@ -734,6 +735,14 @@ $totalProducts = count($products);
                                 <?php echo htmlspecialchars($product['category']); ?>
                                 <?php if (!empty($product['subcategory'])): ?>
                                     <br><small style="color: #718096;"><?php echo htmlspecialchars($product['subcategory']); ?></small>
+                                <?php elseif ($product['category'] === 'Perfumes' && !empty($product['brand'])): ?>
+                                    <br><small style="color: #718096;">Brand: <?php echo htmlspecialchars($product['brand']); ?></small>
+                                    <?php if (!empty($product['gender'])): ?>
+                                        <br><small style="color: #718096;">Gender: <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></small>
+                                    <?php endif; ?>
+                                    <?php if (!empty($product['size'])): ?>
+                                        <br><small style="color: #718096;">Size: <?php echo htmlspecialchars($product['size']); ?></small>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                 </div>
 
@@ -837,23 +846,8 @@ $totalProducts = count($products);
         </div>
     </div>
     
+    <script src="includes/admin-sidebar.js"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !mobileBtn.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
-        });
 
         // Product highlighting and scrolling functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -949,6 +943,85 @@ $totalProducts = count($products);
                 closeDeleteModal();
             }
         });
+
+        // Bulk Actions Functions
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const productCheckboxes = document.querySelectorAll('.product-select');
+            
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const selectedCheckboxes = document.querySelectorAll('.product-select:checked');
+            const bulkActions = document.getElementById('bulk-actions');
+            const selectedCount = document.getElementById('selected-count');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            
+            const selectedCountValue = selectedCheckboxes.length;
+            selectedCount.textContent = `${selectedCountValue} product${selectedCountValue !== 1 ? 's' : ''} selected`;
+            
+            if (selectedCountValue > 0) {
+                bulkActions.style.display = 'block';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+            
+            // Update select all checkbox state
+            const totalCheckboxes = document.querySelectorAll('.product-select');
+            selectAllCheckbox.checked = selectedCountValue === totalCheckboxes.length && totalCheckboxes.length > 0;
+            selectAllCheckbox.indeterminate = selectedCountValue > 0 && selectedCountValue < totalCheckboxes.length;
+        }
+
+        function deleteSelectedProducts() {
+            const selectedCheckboxes = document.querySelectorAll('.product-select:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+            
+            if (selectedIds.length === 0) {
+                alert('Please select products to delete.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} product${selectedIds.length !== 1 ? 's' : ''}? This action cannot be undone.`)) {
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.style.display = 'none';
+                
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'bulk_delete';
+                form.appendChild(actionInput);
+                
+                selectedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'product_ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function clearSelection() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const productCheckboxes = document.querySelectorAll('.product-select');
+            
+            selectAllCheckbox.checked = false;
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            updateBulkActions();
+        }
 
 
     </script>

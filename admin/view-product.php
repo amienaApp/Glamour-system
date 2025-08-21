@@ -31,8 +31,8 @@ if (!empty($subcategory)) {
     $filters['subcategory'] = $subcategory;
 }
 
-// Get all products with filters
-$products = $productModel->getAll($filters, ['createdAt' => 1]);
+// Get all products with filters (newest first)
+$products = $productModel->getAll($filters, ['createdAt' => -1]);
 $totalProducts = count($products);
 
 // Get all categories and subcategories for filters
@@ -1067,6 +1067,14 @@ foreach ($allCategories as $cat) {
                                             <?php echo htmlspecialchars($product['category']); ?>
                                             <?php if (!empty($product['subcategory'])): ?>
                                                 <br><small style="color: #718096;"><?php echo htmlspecialchars($product['subcategory']); ?></small>
+                                            <?php elseif ($product['category'] === 'Perfumes' && !empty($product['brand'])): ?>
+                                                <br><small style="color: #718096;">Brand: <?php echo htmlspecialchars($product['brand']); ?></small>
+                                                <?php if (!empty($product['gender'])): ?>
+                                                    <br><small style="color: #718096;">Gender: <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></small>
+                                                <?php endif; ?>
+                                                <?php if (!empty($product['size'])): ?>
+                                                    <br><small style="color: #718096;">Size: <?php echo htmlspecialchars($product['size']); ?></small>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                         <div class="product-price">
@@ -1124,6 +1132,23 @@ foreach ($allCategories as $cat) {
                                             <?php echo isset($product['createdAt']) ? date('M j, Y', strtotime($product['createdAt'])) : 'N/A'; ?>
                                         </div>
                                     </div>
+                                    
+                                    <?php if ($product['category'] === 'Perfumes'): ?>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Perfume Details</div>
+                                        <div class="detail-value">
+                                            <?php if (!empty($product['brand'])): ?>
+                                                <div><strong>Brand:</strong> <?php echo htmlspecialchars($product['brand']); ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($product['gender'])): ?>
+                                                <div><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($product['size'])): ?>
+                                                <div><strong>Size:</strong> <?php echo htmlspecialchars($product['size']); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <?php 

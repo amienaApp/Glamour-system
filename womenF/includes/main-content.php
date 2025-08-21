@@ -7,20 +7,21 @@ $productModel = new Product();
 // Get all dresses from the database
 $dresses = $productModel->getBySubcategory('Dresses');
 
-// Debug output
-echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
+// Get all tops from the database
+$tops = $productModel->getBySubcategory('Tops');
+
+
 ?>
-
-
 
 <!-- Main Content Section -->
 <main class="main-content">
-    <div class="content-header">
+    <!-- Dresses Section -->
+    <div class="content-header" id="dresses-section">
         <h1 class="page-title">Dresses</h1>
         <div class="content-controls">
             <div class="sort-control">
-                <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select">
+                <label for="sort-select-dresses">Sort:</label>
+                <select id="sort-select-dresses" class="sort-select">
                     <option value="featured" selected>Featured</option>
                     <option value="newest">Newest</option>
                     <option value="price-low">Price: Low to High</option>
@@ -37,9 +38,9 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
         </div>
     </div>
 
-    <div class="product-grid">
+    <div class="product-grid" id="dresses-grid">
         <?php if (!empty($dresses)): ?>
-            <?php echo "<!-- DEBUG: Rendering " . count($dresses) . " dresses -->"; ?>
+            
             <?php foreach ($dresses as $index => $dress): ?>
                 <div class="product-card" data-product-id="<?php echo $dress['_id']; ?>">
                     <div class="product-image">
@@ -54,17 +55,42 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
                                 $backImage = $frontImage;
                             }
                             
-                            if ($frontImage): ?>
-                                <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                     alt="<?php echo htmlspecialchars($dress['name']); ?> - Front" 
-                                     class="active" 
-                                     data-color="<?php echo htmlspecialchars($dress['color']); ?>">
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($dress['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($dress['color']); ?>"
+                                           muted
+                                           loop
+                                           onerror="console.error('Failed to load video:', this.src);"
+>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($dress['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($dress['color']); ?>"
+                                         onerror="console.error('Failed to load image:', this.src);"
+>
+                                <?php endif; ?>
                             <?php endif; ?>
                             
-                            <?php if ($backImage): ?>
-                                <img src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                     alt="<?php echo htmlspecialchars($dress['name']); ?> - Back" 
-                                     data-color="<?php echo htmlspecialchars($dress['color']); ?>">
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($dress['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($dress['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($dress['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($dress['color']); ?>">
+                                <?php endif; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -79,16 +105,40 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
                                         $variantBackImage = $variantFrontImage;
                                     }
                                     
-                                    if ($variantFrontImage): ?>
-                                        <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
-                                             alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop
+                                                   onerror="console.error('Failed to load variant video:', this.src);"
+>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                 onerror="console.error('Failed to load variant image:', this.src);"
+>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                     
-                                    <?php if ($variantBackImage): ?>
-                                        <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
-                                             alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -145,6 +195,182 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Tops Section -->
+    <div class="content-header" id="tops-section" style="margin-top: 60px;">
+        <h1 class="page-title">Tops</h1>
+        <div class="content-controls">
+            <div class="sort-control">
+                <label for="sort-select-tops">Sort:</label>
+                <select id="sort-select-tops" class="sort-select">
+                    <option value="featured" selected>Featured</option>
+                    <option value="newest">Newest</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
+           
+        </div>
+    </div>
+
+    <div class="product-grid" id="tops-grid">
+        <?php if (!empty($tops)): ?>
+            
+            <?php foreach ($tops as $index => $top): ?>
+                <div class="product-card" data-product-id="<?php echo $top['_id']; ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            // Main product images
+                            $frontImage = $top['front_image'] ?? $top['image_front'] ?? '';
+                            $backImage = $top['back_image'] ?? $top['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($top['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($top['color']); ?>"
+                                           muted
+                                           loop
+                                           onerror="console.error('Failed to load video:', this.src);"
+>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($top['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($top['color']); ?>"
+                                         onerror="console.error('Failed to load image:', this.src);"
+>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($top['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($top['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($top['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($top['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($top['color_variants'])):
+                                foreach ($top['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop
+                                                   onerror="console.error('Failed to load variant video:', this.src);"
+>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                 onerror="console.error('Failed to load variant image:', this.src);"
+>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $top['_id']; ?>">Quick View</button>
+                            <?php if (($top['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($top['color'])): ?>
+                                <span class="color-circle <?php echo $index === 0 ? 'active' : ''; ?>" 
+                                      style="background-color: <?php echo htmlspecialchars($top['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($top['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($top['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($top['color_variants'])):
+                                foreach ($top['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($top['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($top['price'], 0); ?></div>
+                        <?php if (($top['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($top['stock'] ?? 0) <= 5 && ($top['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $top['stock']; ?> left</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No tops available at the moment.</p>
+            </div>
+        <?php endif; ?>
+    </div>
 </main>
 
 <!-- Quick View Sidebar -->
@@ -156,10 +382,11 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
     </div>
     
     <div class="quick-view-content">
-        <!-- Product Images -->
+        <!-- Product Media -->
         <div class="quick-view-images">
             <div class="main-image-container">
-                <img id="quick-view-main-image" src="" alt="Product Image">
+                <img id="quick-view-main-image" src="" alt="Product Media">
+                <video id="quick-view-main-video" src="" muted loop style="display: none; max-width: 100%; border-radius: 8px;"></video>
             </div>
             <div class="thumbnail-images" id="quick-view-thumbnails">
                 <!-- Thumbnails will be populated by JavaScript -->
@@ -210,7 +437,7 @@ echo "<!-- DEBUG: Found " . count($dresses) . " dresses -->";
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p id="quick-view-description">A beautiful dress perfect for any occasion. Features a flattering fit and comfortable fabric.</p>
+                <p id="quick-view-description">A beautiful product perfect for any occasion. Features a flattering fit and comfortable fabric.</p>
             </div>
         </div>
     </div>

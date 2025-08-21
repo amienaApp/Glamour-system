@@ -16,27 +16,15 @@ class Product {
         if ($limit > 0) $options['limit'] = $limit;
         if ($skip > 0) $options['skip'] = $skip;
 
-        // Handle regex search for name field
-        if (isset($filters['name']) && is_array($filters['name']) && isset($filters['name']['$regex'])) {
-            // Convert MongoDB-style regex to PHP regex for our file-based system
-            $searchTerm = $filters['name']['$regex'];
-            $caseInsensitive = isset($filters['name']['$options']) && strpos($filters['name']['$options'], 'i') !== false;
-            
-            // Get all products first
-            $allProducts = $this->collection->find([], $options);
-            $filteredProducts = [];
-            
-            foreach ($allProducts as $product) {
-                if (isset($product['name'])) {
-                    $pattern = '/' . preg_quote($searchTerm, '/') . '/' . ($caseInsensitive ? 'i' : '');
-                    if (preg_match($pattern, $product['name'])) {
-                        $filteredProducts[] = $product;
-                    }
-                }
-            }
-            
-            return $filteredProducts;
-        }
+            // Handle regex search for name field
+    if (isset($filters['name']) && is_array($filters['name']) && isset($filters['name']['$regex'])) {
+        // MongoDB handles regex natively, so we can use it directly
+        $searchTerm = $filters['name']['$regex'];
+        $caseInsensitive = isset($filters['name']['$options']) && strpos($filters['name']['$options'], 'i') !== false;
+        
+        // Convert to MongoDB regex format
+        $filters['name'] = new MongoDB\BSON\Regex($searchTerm, $caseInsensitive ? 'i' : '');
+    }
 
         $cursor = $this->collection->find($filters, $options);
         return iterator_to_array($cursor);

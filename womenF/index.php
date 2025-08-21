@@ -22,7 +22,7 @@ $page_title = 'Galamor palace';
                 <!-- Image Bar Section -->
                 <div class="image-bar">
                     <div class="image-item">
-                        <img src="../img/women/12.webp" alt="Women Fashion 12">
+                        <img src="../img/women/dresses/12.webp" alt="Women Fashion 12">
                         <h3>Shop All</h3>
                     </div>
                     <div class="image-item">
@@ -34,16 +34,16 @@ $page_title = 'Galamor palace';
                         <h3>Wedding Guest</h3>
                     </div>
                     <div class="image-item">
-                        <img src="../img/women/17.webp" alt="Women Fashion 17">
-                        <h3>Summer</h3>
+                        <img src="../img/women/dresses/17.webp" alt="Women Fashion 17">
+                        <h3>Wedding-dress</h3>
                     </div>
                     <div class="image-item">
-                        <img src="../img/women/12.webp" alt="Women Fashion 12">
-                        <h3>Long</h3>
+                        <img src="../img/women/NEW/11.webp" alt="Women Fashion 12">
+                        <h3>abaya</h3>
                     </div>
                     <div class="image-item">
-                        <img src="../img/women/13.webp" alt="Women Fashion 13">
-                        <h3>White</h3>
+                        <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
+                        <h3>Summer-dresses</h3>
                     </div>
                     <div class="image-item">
                         <img src="../img/women/14.avif" alt="Women Fashion 14">

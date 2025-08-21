@@ -42,32 +42,45 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="nav-section">
+            <div class="nav-section-title">Orders & Payments</div>
+            <a href="manage-orders.php" class="nav-item <?php echo $currentPage === 'manage-orders.php' ? 'active' : ''; ?>">
+                <i class="fas fa-shopping-cart"></i>
+                Manage Orders
+            </a>
+            <a href="manage-payments.php" class="nav-item <?php echo $currentPage === 'manage-payments.php' ? 'active' : ''; ?>">
+                <i class="fas fa-credit-card"></i>
+                Manage Payments
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Users & Admins</div>
+            <a href="manage-users.php" class="nav-item <?php echo $currentPage === 'manage-users.php' ? 'active' : ''; ?>">
+                <i class="fas fa-users"></i>
+                Manage Users
+            </a>
+            <a href="manage-admins.php" class="nav-item <?php echo $currentPage === 'manage-admins.php' ? 'active' : ''; ?>">
+                <i class="fas fa-user-shield"></i>
+                Manage Admins
+            </a>
+        </div>
+
+        <div class="nav-section">
             <div class="nav-section-title">System</div>
-            <a href="../index.html" class="nav-item">
+            <a href="../index.php" class="nav-item" target="_blank">
                 <i class="fas fa-store"></i>
                 View Store
             </a>
         </div>
     </nav>
 
-    <?php if (in_array($currentPage, ['add-product.php', 'edit-product.php', 'manage-categories.php'])): ?>
-    <div class="sidebar-actions">
-        <a href="add-product.php" class="sidebar-action-btn">
-            <i class="fas fa-plus"></i> Add Product
-        </a>
-        <a href="manage-products.php" class="sidebar-action-btn secondary">
-            <i class="fas fa-boxes"></i> Manage Products
-        </a>
-        <a href="manage-categories.php" class="sidebar-action-btn success">
-            <i class="fas fa-folder"></i> Manage Categories
+    <!-- Logout button at the very end -->
+    <div class="sidebar-footer">
+        <a href="logout.php" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
         </a>
     </div>
-    <?php endif; ?>
-    
-    <a href="logout.php" class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i>
-        Logout
-    </a>
 </div>
 
 
