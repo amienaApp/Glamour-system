@@ -1239,7 +1239,7 @@ function renderProductCard($product) {
         // Updated add to cart function
         function addToCart(productId, options = {}) {
             // Add your cart logic here with options
-            console.log('Adding to cart:', productId, options);
+    
             
             // Show notification
             showNotification('Product added to cart!', 'success');

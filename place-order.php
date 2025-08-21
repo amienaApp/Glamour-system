@@ -500,7 +500,7 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
         // Load payment methods
         async function loadPaymentMethods() {
             try {
-                console.log('Loading payment methods...');
+        
                 const response = await fetch('payment-api.php?t=' + Date.now(), {
                     method: 'POST',
                     headers: {
@@ -511,14 +511,8 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     })
                 });
 
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
-                
                 const responseText = await response.text();
-                console.log('Raw response:', responseText);
-                
                 const data = JSON.parse(responseText);
-                console.log('Parsed data:', data);
                 
                 if (data.success) {
                     paymentMethods = data.methods;
@@ -837,17 +831,17 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
             const originalText = placeOrderBtn.innerHTML;
 
             try {
-                console.log('Starting place order process...');
+        
                 
                 // Validate order details
                 if (!validateOrderDetails()) {
-                    console.log('Order validation failed');
+    
                     return;
                 }
 
                 // Validate payment details
                 if (!validatePaymentDetails()) {
-                    console.log('Payment validation failed');
+    
                     return;
                 }
 
@@ -873,7 +867,7 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                 });
 
                 const orderResultText = await orderResponse.text();
-                console.log('Order response text:', orderResultText);
+
                 
                 // Check if response is HTML instead of JSON
                 if (orderResultText.trim().startsWith('<')) {
@@ -910,7 +904,7 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                 });
 
                 const createResultText = await createResponse.text();
-                console.log('Create payment response text:', createResultText);
+
                 
                 // Check if response is HTML instead of JSON
                 if (createResultText.trim().startsWith('<')) {
@@ -944,7 +938,7 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                 });
 
                 const processResultText = await processResponse.text();
-                console.log('Process payment response text:', processResultText);
+
                 
                 // Check if response is HTML instead of JSON
                 if (processResultText.trim().startsWith('<')) {

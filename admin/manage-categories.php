@@ -1435,7 +1435,7 @@ $categories = $categoryModel->getAll();
                     const categoryDescription = this.getAttribute('data-description');
                     const subcategoriesJson = this.getAttribute('data-subcategories');
                     
-                    console.log('Edit button clicked for:', categoryId, categoryName);
+            
                     editCategory(categoryId, categoryName, categoryDescription, subcategoriesJson);
                 });
             });
@@ -1446,7 +1446,7 @@ $categories = $categoryModel->getAll();
                     const categoryId = this.getAttribute('data-id');
                     const categoryName = this.getAttribute('data-name');
                     
-                    console.log('Delete button clicked for:', categoryId, categoryName);
+            
                     showDeleteCategoryModal(categoryId, categoryName);
                 });
             });
@@ -1458,7 +1458,7 @@ $categories = $categoryModel->getAll();
         let currentSubcategories = [];
 
         function editCategory(categoryId, categoryName, categoryDescription, subcategoriesJson) {
-            console.log('editCategory called with:', { categoryId, categoryName, categoryDescription, subcategoriesJson });
+    
             
             currentCategoryData = {
                 id: categoryId,
@@ -1485,8 +1485,7 @@ $categories = $categoryModel->getAll();
             
             // Populate subcategories dropdown
             const subcategorySelect = document.getElementById('edit_subcategory_select');
-            console.log('Subcategory select element:', subcategorySelect);
-            console.log('Current subcategories:', currentSubcategories);
+
             
             if (subcategorySelect) {
                 subcategorySelect.innerHTML = '<option value="">Select subcategory to edit</option>';
@@ -1497,21 +1496,15 @@ $categories = $categoryModel->getAll();
                         option.value = index;
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
-                        console.log('Added subcategory option:', subcategory);
-                    });
-                } else {
-                    console.log('No subcategories to add');
-                }
+
             } else {
                 console.error('Subcategory select element not found!');
             }
             
             // Show modal
             const modal = document.getElementById('editModal');
-            console.log('Modal element:', modal);
             if (modal) {
                 modal.style.display = 'block';
-                console.log('Modal should be visible');
             } else {
                 console.error('Modal element not found!');
             }
@@ -1663,13 +1656,12 @@ $categories = $categoryModel->getAll();
             const subcategoryIndex = parseInt(modal.getAttribute('data-index'));
             const select = document.getElementById('edit_subcategory_select');
             
-            console.log('Removing subcategory at index:', subcategoryIndex);
-            console.log('Current subcategories before removal:', currentSubcategories);
+
             
             // Remove from array immediately
             currentSubcategories.splice(subcategoryIndex, 1);
             
-            console.log('Current subcategories after removal:', currentSubcategories);
+
             
             // Update dropdown immediately
             select.innerHTML = '<option value="">Select subcategory to edit</option>';
@@ -1692,7 +1684,7 @@ $categories = $categoryModel->getAll();
             // Ensure buttons remain clickable
             setTimeout(ensureButtonClickability, 100);
             
-            console.log('Subcategory removal completed');
+
         }
 
         function saveSubcategory() {
@@ -1714,16 +1706,16 @@ $categories = $categoryModel->getAll();
         }
 
         function addNewSubcategory() {
-            console.log('addNewSubcategory function called');
+    
             
             // Ensure currentSubcategories is initialized
             if (!currentSubcategories) {
                 currentSubcategories = [];
-                console.log('Initialized currentSubcategories array');
+    
             }
             
             const input = document.getElementById('new_subcategory_input');
-            console.log('Input element:', input);
+
             
             if (!input) {
                 showMessage('Input field not found!', 'error');
@@ -1731,23 +1723,23 @@ $categories = $categoryModel->getAll();
             }
             
             const newName = input.value.trim();
-            console.log('New subcategory name:', newName);
+
             
             if (newName) {
                 // Add to current subcategories array
                 currentSubcategories.push(newName);
-                console.log('Updated currentSubcategories:', currentSubcategories);
+    
                 
                 // Update dropdown
                 const select = document.getElementById('edit_subcategory_select');
-                console.log('Select element:', select);
+    
                 
                 if (select) {
                     const option = document.createElement('option');
                     option.value = currentSubcategories.length - 1;
                     option.textContent = newName;
                     select.appendChild(option);
-                    console.log('Added option to dropdown:', option);
+        
                     
                     // Clear input
                     input.value = '';

@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/Perfume.php';
+require_once __DIR__ . '/../../models/Product.php';
 
-$perfumeModel = new Perfume();
+$productModel = new Product();
 
 // Get current filter values from URL
 $currentGender = $_GET['gender'] ?? '';
@@ -11,12 +11,33 @@ $currentSize = $_GET['size'] ?? '';
 $currentMinPrice = $_GET['min_price'] ?? '';
 $currentMaxPrice = $_GET['max_price'] ?? '';
 
-// Get available brands and sizes
-$brands = $perfumeModel->getPerfumeBrands();
-$sizes = $perfumeModel->getPerfumeSizes();
+// Get all perfumes to extract brands and sizes
+$allPerfumes = $productModel->getAll(['category' => 'Perfumes']);
 
-// Get statistics
-$stats = $perfumeModel->getPerfumeStatistics();
+// Get available brands and sizes
+$brands = [];
+$sizes = [];
+$stats = [
+    'total_perfumes' => 0,
+    'women_perfumes' => 0,
+    'men_perfumes' => 0
+];
+
+foreach ($allPerfumes as $perfume) {
+    $stats['total_perfumes']++;
+    
+    if (isset($perfume['gender'])) {
+        if ($perfume['gender'] === 'women') $stats['women_perfumes']++;
+        if ($perfume['gender'] === 'men') $stats['men_perfumes']++;
+    }
+    
+    if (isset($perfume['brand']) && !in_array($perfume['brand'], $brands)) {
+        $brands[] = $perfume['brand'];
+    }
+    if (isset($perfume['size']) && !in_array($perfume['size'], $sizes)) {
+        $sizes[] = $perfume['size'];
+    }
+}
 ?>
 
 <!-- Sidebar Filters -->

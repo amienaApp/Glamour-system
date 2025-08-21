@@ -686,7 +686,7 @@ $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
 
         // Update summary
         function updateSummary() {
-            console.log('updateSummary called - selectedColor:', selectedColor, 'selectedSize:', selectedSize);
+    
             
             document.getElementById('selectedColor').textContent = selectedColor || 'Please select a color';
             document.getElementById('selectedSize').textContent = selectedSize || 'Please select a size';
@@ -695,24 +695,18 @@ $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
             
             // Enable/disable add to cart button
             const addToCartBtn = document.getElementById('addToCartBtn');
-            console.log('Button disabled state before:', addToCartBtn.disabled);
             
             if (selectedColor && selectedSize) {
                 addToCartBtn.disabled = false;
                 addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
-                console.log('Button enabled - both selections made');
             } else {
                 addToCartBtn.disabled = true;
                 addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Please Select Options First';
-                console.log('Button disabled - missing selections');
             }
-            
-            console.log('Button disabled state after:', addToCartBtn.disabled);
         }
 
         // Add to cart
         function addToCart() {
-            console.log('addToCart called - selectedColor:', selectedColor, 'selectedSize:', selectedSize);
             
             // Double-check that both selections are made
             if (!selectedColor || !selectedSize) {
@@ -789,7 +783,6 @@ $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
 
         // Initialize page state
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded - initializing button state');
             updateSummary();
         });
     </script>

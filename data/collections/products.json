@@ -467,26 +467,6 @@
         ]
     },
     {
-        "name": "Mood Setter Black Ruched Long Sleeve Top",
-        "price": 67,
-        "color": "#362b2b",
-        "category": "Women's Clothing",
-        "subcategory": "Dresses",
-        "description": "",
-        "featured": false,
-        "sale": false,
-        "available": true,
-        "stock": 0,
-        "size_category": "",
-        "selected_sizes": "",
-        "front_image": "uploads\/products\/1755195843_front_1.mp4",
-        "back_image": "uploads\/products\/1755195843_back_1.mp4",
-        "_id": "689e1f99484f65138a09b",
-        "createdAt": "2025-08-14 19:40:41",
-        "updatedAt": "2025-08-14 20:24:03",
-        "color_variants": []
-    },
-    {
         "name": "top",
         "price": 20,
         "color": "#faf3f8",
@@ -935,22 +915,38 @@
         "updatedAt": "2025-08-21 13:36:09"
     },
     {
-        "name": "df",
-        "price": 56,
-        "color": "#667eea",
-        "category": "perfumes",
+        "name": "ROSE STAR, THE SILHOUETTE OF DESTINY",
+        "price": 45,
+        "color": "#a2414a",
+        "category": "Perfumes",
         "subcategory": "",
         "description": "",
         "featured": false,
         "sale": false,
         "available": true,
         "stock": 0,
-        "size_category": "none",
+        "size_category": "",
         "selected_sizes": "",
-        "front_image": "uploads\/products\/1755776789_front_6.webp",
-        "back_image": "uploads\/products\/1755776789_back_7.1.webp",
-        "_id": "68a7071580e1bfaebb6ef",
-        "createdAt": "2025-08-21 13:46:29",
-        "updatedAt": "2025-08-21 13:46:29"
+        "brand": "Dior",
+        "gender": "men",
+        "size": "30ml",
+        "front_image": "uploads\/products\/1755785183_front_25.jpg",
+        "back_image": "uploads\/products\/1755785183_back_25.1.webp",
+        "_id": "68a727df12380a2906ad5",
+        "createdAt": "2025-08-21 16:06:23",
+        "updatedAt": "2025-08-21 16:27:32",
+        "color_variants": [
+            {
+                "name": "Bois Talisman",
+                "color": "#b15023",
+                "size_category": "",
+                "selected_sizes": "",
+                "brand": "",
+                "gender": "",
+                "size": "",
+                "front_image": "uploads\/products\/1755786452_variant_0_front_25.2.jpg",
+                "back_image": "uploads\/products\/1755786452_variant_0_back_25.3.webp"
+            }
+        ]
     }
 ]

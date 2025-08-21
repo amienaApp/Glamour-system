@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/Perfume.php';
+require_once __DIR__ . '/../../models/Product.php';
 
-$perfumeModel = new Perfume();
+$productModel = new Product();
 
 // Get query parameters for filtering
 $gender = $_GET['gender'] ?? null;
@@ -10,8 +10,8 @@ $brand = $_GET['brand'] ?? null;
 $size = $_GET['size'] ?? null;
 $minPrice = $_GET['min_price'] ?? null;
 $maxPrice = $_GET['max_price'] ?? null;
-$sort = $_GET['sort'] ?? 'featured';
-$limit = intval($_GET['limit'] ?? 12);
+$sort = $_GET['sort'] ?? 'newest';
+$limit = intval($_GET['limit'] ?? 24);
 $skip = intval($_GET['skip'] ?? 0);
 
 // Build filters
@@ -30,7 +30,7 @@ if ($minPrice !== null && $maxPrice !== null) {
 $sortOptions = [];
 switch ($sort) {
     case 'newest':
-        $sortOptions = ['createdAt' => -1];
+        $sortOptions = ['createdAt' => 1]; // Ascending order - newest at the end
         break;
     case 'price-low':
         $sortOptions = ['price' => 1];
@@ -46,13 +46,25 @@ switch ($sort) {
         break;
 }
 
-// Get perfumes from database
-$perfumes = $perfumeModel->getAllPerfumes($filters, $sortOptions, $limit, $skip);
-$total = $perfumeModel->getCount(array_merge($filters, ['category' => 'Perfumes']));
+// Add category filter for perfumes
+$filters['category'] = 'Perfumes';
 
-// Get available brands and sizes for sidebar
-$brands = $perfumeModel->getPerfumeBrands();
-$sizes = $perfumeModel->getPerfumeSizes();
+// Get perfumes from database
+$perfumes = $productModel->getAll($filters, $sortOptions, $limit, $skip);
+$total = $productModel->getCount($filters);
+
+// Get available brands and sizes for sidebar (from all perfumes, not just filtered)
+$allPerfumes = $productModel->getAll(['category' => 'Perfumes']);
+$brands = [];
+$sizes = [];
+foreach ($allPerfumes as $perfume) {
+    if (isset($perfume['brand']) && !in_array($perfume['brand'], $brands)) {
+        $brands[] = $perfume['brand'];
+    }
+    if (isset($perfume['size']) && !in_array($perfume['size'], $sizes)) {
+        $sizes[] = $perfume['size'];
+    }
+}
 ?>
 
 <!-- Main Content Section -->
@@ -63,8 +75,8 @@ $sizes = $perfumeModel->getPerfumeSizes();
             <div class="sort-control">
                 <label for="sort-select">Sort:</label>
                 <select id="sort-select" class="sort-select" onchange="updateSort(this.value)">
-                    <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured</option>
                     <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured</option>
                     <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
                     <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
                     <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
@@ -72,6 +84,8 @@ $sizes = $perfumeModel->getPerfumeSizes();
             </div>
             <div class="view-control">
                 <span>View:</span>
+                <a href="#" class="view-option <?php echo $limit === 24 ? 'active' : ''; ?>" onclick="updateLimit(24)">24</a>
+                <span>|</span>
                 <a href="#" class="view-option <?php echo $limit === 60 ? 'active' : ''; ?>" onclick="updateLimit(60)">60</a>
                 <span>|</span>
                 <a href="#" class="view-option <?php echo $limit === 120 ? 'active' : ''; ?>" onclick="updateLimit(120)">120</a>
@@ -100,15 +114,30 @@ $sizes = $perfumeModel->getPerfumeSizes();
                                 $backImage = $frontImage;
                             }
                             
+                            // Check if images exist, if not use placeholder
+                            $frontImagePath = $frontImage ? "../$frontImage" : "../img/placeholder.jpg";
+                            $backImagePath = $backImage ? "../$backImage" : "../img/placeholder.jpg";
+                            
                             if ($frontImage): ?>
-                                <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                <img src="<?php echo htmlspecialchars($frontImagePath); ?>" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Front" 
+                                     class="active" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>"
+                                     onerror="this.src='../img/placeholder.jpg'">
+                            <?php else: ?>
+                                <img src="../img/placeholder.jpg" 
                                      alt="<?php echo htmlspecialchars($perfume['name']); ?> - Front" 
                                      class="active" 
                                      data-color="<?php echo htmlspecialchars($perfume['color']); ?>">
                             <?php endif; ?>
                             
                             <?php if ($backImage): ?>
-                                <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                <img src="<?php echo htmlspecialchars($backImagePath); ?>" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Back" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>"
+                                     onerror="this.src='../img/placeholder.jpg'">
+                            <?php else: ?>
+                                <img src="../img/placeholder.jpg" 
                                      alt="<?php echo htmlspecialchars($perfume['name']); ?> - Back" 
                                      data-color="<?php echo htmlspecialchars($perfume['color']); ?>">
                             <?php endif; ?>
@@ -128,13 +157,15 @@ $sizes = $perfumeModel->getPerfumeSizes();
                                     if ($variantFrontImage): ?>
                                         <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
                                              alt="<?php echo htmlspecialchars($perfume['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                             onerror="this.src='../img/placeholder.jpg'">
                                     <?php endif; ?>
                                     
                                     <?php if ($variantBackImage): ?>
                                         <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
                                              alt="<?php echo htmlspecialchars($perfume['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                             onerror="this.src='../img/placeholder.jpg'">
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -281,7 +312,7 @@ $sizes = $perfumeModel->getPerfumeSizes();
 
 <script>
 // Store current filters and pagination state
-let currentFilters = {
+let pageFilters = {
     gender: '<?php echo $gender; ?>',
     brand: '<?php echo $brand; ?>',
     size: '<?php echo $size; ?>',
@@ -294,21 +325,21 @@ let currentFilters = {
 
 // Function to update sort
 function updateSort(sort) {
-    currentFilters.sort = sort;
-    currentFilters.skip = 0; // Reset to first page
+    pageFilters.sort = sort;
+    pageFilters.skip = 0; // Reset to first page
     loadPerfumes();
 }
 
 // Function to update limit
 function updateLimit(limit) {
-    currentFilters.limit = limit;
-    currentFilters.skip = 0; // Reset to first page
+    pageFilters.limit = limit;
+    pageFilters.skip = 0; // Reset to first page
     loadPerfumes();
 }
 
 // Function to go to specific page
 function goToPage(page) {
-    currentFilters.skip = (page - 1) * currentFilters.limit;
+    pageFilters.skip = (page - 1) * pageFilters.limit;
     loadPerfumes();
 }
 
@@ -316,14 +347,14 @@ function goToPage(page) {
 function loadPerfumes() {
     const params = new URLSearchParams();
     
-    if (currentFilters.gender) params.append('gender', currentFilters.gender);
-    if (currentFilters.brand) params.append('brand', currentFilters.brand);
-    if (currentFilters.size) params.append('size', currentFilters.size);
-    if (currentFilters.minPrice) params.append('min_price', currentFilters.minPrice);
-    if (currentFilters.maxPrice) params.append('max_price', currentFilters.maxPrice);
-    if (currentFilters.sort) params.append('sort', currentFilters.sort);
-    if (currentFilters.limit) params.append('limit', currentFilters.limit);
-    if (currentFilters.skip) params.append('skip', currentFilters.skip);
+    if (pageFilters.gender) params.append('gender', pageFilters.gender);
+    if (pageFilters.brand) params.append('brand', pageFilters.brand);
+    if (pageFilters.size) params.append('size', pageFilters.size);
+    if (pageFilters.minPrice) params.append('min_price', pageFilters.minPrice);
+    if (pageFilters.maxPrice) params.append('max_price', pageFilters.maxPrice);
+    if (pageFilters.sort) params.append('sort', pageFilters.sort);
+    if (pageFilters.limit) params.append('limit', pageFilters.limit);
+    if (pageFilters.skip) params.append('skip', pageFilters.skip);
     
     // Update URL without reloading
     const newUrl = window.location.pathname + '?' + params.toString();

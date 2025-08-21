@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Get all products without pagination
-$products = $productModel->getAll([], ['createdAt' => 1]);
+// Get all products without pagination (newest first)
+$products = $productModel->getAll([], ['createdAt' => -1]);
 $totalProducts = count($products);
 ?>
 
@@ -735,6 +735,14 @@ $totalProducts = count($products);
                                 <?php echo htmlspecialchars($product['category']); ?>
                                 <?php if (!empty($product['subcategory'])): ?>
                                     <br><small style="color: #718096;"><?php echo htmlspecialchars($product['subcategory']); ?></small>
+                                <?php elseif ($product['category'] === 'Perfumes' && !empty($product['brand'])): ?>
+                                    <br><small style="color: #718096;">Brand: <?php echo htmlspecialchars($product['brand']); ?></small>
+                                    <?php if (!empty($product['gender'])): ?>
+                                        <br><small style="color: #718096;">Gender: <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></small>
+                                    <?php endif; ?>
+                                    <?php if (!empty($product['size'])): ?>
+                                        <br><small style="color: #718096;">Size: <?php echo htmlspecialchars($product['size']); ?></small>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                 </div>
 

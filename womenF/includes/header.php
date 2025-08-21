@@ -27,7 +27,6 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <!-- Navigation Menu - Center -->
     <div class="nav-menu-container">
         <ul class="nav-menu">
-            <li><a href="#" class="nav-link">Home</a></li>
             <?php if (!empty($categories)): ?>
                 <?php foreach ($categories as $category): ?>
                     <li class="nav-item-modal">
@@ -781,7 +780,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
                         if (loginForm) {
                             loginForm.style.display = 'flex';
                             loginForm.classList.add('show');
-                            console.log('Login form should be visible now');
+    
                         }
                         
                         // Keep the modal open for login
@@ -795,7 +794,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
                             if (loginForm && loginForm.style.display !== 'flex') {
                                 loginForm.style.display = 'flex';
                                 loginForm.classList.add('show');
-                                console.log('Forced login form to be visible');
+
                             }
                         }, 100);
                         

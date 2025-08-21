@@ -413,7 +413,7 @@ $categories = $categoryModel->getAll();
 
         // Open quick view modal
         function openQuickView(productId) {
-            console.log('openQuickView called with productId:', productId);
+    
             
             // Show modal with loading state
             const modal = document.getElementById('quickViewModal');
@@ -735,14 +735,7 @@ $categories = $categoryModel->getAll();
 
         // Wait for DOM to be ready
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing quick view functions...');
-            
-            // Test if openQuickView function exists
-            if (typeof openQuickView === 'function') {
-                console.log('openQuickView function is available');
-            } else {
-                console.error('openQuickView function is NOT available');
-            }
+            // Initialize quick view functions
         });
 
         function filterProducts() {

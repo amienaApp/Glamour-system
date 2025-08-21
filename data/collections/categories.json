@@ -90,21 +90,7 @@
         "createdAt": "2025-08-12 19:48:46",
         "updatedAt": "2025-08-13 21:01:28"
     },
-    {
-        "name": "Electronics",
-        "subcategories": [
-            "Phones",
-            "Laptops",
-            "Tablets",
-            "Accessories",
-            "Smart Watches"
-        ],
-        "description": "Latest technology and gadgets",
-        "icon": "fa-mobile",
-        "_id": "689b7e7e3ad0dc8ff3df0",
-        "createdAt": "2025-08-12 19:48:46",
-        "updatedAt": "2025-08-12 19:48:46"
-    },
+
     {
         "name": "Sports & Fitness",
         "subcategories": [
@@ -133,7 +119,7 @@
         "updatedAt": "2025-08-21 11:12:34"
     },
     {
-        "name": "perfumes",
+        "name": "Perfumes",
         "description": "perfume in glamour",
         "subcategories": [
             "valentino",
