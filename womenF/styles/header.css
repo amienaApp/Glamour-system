@@ -1,0 +1,1385 @@
+/* Header Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Top Navigation Bar */
+.top-nav {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e8e8e8;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    min-height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* Logo Container - Left Side */
+.logo-container {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+}
+
+.logo {
+    flex-shrink: 0;
+}
+
+.logo-text {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.logo-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.logo-accent {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: #7f8c8d;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Navigation Menu Container - Center */
+.nav-menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    padding: 15px 0;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Navigation Links - Professional Styling */
+.nav-link {
+    text-decoration: none;
+    color: #000000;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 8px 0;
+}
+
+.nav-link:hover {
+    color: #333333;
+    font-weight: 600;
+}
+
+.nav-link.active {
+    color: #333333;
+    font-weight: 600;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #333333;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+/* Category Modal Styles */
+.nav-item-modal {
+    position: relative;
+}
+
+.category-modal {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    min-width: 400px;
+    max-width: 600px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.nav-item-modal:hover .category-modal {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+
+.category-modal .modal-header {
+    padding: 0 0 15px 0;
+}
+
+.category-modal .modal-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.category-modal .modal-header p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+.category-modal .modal-content {
+    padding: 15px 0 0 0;
+}
+
+.subcategories-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.subcategory-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.subcategory-item:hover {
+    color: #333;
+}
+
+.subcategory-icon {
+    margin-right: 8px;
+}
+
+.subcategory-icon i {
+    color: #666;
+    font-size: 0.7rem;
+}
+
+.subcategory-item:hover .subcategory-icon i {
+    color: #666;
+}
+
+.subcategory-info h4 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    color: #333;
+}
+
+.subcategory-info span {
+    font-size: 0.75rem;
+    color: #666;
+    display: none;
+}
+
+/* Right Side Elements Container - More Space */
+.nav-right-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+/* Search Box - More Space */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 25px;
+    padding: 10px 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    min-width: 220px;
+}
+
+.search-container:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    border-color: #d1d5db;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0 0 0 8px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    outline: none;
+    color: #495057;
+}
+
+.search-input::placeholder {
+    color: #6c757d;
+}
+
+.search-icon {
+    color: #6c757d;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.search-container:hover .search-icon {
+    color: #1976d2;
+}
+
+/* User Actions - More Space */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-icon, .heart-icon, .shopping-cart {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    background: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-icon:hover, .heart-icon:hover, .shopping-cart:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+}
+
+.user-icon i, .heart-icon i {
+    font-size: 16px;
+    color: #495057;
+    transition: color 0.3s ease;
+}
+
+.user-icon:hover i, .heart-icon:hover i {
+    color: #333333;
+}
+
+/* Shopping Cart - Compact */
+.shopping-cart {
+    background: #f0f8ff !important;
+    border: 1px solid #e6f3ff !important;
+}
+
+.shopping-cart:hover {
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    border-color: #d1d5db !important;
+}
+
+.shopping-cart i {
+    font-size: 16px;
+    color: #4a90e2;
+    transition: color 0.3s ease;
+}
+
+.shopping-cart:hover i {
+    color: #333333;
+}
+
+.cart-count {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ff4757;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 50%;
+    min-width: 14px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(255, 71, 87, 0.3);
+    border: 1px solid #fff;
+}
+
+/* Somalia Flag - More Space */
+.flag-container {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flag-container:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+}
+
+.flag {
+    width: 24px;
+    height: 16px;
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.flag-container:hover .flag {
+    border-color: #90caf9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 20px;
+        padding: 10px 0;
+    }
+    
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 6px 0;
+    }
+    
+    .category-modal {
+        min-width: 300px;
+        left: 0;
+        transform: translateX(0);
+    }
+    
+    .nav-item-modal:hover .category-modal {
+        transform: translateX(0) translateY(0);
+    }
+    
+    .subcategories-grid {
+        gap: 15px;
+    }
+    
+    .search-container {
+        min-width: 150px;
+    }
+    
+    .user-actions {
+        gap: 6px;
+    }
+    
+    .user-icon, .heart-icon, .shopping-cart {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+    
+    .user-icon i, .heart-icon i, .shopping-cart i {
+        font-size: 12px;
+    }
+    
+    .logo-container {
+        padding: 6px 12px;
+    }
+    
+    .logo-main {
+        font-size: 16px;
+    }
+    
+    .logo-accent {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-menu {
+        gap: 15px;
+        padding: 8px 0;
+    }
+    
+    .nav-link {
+        font-size: 0.75rem;
+        padding: 5px 0;
+    }
+    
+    .category-modal {
+        min-width: 280px;
+    }
+    
+    .subcategories-grid {
+        gap: 10px;
+    }
+    
+    .search-container {
+        min-width: 120px;
+        padding: 6px 12px;
+    }
+    
+    .search-input {
+        font-size: 12px;
+    }
+    
+    .user-actions {
+        gap: 4px;
+    }
+    
+    .user-icon, .heart-icon, .shopping-cart {
+        width: 28px;
+        height: 28px;
+        padding: 5px;
+    }
+    
+    .user-icon i, .heart-icon i, .shopping-cart i {
+        font-size: 11px;
+    }
+    
+    .flag-container {
+        width: 28px;
+        height: 28px;
+        padding: 4px;
+    }
+    
+    .flag {
+        width: 16px;
+        height: 12px;
+    }
+    
+    .logo-container {
+        padding: 5px 10px;
+    }
+    
+    .logo-main {
+        font-size: 14px;
+    }
+    
+    .logo-accent {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Success Notification */
+.success-notification {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    z-index: 10000;
+    transition: top 0.5s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.success-notification.show {
+    top: 20px;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-content i {
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.notification-text {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Validation Modal */
+.validation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.validation-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.validation-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.validation-modal.show .validation-content {
+    transform: scale(1);
+}
+
+.validation-header {
+    padding: 24px 24px 16px 24px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.validation-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.validation-icon.error {
+    color: #ef4444;
+}
+
+.validation-icon.success {
+    color: #10b981;
+}
+
+.validation-icon.warning {
+    color: #f59e0b;
+}
+
+.validation-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    font-family: 'Poppins', sans-serif;
+}
+
+.validation-body {
+    padding: 20px 24px;
+}
+
+.validation-message {
+    margin: 0;
+    font-size: 16px;
+    color: #64748b;
+    line-height: 1.5;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.validation-footer {
+    padding: 16px 24px 24px 24px;
+    text-align: center;
+}
+
+.validation-btn {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.validation-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+}
+
+/* User Authentication Modal Styles */
+.user-auth-modal {
+    max-width: 650px;
+    max-height: 85vh;
+    border-radius: 20px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 85vh;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.auth-switch p {
+    margin: 0;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.auth-switch a {
+    color: #0ea5e9;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-left: 4px;
+}
+
+.auth-switch a:hover {
+    color: #0284c7;
+    background: rgba(14, 165, 233, 0.1);
+    text-decoration: none;
+}
+
+/* User Registration Modal Styles */
+.user-registration-modal {
+    max-width: 650px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+.user-auth-modal .modal-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 30px 40px;
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-header .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.modal-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 8px 0;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.modal-subtitle {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+.user-auth-modal .modal-body {
+    padding: 40px;
+    background: white;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 60vh;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.user-auth-modal .modal-body {
+    padding: 40px;
+    background: white;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 60vh;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.user-auth-modal .modal-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.user-registration-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.user-registration-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Form Container */
+.user-registration-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 20px;
+}
+
+/* Contact Input with Flag */
+.contact-input-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.contact-input-container:focus-within {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.flag-prefix {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    min-width: 100px;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.country-code {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    font-family: 'Poppins', sans-serif;
+}
+
+.contact-input {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding-left: 16px !important;
+    background: transparent !important;
+}
+
+.contact-input:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+
+
+/* Radio Button Styles */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1e293b;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.radio-label:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.radio-label input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.radio-label input[type="radio"]:checked {
+    border-color: #667eea;
+    background: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.radio-label input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radio-label input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+/* Form Groups */
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: none;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #1e293b;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-input:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+.form-input::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Password Container */
+.password-container {
+    position: relative;
+}
+
+.show-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.show-password:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    margin-bottom: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1e293b;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.checkbox-label:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: #667eea;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.terms-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.terms-link:hover {
+    color: #5a67d8;
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.submit-btn:hover::before {
+    left: 100%;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(14, 165, 233, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(-1px);
+}
+
+.submit-btn i {
+    font-size: 18px;
+}
+
+/* Responsive Design for Modal */
+@media (max-width: 768px) {
+    .user-registration-modal {
+        max-width: 95%;
+        margin: 20px;
+    }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .user-auth-modal .modal-header {
+        padding: 25px 20px;
+    }
+    
+    .user-auth-modal .modal-body {
+        padding: 20px;
+    }
+    
+    .form-section {
+        padding: 20px;
+    }
+}
+
+/* General modal header styles removed to prevent conflicts */
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.password-container {
+    position: relative;
+}
+
+.show-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+}
+
+.show-password:hover {
+    color: #000;
+}
+
+.save-btn, .signin-btn, .signup-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save-btn:hover, .signin-btn:hover, .signup-btn:hover {
+    background-color: #333;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-password:hover {
+    color: #000;
+}
+
+/* Tab Styles */
+.tab-container {
+    width: 100%;
+}
+
+.tab-nav {
+    display: flex;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: #000;
+    border-bottom-color: #000;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Chat Button */
+.chat-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #000;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.chat-button:hover {
+    transform: scale(1.1);
+}
+
+.chat-button i {
+    font-size: 20px;
+}
+
+/* Image Bar Section */
+.image-bar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 20px;
+    padding: 20px;
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.image-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.image-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.image-item:hover img {
+    transform: scale(1.05);
+}
+
+.image-item h3 {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+    font-family: 'Poppins', sans-serif;
+} 

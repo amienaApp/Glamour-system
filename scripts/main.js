@@ -16,14 +16,35 @@
     });
     
 
-document.getElementById('categoryLink').addEventListener('click', function(event) {
-  event.preventDefault(); // Prevent default anchor click behavior
-  const categories = document.getElementById('categories');
-  categories.style.display = categories.style.display === 'none' || categories.style.display === '' ? 'block' : 'none';
-});
+// Check if categoryLink element exists before adding event listener
+const categoryLink = document.getElementById('categoryLink');
+if (categoryLink) {
+  categoryLink.addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent default anchor click behavior
+    const categories = document.getElementById('categories');
+    if (categories) {
+      categories.style.display = categories.style.display === 'none' || categories.style.display === '' ? 'block' : 'none';
+    }
+  });
+}
 
 // Mobile menu toggle
-    document.getElementById('menu-btn').addEventListener('click', function() {
-      var menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    });
+    const menuBtn = document.getElementById('menu-btn');
+    if (menuBtn) {
+      menuBtn.addEventListener('click', function() {
+        var menu = document.getElementById('mobile-menu');
+        if (menu) {
+          menu.classList.toggle('hidden');
+        }
+      });
+    }
+
+// Debug: Check if Categories link is present
+document.addEventListener('DOMContentLoaded', function() {
+  const categoriesLink = document.querySelector('.nav-item.dropdown .nav-link');
+  if (categoriesLink) {
+    console.log('Categories link found:', categoriesLink.textContent);
+  } else {
+    console.log('Categories link not found');
+  }
+});
