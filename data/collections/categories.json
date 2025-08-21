@@ -119,5 +119,33 @@
         "_id": "689b7e7e65584b4a0f71c",
         "createdAt": "2025-08-12 19:48:46",
         "updatedAt": "2025-08-13 12:07:58"
+    },
+    {
+        "name": "shoes",
+        "description": "shoes glamour",
+        "subcategories": [
+            "sandal",
+            "boots",
+            "heels"
+        ],
+        "_id": "68a6e2d96139192ef475d",
+        "createdAt": "2025-08-21 11:11:53",
+        "updatedAt": "2025-08-21 11:12:34"
+    },
+    {
+        "name": "perfumes",
+        "description": "perfume in glamour",
+        "subcategories": [
+            "valentino",
+            "lataffa",
+            "dior",
+            "chanel",
+            "gucci",
+            "swiss-arabian",
+            "others"
+        ],
+        "_id": "68a7059f07723c5c76b64",
+        "createdAt": "2025-08-21 13:40:15",
+        "updatedAt": "2025-08-21 13:41:51"
     }
 ]

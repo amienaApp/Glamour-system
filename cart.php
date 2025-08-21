@@ -539,7 +539,7 @@ $cart = $cartModel->getCart($userId);
 
         // Proceed to checkout
         function proceedToCheckout() {
-            window.location.href = 'checkout.php';
+            window.location.href = 'place-order.php';
         }
     </script>
 </body>

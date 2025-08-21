@@ -87,17 +87,10 @@ try {
     // Register user
     $registeredUser = $userModel->register($userData);
 
-    // Start session and store user data
-    session_start();
-    $_SESSION['user_id'] = $registeredUser['_id'];
-    $_SESSION['username'] = $registeredUser['username'];
-    $_SESSION['email'] = $registeredUser['email'];
-    $_SESSION['user_role'] = $registeredUser['role'];
-
-    // Return success response
+    // Return success response (don't auto-login)
     echo json_encode([
         'success' => true,
-        'message' => 'Account created successfully! Welcome to Glamour Palace.',
+        'message' => 'Account created successfully! You can now sign in.',
         'user' => $registeredUser
     ]);
 

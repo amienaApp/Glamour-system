@@ -1,0 +1,149 @@
+[
+    {
+        "name": "Women's Clothing",
+        "subcategories": [
+            "Dresses",
+            "Tops",
+            "Bottoms",
+            "Outerwear",
+            "Activewear",
+            "Lingerie",
+            "Swimwear"
+        ],
+        "description": "Fashionable clothing for women of all ages",
+        "icon": "fa-female",
+        "_id": "689b7e7d66661c069e06f",
+        "createdAt": "2025-08-12 19:48:45",
+        "updatedAt": "2025-08-12 19:48:45"
+    },
+    {
+        "name": "Men's Clothing",
+        "subcategories": [
+            "Shirts",
+            "Pants",
+            "Jackets",
+            "Activewear",
+            "Underwear",
+            "Swimwear"
+        ],
+        "description": "Stylish clothing for men",
+        "icon": "fa-male",
+        "_id": "689b7e7d695350d4cf29d",
+        "createdAt": "2025-08-12 19:48:45",
+        "updatedAt": "2025-08-12 19:48:45"
+    },
+    {
+        "name": "Kids' Clothing",
+        "subcategories": [
+            "Boys",
+            "Girls",
+            "Baby",
+            "Toddler"
+        ],
+        "description": "Adorable clothing for children",
+        "icon": "fa-child",
+        "_id": "689b7e7d888ea37ddc931",
+        "createdAt": "2025-08-12 19:48:45",
+        "updatedAt": "2025-08-12 19:48:45"
+    },
+    {
+        "name": "Accessories",
+        "subcategories": [
+            "Shoes",
+            "Hats",
+            "Scarves",
+            "Belts"
+        ],
+        "description": "Complete your look with our accessories",
+        "icon": "fa-diamond",
+        "_id": "689b7e7daf30ccae2c4c3",
+        "createdAt": "2025-08-12 19:48:45",
+        "updatedAt": "2025-08-13 18:03:28"
+    },
+    {
+        "name": "Home & Living",
+        "subcategories": [
+            "Bedding",
+            "Bath",
+            "Kitchen",
+            "Decor",
+            "Furniture"
+        ],
+        "description": "Beautiful items for your home",
+        "icon": "fa-home",
+        "_id": "689b7e7dca7e719b9bd51",
+        "createdAt": "2025-08-12 19:48:45",
+        "updatedAt": "2025-08-12 19:48:45"
+    },
+    {
+        "name": "Beauty & Cosmetics",
+        "subcategories": [
+            "Skincare",
+            "makeup",
+            "Hair Care",
+            "Fragrances",
+            "Tools"
+        ],
+        "description": "Beauty products for everyone",
+        "icon": "fa-magic",
+        "_id": "689b7e7def7599f8a2ba9",
+        "createdAt": "2025-08-12 19:48:46",
+        "updatedAt": "2025-08-13 21:01:28"
+    },
+    {
+        "name": "Electronics",
+        "subcategories": [
+            "Phones",
+            "Laptops",
+            "Tablets",
+            "Accessories",
+            "Smart Watches"
+        ],
+        "description": "Latest technology and gadgets",
+        "icon": "fa-mobile",
+        "_id": "689b7e7e3ad0dc8ff3df0",
+        "createdAt": "2025-08-12 19:48:46",
+        "updatedAt": "2025-08-12 19:48:46"
+    },
+    {
+        "name": "Sports & Fitness",
+        "subcategories": [
+            "Athletic Wear",
+            "Sports Equipment",
+            "Fitness Accessories",
+            "Outdoor Gear",
+            "df"
+        ],
+        "description": "Everything for an active lifestyle",
+        "icon": "fa-futbol-o",
+        "_id": "689b7e7e65584b4a0f71c",
+        "createdAt": "2025-08-12 19:48:46",
+        "updatedAt": "2025-08-13 12:07:58"
+    },
+    {
+        "name": "shoes",
+        "description": "shoes glamour",
+        "subcategories": [
+            "sandal",
+            "boots",
+            "heels"
+        ],
+        "_id": "68a6e2d96139192ef475d",
+        "createdAt": "2025-08-21 11:11:53",
+        "updatedAt": "2025-08-21 11:12:34"
+    },
+    {
+        "name": "perfumes",
+        "description": "perfume in glamour",
+        "subcategories": [
+            "valentino",
+            "lataffa",
+            "dior",
+            "chanel",
+            "gucci"
+        ],
+        "_id": "68a7059f07723c5c76b64",
+        "createdAt": "2025-08-21 13:40:15",
+        "updatedAt": "2025-08-21 13:41:25"
+    }
+]

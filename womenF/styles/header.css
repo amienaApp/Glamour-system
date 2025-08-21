@@ -350,18 +350,21 @@ body {
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: all 0.3s ease;
     z-index: 1001;
     margin-top: 8px;
     overflow: hidden;
 }
 
-/* Show dropdown on hover */
-.user-dropdown-container:hover .user-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+
+
+/* Show dropdown when clicked */
+.user-dropdown.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
 }
+
+
 
 /* Authentication Section */
 .auth-section {
@@ -411,6 +414,8 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
 }
+
+
 
 /* Menu Items */
 .menu-items {
@@ -862,7 +867,6 @@ body {
     justify-content: center;
     backdrop-filter: blur(5px);
     opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .modal.show {
@@ -876,19 +880,9 @@ body {
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-    animation: modalSlideIn 0.3s ease-out;
 }
 
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
+
 
 /* Responsive Modal Styles */
 @media (max-width: 768px) {
@@ -926,7 +920,6 @@ body {
     display: flex;
     flex-direction: column;
     background: #ffffff;
-    animation: modalSlideIn 0.3s ease-out;
 }
 
 /* Ensure modal is hidden by default */
@@ -943,6 +936,23 @@ body {
     flex-direction: column;
     height: 100%;
     max-height: 85vh;
+}
+
+/* Ensure proper form display */
+#login-form {
+    display: flex;
+}
+
+#login-form.show {
+    display: flex !important;
+}
+
+#register-form {
+    display: none;
+}
+
+#register-form.show {
+    display: flex !important;
 }
 
 .auth-switch {
@@ -1403,6 +1413,22 @@ body {
 
 .submit-btn i {
     font-size: 18px;
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    background: #94a3b8 !important;
+}
+
+.submit-btn .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Responsive Design for Modal */

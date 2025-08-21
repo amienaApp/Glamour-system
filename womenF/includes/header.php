@@ -93,23 +93,12 @@ $isLoggedIn = isset($_SESSION['user_id']);
                             <div class="user-info">
                                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
                             </div>
-                            <a href="logout-handler.php" class="auth-btn logout-btn">
+                            <a href="#" onclick="logout()" class="auth-btn logout-btn">
                                 Sign Out
                             </a>
                         </div>
-                    <?php else: ?>
-                        <div class="auth-section">
-                            <button class="auth-btn signin-btn" id="signin-btn">
-                                Sign In
-                            </button>
-                            <button class="auth-btn signup-btn" id="signup-btn">
-                                Sign Up
-                            </button>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <!-- Menu Items -->
-                    <?php if ($isLoggedIn): ?>
+                        
+                        <!-- Menu Items for Logged In Users -->
                         <div class="menu-items">
                             <a href="#" class="menu-item" id="dashboard-link">
                                 <i class="fas fa-tachometer-alt"></i>
@@ -119,7 +108,18 @@ $isLoggedIn = isset($_SESSION['user_id']);
                                 <i class="fas fa-box"></i>
                                 <span>My orders</span>
                             </a>
-                           
+                        </div>
+                    <?php else: ?>
+                        <!-- Simple Sign In/Sign Up for Non-Logged Users -->
+                        <div class="auth-section">
+                            <button class="auth-btn signin-btn" id="signin-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Sign In
+                            </button>
+                            <button class="auth-btn signup-btn" id="signup-btn">
+                                <i class="fas fa-user-plus"></i>
+                                Sign Up
+                            </button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -187,13 +187,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     </div>
 </div>
 
-<!-- Success Notification -->
-<div class="success-notification" id="success-notification">
-    <div class="notification-content">
-        <i class="fas fa-check-circle"></i>
-        <span class="notification-text">Registration Successful!</span>
-    </div>
-</div>
+
 
 <!-- Validation Modal -->
 <div class="validation-modal" id="validation-modal">
@@ -353,7 +347,6 @@ $isLoggedIn = isset($_SESSION['user_id']);
     });
 
     function loadCartCount() {
-        console.log('Loading cart count...');
         fetch('../cart-api.php', {
             method: 'POST',
             headers: {
@@ -363,21 +356,17 @@ $isLoggedIn = isset($_SESSION['user_id']);
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
             if (data.success) {
                 updateCartCount(data.cart_count);
-            } else {
-                console.error('Cart API error:', data.message);
             }
         })
         .catch(error => {
-            console.error('Error loading cart count:', error);
+            // Silent error handling
         });
     }
 
     function updateCartCount(count) {
         const cartCountElement = document.querySelector('.cart-count');
-        console.log('Updating cart count:', count, 'Element found:', !!cartCountElement);
         
         if (cartCountElement) {
             cartCountElement.textContent = count;
@@ -422,31 +411,21 @@ $isLoggedIn = isset($_SESSION['user_id']);
             if (data.success) {
                 updateCartCount(data.cart_count);
                 // Show success message
-                if (typeof showNotification === 'function') {
-                    showNotification('Product added to cart successfully!', 'success');
-                } else {
-                    alert('Product added to cart successfully!');
-                }
+                alert('Product added to cart successfully!');
             } else {
-                if (typeof showNotification === 'function') {
-                    showNotification('Error: ' + data.message, 'error');
-                } else {
-                    alert('Error: ' + data.message);
-                }
+                alert('Error: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            if (typeof showNotification === 'function') {
-                showNotification('Error adding product to cart', 'error');
-            } else {
-                alert('Error adding product to cart');
-            }
+            alert('Error adding product to cart');
         });
     }
 
-    // User Dropdown Functionality
-    document.addEventListener('DOMContentLoaded', function() {
+            // User Dropdown Functionality
+        let isTransitioningToLogin = false; // Flag to prevent login form from being hidden
+        
+        document.addEventListener('DOMContentLoaded', function() {
         const signinBtn = document.getElementById('signin-btn');
         const signupBtn = document.getElementById('signup-btn');
         const userModal = document.getElementById('user-modal');
@@ -459,54 +438,93 @@ $isLoggedIn = isset($_SESSION['user_id']);
             userModal.style.display = 'none';
         }
 
-        // User icon click functionality
+        // User icon click functionality - ONLY shows/hides dropdown
         if (userIcon) {
             userIcon.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('User icon clicked');
-                if (userModal) {
-                    userModal.style.display = 'flex';
-                    // Trigger reflow to ensure display change is applied
-                    userModal.offsetHeight;
-                    userModal.classList.add('show');
-                    // Show login form by default
-                    if (loginForm) loginForm.style.display = 'flex';
-                    if (registerForm) registerForm.style.display = 'none';
+                
+                // Toggle dropdown visibility ONLY
+                const userDropdown = document.getElementById('user-dropdown');
+                
+                if (userDropdown) {
+                    const isVisible = userDropdown.style.opacity === '1' || userDropdown.classList.contains('show');
+                    
+                    if (isVisible) {
+                        // Hide dropdown
+                        userDropdown.style.opacity = '0';
+                        userDropdown.style.visibility = 'hidden';
+                        userDropdown.style.transform = 'translateY(-10px)';
+                        userDropdown.classList.remove('show');
+                    } else {
+                        // Show dropdown
+                        userDropdown.style.opacity = '1';
+                        userDropdown.style.visibility = 'visible';
+                        userDropdown.style.transform = 'translateY(0)';
+                        userDropdown.classList.add('show');
+                    }
                 }
             });
         }
 
-        // Sign In button functionality
+        // Sign In button functionality - shows login modal
         if (signinBtn) {
             signinBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Sign In button clicked');
+                
+                // Hide dropdown first
+                const userDropdown = document.getElementById('user-dropdown');
+                if (userDropdown) {
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                    userDropdown.classList.remove('show');
+                }
+                
+                // Show login modal immediately
                 if (userModal) {
                     userModal.style.display = 'flex';
-                    // Trigger reflow to ensure display change is applied
-                    userModal.offsetHeight;
                     userModal.classList.add('show');
-                    if (loginForm) loginForm.style.display = 'flex';
-                    if (registerForm) registerForm.style.display = 'none';
+                    if (loginForm) {
+                        loginForm.style.display = 'flex';
+                        loginForm.classList.add('show');
+                    }
+                    if (registerForm) {
+                        registerForm.style.display = 'none';
+                        registerForm.classList.remove('show');
+                    }
                 }
             });
         }
 
-        // Sign Up button functionality
+        // Sign Up button functionality - shows register modal
         if (signupBtn) {
             signupBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Sign Up button clicked');
+                
+                // Hide dropdown first
+                const userDropdown = document.getElementById('user-dropdown');
+                if (userDropdown) {
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                    userDropdown.classList.remove('show');
+                }
+                
+                // Show register modal immediately
                 if (userModal) {
                     userModal.style.display = 'flex';
-                    // Trigger reflow to ensure display change is applied
-                    userModal.offsetHeight;
                     userModal.classList.add('show');
-                    if (loginForm) loginForm.style.display = 'none';
-                    if (registerForm) registerForm.style.display = 'flex';
+                    if (loginForm) {
+                        loginForm.style.display = 'none';
+                        loginForm.classList.remove('show');
+                    }
+                    if (registerForm) {
+                        registerForm.style.display = 'flex';
+                        registerForm.classList.add('show');
+                    }
                 }
             });
         }
@@ -517,27 +535,38 @@ $isLoggedIn = isset($_SESSION['user_id']);
             button.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Close button clicked');
-                if (userModal) {
+                if (userModal && !isTransitioningToLogin) {
                     userModal.classList.remove('show');
-                    setTimeout(() => {
-                        userModal.style.display = 'none';
-                    }, 300);
+                    userModal.style.display = 'none';
                 }
             });
         });
 
-        // Close modal when clicking outside
-        if (userModal) {
-            userModal.addEventListener('click', function(e) {
-                if (e.target === userModal) {
-                    userModal.classList.remove('show');
-                    setTimeout(() => {
-                        userModal.style.display = 'none';
-                    }, 300);
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const userDropdown = document.getElementById('user-dropdown');
+            const userIcon = document.getElementById('user-icon');
+            
+            if (userDropdown && userIcon) {
+                // Check if click is outside the dropdown and user icon
+                if (!userDropdown.contains(e.target) && !userIcon.contains(e.target)) {
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                    userDropdown.classList.remove('show');
                 }
-            });
-        }
+            }
+            
+            // Close modal when clicking outside
+            if (userModal) {
+                userModal.addEventListener('click', function(e) {
+                    if (e.target === userModal && !isTransitioningToLogin) {
+                        userModal.classList.remove('show');
+                        userModal.style.display = 'none';
+                    }
+                });
+            }
+        });
 
         // Switch between login and register forms
         const switchToRegister = document.getElementById('switch-to-register');
@@ -546,16 +575,28 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (switchToRegister) {
             switchToRegister.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (loginForm) loginForm.style.display = 'none';
-                if (registerForm) registerForm.style.display = 'flex';
+                if (loginForm) {
+                    loginForm.style.display = 'none';
+                    loginForm.classList.remove('show');
+                }
+                if (registerForm) {
+                    registerForm.style.display = 'flex';
+                    registerForm.classList.add('show');
+                }
             });
         }
 
         if (switchToLogin) {
             switchToLogin.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (registerForm) registerForm.style.display = 'none';
-                if (loginForm) loginForm.style.display = 'flex';
+                if (registerForm) {
+                    registerForm.style.display = 'none';
+                    registerForm.classList.remove('show');
+                }
+                if (loginForm) {
+                    loginForm.style.display = 'flex';
+                    loginForm.classList.add('show');
+                }
             });
         }
 
@@ -563,20 +604,11 @@ $isLoggedIn = isset($_SESSION['user_id']);
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && userModal && userModal.style.display === 'flex') {
                 userModal.classList.remove('show');
-                setTimeout(() => {
-                    userModal.style.display = 'none';
-                }, 300);
+                userModal.style.display = 'none';
             }
         });
 
-        // Add smooth transitions
-        if (userModal) {
-            userModal.addEventListener('transitionend', function() {
-                if (userModal.style.display === 'none') {
-                    userModal.style.visibility = 'hidden';
-                }
-            });
-        }
+
 
         // Menu item click handlers
         const dashboardLink = document.getElementById('dashboard-link');
@@ -589,7 +621,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (dashboardLink) {
             dashboardLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Dashboard feature coming soon!');
+                // Dashboard feature coming soon
             });
         }
 
@@ -597,7 +629,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (myInfoLink) {
             myInfoLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('My Info feature coming soon!');
+                // My Info feature coming soon
             });
         }
 
@@ -605,7 +637,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (notificationsLink) {
             notificationsLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Notifications feature coming soon!');
+                // Notifications feature coming soon
             });
         }
 
@@ -613,7 +645,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (notifyMeLink) {
             notifyMeLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Notify Me List feature coming soon!');
+                // Notify Me List feature coming soon
             });
         }
 
@@ -621,7 +653,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (giftCardsLink) {
             giftCardsLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Gift Cards feature coming soon!');
+                // Gift Cards feature coming soon
             });
         }
 
@@ -632,41 +664,255 @@ $isLoggedIn = isset($_SESSION['user_id']);
         if (loginFormElement) {
             loginFormElement.addEventListener('submit', function(e) {
                 e.preventDefault();
-                // Show success message
-                showNotification('Login functionality coming soon!', 'info');
+                
+                // Get form data
+                const formData = {
+                    username: document.getElementById('login-username').value.trim(),
+                    password: document.getElementById('login-password').value
+                };
+                
+                // Basic validation
+                if (!formData.username || !formData.password) {
+                    return;
+                }
+                
+
+                
+                // Disable submit button during request
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                
+                // Send login request
+                fetch('./login-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear the login form
+                        loginFormElement.reset();
+                        
+                        // Close the modal immediately
+                        if (userModal) {
+                            userModal.classList.remove('show');
+                            userModal.style.display = 'none';
+                        }
+                        
+                        // Refresh page to show logged-in state
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 300);
+                    }
+                })
+                .catch(error => {
+                    // Silent error handling
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
             });
         }
 
         if (registerFormElement) {
             registerFormElement.addEventListener('submit', function(e) {
                 e.preventDefault();
-                // Show success message
-                showNotification('Registration functionality coming soon!', 'info');
+                
+                // Get form data
+                const formData = {
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    contact_number: '+252' + document.getElementById('contact-number').value,
+                    gender: document.querySelector('input[name="gender"]:checked')?.value,
+                    region: document.getElementById('region').value,
+                    city: document.getElementById('city').value,
+                    password: document.getElementById('password').value,
+                    confirm_password: document.getElementById('confirm-password').value
+                };
+                
+                // Basic validation
+                if (!formData.username || !formData.email || !formData.contact_number || 
+                    !formData.gender || !formData.region || !formData.city || 
+                    !formData.password || !formData.confirm_password) {
+                    return;
+                }
+                
+                if (formData.password !== formData.confirm_password) {
+                    return;
+                }
+                
+
+                
+                // Disable submit button during request
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+                
+                // Send registration request
+                fetch('./register-handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Set flag to prevent login form from being hidden
+                        isTransitioningToLogin = true;
+                        
+                        // Clear the registration form
+                        registerFormElement.reset();
+                        
+                        // Hide registration form and show login form
+                        if (registerForm) {
+                            registerForm.style.display = 'none';
+                            registerForm.classList.remove('show');
+                        }
+                        if (loginForm) {
+                            loginForm.style.display = 'flex';
+                            loginForm.classList.add('show');
+                            console.log('Login form should be visible now');
+                        }
+                        
+                        // Keep the modal open for login
+                        if (userModal) {
+                            userModal.style.display = 'flex';
+                            userModal.classList.add('show');
+                        }
+                        
+                        // Double-check login form is visible after a short delay
+                        setTimeout(() => {
+                            if (loginForm && loginForm.style.display !== 'flex') {
+                                loginForm.style.display = 'flex';
+                                loginForm.classList.add('show');
+                                console.log('Forced login form to be visible');
+                            }
+                        }, 100);
+                        
+                        // Reset flag after a delay
+                        setTimeout(() => {
+                            isTransitioningToLogin = false;
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    // Silent error handling
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
             });
         }
 
-        // Notification function
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('success-notification');
-            if (notification) {
-                const textElement = notification.querySelector('.notification-text');
-                if (textElement) {
-                    textElement.textContent = message;
-                }
-                
-                // Update notification style based on type
-                notification.className = `success-notification ${type}`;
-                notification.classList.add('show');
-                
-                // Hide notification after 3 seconds
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
+
+
+        // Password visibility toggle functionality
+        function togglePasswordVisibility(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleBtn = passwordInput.parentElement.querySelector('.show-password i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.className = 'fas fa-eye-slash';
             } else {
-                // Fallback to alert if notification element not found
-                alert(message);
+                passwordInput.type = 'password';
+                toggleBtn.className = 'fas fa-eye';
             }
         }
+
+        // Add click handlers for password visibility toggles
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.show-password')) {
+                const passwordContainer = e.target.closest('.password-container');
+                const passwordInput = passwordContainer.querySelector('input');
+                const toggleBtn = passwordContainer.querySelector('.show-password i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleBtn.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    toggleBtn.className = 'fas fa-eye';
+                }
+            }
+        });
+
+        // Region-City functionality for registration form
+        const regionSelect = document.getElementById('region');
+        const citySelect = document.getElementById('city');
+
+        if (regionSelect && citySelect) {
+            // Cities for each region
+            const citiesByRegion = {
+                'banadir': ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn'],
+                'bari': ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban', 'Bandarbeyla'],
+                'bay': ['Baidoa', 'Burdhubo', 'Dinsor', 'Qansaxdheere'],
+                'galguduud': ['Dhusamareb', 'Adado', 'Abudwaq', 'Galgadud'],
+                'gedo': ['Garbahaarrey', 'Bardhere', 'Luuq', 'El Wak', 'Dolow'],
+                'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi', 'Mahas'],
+                'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow', 'Dujuma'],
+                'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe', 'Afmadow'],
+                'mudug': ['Galkayo', 'Hobyo', 'Harardhere', 'Jariiban'],
+                'nugaal': ['Garowe', 'Eyl', 'Burtinle', 'Dangorayo'],
+                'sanaag': ['Erigavo', 'Badhan', 'Laasqoray', 'Dhahar'],
+                'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
+                'shabeellaha-hoose': ['Merca', 'Baraawe', 'Kurtunwaarey', 'Qoryooley'],
+                'sool': ['Laascaanood', 'Taleex', 'Xudun', 'Caynabo'],
+                'togdheer': ['Burao', 'Oodweyne', 'Sheikh', 'Buhoodle'],
+                'woqooyi-galbeed': ['Hargeisa', 'Berbera', 'Borama', 'Gabiley', 'Baki']
+            };
+
+            regionSelect.addEventListener('change', function() {
+                const selectedRegion = this.value;
+                citySelect.innerHTML = '<option value="">Select city</option>';
+                citySelect.disabled = true;
+
+                if (selectedRegion && citiesByRegion[selectedRegion]) {
+                    citiesByRegion[selectedRegion].forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.toLowerCase().replace(/\s+/g, '-');
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                    citySelect.disabled = false;
+                }
+            });
+        }
+
+        // Logout function
+        window.logout = function() {
+            fetch('./logout-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
+            })
+            .catch(error => {
+                // Silent error handling
+            });
+        }
+
+
     });
 </script>
 </div> 

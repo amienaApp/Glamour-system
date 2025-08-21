@@ -53,57 +53,46 @@
         "updatedAt": "2025-08-20 20:44:38"
     },
     {
-        "user_id": "68a612879695579664042",
+        "user_id": "68a6fe6e3deddfaff9313",
         "items": [
             {
-                "product_id": "689bbcaa6e702eb447f87",
+                "product_id": "689e456a01837b63021fb",
                 "quantity": 1,
-                "added_at": "2025-08-20 21:09:37",
+                "added_at": "2025-08-21 13:10:35",
                 "product": {
-                    "name": "Red Satin Slip Dress",
-                    "price": 76,
-                    "description": "Elegant red satin slip dress with smooth finish",
+                    "name": "Cozy Legend Tan Leopard Print Faux Fur Coat",
+                    "price": 23,
+                    "color": "#5e331c",
                     "category": "Women's Clothing",
-                    "subcategory": "Dresses",
-                    "image_front": "img\/women\/dresses\/24.jpg",
-                    "image_back": "img\/women\/dresses\/24.jpg",
-                    "featured": true,
+                    "subcategory": "Tops",
+                    "description": "",
+                    "featured": false,
                     "sale": false,
-                    "color_variants": [
-                        {
-                            "name": "Maroon",
-                            "color": "#7311118e",
-                            "front_image": "img\/women\/dresses\/24.jpg",
-                            "back_image": "img\/women\/dresses\/24.jpg"
-                        },
-                        {
-                            "name": "Silver",
-                            "color": "#9e95958e",
-                            "front_image": "img\/women\/dresses\/24.1.jpg",
-                            "back_image": "img\/women\/dresses\/24.1.jpg"
-                        }
-                    ],
-                    "created_at": "2025-08-13 00:14:02",
-                    "updated_at": "2025-08-13 00:14:02",
-                    "_id": "689bbcaa6e702eb447f87",
-                    "createdAt": "2025-08-13 00:14:02",
-                    "updatedAt": "2025-08-13 00:14:02"
+                    "available": true,
+                    "stock": 0,
+                    "size_category": "",
+                    "selected_sizes": "",
+                    "front_image": "uploads\/products\/1755202922_product_1_front_11.webp",
+                    "back_image": "uploads\/products\/1755202922_product_1_back_11.1.webp",
+                    "_id": "689e456a01837b63021fb",
+                    "createdAt": "2025-08-14 22:22:02",
+                    "updatedAt": "2025-08-14 22:22:02"
                 },
-                "subtotal": 76
+                "subtotal": 23
             }
         ],
-        "total_amount": 76,
+        "total_amount": 23,
         "item_count": 1,
-        "status": "confirmed",
-        "order_number": "ORD2025082021150846CCE0",
-        "shipping_address": "burtinle",
+        "status": "processing",
+        "order_number": "ORD20250821131728D6A882",
+        "shipping_address": "HODANHILLS",
         "billing_address": "HILL4",
-        "payment_method": "bank",
+        "payment_method": "waafi",
         "notes": "",
-        "created_at": "2025-08-20 21:15:08",
-        "updated_at": "2025-08-20 21:15:08",
-        "_id": "68a61ebc9cf0423c6897c",
-        "createdAt": "2025-08-20 21:15:08",
-        "updatedAt": "2025-08-20 21:15:08"
+        "created_at": "2025-08-21 13:17:28",
+        "updated_at": "2025-08-21 13:18:20",
+        "_id": "68a70048622301b1c8fcb",
+        "createdAt": "2025-08-21 13:17:28",
+        "updatedAt": "2025-08-21 13:18:20"
     }
 ]
