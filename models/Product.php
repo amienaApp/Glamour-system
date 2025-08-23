@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 
 class Product {
     private $collection;
 
     public function __construct() {
-        $db = Database::getInstance();
+        $db = MongoDB::getInstance();
         $this->collection = $db->getCollection('products');
     }
 

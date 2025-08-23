@@ -7,9 +7,32 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
+
+// Helper function to convert BSONArray to regular array
+function toArray($value) {
+    if (is_object($value) && method_exists($value, 'toArray')) {
+        $result = $value->toArray();
+        // Ensure we get a proper array
+        if (is_array($result)) {
+            return $result;
+        } else {
+            // If toArray() returns an object, try to convert it
+            return (array)$result;
+        }
+    }
+    return $value;
+}
+
+// Helper function to get count of array or BSONArray
+function getCount($value) {
+    if (is_object($value) && method_exists($value, 'count')) {
+        return $value->count();
+    }
+    return count($value);
+}
 
 $categoryModel = new Category();
 $productModel = new Product();
@@ -1922,8 +1945,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="color-variants-section">
                             <p>Add or edit color variants for your product</p>
                             <div id="color-variants-container">
-                                <?php if (!empty($product['color_variants'])): ?>
-                                    <?php foreach ($product['color_variants'] as $index => $variant): ?>
+                                <?php 
+                                $colorVariants = toArray($product['color_variants'] ?? []);
+                                if (!empty($colorVariants)): 
+                                ?>
+                                    <?php foreach ($colorVariants as $index => $variant): ?>
                                         <div class="variant-item">
                                         <div class="variant-header">
                                             <h4>Color Variant #<?php echo $index + 1; ?></h4>
@@ -2140,7 +2166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
 
-        let colorVariantIndex = <?php echo count($product['color_variants'] ?? []); ?>;
+                        let colorVariantIndex = <?php echo getCount($product['color_variants'] ?? []); ?>;
         let deletedVariants = []; // Track deleted variants
 
         function addColorVariant() {

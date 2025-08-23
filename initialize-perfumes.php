@@ -4,7 +4,7 @@
  * Run this script to add sample perfume products to the database
  */
 
-require_once 'config/database.php';
+require_once 'config/mongodb.php';
 require_once 'models/Perfume.php';
 
 try {

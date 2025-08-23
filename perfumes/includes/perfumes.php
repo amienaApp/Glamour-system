@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/mongodb.php';
 require_once __DIR__ . '/../../models/Product.php';
 
 $productModel = new Product();
@@ -174,11 +174,11 @@ foreach ($allPerfumes as $perfume) {
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
-                            <button class="quick-view" data-product-id="<?php echo $perfume['_id']; ?>">Quick View</button>
+                            <button class="quick-view" data-product-id="<?php echo $perfume['_id']; ?>" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Quick View</button>
                             <?php if (($perfume['available'] ?? true) === false): ?>
                                 <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag" onclick="addToCart('<?php echo $perfume['_id']; ?>')">Add To Bag</button>
+                                <button class="add-to-bag" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Add To Bag</button>
                             <?php endif; ?>
                 </div>
             </div>
@@ -244,7 +244,7 @@ foreach ($allPerfumes as $perfume) {
 <!-- Quick View Sidebar -->
 <div class="quick-view-sidebar" id="quick-view-sidebar">
     <div class="quick-view-header">
-        <button class="close-quick-view" id="close-quick-view">
+        <button class="close-quick-view" id="close-quick-view" onclick="closeQuickViewTest()">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -364,19 +364,24 @@ function loadPerfumes() {
     window.location.reload();
 }
 
-// Function to add to cart
-function addToCart(productId) {
+// Function to add to cart from quick view
+function addToCartFromQuickView(productId, productName) {
+    console.log('Adding to cart from quick view:', productName);
+    
     fetch('../cart-api.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `action=add_to_cart&product_id=${productId}&quantity=1`
+        body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update cart count
+            // Show success message
+            showQuickViewNotification('Product added to cart successfully!', 'success');
+            
+            // Update cart count if available
             const cartCountElement = document.querySelector('.cart-count');
             if (cartCountElement) {
                 cartCountElement.textContent = data.cart_count;
@@ -384,15 +389,90 @@ function addToCart(productId) {
                     cartCountElement.style.display = 'flex';
                 }
             }
-            alert('Product added to cart successfully!');
         } else {
-            alert('Error: ' + data.message);
+            showQuickViewNotification('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error adding product to cart');
+        showQuickViewNotification('Error adding product to cart', 'error');
     });
+}
+
+// Function to add to cart (legacy - now handled by script.js)
+function addToCart(productId) {
+    // This function is kept for compatibility but the actual functionality is in script.js
+    console.log('Legacy addToCart called for product ID:', productId);
+}
+
+// Function to show notifications in quick view
+function showQuickViewNotification(message, type = 'info') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.quick-view-notification');
+    existingNotifications.forEach(notification => {
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
+    });
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = 'quick-view-notification';
+    
+    // Set colors based on type
+    let backgroundColor, icon;
+    switch (type) {
+        case 'success':
+            backgroundColor = '#28a745';
+            icon = '✓';
+            break;
+        case 'error':
+            backgroundColor = '#dc3545';
+            icon = '✗';
+            break;
+        case 'info':
+        default:
+            backgroundColor = '#17a2b8';
+            icon = 'ℹ';
+            break;
+    }
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${backgroundColor};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10001;
+        font-weight: 500;
+        font-size: 14px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    
+    notification.textContent = `${icon} ${message}`;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
 // Function to initialize sample perfumes
@@ -401,16 +481,177 @@ function initializePerfumes() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            window.location.reload();
+            // Use modern notification if available, otherwise fallback to alert
+            if (typeof showNotification === 'function') {
+                showNotification(data.message, 'success');
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                alert(data.message);
+                window.location.reload();
+            }
         } else {
-            alert('Error: ' + data.message);
+            if (typeof showNotification === 'function') {
+                showNotification('Error: ' + data.message, 'error');
+            } else {
+                alert('Error: ' + data.message);
+            }
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error initializing perfumes');
+        if (typeof showNotification === 'function') {
+            showNotification('Error initializing perfumes', 'error');
+        } else {
+            alert('Error initializing perfumes');
+        }
     });
+}
+
+// Quick view function
+function testQuickView(productId) {
+    console.log('Quick view opened for product:', productId);
+    
+    // Find the product card with this ID
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!productCard) {
+        console.log('No product card found for ID:', productId);
+        return;
+    }
+    
+    // Extract product data from the DOM
+    const product = {
+        name: productCard.querySelector('.product-name').textContent,
+        price: productCard.querySelector('.product-price').textContent,
+        brand: productCard.querySelector('.product-brand').textContent,
+        size: productCard.querySelector('.product-size').textContent,
+        images: []
+    };
+    
+    // Get images from the product card
+    const images = productCard.querySelectorAll('.image-slider img');
+    images.forEach(img => {
+        product.images.push({
+            src: img.src,
+            color: img.getAttribute('data-color') || 'default'
+        });
+    });
+    
+    // Get colors from the product card
+    const colorCircles = productCard.querySelectorAll('.color-circle');
+    product.colors = [];
+    colorCircles.forEach((circle, index) => {
+        product.colors.push({
+            name: circle.title || circle.getAttribute('data-color'),
+            value: circle.getAttribute('data-color'),
+            hex: circle.style.backgroundColor || '#000'
+        });
+    });
+    
+    // Get sizes (for perfumes, usually just one size)
+    product.sizes = [product.size || '100ml'];
+    
+    console.log('Extracted product data:', product);
+
+    // Populate quick view with product data
+    document.getElementById('quick-view-title').textContent = product.name;
+    document.getElementById('quick-view-price').textContent = product.price;
+    document.getElementById('quick-view-brand').textContent = product.brand;
+    document.getElementById('quick-view-size').textContent = product.size;
+    
+    // Set main image
+    const mainImage = document.getElementById('quick-view-main-image');
+    if (product.images.length > 0) {
+        mainImage.src = product.images[0].src;
+        mainImage.alt = product.name;
+    }
+
+    // Populate thumbnails
+    const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+    thumbnailsContainer.innerHTML = '';
+    
+    product.images.forEach((image, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+        thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
+        
+        thumbnail.addEventListener('click', () => {
+            mainImage.src = image.src;
+            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+            thumbnail.classList.add('active');
+        });
+        
+        thumbnailsContainer.appendChild(thumbnail);
+    });
+
+    // Populate colors
+    const colorSelection = document.getElementById('quick-view-color-selection');
+    colorSelection.innerHTML = '';
+    
+    product.colors.forEach((color, index) => {
+        const colorCircle = document.createElement('div');
+        colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
+        colorCircle.style.backgroundColor = color.hex;
+        colorCircle.setAttribute('data-color', color.value);
+        colorCircle.title = color.name;
+        
+        colorCircle.addEventListener('click', () => {
+            colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
+            colorCircle.classList.add('active');
+        });
+        
+        colorSelection.appendChild(colorCircle);
+    });
+
+    // Populate sizes
+    const sizeSelection = document.getElementById('quick-view-size-selection');
+    sizeSelection.innerHTML = '';
+    
+    product.sizes.forEach(size => {
+        const sizeBtn = document.createElement('button');
+        sizeBtn.className = 'quick-view-size-btn';
+        sizeBtn.textContent = size;
+        
+        sizeBtn.addEventListener('click', () => {
+            sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
+            sizeBtn.classList.add('active');
+        });
+        
+        sizeSelection.appendChild(sizeBtn);
+    });
+    
+    // Set up Add to Bag button functionality
+    const addToBagBtn = document.getElementById('add-to-bag-quick');
+    if (addToBagBtn) {
+        addToBagBtn.onclick = function() {
+            addToCartFromQuickView(productId, product.name);
+        };
+    }
+    
+    // Show the sidebar
+    const sidebar = document.getElementById('quick-view-sidebar');
+    const overlay = document.getElementById('quick-view-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.add('active');
+    }
+    
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
+
+// Close quick view function
+function closeQuickViewTest() {
+    const sidebar = document.getElementById('quick-view-sidebar');
+    const overlay = document.getElementById('quick-view-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.remove('active');
+    }
+    
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
 }
 
 // Load cart count on page load

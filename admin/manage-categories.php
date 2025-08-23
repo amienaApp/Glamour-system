@@ -1,4 +1,4 @@
-<?php
+the add <?php
 session_start();
 
 // Check if admin is logged in
@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Category.php';
 
 $categoryModel = new Category();

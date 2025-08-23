@@ -11,13 +11,13 @@ $page_title = 'Galamor palace';
     <meta http-equiv="Expires" content="0">
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
-                    <?php include 'includes/header.php'; ?>
+                    <?php include '../heading/header.php'; ?>
 
                 <!-- Image Bar Section -->
                 

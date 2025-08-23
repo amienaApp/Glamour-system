@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=add_to_cart&product_id=${productId}&quantity=1`
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
         })
         .then(response => response.json())
         .then(data => {

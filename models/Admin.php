@@ -4,14 +4,15 @@
  * Handles admin user management and authentication
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 
 class Admin {
     private $db;
     private $collection;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('admins');
     }
 

@@ -4,7 +4,8 @@
  * Handles shopping cart operations
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 require_once __DIR__ . '/Product.php'; // Required for getById in getCart
 
 class Cart {
@@ -12,7 +13,7 @@ class Cart {
     private $collection;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('carts');
     }
 

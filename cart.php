@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once 'config/database.php';
+require_once 'config/mongodb.php';
 require_once 'models/Cart.php';
 require_once 'models/Product.php';
 
@@ -14,6 +14,26 @@ $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
 
 $cartModel = new Cart();
 $cart = $cartModel->getCart($userId);
+
+// Get return URL from session or default to main page
+$returnUrl = $_SESSION['return_url'] ?? 'index.php';
+
+// If return URL is the same as current page (cart.php), default to main page
+if ($returnUrl === 'cart.php' || $returnUrl === $_SERVER['REQUEST_URI']) {
+    $returnUrl = 'index.php';
+}
+
+// Clean up the return URL to prevent potential security issues
+$returnUrl = htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8');
+if (empty($returnUrl) || strpos($returnUrl, '..') !== false || strpos($returnUrl, '://') !== false) {
+    $returnUrl = 'index.php';
+}
+
+// Clear the return URL from session after using it
+unset($_SESSION['return_url']);
+
+// Debug: Uncomment the line below to see the return URL
+// echo "<!-- Debug: Return URL = $returnUrl -->";
 ?>
 
 <!DOCTYPE html>
@@ -357,10 +377,6 @@ $cart = $cartModel->getCart($userId);
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
-            <a href="products.php" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                Continue Shopping
-            </a>
         </div>
 
         <?php if (empty($cart['items'])): ?>
@@ -370,10 +386,6 @@ $cart = $cartModel->getCart($userId);
                     <i class="fas fa-shopping-cart"></i>
                     <h3>Your cart is empty</h3>
                     <p>Looks like you haven't added any items to your cart yet.</p>
-                    <a href="products.php" class="shop-btn">
-                        <i class="fas fa-shopping-bag"></i>
-                        Start Shopping
-                    </a>
                 </div>
             </div>
         <?php else: ?>
@@ -452,7 +464,150 @@ $cart = $cartModel->getCart($userId);
         <?php endif; ?>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Confirm Action</h3>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-confirm" id="modal-confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px 20px 10px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-body p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 10px 20px 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel, .btn-confirm {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #c82333;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+
     <script>
+        // Modal functions
+        function showModal(title, message, confirmAction) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('modal-confirm-btn').onclick = confirmAction;
+            document.getElementById('confirmation-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmation-modal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmation-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
         // Update quantity
         function updateQuantity(productId, change, newValue = null) {
             let quantity;
@@ -477,64 +632,76 @@ $cart = $cartModel->getCart($userId);
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    showModal('Error', 'Error: ' + data.message, closeModal);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error updating quantity');
+                showModal('Error', 'Error updating quantity', closeModal);
             });
         }
 
         // Remove item
         function removeItem(productId) {
-            if (confirm('Are you sure you want to remove this item from your cart?')) {
-                fetch('cart-api.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=remove_item&product_id=${productId}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error removing item');
-                });
-            }
+            showModal(
+                'Remove Item', 
+                'Are you sure you want to remove this item from your cart?',
+                function() {
+                    closeModal();
+                    fetch('cart-api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `action=remove_item&product_id=${productId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            showModal('Error', 'Error: ' + data.message, closeModal);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showModal('Error', 'Error removing item', closeModal);
+                    });
+                }
+            );
         }
 
         // Clear cart
         function clearCart() {
-            if (confirm('Are you sure you want to clear your entire cart? This action cannot be undone.')) {
-                fetch('cart-api.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'action=clear_cart'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Cart cleared successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error clearing cart');
-                });
-            }
+            showModal(
+                'Clear Cart', 
+                'Are you sure you want to clear your entire cart? This action cannot be undone.',
+                function() {
+                    closeModal();
+                    fetch('cart-api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=clear_cart'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showModal('Success', 'Cart cleared successfully!', function() {
+                                closeModal();
+                                location.reload();
+                            });
+                        } else {
+                            showModal('Error', 'Error: ' + data.message, closeModal);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showModal('Error', 'Error clearing cart', closeModal);
+                    });
+                }
+            );
         }
 
         // Proceed to checkout

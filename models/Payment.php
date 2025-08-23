@@ -5,7 +5,8 @@
  * Supports: SAHAL, SAAD, EVC, EDAHAB, Card/Bank
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 require_once __DIR__ . '/Order.php';
 // Email functionality removed for local system
 
@@ -14,7 +15,7 @@ class Payment {
     private $collection;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('payments');
     }
 
