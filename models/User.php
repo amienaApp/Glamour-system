@@ -4,14 +4,15 @@
  * Handles user registration, authentication, and database operations
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 
 class User {
     private $db;
     private $collection;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('users');
     }
 
@@ -58,6 +59,46 @@ class User {
     }
 
     /**
+     * Create a new user (admin function)
+     */
+    public function createUser($userData) {
+        // Validate required fields
+        $requiredFields = ['username', 'email', 'password'];
+        foreach ($requiredFields as $field) {
+            if (empty($userData[$field])) {
+                throw new Exception("Field '$field' is required");
+            }
+        }
+
+        // Check if email already exists
+        $existingEmail = $this->collection->findOne(['email' => $userData['email']]);
+        if ($existingEmail) {
+            throw new Exception("Email already registered");
+        }
+
+        // Hash password
+        $userData['password'] = password_hash($userData['password'], PASSWORD_DEFAULT);
+        
+        // Add additional fields
+        $userData['status'] = 'active';
+        $userData['role'] = 'user';
+        $userData['created_at'] = date('Y-m-d H:i:s');
+        $userData['updated_at'] = date('Y-m-d H:i:s');
+
+        // Insert user into database
+        $result = $this->collection->insertOne($userData);
+        
+        if ($result->getInsertedId()) {
+            // Return user data without password
+            unset($userData['password']);
+            $userData['_id'] = $result->getInsertedId();
+            return $userData;
+        }
+
+        throw new Exception("Failed to create user");
+    }
+
+    /**
      * Authenticate user login
      */
     public function login($username, $password) {
@@ -90,6 +131,15 @@ class User {
      * Get user by ID
      */
     public function getById($userId) {
+        // Convert string ID to ObjectId if needed
+        if (is_string($userId)) {
+            try {
+                $userId = new MongoDB\BSON\ObjectId($userId);
+            } catch (Exception $e) {
+                // If conversion fails, try with string
+            }
+        }
+        
         $user = $this->collection->findOne(['_id' => $userId]);
         if ($user) {
             unset($user['password']);
@@ -141,9 +191,48 @@ class User {
     }
 
     /**
+     * Update user (admin function)
+     */
+    public function updateUser($userId, $updateData) {
+        // Convert string ID to ObjectId if needed
+        if (is_string($userId)) {
+            try {
+                $userId = new MongoDB\BSON\ObjectId($userId);
+            } catch (Exception $e) {
+                // If conversion fails, try with string
+            }
+        }
+
+        // Remove password from update data if not being changed
+        if (!isset($updateData['password']) || empty($updateData['password'])) {
+            unset($updateData['password']);
+        } else {
+            $updateData['password'] = password_hash($updateData['password'], PASSWORD_DEFAULT);
+        }
+
+        $updateData['updated_at'] = date('Y-m-d H:i:s');
+
+        $result = $this->collection->updateOne(
+            ['_id' => $userId],
+            ['$set' => $updateData]
+        );
+
+        return $result->getModifiedCount() > 0;
+    }
+
+    /**
      * Change user password
      */
     public function changePassword($userId, $currentPassword, $newPassword) {
+        // Convert string ID to ObjectId if needed
+        if (is_string($userId)) {
+            try {
+                $userId = new MongoDB\BSON\ObjectId($userId);
+            } catch (Exception $e) {
+                // If conversion fails, try with string
+            }
+        }
+
         $user = $this->collection->findOne(['_id' => $userId]);
         if (!$user) {
             throw new Exception("User not found");
@@ -179,12 +268,17 @@ class User {
     /**
      * Get all users (for admin purposes)
      */
-    public function getAllUsers($limit = 50, $skip = 0) {
-        $users = $this->collection->find([], [
-            'limit' => $limit,
-            'skip' => $skip,
+    public function getAllUsers($limit = null, $skip = 0) {
+        $options = [
             'sort' => ['created_at' => -1]
-        ]);
+        ];
+        
+        if ($limit !== null) {
+            $options['limit'] = $limit;
+            $options['skip'] = $skip;
+        }
+        
+        $users = $this->collection->find([], $options);
 
         $userList = [];
         foreach ($users as $user) {
@@ -285,6 +379,133 @@ class User {
         );
 
         return $result->getModifiedCount() > 0;
+    }
+
+    /**
+     * Get user statistics for admin dashboard
+     */
+    public function getUserStatistics() {
+        $totalUsers = $this->collection->countDocuments();
+        $activeUsers = $this->collection->countDocuments(['status' => 'active']);
+        $inactiveUsers = $this->collection->countDocuments(['status' => 'inactive']);
+        
+        // Count users who logged in today
+        $today = date('Y-m-d');
+        $onlineUsers = $this->collection->countDocuments([
+            'last_login' => ['$gte' => $today . ' 00:00:00']
+        ]);
+
+        return [
+            'total_users' => $totalUsers,
+            'active_users' => $activeUsers,
+            'inactive_users' => $inactiveUsers,
+            'online_users' => $onlineUsers
+        ];
+    }
+
+
+
+    /**
+     * Update user status (active/inactive)
+     */
+    public function updateStatus($userId, $status) {
+        // Convert string ID to ObjectId if needed
+        if (is_string($userId)) {
+            try {
+                $userId = new MongoDB\BSON\ObjectId($userId);
+            } catch (Exception $e) {
+                // If conversion fails, try with string
+            }
+        }
+
+        if (!in_array($status, ['active', 'inactive'])) {
+            throw new Exception("Invalid status");
+        }
+
+        $result = $this->collection->updateOne(
+            ['_id' => $userId],
+            ['$set' => [
+                'status' => $status,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]]
+        );
+
+        if ($result->getModifiedCount() === 0) {
+            throw new Exception("User not found or no changes made");
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete user
+     */
+    public function deleteUser($userId) {
+        // Convert string ID to ObjectId if needed
+        if (is_string($userId)) {
+            try {
+                $userId = new MongoDB\BSON\ObjectId($userId);
+            } catch (Exception $e) {
+                // If conversion fails, try with string
+            }
+        }
+
+        $result = $this->collection->deleteOne(['_id' => $userId]);
+        
+        if ($result->getDeletedCount() === 0) {
+            throw new Exception("User not found");
+        }
+
+        return true;
+    }
+
+    /**
+     * Update last login time
+     */
+    public function updateLastLogin($userId) {
+        $result = $this->collection->updateOne(
+            ['_id' => $userId],
+            ['$set' => [
+                'last_login' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]]
+        );
+
+        return $result->getModifiedCount() > 0;
+    }
+
+    /**
+     * Get users by status
+     */
+    public function getUsersByStatus($status) {
+        $users = $this->collection->find(['status' => $status], ['sort' => ['created_at' => -1]]);
+        
+        $userList = [];
+        foreach ($users as $user) {
+            unset($user['password']);
+            $userList[] = $user;
+        }
+
+        return $userList;
+    }
+
+    /**
+     * Get recent users (last 30 days)
+     */
+    public function getRecentUsers($days = 30) {
+        $date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        
+        $users = $this->collection->find([
+            'created_at' => ['$gte' => $date]
+        ], ['sort' => ['created_at' => -1]]);
+        
+        $userList = [];
+        foreach ($users as $user) {
+            unset($user['password']);
+            $userList[] = $user;
+        }
+
+        return $userList;
     }
 }
 ?>

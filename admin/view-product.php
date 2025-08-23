@@ -7,9 +7,32 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Product.php';
 require_once '../models/Category.php';
+
+// Helper function to convert BSONArray to regular array
+function toArray($value) {
+    if (is_object($value) && method_exists($value, 'toArray')) {
+        $result = $value->toArray();
+        // Ensure we get a proper array
+        if (is_array($result)) {
+            return $result;
+        } else {
+            // If toArray() returns an object, try to convert it
+            return (array)$result;
+        }
+    }
+    return $value;
+}
+
+// Helper function to get count of array or BSONArray
+function getCount($value) {
+    if (is_object($value) && method_exists($value, 'count')) {
+        return $value->count();
+    }
+    return count($value);
+}
 
 $productModel = new Product();
 $categoryModel = new Category();
@@ -31,8 +54,8 @@ if (!empty($subcategory)) {
     $filters['subcategory'] = $subcategory;
 }
 
-// Get all products with filters
-$products = $productModel->getAll($filters, ['createdAt' => 1]);
+// Get all products with filters (newest first)
+$products = $productModel->getAll($filters, ['createdAt' => -1]);
 $totalProducts = count($products);
 
 // Get all categories and subcategories for filters
@@ -1067,6 +1090,14 @@ foreach ($allCategories as $cat) {
                                             <?php echo htmlspecialchars($product['category']); ?>
                                             <?php if (!empty($product['subcategory'])): ?>
                                                 <br><small style="color: #718096;"><?php echo htmlspecialchars($product['subcategory']); ?></small>
+                                            <?php elseif ($product['category'] === 'Perfumes' && !empty($product['brand'])): ?>
+                                                <br><small style="color: #718096;">Brand: <?php echo htmlspecialchars($product['brand']); ?></small>
+                                                <?php if (!empty($product['gender'])): ?>
+                                                    <br><small style="color: #718096;">Gender: <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></small>
+                                                <?php endif; ?>
+                                                <?php if (!empty($product['size'])): ?>
+                                                    <br><small style="color: #718096;">Size: <?php echo htmlspecialchars($product['size']); ?></small>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                         <div class="product-price">
@@ -1124,6 +1155,23 @@ foreach ($allCategories as $cat) {
                                             <?php echo isset($product['createdAt']) ? date('M j, Y', strtotime($product['createdAt'])) : 'N/A'; ?>
                                         </div>
                                     </div>
+                                    
+                                    <?php if ($product['category'] === 'Perfumes'): ?>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Perfume Details</div>
+                                        <div class="detail-value">
+                                            <?php if (!empty($product['brand'])): ?>
+                                                <div><strong>Brand:</strong> <?php echo htmlspecialchars($product['brand']); ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($product['gender'])): ?>
+                                                <div><strong>Gender:</strong> <?php echo htmlspecialchars(ucfirst($product['gender'])); ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($product['size'])): ?>
+                                                <div><strong>Size:</strong> <?php echo htmlspecialchars($product['size']); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <?php 
@@ -1152,8 +1200,8 @@ foreach ($allCategories as $cat) {
                                 if (!empty($product['color_variants'])) {
                                     if (is_string($product['color_variants'])) {
                                         $colorVariants = json_decode($product['color_variants'], true) ?: [];
-                                    } elseif (is_array($product['color_variants'])) {
-                                        $colorVariants = $product['color_variants'];
+                                    } else {
+                                        $colorVariants = toArray($product['color_variants']);
                                     }
                                 }
                                 ?>
@@ -1163,8 +1211,11 @@ foreach ($allCategories as $cat) {
                                         <?php foreach (array_slice($colorVariants, 0, 5) as $variant): ?>
                                             <div class="color-swatch" style="background-color: <?php echo htmlspecialchars($variant['color']); ?>" title="<?php echo htmlspecialchars($variant['name']); ?>"></div>
                                         <?php endforeach; ?>
-                                        <?php if (count($colorVariants) > 5): ?>
-                                            <small style="color: #718096; align-self: center;">+<?php echo count($colorVariants) - 5; ?> more</small>
+                                        <?php 
+                                        $totalVariants = getCount($product['color_variants']);
+                                        if ($totalVariants > 5): 
+                                        ?>
+                                            <small style="color: #718096; align-self: center;">+<?php echo $totalVariants - 5; ?> more</small>
                                         <?php endif; ?>
                                     <?php elseif (!empty($product['color'])): ?>
                                         <div class="color-swatch" style="background-color: <?php echo htmlspecialchars($product['color']); ?>" title="Main Color"></div>

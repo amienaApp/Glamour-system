@@ -1,5 +1,71 @@
+<?php
+require_once __DIR__ . '/../../config/mongodb.php';
+require_once __DIR__ . '/../../models/Product.php';
 
+$productModel = new Product();
 
+// Get query parameters for filtering
+$gender = $_GET['gender'] ?? null;
+$brand = $_GET['brand'] ?? null;
+$size = $_GET['size'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
+$sort = $_GET['sort'] ?? 'newest';
+$limit = intval($_GET['limit'] ?? 24);
+$skip = intval($_GET['skip'] ?? 0);
+
+// Build filters
+$filters = [];
+if ($gender) $filters['gender'] = $gender;
+if ($brand) $filters['brand'] = $brand;
+if ($size) $filters['size'] = $size;
+if ($minPrice !== null && $maxPrice !== null) {
+    $filters['price'] = [
+        '$gte' => floatval($minPrice),
+        '$lte' => floatval($maxPrice)
+    ];
+}
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['createdAt' => 1]; // Ascending order - newest at the end
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, 'createdAt' => -1];
+        break;
+    default: // featured
+        $sortOptions = ['featured' => -1, 'createdAt' => -1];
+        break;
+}
+
+// Add category filter for perfumes
+$filters['category'] = 'Perfumes';
+
+// Get perfumes from database
+$perfumes = $productModel->getAll($filters, $sortOptions, $limit, $skip);
+$total = $productModel->getCount($filters);
+
+// Get available brands and sizes for sidebar (from all perfumes, not just filtered)
+$allPerfumes = $productModel->getAll(['category' => 'Perfumes']);
+$brands = [];
+$sizes = [];
+foreach ($allPerfumes as $perfume) {
+    if (isset($perfume['brand']) && !in_array($perfume['brand'], $brands)) {
+        $brands[] = $perfume['brand'];
+    }
+    if (isset($perfume['size']) && !in_array($perfume['size'], $sizes)) {
+        $sizes[] = $perfume['size'];
+    }
+}
+?>
 
 <!-- Main Content Section -->
 <main class="main-content">
@@ -8,351 +74,177 @@
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
             </div>
             <div class="view-control">
                 <span>View:</span>
-                <a href="#" class="view-option active">60</a>
+                <a href="#" class="view-option <?php echo $limit === 24 ? 'active' : ''; ?>" onclick="updateLimit(24)">24</a>
                 <span>|</span>
-                <a href="#" class="view-option">120</a>
+                <a href="#" class="view-option <?php echo $limit === 60 ? 'active' : ''; ?>" onclick="updateLimit(60)">60</a>
+                <span>|</span>
+                <a href="#" class="view-option <?php echo $limit === 120 ? 'active' : ''; ?>" onclick="updateLimit(120)">120</a>
             </div>
         </div>
     </div>
 
-    <div class="product-grid">
-        <!-- Product 1 - dior Perfume -->
-        
-        <!-- <div class="product-card" data-product-id="1" data-gender="men" data-brand="dior" data-size="100ml" data-price="150">
+    <div class="product-grid" id="perfumes-grid">
+        <?php if (!empty($perfumes)): ?>
+            <?php foreach ($perfumes as $index => $perfume): ?>
+                <div class="product-card" 
+                     data-product-id="<?php echo $perfume['_id']; ?>" 
+                     data-gender="<?php echo htmlspecialchars($perfume['gender'] ?? ''); ?>" 
+                     data-brand="<?php echo htmlspecialchars($perfume['brand'] ?? ''); ?>" 
+                     data-size="<?php echo htmlspecialchars($perfume['size'] ?? ''); ?>" 
+                     data-price="<?php echo $perfume['price']; ?>">
             <div class="product-image">
                 <div class="image-slider">
-                    <img src="../img/perfumes/15.jpg" alt="Men's Cologne - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/15.1.jpg" alt="Men's Cologne - Back" data-color="blue">
+                            <?php 
+                            // Main product images
+                            $frontImage = $perfume['front_image'] ?? $perfume['image_front'] ?? '';
+                            $backImage = $perfume['back_image'] ?? $perfume['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            // Check if images exist, if not use placeholder
+                            $frontImagePath = $frontImage ? "../$frontImage" : "../img/placeholder.jpg";
+                            $backImagePath = $backImage ? "../$backImage" : "../img/placeholder.jpg";
+                            
+                            if ($frontImage): ?>
+                                <img src="<?php echo htmlspecialchars($frontImagePath); ?>" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Front" 
+                                     class="active" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>"
+                                     onerror="this.src='../img/placeholder.jpg'">
+                            <?php else: ?>
+                                <img src="../img/placeholder.jpg" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Front" 
+                                     class="active" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>">
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): ?>
+                                <img src="<?php echo htmlspecialchars($backImagePath); ?>" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Back" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>"
+                                     onerror="this.src='../img/placeholder.jpg'">
+                            <?php else: ?>
+                                <img src="../img/placeholder.jpg" 
+                                     alt="<?php echo htmlspecialchars($perfume['name']); ?> - Back" 
+                                     data-color="<?php echo htmlspecialchars($perfume['color']); ?>">
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($perfume['color_variants'])):
+                                foreach ($perfume['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): ?>
+                                        <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                             alt="<?php echo htmlspecialchars($perfume['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                             onerror="this.src='../img/placeholder.jpg'">
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): ?>
+                                        <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                             alt="<?php echo htmlspecialchars($perfume['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                             data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                             onerror="this.src='../img/placeholder.jpg'">
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                 </div>
                 <button class="heart-button">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
-                    <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                            <button class="quick-view" data-product-id="<?php echo $perfume['_id']; ?>" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Quick View</button>
+                            <?php if (($perfume['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Add To Bag</button>
+                            <?php endif; ?>
                 </div>
             </div>
             <div class="product-info">
                 <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                    <span class="color-circle" style="background-color: #0e50f6ff;" title="Blue" data-color="blue"></span>
+                            <?php 
+                            // Main product color
+                            if (!empty($perfume['color'])): ?>
+                                <span class="color-circle <?php echo $index === 0 ? 'active' : ''; ?>" 
+                                      style="background-color: <?php echo htmlspecialchars($perfume['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($perfume['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($perfume['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($perfume['color_variants'])):
+                                foreach ($perfume['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                 </div>
-                <h3 class="product-name">Sauvage dior 100ml</h3>
-                <div class="product-price">$150</div>
-            </div>
-        </div> -->
-
-         <!-- Product 1 - dior men Perfume -->
-        <div class="product-card" data-product-id="1" data-gender="men" data-brand="valentino" data-size="100ml" data-price="150">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/15.jpg" alt="Men's Cologne - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/15.0.jpg" alt="Men's Cologne - Back" data-color="black">
-                    <img src="../img/perfumes/15.1.jpg" alt="Men's Cologne - Front" data-color="blue">
-                    <img src="../img/perfumes/15.1.0.jpg" alt="Men's Cologne - Back" data-color="blue">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                     <span class="color-circle " style="background-color: #0e50f6ff;" title="blue" data-color="blue"></span>
-                </div>
-                <h3 class="product-name">Sauvage dior 100ml</h3>
-                <div class="product-price">$150</div>
-            </div>
-        </div>
-        
-        <!-- Product 1 - men's Perfume -->
-        <div class="product-card" data-product-id="2" data-gender="men" data-brand="other" data-size="100ml" data-price="220">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/23.jpg" alt="en's Perfume - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/23.1.jpg" alt="en's Perfume - Back"  data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="2">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                        <h3 class="product-name"><?php echo htmlspecialchars($perfume['name']); ?></h3>
+                        <div class="product-brand"><?php echo htmlspecialchars($perfume['brand'] ?? ''); ?></div>
+                        <div class="product-size"><?php echo htmlspecialchars($perfume['size'] ?? ''); ?></div>
+                        <div class="product-price">$<?php echo number_format($perfume['price'], 0); ?></div>
+                        <?php if (($perfume['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($perfume['stock'] ?? 0) <= 5 && ($perfume['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $perfume['stock']; ?> left</div>
+                        <?php endif; ?>
                 </div>
             </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #fd0f36ff;" title="red" data-color="red"></span>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No perfumes available at the moment.</p>
+                <button onclick="initializePerfumes()" class="btn btn-primary">Initialize Sample Perfumes</button>
                 </div>
-                <h3 class="product-name">strong with you Perfume 100ml</h3>
-                <div class="product-price">$220</div>
-            </div>
-        </div>
-
-        
-
-        <!-- Product 3 - Lattafa Perfume -->
-        <div class="product-card" data-product-id="3" data-gender="men" data-brand="lattafa" data-size="100ml" data-price="125">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/20.jpg" alt="Lattafa Oud - Front" class="active" data-color="brown">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="3">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #8b4513;" title="Brown" data-color="brown"></span>
-                </div>
-                <h3 class="product-name">Khamrah 100ml</h3>
-                <div class="product-price">$125</div>
-            </div>
-        </div>
-
-        <!-- Product 4 - dior Perfume -->
-        <div class="product-card" data-product-id="4" data-gender="women" data-brand="dior" data-size="100ml" data-price="105">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/14.avif" alt="mss dior - Front" class="active" data-color="pink">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="4">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #eb9abcff;" title="pink" data-color="pink"></span>
-                </div>
-                <h3 class="product-name">Mss dior Eau De Parfum 100ml </h3>
-                <div class="product-price">$105</div>
-            </div>
-        </div>
-
-        <!-- Product 5 - Valentino Perfume -->
-        <div class="product-card" data-product-id="5" data-gender="men" data-brand="valentino" data-size="30ml" data-price="95">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/7.webp" alt="Valentino Donna - Front" class="active" data-color="pink">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="5">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ffc0cb;" title="Pink" data-color="pink"></span>
-                </div>
-                <h3 class="product-name">Valentino Donna Born in Roma 30ml</h3>
-                <div class="product-price">$95</div>
-            </div>
+        <?php endif; ?>
         </div>
 
-        <!-- Product 6 - Gucci Perfume -->
-        <div class="product-card" data-product-id="6" data-gender="men" data-brand="gucci" data-size="100ml" data-price="180">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/22.jpg" alt="Gucci Bloom - Front" class="active" data-color="black">
+    <!-- Pagination -->
+    <?php if ($total > $limit): ?>
+        <div class="pagination">
+            <?php 
+            $totalPages = ceil($total / $limit);
+            $currentPage = floor($skip / $limit) + 1;
+            
+            for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="#" class="page-link <?php echo $i === $currentPage ? 'active' : ''; ?>" 
+                   onclick="goToPage(<?php echo $i; ?>)"><?php echo $i; ?></a>
+            <?php endfor; ?>
                 </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="6">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #050505ff;" title="black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Gucci Bloom Eau de Parfum 100ml</h3>
-                <div class="product-price">$180</div>
-            </div>
-        </div>
-
-        <!-- Product 7 - women  Perfume -->
-        <div class="product-card" data-product-id="7" data-gender="women" data-brand="other" data-size="50ml" data-price="140">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/16.png" alt=" Front" class="active" data-color="pink">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="7">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #f7a7c2ff;" title="pink" data-color="pink"></span>
-                </div>
-                <h3 class="product-name">Prada milano 50ml</h3>
-                <div class="product-price">$140</div>
-            </div>
-        </div>
-
-        <!-- Product 8 - valentino men Perfume -->
-        <div class="product-card" data-product-id="8" data-gender="men" data-brand="valentino" data-size="100ml" data-price="200">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/10.webp" alt="Men's Cologne - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/10.0.webp" alt="Men's Cologne - Back" data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="8">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">valentino 100ml</h3>
-                <div class="product-price">$200</div>
-            </div>
-        </div>
-
-
-        
-        <!-- Product 9 - valentino Perfume -->
-        <div class="product-card" data-product-id="9" data-gender="women" data-brand="valentino" data-size="50ml" data-price="120">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/4.webp" alt="Dior J'adore - Front" class="active" data-color="pink">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="9">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ffc0cb;" title="pink" data-color="pink"></span>
-                </div>
-                <h3 class="product-name">Born In Roma Extradose Eau De Parfum 30Ml</h3>
-                <div class="product-price">$120</div>
-            </div>
-        </div>
-
-        <!-- Product 10 -  women Luxury Perfume -->
-        <div class="product-card" data-product-id="10" data-gender="women" data-brand="chanel" data-size="50ml" data-price="200">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/12.webp" alt="Men's Luxury Perfume - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/12.0.webp" alt="Men's Luxury Perfume - Back" data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="10">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ff0000ff;" title="red" data-color="red"></span>
-                </div>
-                <h3 class="product-name">Chanel Coco Mademoiselle</h3>
-                <div class="product-price">$200</div>
-            </div>
-        </div>
-
-        <!-- Product 11 - Men's Luxury Perfume -->
-        <div class="product-card" data-product-id="11" data-gender="men" data-brand="gucci" data-size="100ml" data-price="160">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/13.webp" alt="Men's Luxury Perfume - Front" class="active" data-color="black">
-                    <img src="../img/perfumes/13.0.webp" alt="Men's Luxury Perfume - Back" data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="11">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Gucci Guilty Pour Homme</h3>
-                <div class="product-price">$160</div>
-            </div>
-        </div>
-
-        <!-- Product 12 - women Perfume -->
-        <div class="product-card" data-product-id="12" data-gender="women" data-brand="other" data-size="100ml" data-price="250">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/perfumes/24.jpg" alt="Men's Luxury Perfume - Front" class="active" data-color="blue">
-                    <img src="../img/perfumes/17.jpg" alt="Men's Luxury Perfume - Back" data-color="navy">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="12">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #474eb9ff;" title="blue" data-color="blue"></span>
-                     <span class="color-circle " style="background-color: #1a2145ff;" title="navy" data-color="navy"></span>
-                </div>
-                <h3 class="product-name">Good girl perfume 100ml</h3>
-                <div class="product-price">$250</div>
-            </div>
-        </div>
-
-      
-
-   
-    </div>
-
+    <?php endif; ?>
 </main>
 
 <!-- Quick View Sidebar -->
 <div class="quick-view-sidebar" id="quick-view-sidebar">
     <div class="quick-view-header">
-        <button class="close-quick-view" id="close-quick-view">
+        <button class="close-quick-view" id="close-quick-view" onclick="closeQuickViewTest()">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -372,6 +264,7 @@
         <div class="quick-view-details">
             <h2 id="quick-view-title"></h2>
             <div class="quick-view-brand" id="quick-view-brand"></div>
+            <div class="quick-view-size" id="quick-view-size"></div>
             <div class="quick-view-price" id="quick-view-price"></div>
             <div class="quick-view-reviews">
                 <span class="stars">★★★★★</span>
@@ -408,7 +301,7 @@
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p>A beautiful dress perfect for any occasion. Features a flattering fit and comfortable fabric.</p>
+                <p id="quick-view-description">A beautiful fragrance perfect for any occasion.</p>
             </div>
         </div>
     </div>
@@ -416,3 +309,374 @@
 
 <!-- Quick View Overlay -->
 <div class="quick-view-overlay" id="quick-view-overlay"></div> 
+
+<script>
+// Store current filters and pagination state
+let pageFilters = {
+    gender: '<?php echo $gender; ?>',
+    brand: '<?php echo $brand; ?>',
+    size: '<?php echo $size; ?>',
+    minPrice: '<?php echo $minPrice; ?>',
+    maxPrice: '<?php echo $maxPrice; ?>',
+    sort: '<?php echo $sort; ?>',
+    limit: <?php echo $limit; ?>,
+    skip: <?php echo $skip; ?>
+};
+
+// Function to update sort
+function updateSort(sort) {
+    pageFilters.sort = sort;
+    pageFilters.skip = 0; // Reset to first page
+    loadPerfumes();
+}
+
+// Function to update limit
+function updateLimit(limit) {
+    pageFilters.limit = limit;
+    pageFilters.skip = 0; // Reset to first page
+    loadPerfumes();
+}
+
+// Function to go to specific page
+function goToPage(page) {
+    pageFilters.skip = (page - 1) * pageFilters.limit;
+    loadPerfumes();
+}
+
+// Function to load perfumes with current filters
+function loadPerfumes() {
+    const params = new URLSearchParams();
+    
+    if (pageFilters.gender) params.append('gender', pageFilters.gender);
+    if (pageFilters.brand) params.append('brand', pageFilters.brand);
+    if (pageFilters.size) params.append('size', pageFilters.size);
+    if (pageFilters.minPrice) params.append('min_price', pageFilters.minPrice);
+    if (pageFilters.maxPrice) params.append('max_price', pageFilters.maxPrice);
+    if (pageFilters.sort) params.append('sort', pageFilters.sort);
+    if (pageFilters.limit) params.append('limit', pageFilters.limit);
+    if (pageFilters.skip) params.append('skip', pageFilters.skip);
+    
+    // Update URL without reloading
+    const newUrl = window.location.pathname + '?' + params.toString();
+    window.history.pushState({}, '', newUrl);
+    
+    // Reload the page to show filtered results
+    window.location.reload();
+}
+
+// Function to add to cart from quick view
+function addToCartFromQuickView(productId, productName) {
+    console.log('Adding to cart from quick view:', productName);
+    
+    fetch('../cart-api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showQuickViewNotification('Product added to cart successfully!', 'success');
+            
+            // Update cart count if available
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = data.cart_count;
+                if (data.cart_count > 0) {
+                    cartCountElement.style.display = 'flex';
+                }
+            }
+        } else {
+            showQuickViewNotification('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showQuickViewNotification('Error adding product to cart', 'error');
+    });
+}
+
+// Function to add to cart (legacy - now handled by script.js)
+function addToCart(productId) {
+    // This function is kept for compatibility but the actual functionality is in script.js
+    console.log('Legacy addToCart called for product ID:', productId);
+}
+
+// Function to show notifications in quick view
+function showQuickViewNotification(message, type = 'info') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.quick-view-notification');
+    existingNotifications.forEach(notification => {
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
+    });
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = 'quick-view-notification';
+    
+    // Set colors based on type
+    let backgroundColor, icon;
+    switch (type) {
+        case 'success':
+            backgroundColor = '#28a745';
+            icon = '✓';
+            break;
+        case 'error':
+            backgroundColor = '#dc3545';
+            icon = '✗';
+            break;
+        case 'info':
+        default:
+            backgroundColor = '#17a2b8';
+            icon = 'ℹ';
+            break;
+    }
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${backgroundColor};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10001;
+        font-weight: 500;
+        font-size: 14px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    
+    notification.textContent = `${icon} ${message}`;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Function to initialize sample perfumes
+function initializePerfumes() {
+    fetch('../perfumes-api.php?action=initialize_perfumes')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Use modern notification if available, otherwise fallback to alert
+            if (typeof showNotification === 'function') {
+                showNotification(data.message, 'success');
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                alert(data.message);
+                window.location.reload();
+            }
+        } else {
+            if (typeof showNotification === 'function') {
+                showNotification('Error: ' + data.message, 'error');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (typeof showNotification === 'function') {
+            showNotification('Error initializing perfumes', 'error');
+        } else {
+            alert('Error initializing perfumes');
+        }
+    });
+}
+
+// Quick view function
+function testQuickView(productId) {
+    console.log('Quick view opened for product:', productId);
+    
+    // Find the product card with this ID
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!productCard) {
+        console.log('No product card found for ID:', productId);
+        return;
+    }
+    
+    // Extract product data from the DOM
+    const product = {
+        name: productCard.querySelector('.product-name').textContent,
+        price: productCard.querySelector('.product-price').textContent,
+        brand: productCard.querySelector('.product-brand').textContent,
+        size: productCard.querySelector('.product-size').textContent,
+        images: []
+    };
+    
+    // Get images from the product card
+    const images = productCard.querySelectorAll('.image-slider img');
+    images.forEach(img => {
+        product.images.push({
+            src: img.src,
+            color: img.getAttribute('data-color') || 'default'
+        });
+    });
+    
+    // Get colors from the product card
+    const colorCircles = productCard.querySelectorAll('.color-circle');
+    product.colors = [];
+    colorCircles.forEach((circle, index) => {
+        product.colors.push({
+            name: circle.title || circle.getAttribute('data-color'),
+            value: circle.getAttribute('data-color'),
+            hex: circle.style.backgroundColor || '#000'
+        });
+    });
+    
+    // Get sizes (for perfumes, usually just one size)
+    product.sizes = [product.size || '100ml'];
+    
+    console.log('Extracted product data:', product);
+
+    // Populate quick view with product data
+    document.getElementById('quick-view-title').textContent = product.name;
+    document.getElementById('quick-view-price').textContent = product.price;
+    document.getElementById('quick-view-brand').textContent = product.brand;
+    document.getElementById('quick-view-size').textContent = product.size;
+    
+    // Set main image
+    const mainImage = document.getElementById('quick-view-main-image');
+    if (product.images.length > 0) {
+        mainImage.src = product.images[0].src;
+        mainImage.alt = product.name;
+    }
+
+    // Populate thumbnails
+    const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+    thumbnailsContainer.innerHTML = '';
+    
+    product.images.forEach((image, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+        thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
+        
+        thumbnail.addEventListener('click', () => {
+            mainImage.src = image.src;
+            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+            thumbnail.classList.add('active');
+        });
+        
+        thumbnailsContainer.appendChild(thumbnail);
+    });
+
+    // Populate colors
+    const colorSelection = document.getElementById('quick-view-color-selection');
+    colorSelection.innerHTML = '';
+    
+    product.colors.forEach((color, index) => {
+        const colorCircle = document.createElement('div');
+        colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
+        colorCircle.style.backgroundColor = color.hex;
+        colorCircle.setAttribute('data-color', color.value);
+        colorCircle.title = color.name;
+        
+        colorCircle.addEventListener('click', () => {
+            colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
+            colorCircle.classList.add('active');
+        });
+        
+        colorSelection.appendChild(colorCircle);
+    });
+
+    // Populate sizes
+    const sizeSelection = document.getElementById('quick-view-size-selection');
+    sizeSelection.innerHTML = '';
+    
+    product.sizes.forEach(size => {
+        const sizeBtn = document.createElement('button');
+        sizeBtn.className = 'quick-view-size-btn';
+        sizeBtn.textContent = size;
+        
+        sizeBtn.addEventListener('click', () => {
+            sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
+            sizeBtn.classList.add('active');
+        });
+        
+        sizeSelection.appendChild(sizeBtn);
+    });
+    
+    // Set up Add to Bag button functionality
+    const addToBagBtn = document.getElementById('add-to-bag-quick');
+    if (addToBagBtn) {
+        addToBagBtn.onclick = function() {
+            addToCartFromQuickView(productId, product.name);
+        };
+    }
+    
+    // Show the sidebar
+    const sidebar = document.getElementById('quick-view-sidebar');
+    const overlay = document.getElementById('quick-view-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.add('active');
+    }
+    
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
+
+// Close quick view function
+function closeQuickViewTest() {
+    const sidebar = document.getElementById('quick-view-sidebar');
+    const overlay = document.getElementById('quick-view-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.remove('active');
+    }
+    
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+}
+
+// Load cart count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('../cart-api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=get_cart_count'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = data.cart_count;
+                if (data.cart_count > 0) {
+                    cartCountElement.style.display = 'flex';
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error loading cart count:', error);
+    });
+});
+</script> 

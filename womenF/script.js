@@ -51,9 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update quick view content
         const titleEl = document.getElementById('quick-view-title');
         const priceEl = document.getElementById('quick-view-price');
+        const addToBagBtn = document.getElementById('add-to-bag-quick');
         
         if (titleEl) titleEl.textContent = name;
         if (priceEl) priceEl.textContent = price;
+        if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
         
         // Handle images
         const mainImage = document.getElementById('quick-view-main-image');
@@ -479,28 +481,127 @@ document.addEventListener('DOMContentLoaded', function() {
                 addToCart(productId, productName);
             }
         }
+        
+        // Quick view add to bag functionality
+        if (e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
+            e.preventDefault();
+            const button = e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick');
+            
+            if (button.disabled) return;
+            
+            const productId = button.getAttribute('data-product-id');
+            const productName = document.getElementById('quick-view-title')?.textContent || 'Product';
+            
+            if (productId) {
+                addToCart(productId, productName);
+            }
+        }
     });
     
     function addToCart(productId, productName) {
         console.log('Adding to cart:', productId, productName);
         
+        // Show loading state
+        const button = document.querySelector(`[data-product-id="${productId}"] .add-to-bag`);
+        let originalText = '';
+        if (button) {
+            originalText = button.textContent;
+            button.textContent = 'Adding...';
+            button.disabled = true;
+        }
+        
+        // Show immediate feedback notification
+        showNotification(`Adding ${productName} to cart...`, 'info');
+        
+        // Make API call to add to cart
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Cart API response:', data);
+            
+            if (data.success) {
+                // Update cart count in header
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount(data.cart_count);
+                }
+                
+                // Show success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            if (button && originalText) {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    }
+    
+    // Improved notification function
+    function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.cart-notification');
+        existingNotifications.forEach(notification => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        });
+        
         // Create notification
         const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        
+        // Set colors based on type
+        let backgroundColor, icon;
+        switch (type) {
+            case 'success':
+                backgroundColor = '#28a745';
+                icon = '✓';
+                break;
+            case 'error':
+                backgroundColor = '#dc3545';
+                icon = '✗';
+                break;
+            case 'info':
+            default:
+                backgroundColor = '#17a2b8';
+                icon = 'ℹ';
+                break;
+        }
+        
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #28a745;
+            background: ${backgroundColor};
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 10000;
             font-weight: 500;
+            font-size: 14px;
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
         `;
-        notification.textContent = `✓ ${productName} added to cart!`;
+        
+        notification.textContent = `${icon} ${message}`;
         
         document.body.appendChild(notification);
         

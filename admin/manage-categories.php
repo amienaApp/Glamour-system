@@ -1,4 +1,4 @@
-<?php
+the add <?php
 session_start();
 
 // Check if admin is logged in
@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Category.php';
 
 $categoryModel = new Category();
@@ -119,6 +119,7 @@ $categories = $categoryModel->getAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Categories - Glamour Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="includes/admin-sidebar.css">
     <style>
         * { 
             margin: 0; 
@@ -132,151 +133,6 @@ $categories = $categoryModel->getAll();
             min-height: 100vh; 
             color: #3E2723; 
             display: flex;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px 0;
-            box-shadow: 5px 0 25px rgba(62, 39, 35, 0.1);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid rgba(62, 39, 35, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #3E2723;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-logo i {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
-
-        .sidebar-nav {
-            padding: 0 20px;
-        }
-
-        .nav-section {
-            margin-bottom: 30px;
-        }
-
-        .nav-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #3E2723;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: #3E2723;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-item:hover {
-            background: rgba(41, 182, 246, 0.1);
-            color: #29B6F6;
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.3);
-        }
-
-        .sidebar-actions {
-            padding: 20px;
-            border-top: 1px solid rgba(62, 39, 35, 0.1);
-            margin-top: auto;
-        }
-
-        .sidebar-action-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.3);
-        }
-
-        .sidebar-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(41, 182, 246, 0.4);
-            text-decoration: none;
-            color: white;
-        }
-
-        .sidebar-action-btn.secondary {
-            background: linear-gradient(135deg, #3E2723, #5D4037);
-        }
-
-        .sidebar-action-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.3);
-        }
-
-        .sidebar-action-btn.success {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-        }
-
-        .sidebar-action-btn.success:hover {
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
-
-        .logout-btn {
-            display: block;
-            width: 100%;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
-            text-decoration: none;
-            color: white;
         }
 
         /* Main Content */
@@ -938,10 +794,6 @@ $categories = $categoryModel->getAll();
             margin: 10px 0;
         }
 
-        .mobile-menu-btn {
-            display: none;
-        }
-
         /* Professional Responsive Design */
         @media (max-width: 1200px) {
             .container {
@@ -959,35 +811,10 @@ $categories = $categoryModel->getAll();
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                width: 280px;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
             .main-content {
                 margin-left: 0;
                 width: 100%;
                 padding: 10px;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-                position: fixed;
-                top: 15px;
-                left: 15px;
-                z-index: 1001;
-                background: rgba(255, 255, 255, 0.95);
-                border: none;
-                padding: 10px;
-                border-radius: 8px;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(62, 39, 35, 0.15);
-                font-size: 16px;
             }
             
             .header {
@@ -1340,11 +1167,6 @@ $categories = $categoryModel->getAll();
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <?php include 'includes/admin-sidebar.php'; ?>
 
     <!-- Main Content -->
@@ -1600,11 +1422,8 @@ $categories = $categoryModel->getAll();
         </div>
     </div>
 
+    <script src="includes/admin-sidebar.js"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
 
         // Add event listeners when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -1616,7 +1435,7 @@ $categories = $categoryModel->getAll();
                     const categoryDescription = this.getAttribute('data-description');
                     const subcategoriesJson = this.getAttribute('data-subcategories');
                     
-                    console.log('Edit button clicked for:', categoryId, categoryName);
+            
                     editCategory(categoryId, categoryName, categoryDescription, subcategoriesJson);
                 });
             });
@@ -1627,7 +1446,7 @@ $categories = $categoryModel->getAll();
                     const categoryId = this.getAttribute('data-id');
                     const categoryName = this.getAttribute('data-name');
                     
-                    console.log('Delete button clicked for:', categoryId, categoryName);
+            
                     showDeleteCategoryModal(categoryId, categoryName);
                 });
             });
@@ -1639,7 +1458,7 @@ $categories = $categoryModel->getAll();
         let currentSubcategories = [];
 
         function editCategory(categoryId, categoryName, categoryDescription, subcategoriesJson) {
-            console.log('editCategory called with:', { categoryId, categoryName, categoryDescription, subcategoriesJson });
+    
             
             currentCategoryData = {
                 id: categoryId,
@@ -1666,8 +1485,7 @@ $categories = $categoryModel->getAll();
             
             // Populate subcategories dropdown
             const subcategorySelect = document.getElementById('edit_subcategory_select');
-            console.log('Subcategory select element:', subcategorySelect);
-            console.log('Current subcategories:', currentSubcategories);
+
             
             if (subcategorySelect) {
                 subcategorySelect.innerHTML = '<option value="">Select subcategory to edit</option>';
@@ -1678,21 +1496,15 @@ $categories = $categoryModel->getAll();
                         option.value = index;
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
-                        console.log('Added subcategory option:', subcategory);
-                    });
-                } else {
-                    console.log('No subcategories to add');
-                }
+
             } else {
                 console.error('Subcategory select element not found!');
             }
             
             // Show modal
             const modal = document.getElementById('editModal');
-            console.log('Modal element:', modal);
             if (modal) {
                 modal.style.display = 'block';
-                console.log('Modal should be visible');
             } else {
                 console.error('Modal element not found!');
             }
@@ -1844,13 +1656,12 @@ $categories = $categoryModel->getAll();
             const subcategoryIndex = parseInt(modal.getAttribute('data-index'));
             const select = document.getElementById('edit_subcategory_select');
             
-            console.log('Removing subcategory at index:', subcategoryIndex);
-            console.log('Current subcategories before removal:', currentSubcategories);
+
             
             // Remove from array immediately
             currentSubcategories.splice(subcategoryIndex, 1);
             
-            console.log('Current subcategories after removal:', currentSubcategories);
+
             
             // Update dropdown immediately
             select.innerHTML = '<option value="">Select subcategory to edit</option>';
@@ -1873,7 +1684,7 @@ $categories = $categoryModel->getAll();
             // Ensure buttons remain clickable
             setTimeout(ensureButtonClickability, 100);
             
-            console.log('Subcategory removal completed');
+
         }
 
         function saveSubcategory() {
@@ -1895,16 +1706,16 @@ $categories = $categoryModel->getAll();
         }
 
         function addNewSubcategory() {
-            console.log('addNewSubcategory function called');
+    
             
             // Ensure currentSubcategories is initialized
             if (!currentSubcategories) {
                 currentSubcategories = [];
-                console.log('Initialized currentSubcategories array');
+    
             }
             
             const input = document.getElementById('new_subcategory_input');
-            console.log('Input element:', input);
+
             
             if (!input) {
                 showMessage('Input field not found!', 'error');
@@ -1912,23 +1723,23 @@ $categories = $categoryModel->getAll();
             }
             
             const newName = input.value.trim();
-            console.log('New subcategory name:', newName);
+
             
             if (newName) {
                 // Add to current subcategories array
                 currentSubcategories.push(newName);
-                console.log('Updated currentSubcategories:', currentSubcategories);
+    
                 
                 // Update dropdown
                 const select = document.getElementById('edit_subcategory_select');
-                console.log('Select element:', select);
+    
                 
                 if (select) {
                     const option = document.createElement('option');
                     option.value = currentSubcategories.length - 1;
                     option.textContent = newName;
                     select.appendChild(option);
-                    console.log('Added option to dropdown:', option);
+        
                     
                     // Clear input
                     input.value = '';

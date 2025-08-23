@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Include required files
-    require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../config/mongodb.php';
     require_once __DIR__ . '/../models/User.php';
 
     // Get POST data
@@ -38,6 +38,9 @@ try {
 
     // Attempt login
     $user = $userModel->login($input['username'], $input['password']);
+
+    // Update last login time
+    $userModel->updateLastLogin($user['_id']);
 
     // Start session and store user data
     session_start();

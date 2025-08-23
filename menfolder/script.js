@@ -38,11 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const imageSlider = card.querySelector('.image-slider');
         const images = imageSlider ? imageSlider.querySelectorAll('img') : [];
         const colorCircles = card.querySelectorAll('.color-circle');
-        let currentColor = 'black'; // Default color
+        
+        // Get the initial color from the active color circle
+        const activeColorCircle = card.querySelector('.color-circle.active');
+        let currentColor = activeColorCircle ? activeColorCircle.getAttribute('data-color') : 'black';
         let autoSlideInterval;
         let currentImageIndex = 0; // Track current image index for each color
         
         console.log(`Product ${index + 1}: Found ${images.length} images and ${colorCircles.length} color circles`);
+        console.log(`Product ${index + 1}: Initial color is ${currentColor}`);
         
         // Only initialize if we have images
         if (images.length > 0) {
@@ -233,17 +237,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Product data for quick view
     const productData = {
         1: {
-            name: "Popcorn Fabric Shirt",
-            price: "$15",
+            name: "shirt",
+            price: "$12",
             images: [
-                { src: "../img/men/shirts/9.1.png", color: "lightblue" },
-                { src: "../img/men/shirts/9.1.1.png", color: "lightblue" },
+                { src: "../img/men/shirts/9.1.png", color: "bluelight" },
+                { src: "../img/men/shirts/9.1.1.png", color: "bluelight" },
                 { src: "../img/men/shirts/9.png", color: "brown" },
                 { src: "../img/men/shirts/9.0.png", color: "brown" }
             ],
             colors: [
-                { name: "lightblue", value: "lightblue", hex: "#add8e6" },
-                { name: "brown", value: "brown", hex: "#634145ff" }
+                { name: "Bluelight", value: "bluelight", hex: "#96e0f3ff" },
+                { name: "brown", value: "brown", hex: "#5f3727ff" }
             ],
             sizes: ["XS", "S", "M", "L", "XL","XXL"],
             soldOutSizes: ["XS"]
@@ -283,13 +287,13 @@ document.addEventListener('DOMContentLoaded', function() {
             soldOutSizes: ["L"]
         },
         4: {
-            name: "Formal shirts",
+            name: "formal shirt",
             price: "$18",
             images: [
                 { src: "../img/men/shirts/14.jpg", color: "navy" },
                 { src: "../img/men/shirts/14.0.jpg", color: "navy" },
                 { src: "../img/men/shirts/14.1.jpg", color: "lightblue" },
-                { src: "../img/men/shirts/14.1.jpg", color: "lightblue" }
+                { src: "../img/men/shirts/14.0.jpg", color: "lightblue" }
             ],
             colors: [
                 { name: "navy", value: "navy", hex: "#001f3f" },
@@ -364,364 +368,138 @@ document.addEventListener('DOMContentLoaded', function() {
             sizes: ["XS", "S", "M", "L", "XL"],
             soldOutSizes: []
         },
-        9: {
-            name: "Orange Floral Summer Dress",
-            price: "$78",
-            images: [
-                { src: "../img/women/NEW/1.webp", color: "orange" },
-                { src: "../img/women/NEW/1.1.webp", color: "orange" },
-                { src: "../img/women/NEW/1.2.webp", color: "orange" },
-                { src: "../img/women/NEW/1.3.webp", color: "orange" }
-            ],
-            colors: [
-                { name: "Orange", value: "orange", hex: "#e66909ff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: []
-        },
-        10: {
-            name: "Purple Evening Gown",
-            price: "$120",
-            images: [
-                { src: "../img/women/NEW/7.1.webp", color: "purple" },
-                { src: "../img/women/NEW/7.webp", color: "purple" },
-                { src: "../img/women/NEW/7.3.jpg", color: "purple" }
-            ],
-            colors: [
-                { name: "Purple", value: "purple", hex: "#541654ff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: ["XS"]
-        },
-        11: {
-            name: "Maroon Cocktail Dress",
-            price: "$95",
-            images: [
-                { src: "../img/women/NEW/2.1.webp", color: "maroon" },
-                { src: "../img/women/NEW/2.3.webp", color: "maroon" },
-                { src: "../img/women/NEW/2.webp", color: "maroon" }
-            ],
-            colors: [
-                { name: "Maroon", value: "maroon", hex: "#54162bff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: []
-        },
-        12: {
-            name: "Multi-Color Party Dress",
-            price: "$88",
-            images: [
-                { src: "../img/women/NEW/3.webp", color: "apricot" },
-                { src: "../img/women/NEW/3.1.webp", color: "pink" },
-                { src: "../img/women/NEW/3.2.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Apricot", value: "apricot", hex: "#db8e09ff" },
-                { name: "Pink", value: "pink", hex: "#e683a4ff" },
-                { name: "Black", value: "black", hex: "#050505ff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: ["L"]
-        },
-        13: {
-            name: "Grey Casual Dress",
-            price: "$65",
-            images: [
-                { src: "../img/women/NEW/10.1.jpg", color: "grey" },
-                { src: "../img/women/NEW/10.webp", color: "brown" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#d2cfcdeb" },
-                { name: "Brown", value: "brown", hex: "#54162bff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: []
-        },
-        14: {
-            name: "Classic Black Dress",
-            price: "$110",
-            images: [
-                { src: "../img/women/NEW/11.webp", color: "black" },
-                { src: "../img/women/NEW/11.2.jpg", color: "grey" },
-                { src: "../img/women/NEW/11.4.jpg", color: "beige" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000ff" },
-                { name: "Grey", value: "grey", hex: "#cec6c9ff" },
-                { name: "Beige", value: "beige", hex: "#e3c880ff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: ["M"]
-        },
-        15: {
-            name: "Maroon Evening Dress",
-            price: "$135",
-            images: [
-                { src: "../img/women/NEW/8.1.webp", color: "maroon" },
-                { src: "../img/women/NEW/8.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Maroon", value: "maroon", hex: "#54162bff" },
-                { name: "Black", value: "black", hex: "#020202ff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL"],
-            soldOutSizes: ["XL"]
-        },
+        
 
         // Suit Products
         "suit-1": {
             name: "Classic Black Suit",
             price: "$299",
             images: [
-                { src: "../img/men/suits/1.avif", color: "black" },
-                { src: "../img/men/suits/1.1.avif", color: "black" },
-                { src: "../img/men/suits/1.2.avif", color: "black" }
+                { src: "../img/men/suits/1.avif", color: "romanbrown" },
+                { src: "../img/men/suits/1.1.avif", color: "white" },
+                { src: "../img/men/suits/1.2.avif", color: "brown" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Charcoal", value: "charcoal", hex: "#2c2c2c" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Romanbrown", value: "romanbrown", hex: "#794D4C" },
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Brown", value: "brown", hex: "#483131" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["S"]
         },
         "suit-2": {
-            name: "Navy Blue Suit",
-            price: "$349",
+            name: "Grey Business Suit",
+            price: "$259",
             images: [
-                { src: "../img/men/suits/2.avif", color: "navy" },
-                { src: "../img/men/suits/2.1.avif", color: "cyan" }
-                
+                { src: "../img/men/suits/4.avif", color: "black" },
+                { src: "../img/men/suits/4.2.jpg", color: "black" },
+                { src: "../img/men/suits/4.1.jpg", color: "white" },
+                { src: "../img/men/suits/4.4.jpg", color: "navy" }
             ],
             colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" }
-                
+                { name: "Black", value: "black", hex: "#000000ff" },
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Navy", value: "navy", hex: "#202c3fff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
         "suit-3": {
-            name: "Charcoal Suit",
-            price: "$279",
-            images: [
-                { src: "../img/men/suits/3.avif", color: "charcoal" },
-                { src: "../img/men/suits/3.1.avif", color: "charcoal" },
-                { src: "../img/men/suits/3.2.avif", color: "charcoal" }
-            ],
-            colors: [
-                { name: "Charcoal", value: "charcoal", hex: "#2c2c2c" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["XL"]
-        },
-        "suit-4": {
-            name: "Grey Business Suit",
-            price: "$259",
-            images: [
-                { src: "../img/men/suits/4.avif", color: "grey" },
-                { src: "../img/men/suits/4.1.avif", color: "grey" },
-                { src: "../img/men/suits/4.2.avif", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "suit-5": {
-            name: "Brown Formal Suit",
-            price: "$329",
-            images: [
-                { src: "../img/men/suits/5.avif", color: "brown" },
-                { src: "../img/men/suits/5.1.avif", color: "brown" },
-                { src: "../img/men/suits/5.2.avif", color: "brown" }
-            ],
-            colors: [
-                { name: "Brown", value: "brown", hex: "#8B4513" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["M"]
-        },
-        "suit-6": {
-            name: "Blue Business Suit",
-            price: "$379",
-            images: [
-                { src: "../img/men/suits/6.jpg", color: "blue" },
-                { src: "../img/men/suits/6.1.jpg", color: "blue" },
-                { src: "../img/men/suits/6.4.jpg", color: "blue" }
-            ],
-            colors: [
-                { name: "Blue", value: "blue", hex: "#0066cc" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "suit-7": {
             name: "Dark Formal Suit",
             price: "$299",
             images: [
-                { src: "../img/men/suits/7.jpg", color: "dark" },
-                { src: "../img/men/suits/7.1.jpg", color: "dark" },
-                { src: "../img/men/suits/7.2.jpg", color: "dark" }
+                { src: "../img/men/suits/7.jpg", color: "black" },
+                { src: "../img/men/suits/7.1.jpg", color: "white" },
+                { src: "../img/men/suits/7.2.jpg", color: "silver" }
             ],
             colors: [
-                { name: "Dark", value: "dark", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Charcoal", value: "charcoal", hex: "#2c2c2c" }
+                { name: "Black", value: "black", hex: "#000000ff" },
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Silver", value: "silver", hex: "#c0c0c0" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["L"]
         },
-        "suit-8": {
-            name: "Elegant Black Suit",
+        "suit-4": {
+            name: "Elegant Suit",
             price: "$399",
             images: [
                 { src: "../img/men/suits/5.6.jpg", color: "black" },
-                { src: "../img/men/suits/5.7.jpg", color: "black" }
+                { src: "../img/men/suits/5.7.jpg", color: "grey" }
             ],
             colors: [
                 { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Charcoal", value: "charcoal", hex: "#2c2c2c" }
+                { name: "Grey", value: "grey", hex: "#808080" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
 
         // T-Shirt Products
+        
         "tshirt-1": {
-            name: "Classic White T-Shirt",
-            price: "$25",
-            images: [
-                { src: "../img/men/t-shirts/1.jpg", color: "white" },
-                { src: "../img/men/t-shirts/1.2.jpg", color: "white" },
-                { src: "../img/men/t-shirts/1.3.jpg", color: "white" }
-            ],
-            colors: [
-                { name: "White", value: "white", hex: "#ffffff" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["XS"]
-        },
-        "tshirt-2": {
-            name: "Black T-Shirt",
+            name: "soft T-Shirt",
             price: "$22",
             images: [
-                { src: "../img/men/t-shirts/2.jpg", color: "black" },
-                { src: "../img/men/t-shirts/2.1.jpg", color: "black" },
-                { src: "../img/men/t-shirts/2.2.jpg", color: "black" }
+                { src: "../img/men/t-shirts/2.jpg", color: "purple" },
+                { src: "../img/men/t-shirts/2.4.jpg", color: "maroon" },
+                { src: "../img/men/t-shirts/2.3.jpg", color: "brown" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" },
-                { name: "Grey", value: "grey", hex: "#808080" }
+                { name: "Purple", value: "purple", hex: "#9560eaff" },
+                { name: "Maroon", value: "maroon", hex: "#892e2eff" },
+                { name: "Brown", value: "brown", hex: "#6e503fd4" }
             ],
             sizes: ["XS", "S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
-        "tshirt-3": {
+        "tshirt-2": {
             name: "Grey T-Shirt",
             price: "$20",
             images: [
-                { src: "../img/men/t-shirts/3.jpg", color: "grey" },
-                { src: "../img/men/t-shirts/3.1.jpg", color: "grey" },
-                { src: "../img/men/t-shirts/3.2.jpg", color: "grey" }
+                { src: "../img/men/t-shirts/3.jpg", color: "white" },
+                { src: "../img/men/t-shirts/3.1.jpg", color: "white" },
+                { src: "../img/men/t-shirts/3.2.jpg", color: "militarygreen" }
             ],
             colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Militarygreen", value: "militarygreen", hex: "#4B5320" }
             ],
             sizes: ["XS", "S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["L"]
         },
-        "tshirt-4": {
-            name: "Blue T-Shirt",
+        "tshirt-3": {
+            name: "patchwork detail T-Shirt",
             price: "$28",
             images: [
                 { src: "../img/men/t-shirts/4.jpg", color: "blue" },
                 { src: "../img/men/t-shirts/4.0.jpg", color: "blue" },
-                { src: "../img/men/t-shirts/4.1.jpg", color: "blue" }
+                { src: "../img/men/t-shirts/4.1.jpg", color: "yellow" },
+                { src: "../img/men/t-shirts/4.1.1.jpg", color: "yellow" }
             ],
             colors: [
                 { name: "Blue", value: "blue", hex: "#0066cc" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "Yellow", value: "yellow", hex: "#b8a562ff" }
             ],
             sizes: ["XS", "S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
-        "tshirt-5": {
-            name: "Red T-Shirt",
-            price: "$26",
-            images: [
-                { src: "../img/men/t-shirts/5.jpg", color: "red" },
-                { src: "../img/men/t-shirts/5.0.jpg", color: "red" },
-                { src: "../img/men/t-shirts/5.1.jpg", color: "red" }
-            ],
-            colors: [
-                { name: "Red", value: "red", hex: "#cc0000" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["M"]
-        },
-        "tshirt-6": {
+        "tshirt-4": {
             name: "Graphic T-Shirt",
             price: "$32",
             images: [
-                { src: "../img/men/t-shirts/6.png", color: "black" },
-                { src: "../img/men/t-shirts/6.0.png", color: "black" },
-                { src: "../img/men/t-shirts/6.1.png", color: "black" }
+                { src: "../img/men/t-shirts/6.png", color: "lightblue" },
+                { src: "../img/men/t-shirts/6.0.png", color: "lightblue" },
+                { src: "../img/men/t-shirts/6.1.png", color: "lightgreen" },
+                { src: "../img/men/t-shirts/6.1.1.png", color: "lightgreen" },
+                { src: "../img/men/t-shirts/6.2.png", color: "black" },
+                { src: "../img/men/t-shirts/6.2.1.png", color: "black" },
+               
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "tshirt-7": {
-            name: "Striped T-Shirt",
-            price: "$35",
-            images: [
-                { src: "../img/men/t-shirts/9.avif", color: "navy" },
-                { src: "../img/men/t-shirts/9.1.avif", color: "navy" },
-                { src: "../img/men/t-shirts/9.2.avif", color: "navy" }
-            ],
-            colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "White", value: "white", hex: "#ffffff" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["XL"]
-        },
-        "tshirt-8": {
-            name: "Premium T-Shirt",
-            price: "$40",
-            images: [
-                { src: "../img/men/t-shirts/10.webp", color: "white" },
-                { src: "../img/men/t-shirts/10.0.webp", color: "white" },
-                { src: "../img/men/t-shirts/10.1.webp", color: "white" }
-            ],
-            colors: [
-                { name: "White", value: "white", hex: "#ffffff" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
+                { name: "Lightblue", value: "lightblue", hex: "#6976ead6" },
+                { name: "Lightgreen", value: "lightgreen", hex: "#6cf3e5ff" },
+                { name: "Black", value: "black", hex: "#000000ff" }
             ],
             sizes: ["XS", "S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
@@ -729,387 +507,196 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Hoodie Products
         "hoodie-1": {
-            name: "Classic Grey Hoodie",
+            name: "men's wild Dragon Hoodie",
             price: "$45",
             images: [
-                { src: "../img/men/hoodie$sweatshirt/1.jpg", color: "grey" },
-                { src: "../img/men/hoodie$sweatshirt/2.jpg", color: "grey" },
-                { src: "../img/men/hoodie$sweatshirt/3.1.jpg", color: "grey" }
+                { src: "../img/men/hoodie$sweatshirt/13.2.jpg", color: "white" },
+                { src: "../img/men/hoodie$sweatshirt/13.2.0.jpg", color: "white" },
+                { src: "../img/men/hoodie$sweatshirt/13.jpg", color: "purple" },
+                { src: "../img/men/hoodie$sweatshirt/13.0.jpg", color: "purple" },
+                { src: "../img/men/hoodie$sweatshirt/13.1.jpg", color: "red" },
+                { src: "../img/men/hoodie$sweatshirt/13.1.0.jpg", color: "red" }
             ],
             colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "White", value: "white", hex: "#ffffffff" },
+                { name: "Purple", value: "purple", hex: "#cc3eb4ff" },
+                { name: "Red", value: "red", hex: "#fb3939ff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["S"]
         },
         "hoodie-2": {
-            name: "Black Hoodie",
+            name: "stylish Hoodie",
             price: "$42",
             images: [
-                { src: "../img/men/hoodie$sweatshirt/3.jpg", color: "black" },
-                { src: "../img/men/hoodie$sweatshirt/4.jpg", color: "black" },
-                { src: "../img/men/hoodie$sweatshirt/5.1.jpg", color: "black" }
+                { src: "../img/men/hoodie$sweatshirt/3.jpg", color: "lightgrey" },
+                { src: "../img/men/hoodie$sweatshirt/3.0.jpg", color: "lightgrey" },
+                { src: "../img/men/hoodie$sweatshirt/3.2.jpg", color: "beige" },
+                { src: "../img/men/hoodie$sweatshirt/3.2.0.jpg", color: "beige" },
+                { src: "../img/men/hoodie$sweatshirt/3.1.jpg", color: "black" },
+                { src: "../img/men/hoodie$sweatshirt/3.1.0.jpg", color: "black" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "Lightgrey", value: "lightgrey", hex: "#808080" },
+                { name: "Beige", value: "beige", hex: "#f5f5dc" },
+                { name: "Black", value: "black", hex: "#000000" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
         "hoodie-3": {
-            name: "Navy Blue Hoodie",
+            name: "soft Hoodie",
             price: "$48",
             images: [
-                { src: "../img/men/hoodie$sweatshirt/5.jpg", color: "navy" },
-                { src: "../img/men/hoodie$sweatshirt/6.jpg", color: "navy" },
-                { src: "../img/men/hoodie$sweatshirt/7.1.0.webp", color: "navy" }
+                { src: "../img/men/hoodie$sweatshirt/12.jpeg", color: "cyan" },
+                { src: "../img/men/hoodie$sweatshirt/12.0.jpeg", color: "cyan" },
+                { src: "../img/men/hoodie$sweatshirt/12.1.webp", color: "black" },
+                { src: "../img/men/hoodie$sweatshirt/12.1.1.webp", color: "black" },
+                { src: "../img/men/hoodie$sweatshirt/12.2.webp", color: "white" },
+                { src: "../img/men/hoodie$sweatshirt/12.2.1.webp", color: "white" }
             ],
             colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
+                { name: "Cyan", value: "cyan", hex: "#6ae5f0ff" },
                 { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
+                { name: "White", value: "white", hex: "#ffffffff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["XL"]
         },
         "hoodie-4": {
-            name: "Grey Sweatshirt",
+            name: "elegent Sweatshirt",
             price: "$38",
             images: [
-                { src: "../img/men/hoodie$sweatshirt/7.1.webp", color: "grey" },
-                { src: "../img/men/hoodie$sweatshirt/7.2.0.webp", color: "grey" },
-                { src: "../img/men/hoodie$sweatshirt/7.3", color: "grey" }
+                { src: "../img/men/hoodie$sweatshirt/7.4.webp", color: "beige" },
+                { src: "../img/men/hoodie$sweatshirt/7.4.0.webp", color: "beige" },
+                { src: "../img/men/hoodie$sweatshirt/7.2.webp", color: "maroon" },
+                { src: "../img/men/hoodie$sweatshirt/7.2.0.webp", color: "maroon" },
+                { src: "../img/men/hoodie$sweatshirt/7.5.webp", color: "greyblue" },
+                { src: "../img/men/hoodie$sweatshirt/7.5.0.webp", color: "greyblue" }
             ],
             colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "Beige", value: "beige", hex: "#f5f5dc" },
+                { name: "Maroon", value: "maroon", hex: "#ec424dff" },
+                { name: "Greyblue", value: "greyblue", hex: "#797F9F" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
-        "hoodie-5": {
-            name: "Black Sweatshirt",
-            price: "$35",
-            images: [
-                { src: "../img/men/hoodie$sweatshirt/7.4.0.webp", color: "black" },
-                { src: "../img/men/hoodie$sweatshirt/7.5.0.webp", color: "black" },
-                { src: "../img/men/hoodie$sweatshirt/7.o.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "White", value: "white", hex: "#ffffff" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["M"]
-        },
-        "hoodie-6": {
-            name: "Classic Navy Hoodie",
-            price: "$45",
-            images: [
-                { src: "../img/men/hoodie$sweatshirt/7.webp", color: "navy" },
-                { src: "../img/men/hoodie$sweatshirt/7.1.webp", color: "navy" },
-                { src: "../img/men/hoodie$sweatshirt/7.2.webp", color: "navy" }
-            ],
-            colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "hoodie-7": {
-            name: "Grey Hoodie",
-            price: "$42",
-            images: [
-                { src: "../img/men/hoodie$sweatshirt/7.4.webp", color: "grey" },
-                { src: "../img/men/hoodie$sweatshirt/7.5.webp", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "White", value: "white", hex: "#ffffff" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["L"]
-        },
-        "hoodie-8": {
-            name: "Premium Black Hoodie",
-            price: "$55",
-            images: [
-                { src: "../img/men/hoodie$sweatshirt/7.2.webp", color: "black" },
-                { src: "../img/men/hoodie$sweatshirt/7.3.1.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "White", value: "white", hex: "#ffffff" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
+       
 
         // Pants Products
         "pants-1": {
-            name: "Classic Black Pants",
+            name: "Classic Pants",
             price: "$65",
             images: [
                 { src: "../img/men/pants/1.avif", color: "black" },
-                { src: "../img/men/pants/1.1.avif", color: "black" },
-                { src: "../img/men/pants/1.2.avif", color: "black" }
+                { src: "../img/men/pants/1.0.avif", color: "black" },
+                { src: "../img/men/pants/1.1.avif", color: "blue" },
+                { src: "../img/men/pants/1.1.0.avif", color: "blue" },
+                { src: "../img/men/pants/1.2.avif", color: "lightblue" },
+                { src: "../img/men/pants/1.2.0.avif", color: "lightblue" }
             ],
             colors: [
                 { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Blue", value: "blue", hex: "#1a1c4fff" },
+                { name: "Lightblue", value: "lightblue", hex: "#99bee8ff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["S"]
         },
         "pants-2": {
-            name: "Grey Formal Pants",
+            name: "classic baggy jeans",
             price: "$58",
             images: [
-                { src: "../img/men/pants/2.webp", color: "grey" },
-                { src: "../img/men/pants/2.1.webp", color: "grey" },
-                { src: "../img/men/pants/2.2.webp", color: "grey" }
+                { src: "../img/men/pants/2.webp", color: "black" },
+                { src: "../img/men/pants/2.0.webp", color: "black" },
+                { src: "../img/men/pants/2.2.webp", color: "blue" },
+                { src: "../img/men/pants/2.2.0.webp", color: "blue" },
+                { src: "../img/men/pants/2.1.webp", color: "lightblue" },
+                { src: "../img/men/pants/2.1.0.webp", color: "lightblue" }
             ],
             colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
                 { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Blue", value: "blue", hex: "#1a1c4fff" },
+                { name: "Lightblue", value: "lightblue", hex: "#99bee8ff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
         "pants-3": {
-            name: "Navy Blue Pants",
+            name: "elegent Pants",
             price: "$62",
             images: [
-                { src: "../img/men/pants/3.webp", color: "navy" },
-                { src: "../img/men/pants/3.1.webp", color: "navy" },
-                { src: "../img/men/pants/3.2.webp", color: "navy" }
+                { src: "../img/men/pants/5.webp", color: "black" },
+                { src: "../img/men/pants/5.0.webp", color: "black" },
+                { src: "../img/men/pants/5.1.webp", color: "beige" },
+                { src: "../img/men/pants/5.1.0.webp", color: "beige" }
             ],
             colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
+                { name: "Black", value: "black", hex: "#1a1a1a" },
+                { name: "Beige", value: "beige", hex: "#f5f5dc" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["XL"]
         },
-        "pants-4": {
-            name: "Black Business Pants",
-            price: "$68",
-            images: [
-                { src: "../img/men/pants/4.webp", color: "black" },
-                { src: "../img/men/pants/4.1.webp", color: "black" },
-                { src: "../img/men/pants/4.2.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "pants-5": {
-            name: "Grey Casual Pants",
-            price: "$55",
-            images: [
-                { src: "../img/men/pants/5.webp", color: "grey" },
-                { src: "../img/men/pants/5.1.webp", color: "grey" },
-                { src: "../img/men/pants/5.2.webp", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["M"]
-        },
-        "pants-6": {
-            name: "Navy Casual Pants",
-            price: "$60",
-            images: [
-                { src: "../img/men/pants/6.webp", color: "navy" },
-                { src: "../img/men/pants/6.1.webp", color: "navy" },
-                { src: "../img/men/pants/6.2.webp", color: "navy" }
-            ],
-            colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "pants-7": {
-            name: "Black Formal Pants",
-            price: "$72",
-            images: [
-                { src: "../img/men/pants/7.webp", color: "black" },
-                { src: "../img/men/pants/7.1.webp", color: "black" },
-                { src: "../img/men/pants/7.2.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["L"]
-        },
-        "pants-8": {
-            name: "Grey Business Pants",
-            price: "$65",
-            images: [
-                { src: "../img/men/pants/8.webp", color: "grey" },
-                { src: "../img/men/pants/8.1.webp", color: "grey" },
-                { src: "../img/men/pants/8.2.webp", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
+       
 
         // Shorts Products
         "shorts-1": {
-            name: "Classic Black Shorts",
+            name: "Classic Shorts",
             price: "$35",
             images: [
-                { src: "../img/men/shorts/1.jpg", color: "black" },
-                { src: "../img/men/shorts/2.1.jpg", color: "black" },
-                { src: "../img/men/shorts/2.3", color: "black" }
+                { src: "../img/men/shorts/2.jpg", color: "black" },
+                { src: "../img/men/shorts/2.1.jpg", color: "lightblue" },
+                { src: "../img/men/shorts/2.4.jpg", color: "navy" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Black", value: "black", hex: "#000000ff" },
+                { name: "Lightblue", value: "lightblue", hex: "#b7d0eeff" },
+                { name: "Navy", value: "navy", hex: "#171b2aff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["S"]
         },
         "shorts-2": {
-            name: "Grey Casual Shorts",
+            name: "Casual Shorts",
             price: "$32",
             images: [
-                { src: "../img/men/shorts/2.jpg", color: "grey" },
-                { src: "../img/men/shorts/2.4.jpg", color: "grey" },
-                { src: "../img/men/shorts/3.jpg", color: "grey" }
+                { src: "../img/men/shorts/12.avif", color: "black" },
+                { src: "../img/men/shorts/12.0.avif", color: "black" },
+                { src: "../img/men/shorts/12.1.avif", color: "pacificblue" },
+                { src: "../img/men/shorts/12.1.0.avif", color: "pacificblue" }
             ],
             colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
                 { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Pacificblue", value: "pacificblue", hex: "#6ba9fbff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
         },
         "shorts-3": {
-            name: "Navy Blue Shorts",
+            name: "black stylish Short",
             price: "$38",
             images: [
-                { src: "../img/men/shorts/4.jpg", color: "navy" },
-                { src: "../img/men/shorts/5.jpg", color: "navy" },
-                { src: "../img/men/shorts/6.jpg", color: "navy" }
+                { src: "../img/men/shorts/6.jpg", color: "black" }
             ],
             colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
+                { name: "Black", value: "black", hex: "#000000" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: ["XL"]
         },
         "shorts-4": {
-            name: "Black Athletic Shorts",
+            name: "elegent Shorts",
             price: "$40",
             images: [
-                { src: "../img/men/shorts/7.1.jpg", color: "black" },
-                { src: "../img/men/shorts/7.2.jpg", color: "black" },
-                { src: "../img/men/shorts/7.3", color: "black" }
+                { src: "../img/men/shorts/5.jpg", color: "lightblue" },
+                { src: "../img/men/shorts/5.0.jpg", color: "lightblue" },
+                { src: "../img/men/shorts/5.1.jpg", color: "black" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "shorts-5": {
-            name: "Grey Athletic Shorts",
-            price: "$38",
-            images: [
-                { src: "../img/men/shorts/7.4.jpg", color: "grey" },
-                { src: "../img/men/shorts/8.1.jpg", color: "grey" },
-                { src: "../img/men/shorts/8.4.jpg", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["M"]
-        },
-        "shorts-6": {
-            name: "Navy Casual Shorts",
-            price: "$35",
-            images: [
-                { src: "../img/men/shorts/8.5.jpg", color: "navy" },
-                { src: "../img/men/shorts/9.1.jpg", color: "navy" },
-                { src: "../img/men/shorts/9.jpg", color: "navy" }
-            ],
-            colors: [
-                { name: "Navy", value: "navy", hex: "#1a1a1a" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: []
-        },
-        "shorts-7": {
-            name: "Black Casual Shorts",
-            price: "$33",
-            images: [
-                { src: "../img/men/shorts/10.jpg", color: "black" },
-                { src: "../img/men/shorts/2.1.jpg", color: "black" },
-                { src: "../img/men/shorts/2.3", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
-            ],
-            sizes: ["S", "M", "L", "XL", "XXL"],
-            soldOutSizes: ["L"]
-        },
-        "shorts-8": {
-            name: "Grey Summer Shorts",
-            price: "$30",
-            images: [
-                { src: "../img/men/shorts/2.4.jpg", color: "grey" },
-                { src: "../img/men/shorts/3.jpg", color: "grey" },
-                { src: "../img/men/shorts/4.jpg", color: "grey" }
-            ],
-            colors: [
-                { name: "Grey", value: "grey", hex: "#808080" },
-                { name: "Black", value: "black", hex: "#000000" },
-                { name: "Navy", value: "navy", hex: "#1a1a1a" }
+                { name: "Lightblue", value: "lightblue", hex: "#586cc8ff" },
+                { name: "Black", value: "black", hex: "#000000ff" }
             ],
             sizes: ["S", "M", "L", "XL", "XXL"],
             soldOutSizes: []
@@ -1428,4 +1015,679 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Quick view:', this.closest('.product-card').querySelector('.product-name').textContent);
         });
     });
+
+    // Function to update style count
+    function updateStyleCount() {
+        const visibleProducts = document.querySelectorAll('.product-grid[style*="display: grid"] .product-card, .product-grid:not([style*="display: none"]) .product-card');
+        const styleCountElement = document.getElementById('style-count');
+        if (styleCountElement) {
+            const count = visibleProducts.length;
+            styleCountElement.textContent = `${count} Style${count !== 1 ? 's' : ''}`;
+        }
+    }
+
+    // Update style count on page load
+    updateStyleCount();
+
+    // Category Filtering Functionality
+    const imageBarItems = document.querySelectorAll('.image-item');
+    const contentHeaders = document.querySelectorAll('.content-header');
+    const productGrids = document.querySelectorAll('.product-grid');
+    
+    // Add click event listeners to image bar items
+    imageBarItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const selectedCategory = this.getAttribute('data-category');
+            console.log('Selected category:', selectedCategory);
+            
+            // Remove active class from all image items
+            imageBarItems.forEach(imgItem => imgItem.classList.remove('active'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Filter content based on selected category
+            filterContent(selectedCategory);
+        });
+    });
+    
+        // Function to filter content
+    function filterContent(category) {
+        if (category === 'all') {
+            // Show all content
+            contentHeaders.forEach(header => {
+                header.style.display = 'flex';
+            });
+            productGrids.forEach(grid => {
+                grid.style.display = 'grid';
+            });
+        } else {
+            // Hide all content first
+            contentHeaders.forEach(header => {
+                header.style.display = 'none';
+            });
+            productGrids.forEach(grid => {
+                grid.style.display = 'none';
+            });
+
+            // Show only selected category
+            const selectedHeaders = document.querySelectorAll(`[data-category="${category}"]`);
+            selectedHeaders.forEach(header => {
+                header.style.display = 'flex';
+            });
+
+            const selectedGrids = document.querySelectorAll(`[data-category="${category}"]`);
+            selectedGrids.forEach(grid => {
+                if (grid.classList.contains('product-grid')) {
+                    grid.style.display = 'grid';
+                }
+            });
+        }
+        
+        // Hide empty sections after category filtering
+        hideEmptySections();
+        
+        // Update style count after filtering
+        updateStyleCount();
+    }
+    
+    // Set "Shop All" as active by default
+    const shopAllItem = document.querySelector('[data-category="all"]');
+    if (shopAllItem) {
+        shopAllItem.classList.add('active');
+    }
+
+    // Sidebar Filter Functionality
+    const sidebarCheckboxes = document.querySelectorAll('.sidebar input[type="checkbox"]');
+    const categoryCheckboxes = document.querySelectorAll('.sidebar input[name="category[]"]');
+    const sizeCheckboxes = document.querySelectorAll('.sidebar input[name="size[]"]');
+    const colorCheckboxes = document.querySelectorAll('.sidebar input[name="color[]"]');
+    const priceCheckboxes = document.querySelectorAll('.sidebar input[name="price[]"]');
+    
+    // Category checkboxes work like the image bar
+    categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applySidebarFilters();
+        });
+    });
+    
+    // Size, color, and price checkboxes for filtering products
+    sizeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applySidebarFilters();
+        });
+    });
+    
+    colorCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applySidebarFilters();
+        });
+    });
+    
+    priceCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applySidebarFilters();
+        });
+    });
+
+    // Function to apply sidebar filters (works like Image Bar Section)
+    function applySidebarFilters() {
+        const selectedCategories = Array.from(document.querySelectorAll('.sidebar input[name="category[]"]:checked'))
+            .map(cb => cb.value.toLowerCase());
+        const selectedSizes = Array.from(document.querySelectorAll('.sidebar input[name="size[]"]:checked'))
+            .map(cb => cb.value.toLowerCase());
+        const selectedColors = Array.from(document.querySelectorAll('.sidebar input[name="color[]"]:checked'))
+            .map(cb => cb.value.toLowerCase());
+        const selectedPrices = Array.from(document.querySelectorAll('.sidebar input[name="price[]"]:checked'))
+            .map(cb => cb.value.toLowerCase());
+
+        console.log('Sidebar filters:', {
+            categories: selectedCategories,
+            sizes: selectedSizes,
+            colors: selectedColors,
+            prices: selectedPrices
+        });
+
+        // First, apply category filtering (section-level)
+        if (selectedCategories.length === 0) {
+            // No categories selected - show all sections (like "Shop All")
+            filterContent('all');
+            
+            // Update image bar to show "Shop All" as active
+            imageBarItems.forEach(item => item.classList.remove('active'));
+            const shopAllItem = document.querySelector('[data-category="all"]');
+            if (shopAllItem) {
+                shopAllItem.classList.add('active');
+            }
+        } else if (selectedCategories.length === 1) {
+            // Single category selected - show only that section
+            const category = selectedCategories[0];
+            filterContent(category);
+            
+            // Update image bar to show corresponding category as active
+            imageBarItems.forEach(item => item.classList.remove('active'));
+            const correspondingImageItem = document.querySelector(`[data-category="${category}"]`);
+            if (correspondingImageItem) {
+                correspondingImageItem.classList.add('active');
+            }
+        } else {
+            // Multiple categories selected - show all selected sections
+            contentHeaders.forEach(header => {
+                header.style.display = 'none';
+            });
+            productGrids.forEach(grid => {
+                grid.style.display = 'none';
+            });
+            
+            selectedCategories.forEach(category => {
+                const selectedHeaders = document.querySelectorAll(`[data-category="${category}"]`);
+                selectedHeaders.forEach(header => {
+                    if (header.classList.contains('content-header')) {
+                        header.style.display = 'flex';
+                    }
+                });
+                
+                const selectedGrids = document.querySelectorAll(`[data-category="${category}"]`);
+                selectedGrids.forEach(grid => {
+                    if (grid.classList.contains('product-grid')) {
+                        grid.style.display = 'grid';
+                    }
+                });
+            });
+            
+            // Remove active class from all image bar items when multiple selected
+            imageBarItems.forEach(item => item.classList.remove('active'));
+        }
+
+        // Then apply size, color, and price filtering (product-level)
+        applyProductFilters(selectedSizes, selectedColors, selectedPrices);
+        
+        // Hide empty sections after all filtering is done
+        hideEmptySections();
+        
+        // Update style count after filtering
+        updateStyleCount();
+    }
+
+    // Function to apply product-level filters (size, color, price)
+    function applyProductFilters(selectedSizes, selectedColors, selectedPrices) {
+        const allProducts = document.querySelectorAll('.product-card');
+        
+        allProducts.forEach(product => {
+            let shouldShow = true;
+            
+            // Check size filter
+            if (selectedSizes.length > 0) {
+                const productSizes = getProductSizes(product);
+                const hasMatchingSize = selectedSizes.some(selectedSize => 
+                    productSizes.some(productSize => 
+                        matchSizes(selectedSize, productSize)
+                    )
+                );
+                if (!hasMatchingSize) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check color filter
+            if (selectedColors.length > 0 && shouldShow) {
+                const productColors = getProductColors(product);
+                const hasMatchingColor = selectedColors.some(selectedColor => 
+                    productColors.some(productColor => 
+                        matchColors(selectedColor, productColor)
+                    )
+                );
+                if (!hasMatchingColor) {
+                    shouldShow = false;
+                } else {
+                    // If color filter is applied, hide non-matching color images and show only matching ones
+                    const imageSlider = product.querySelector('.image-slider');
+                    if (imageSlider) {
+                        const images = imageSlider.querySelectorAll('img');
+                        const colorCircles = product.querySelectorAll('.color-circle');
+                        
+                        // Hide all images first
+                        images.forEach(img => {
+                            img.style.display = 'none';
+                        });
+                        
+                        // Hide all color circles first
+                        colorCircles.forEach(circle => {
+                            circle.style.display = 'none';
+                        });
+                        
+                        // Show only images and color circles that match the selected colors
+                        selectedColors.forEach(selectedColor => {
+                            images.forEach(img => {
+                                const imgColor = img.getAttribute('data-color');
+                                if (imgColor && matchColors(selectedColor, imgColor)) {
+                                    img.style.display = 'block';
+                                }
+                            });
+                            
+                            colorCircles.forEach(circle => {
+                                const circleColor = circle.getAttribute('data-color');
+                                if (circleColor && matchColors(selectedColor, circleColor)) {
+                                    circle.style.display = 'inline-block';
+                                }
+                            });
+                        });
+                        
+                        // Make the first visible image active
+                        const visibleImages = imageSlider.querySelectorAll('img[style*="display: block"]');
+                        if (visibleImages.length > 0) {
+                            images.forEach(img => img.classList.remove('active'));
+                            visibleImages[0].classList.add('active');
+                        }
+                        
+                        // Make the first visible color circle active
+                        const visibleColorCircles = product.querySelectorAll('.color-circle[style*="display: inline-block"]');
+                        if (visibleColorCircles.length > 0) {
+                            colorCircles.forEach(circle => circle.classList.remove('active'));
+                            visibleColorCircles[0].classList.add('active');
+                        }
+                    }
+                }
+            } else {
+                // If no color filter is applied, show all images and color circles
+                const imageSlider = product.querySelector('.image-slider');
+                if (imageSlider) {
+                    const images = imageSlider.querySelectorAll('img');
+                    const colorCircles = product.querySelectorAll('.color-circle');
+                    
+                    images.forEach(img => {
+                        img.style.display = 'block';
+                    });
+                    
+                    colorCircles.forEach(circle => {
+                        circle.style.display = 'inline-block';
+                    });
+                    
+                    // Reset to first image and first color circle
+                    if (images.length > 0) {
+                        images.forEach(img => img.classList.remove('active'));
+                        images[0].classList.add('active');
+                    }
+                    
+                    if (colorCircles.length > 0) {
+                        colorCircles.forEach(circle => circle.classList.remove('active'));
+                        colorCircles[0].classList.add('active');
+                    }
+                }
+            }
+            
+            // Check price filter
+            if (selectedPrices.length > 0 && shouldShow) {
+                const productPrice = getProductPrice(product);
+                const hasMatchingPrice = selectedPrices.some(selectedPrice => {
+                    return isPriceInRange(productPrice, selectedPrice);
+                });
+                if (!hasMatchingPrice) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Show/hide product based on filters
+            product.style.display = shouldShow ? 'block' : 'none';
+        });
+        
+        // Hide empty sections (sections with no visible products)
+        hideEmptySections();
+    }
+    
+    // Function to hide sections that have no visible products
+    function hideEmptySections() {
+        const allProductGrids = document.querySelectorAll('.product-grid');
+        
+        allProductGrids.forEach(grid => {
+            const visibleProducts = grid.querySelectorAll('.product-card[style*="display: block"], .product-card:not([style*="display: none"])');
+            const sectionHeader = document.querySelector(`.content-header[data-category="${grid.getAttribute('data-category')}"]`);
+            
+            if (visibleProducts.length === 0) {
+                // Hide the entire section (header and grid) if no products are visible
+                if (sectionHeader) {
+                    sectionHeader.style.display = 'none';
+                }
+                grid.style.display = 'none';
+            } else {
+                // Show the section if it has visible products
+                if (sectionHeader) {
+                    sectionHeader.style.display = 'flex';
+                }
+                grid.style.display = 'grid';
+            }
+        });
+    }
+    
+    // Helper function to get product sizes
+    function getProductSizes(product) {
+        const productId = product.getAttribute('data-product-id');
+        if (productId && productData[productId]) {
+            return productData[productId].sizes || [];
+        }
+        return [];
+    }
+    
+    // Helper function to get product colors
+    function getProductColors(product) {
+        const colorElements = product.querySelectorAll('.color-circle');
+        const colors = [];
+        colorElements.forEach(colorCircle => {
+            const colorName = colorCircle.getAttribute('data-color');
+            if (colorName) {
+                colors.push(colorName);
+            }
+        });
+        return colors;
+    }
+    
+    // Helper function to get product price
+    function getProductPrice(product) {
+        const priceElement = product.querySelector('.product-price');
+        if (priceElement) {
+            return extractPrice(priceElement.textContent);
+        }
+        return 0;
+    }
+    
+    // Helper function to check if price is in range
+    function isPriceInRange(productPrice, priceRange) {
+        switch(priceRange) {
+            case '0-25':
+                return productPrice >= 0 && productPrice <= 25;
+            case '25-50':
+                return productPrice >= 25 && productPrice <= 50;
+            case '50-75':
+                return productPrice >= 50 && productPrice <= 75;
+            case '75-100':
+                return productPrice >= 75 && productPrice <= 100;
+            case '100+':
+                return productPrice >= 100;
+            case 'on-sale':
+                // For on-sale, we'll check if there's a sale indicator
+                const saleElement = product.querySelector('.sale-badge, .discount');
+                return saleElement !== null;
+            default:
+                return true;
+        }
+    }
+    
+    // Helper function to match colors with variations
+    function matchColors(selectedColor, productColor) {
+        const selected = selectedColor.toLowerCase();
+        const product = productColor.toLowerCase();
+        
+        // Direct match
+        if (selected === product) return true;
+        
+        // Partial matches for common color variations
+        const colorVariations = {
+            'green': ['green', 'darkgreen', 'lightgreen', 'militarygreen', 'forestgreen', 'olivegreen'],
+            'blue': ['blue', 'lightblue', 'navy', 'darkblue', 'skyblue', 'royalblue'],
+            'red': ['red', 'darkred', 'lightred', 'crimson', 'maroon'],
+            'black': ['black', 'darkblack', 'charcoal'],
+            'white': ['white', 'offwhite', 'cream', 'ivory'],
+            'brown': ['brown', 'darkbrown', 'lightbrown', 'tan', 'beige'],
+            'grey': ['grey', 'gray', 'lightgrey', 'darkgrey', 'silver'],
+            'purple': ['purple', 'darkpurple', 'lightpurple', 'violet'],
+            'pink': ['pink', 'lightpink', 'darkpink', 'rose'],
+            'orange': ['orange', 'lightorange', 'darkorange'],
+            'yellow': ['yellow', 'lightyellow', 'gold', 'golden'],
+            'beige': ['beige', 'tan', 'cream', 'offwhite']
+        };
+        
+        // Check if selected color has variations
+        if (colorVariations[selected]) {
+            return colorVariations[selected].includes(product);
+        }
+        
+        // Check if product color has variations
+        for (const [baseColor, variations] of Object.entries(colorVariations)) {
+            if (variations.includes(product) && baseColor === selected) {
+                return true;
+            }
+        }
+        
+        // Partial string matching as fallback
+        return selected.includes(product) || product.includes(selected);
+    }
+
+    // Helper function to match sizes with variations
+    function matchSizes(selectedSize, productSize) {
+        const selected = selectedSize.toLowerCase();
+        const product = productSize.toLowerCase();
+        
+        // Direct match
+        if (selected === product) return true;
+        
+        // Handle size variations
+        const sizeVariations = {
+            'xs': ['xs', 'x-small', 'extra small'],
+            's': ['s', 'small'],
+            'm': ['m', 'medium'],
+            'l': ['l', 'large'],
+            'xl': ['xl', 'x-large', 'extra large'],
+            'xxl': ['xxl', '2xl', '2x-large', '2xl', 'xx-large', 'extra extra large'],
+            '2xl': ['2xl', 'xxl', 'xx-large', 'extra extra large'],
+            '3xl': ['3xl', 'xxxl', 'xxx-large', 'extra extra extra large'],
+            '4xl': ['4xl', 'xxxxl', 'xxxx-large'],
+            '5xl': ['5xl', 'xxxxxl', 'xxxxx-large']
+        };
+        
+        // Check if selected size has variations
+        if (sizeVariations[selected]) {
+            return sizeVariations[selected].includes(product);
+        }
+        
+        // Check if product size has variations
+        for (const [baseSize, variations] of Object.entries(sizeVariations)) {
+            if (variations.includes(product) && baseSize === selected) {
+                return true;
+            }
+        }
+        
+        // Partial string matching as fallback
+        return selected.includes(product) || product.includes(selected);
+    }
+
+    // Function to update product count
+    function updateProductCount() {
+        const visibleProducts = document.querySelectorAll('.product-card[style*="display: block"], .product-card:not([style*="display: none"])');
+        const styleCountElement = document.querySelector('.style-count');
+        if (styleCountElement) {
+            styleCountElement.textContent = `${visibleProducts.length} Styles`;
+        }
+    }
+
+    // Clear all filters button functionality
+    const clearFiltersBtn = document.querySelector('.clear-filters-btn');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            // Uncheck all checkboxes
+            categoryCheckboxes.forEach(cb => cb.checked = false);
+            sizeCheckboxes.forEach(cb => cb.checked = false);
+            colorCheckboxes.forEach(cb => cb.checked = false);
+            priceCheckboxes.forEach(cb => cb.checked = false);
+            // Apply filters (which will show all sections and products)
+            applySidebarFilters();
+        });
+    }
+
+    // Update the filterContent function to reset sort and view when switching categories
+    const originalFilterContent = filterContent;
+    filterContent = function(category) {
+        originalFilterContent(category);
+        
+        // Reset sort to featured for the new category
+        if (category !== 'all') {
+            const categoryHeader = document.querySelector(`.content-header[data-category="${category}"]`);
+            if (categoryHeader) {
+                const sortSelect = categoryHeader.querySelector('.sort-select');
+                if (sortSelect) {
+                    sortSelect.value = 'featured';
+                }
+                
+                // Reset view to 60
+                const viewControl = categoryHeader.querySelector('.view-control');
+                if (viewControl) {
+                    viewControl.querySelectorAll('.view-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    const defaultView = viewControl.querySelector('.view-option');
+                    if (defaultView) {
+                        defaultView.classList.add('active');
+                    }
+                }
+                
+                // Show all products for the category
+                const productGrid = document.querySelector(`.product-grid[data-category="${category}"]`);
+                if (productGrid) {
+                    const products = productGrid.querySelectorAll('.product-card');
+                    products.forEach(product => {
+                        product.style.display = 'block';
+                    });
+                }
+            }
+        }
+    };
+
+    // Global Sort Functionality - Works across all sections
+    const sortSelects = document.querySelectorAll('.sort-select');
+    
+    // Track original grid for each product
+    function trackOriginalGrids() {
+        const allProductGrids = document.querySelectorAll('.product-grid');
+        allProductGrids.forEach(grid => {
+            const products = grid.querySelectorAll('.product-card');
+            products.forEach(product => {
+                const gridSelector = `.product-grid[data-category="${grid.getAttribute('data-category')}"]`;
+                product.setAttribute('data-original-grid', gridSelector);
+            });
+        });
+    }
+    
+    // Initialize tracking
+    trackOriginalGrids();
+    
+    sortSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const sortValue = this.value;
+            // Sort globally regardless of which category's sort select was changed
+            sortProductsGlobally(sortValue);
+            
+            // Update all sort selects to show the same value
+            sortSelects.forEach(otherSelect => {
+                otherSelect.value = sortValue;
+            });
+        });
+    });
+
+    // Function to sort products globally across all sections
+    function sortProductsGlobally(sortType) {
+        // Get all product grids
+        const allProductGrids = document.querySelectorAll('.product-grid');
+        
+        // Collect all products from all grids
+        let allProducts = [];
+        allProductGrids.forEach(grid => {
+            const products = Array.from(grid.querySelectorAll('.product-card'));
+            allProducts = allProducts.concat(products);
+        });
+        
+        // Sort all products
+        allProducts.sort((a, b) => {
+            const priceA = extractPrice(a.querySelector('.product-price').textContent);
+            const priceB = extractPrice(b.querySelector('.product-price').textContent);
+            const nameA = a.querySelector('.product-name').textContent.toLowerCase();
+            const nameB = b.querySelector('.product-name').textContent.toLowerCase();
+            
+            switch(sortType) {
+                case 'price-low':
+                    return priceA - priceB;
+                case 'price-high':
+                    return priceB - priceA;
+                case 'newest':
+                    // For newest, we'll sort by product ID (assuming higher ID = newer)
+                    const idA = parseInt(a.getAttribute('data-product-id')) || 0;
+                    const idB = parseInt(b.getAttribute('data-product-id')) || 0;
+                    return idB - idA;
+                case 'popular':
+                    // For popular, we'll sort alphabetically (you can modify this based on your data)
+                    return nameA.localeCompare(nameB);
+                case 'featured':
+                default:
+                    // For featured, maintain original order
+                    return 0;
+            }
+        });
+        
+        // Clear all product grids
+        allProductGrids.forEach(grid => {
+            grid.innerHTML = '';
+        });
+        
+        // Redistribute sorted products back to their original grids
+        allProducts.forEach(product => {
+            const originalGrid = product.getAttribute('data-original-grid');
+            if (originalGrid) {
+                const targetGrid = document.querySelector(originalGrid);
+                if (targetGrid) {
+                    targetGrid.appendChild(product);
+                }
+            }
+        });
+    }
+
+    // Function to extract price from price text
+    function extractPrice(priceText) {
+        const priceMatch = priceText.match(/\$(\d+(?:\.\d{2})?)/);
+        return priceMatch ? parseFloat(priceMatch[1]) : 0;
+    }
+
+    // View options functionality
+    const viewOptions = document.querySelectorAll('.view-option');
+    
+    viewOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all view options across all sections
+            document.querySelectorAll('.view-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            // Add active class to clicked option
+            this.classList.add('active');
+            
+            // Get the number of items to show
+            const itemsToShow = parseInt(this.textContent);
+            
+            // Apply view limit globally to all visible categories
+            applyViewLimit('all', itemsToShow);
+        });
+    });
+
+    // Function to apply view limit
+    function applyViewLimit(category, limit) {
+        let productGrids;
+        
+        if (category === 'all') {
+            productGrids = document.querySelectorAll('.product-grid[style*="display: grid"], .product-grid:not([style*="display: none"])');
+        } else {
+            const grid = document.querySelector(`.product-grid[data-category="${category}"]`);
+            productGrids = grid ? [grid] : [];
+        }
+        
+        productGrids.forEach(grid => {
+            const products = grid.querySelectorAll('.product-card');
+            
+            products.forEach((product, index) => {
+                if (index < limit) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        });
+    }
 }); 

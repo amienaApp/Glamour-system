@@ -7,9 +7,32 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
+
+// Helper function to convert BSONArray to regular array
+function toArray($value) {
+    if (is_object($value) && method_exists($value, 'toArray')) {
+        $result = $value->toArray();
+        // Ensure we get a proper array
+        if (is_array($result)) {
+            return $result;
+        } else {
+            // If toArray() returns an object, try to convert it
+            return (array)$result;
+        }
+    }
+    return $value;
+}
+
+// Helper function to get count of array or BSONArray
+function getCount($value) {
+    if (is_object($value) && method_exists($value, 'count')) {
+        return $value->count();
+    }
+    return count($value);
+}
 
 $categoryModel = new Category();
 $productModel = new Product();
@@ -70,6 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'selected_sizes' => $productPost['selected_sizes'] ?? ''
             ];
 
+            // Handle perfume-specific fields
+            if (strtolower($productData['category']) === 'perfumes') {
+                $productData['category'] = 'Perfumes'; // Ensure correct case
+                $productData['brand'] = $productPost['brand'] ?? '';
+                $productData['gender'] = $productPost['gender'] ?? '';
+                $productData['size'] = $productPost['size'] ?? '';
+            }
+
             // Handle main product images for this product
             if (isset($_FILES['products']['name'][$productIndex]['front_image']) && 
                 $_FILES['products']['error'][$productIndex]['front_image'] === UPLOAD_ERR_OK) {
@@ -104,6 +135,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'size_category' => $variant['size_category'] ?? '',
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
+
+                        // Handle perfume-specific fields for variants
+                        if (strtolower($productData['category']) === 'perfumes') {
+                            $variantData['brand'] = $variant['brand'] ?? '';
+                            $variantData['gender'] = $variant['gender'] ?? '';
+                            $variantData['size'] = $variant['size'] ?? '';
+                        }
 
                         // Handle variant images
                         if (isset($_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['front_image']) && 
@@ -185,6 +223,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'selected_sizes' => $_POST['selected_sizes'] ?? ''
         ];
 
+        // Handle perfume-specific fields
+        if (strtolower($productData['category']) === 'perfumes') {
+            $productData['category'] = 'Perfumes'; // Ensure correct case
+            $productData['brand'] = $_POST['brand'] ?? '';
+            $productData['gender'] = $_POST['gender'] ?? '';
+            $productData['size'] = $_POST['size'] ?? '';
+        }
+
         // Handle main product images
         if (isset($_FILES['front_image']) && $_FILES['front_image']['error'] === UPLOAD_ERR_OK) {
             $frontImageName = time() . '_front_' . $_FILES['front_image']['name'];
@@ -227,6 +273,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'size_category' => $variant['size_category'] ?? '',
                     'selected_sizes' => $variant['selected_sizes'] ?? ''
                 ];
+
+                // Handle perfume-specific fields for variants
+                if (strtolower($productData['category']) === 'perfumes') {
+                    $variantData['brand'] = $variant['brand'] ?? '';
+                    $variantData['gender'] = $variant['gender'] ?? '';
+                    $variantData['size'] = $variant['size'] ?? '';
+                }
 
                 // Handle variant front image
                 if (isset($_FILES['color_variants']['name'][$index]['front_image']) && 
@@ -1726,7 +1779,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                 <label for="category">Category *</label>
-                                <select id="category" name="category" required onchange="loadSubcategories()">
+                                <select id="category" name="category" required onchange="loadSubcategories(); togglePerfumeFields(this.value);">
                     <option value="">Select Category</option>
                     <?php foreach ($categories as $category): ?>
                                         <option value="<?php echo htmlspecialchars($category['name']); ?>" <?php echo ($product['category'] === $category['name']) ? 'selected' : ''; ?>>
@@ -1736,7 +1789,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             
-            <div class="form-group">
+            <div class="form-group" id="subcategory-group">
                 <label for="subcategory">Subcategory</label>
                 <select id="subcategory" name="subcategory">
                     <option value="">Select Subcategory</option>
@@ -1748,7 +1801,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             
-            <div class="form-group">
+            <div class="form-group" id="brand-group" style="display: none;">
+                <label for="brand">Brand *</label>
+                <select id="brand" name="brand">
+                    <option value="">Select Brand</option>
+                    <option value="Valentino" <?php echo ($product['brand'] ?? '') === 'Valentino' ? 'selected' : ''; ?>>Valentino</option>
+                    <option value="Chanel" <?php echo ($product['brand'] ?? '') === 'Chanel' ? 'selected' : ''; ?>>Chanel</option>
+                    <option value="Dior" <?php echo ($product['brand'] ?? '') === 'Dior' ? 'selected' : ''; ?>>Dior</option>
+                    <option value="Gucci" <?php echo ($product['brand'] ?? '') === 'Gucci' ? 'selected' : ''; ?>>Gucci</option>
+                    <option value="Yves Saint Laurent" <?php echo ($product['brand'] ?? '') === 'Yves Saint Laurent' ? 'selected' : ''; ?>>Yves Saint Laurent</option>
+                    <option value="Tom Ford" <?php echo ($product['brand'] ?? '') === 'Tom Ford' ? 'selected' : ''; ?>>Tom Ford</option>
+                    <option value="Versace" <?php echo ($product['brand'] ?? '') === 'Versace' ? 'selected' : ''; ?>>Versace</option>
+                    <option value="Prada" <?php echo ($product['brand'] ?? '') === 'Prada' ? 'selected' : ''; ?>>Prada</option>
+                    <option value="Bvlgari" <?php echo ($product['brand'] ?? '') === 'Bvlgari' ? 'selected' : ''; ?>>Bvlgari</option>
+                    <option value="Armani" <?php echo ($product['brand'] ?? '') === 'Armani' ? 'selected' : ''; ?>>Armani</option>
+                    <option value="Calvin Klein" <?php echo ($product['brand'] ?? '') === 'Calvin Klein' ? 'selected' : ''; ?>>Calvin Klein</option>
+                    <option value="Ralph Lauren" <?php echo ($product['brand'] ?? '') === 'Ralph Lauren' ? 'selected' : ''; ?>>Ralph Lauren</option>
+                    <option value="Balenciaga" <?php echo ($product['brand'] ?? '') === 'Balenciaga' ? 'selected' : ''; ?>>Balenciaga</option>
+                    <option value="Givenchy" <?php echo ($product['brand'] ?? '') === 'Givenchy' ? 'selected' : ''; ?>>Givenchy</option>
+                    <option value="Hermès" <?php echo ($product['brand'] ?? '') === 'Hermès' ? 'selected' : ''; ?>>Hermès</option>
+                    <option value="Jo Malone" <?php echo ($product['brand'] ?? '') === 'Jo Malone' ? 'selected' : ''; ?>>Jo Malone</option>
+                    <option value="Marc Jacobs" <?php echo ($product['brand'] ?? '') === 'Marc Jacobs' ? 'selected' : ''; ?>>Marc Jacobs</option>
+                    <option value="Viktor&Rolf" <?php echo ($product['brand'] ?? '') === 'Viktor&Rolf' ? 'selected' : ''; ?>>Viktor&Rolf</option>
+                    <option value="Maison Margiela" <?php echo ($product['brand'] ?? '') === 'Maison Margiela' ? 'selected' : ''; ?>>Maison Margiela</option>
+                    <option value="Byredo" <?php echo ($product['brand'] ?? '') === 'Byredo' ? 'selected' : ''; ?>>Byredo</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="gender-group" style="display: none;">
+                <label for="gender">Gender *</label>
+                <select id="gender" name="gender">
+                    <option value="">Select Gender</option>
+                    <option value="men" <?php echo ($product['gender'] ?? '') === 'men' ? 'selected' : ''; ?>>Men</option>
+                    <option value="women" <?php echo ($product['gender'] ?? '') === 'women' ? 'selected' : ''; ?>>Women</option>
+                    <option value="unisex" <?php echo ($product['gender'] ?? '') === 'unisex' ? 'selected' : ''; ?>>Unisex</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="perfume-size-group" style="display: none;">
+                <label for="perfume_size">Size *</label>
+                <select id="perfume_size" name="size">
+                    <option value="">Select Size</option>
+                    <option value="30ml" <?php echo ($product['size'] ?? '') === '30ml' ? 'selected' : ''; ?>>30ml</option>
+                    <option value="50ml" <?php echo ($product['size'] ?? '') === '50ml' ? 'selected' : ''; ?>>50ml</option>
+                    <option value="100ml" <?php echo ($product['size'] ?? '') === '100ml' ? 'selected' : ''; ?>>100ml</option>
+                    <option value="200ml" <?php echo ($product['size'] ?? '') === '200ml' ? 'selected' : ''; ?>>200ml</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="size-category-group">
                 <label for="size_category">Size Category</label>
                 <select id="size_category" name="size_category" onchange="loadSizeOptions()">
                     <option value="">Select Size Category</option>
@@ -1844,8 +1945,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="color-variants-section">
                             <p>Add or edit color variants for your product</p>
                             <div id="color-variants-container">
-                                <?php if (!empty($product['color_variants'])): ?>
-                                    <?php foreach ($product['color_variants'] as $index => $variant): ?>
+                                <?php 
+                                $colorVariants = toArray($product['color_variants'] ?? []);
+                                if (!empty($colorVariants)): 
+                                ?>
+                                    <?php foreach ($colorVariants as $index => $variant): ?>
                                         <div class="variant-item">
                                         <div class="variant-header">
                                             <h4>Color Variant #<?php echo $index + 1; ?></h4>
@@ -2028,13 +2132,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 .catch(error => console.error('Error loading subcategories:', error));
         }
 
+        function togglePerfumeFields(category) {
+            const brandGroup = document.getElementById('brand-group');
+            const genderGroup = document.getElementById('gender-group');
+            const perfumeSizeGroup = document.getElementById('perfume-size-group');
+            const subcategoryGroup = document.getElementById('subcategory-group');
+            const sizeCategoryGroup = document.getElementById('size-category-group');
+            
+            const shouldShow = category.toLowerCase() === 'perfumes';
+            
+            // Show/hide individual perfume fields
+            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            
+            // Hide subcategory and size category for perfumes
+            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            
+            // Make perfume fields required when category is Perfumes
+            const brandField = document.getElementById('brand');
+            const genderField = document.getElementById('gender');
+            const sizeField = document.getElementById('perfume_size');
+            
+            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
+            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
+            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+        }
+
         function toggleSalePrice() {
             const saleCheckbox = document.getElementById('sale');
             const salePriceGroup = document.getElementById('salePriceGroup');
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
 
-        let colorVariantIndex = <?php echo count($product['color_variants'] ?? []); ?>;
+                        let colorVariantIndex = <?php echo getCount($product['color_variants'] ?? []); ?>;
         let deletedVariants = []; // Track deleted variants
 
         function addColorVariant() {
@@ -2136,7 +2268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             const originalIndex = getOriginalVariantIndex(variantItem);
                             if (originalIndex !== -1) {
                                 deletedVariants.push(originalIndex);
-                                console.log('Added variant index', originalIndex, 'to deleted variants:', deletedVariants);
+                    
                             }
                             
                             // Remove the variant item from DOM
@@ -2145,7 +2277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Reindex remaining variants
                             reindexVariants();
                             
-                            console.log('Variant removed and variants reindexed');
+                
                             
                             // Show success message after a short delay
                             setTimeout(() => {
@@ -2267,7 +2399,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showVariantImages(variantIndex) {
-            console.log('showVariantImages called with variantIndex:', variantIndex);
+    
             
             // Remove active class from all color circles
             document.querySelectorAll('.admin-color-circle').forEach(circle => {
@@ -2278,10 +2410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const clickedCircle = document.getElementById(`admin-color-circle-${variantIndex}`);
             if (clickedCircle) {
                 clickedCircle.classList.add('active');
-                console.log('Added active class to circle:', clickedCircle);
-            } else {
-                console.log('Could not find circle with ID: admin-color-circle-' + variantIndex);
-            }
+                
 
             // Show the variant images
             const variantItem = clickedCircle ? clickedCircle.closest('.variant-item') : null;
@@ -2297,11 +2426,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         imageInputs.style.backgroundColor = '';
                     }, 2000);
                     
-                    console.log('Scrolled to variant images');
+        
                 }
             }
 
-            console.log(`Showing images for variant ${variantIndex}`);
+
         }
 
         // Size Dropdown Functions
@@ -3098,6 +3227,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             toggleSalePrice();
             loadSubcategories();
             
+            // Initialize perfume fields based on current category
+            const currentCategory = document.getElementById('category').value;
+            if (currentCategory) {
+                togglePerfumeFields(currentCategory);
+            }
+            
             // Add event listener for category dropdown
             document.getElementById('category').addEventListener('change', function() {
                 loadSubcategories();
@@ -3116,12 +3251,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const deletedVariantsField = document.getElementById('deleted-variants');
             if (deletedVariantsField) {
                 deletedVariantsField.value = JSON.stringify(deletedVariants);
-                console.log('Updated deleted variants field:', deletedVariantsField.value);
+    
             }
         }
 
         function initializeAdminColorCircles() {
-            console.log('Initializing admin color circles...');
+    
             
             // Add change event listeners to existing color inputs
             document.querySelectorAll('.variant-color-input').forEach((input, index) => {
@@ -3132,9 +3267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Log all admin color circles found
             const colorCircles = document.querySelectorAll('.admin-color-circle');
-            console.log('Found admin color circles:', colorCircles.length);
             colorCircles.forEach((circle, index) => {
-                console.log(`Color circle ${index}:`, {
                     id: circle.id,
                     'data-variant-index': circle.getAttribute('data-variant-index'),
                     backgroundColor: circle.style.backgroundColor
@@ -3147,7 +3280,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    console.log('Admin color circle clicked:', e.target);
+    
                     
                     const variantIndex = e.target.getAttribute('data-variant-index');
                     if (variantIndex !== null) {

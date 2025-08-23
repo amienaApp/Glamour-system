@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
 
@@ -49,6 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'size_category' => $productPost['size_category'] ?? '',
                 'selected_sizes' => $productPost['selected_sizes'] ?? ''
             ];
+            
+            // Force category to be "Perfumes" if it's any variation of "perfumes"
+            if (strtolower($productData['category'] ?? '') === 'perfumes') {
+                $productData['category'] = 'Perfumes';
+                $productData['brand'] = $productPost['brand'] ?? '';
+                $productData['gender'] = $productPost['gender'] ?? '';
+                $productData['size'] = $productPost['size'] ?? '';
+            }
 
             // Handle main product images for this product
             if (isset($_FILES['products']['name'][$productIndex]['front_image']) && 
@@ -80,6 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'size_category' => $variant['size_category'] ?? '',
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
+
+                        // Handle perfume-specific fields for variants
+                        if (strtolower($productData['category']) === 'perfumes') {
+                            $variantData['brand'] = $variant['brand'] ?? '';
+                            $variantData['gender'] = $variant['gender'] ?? '';
+                            $variantData['size'] = $variant['size'] ?? '';
+                        }
 
                         // Handle variant images
                         if (isset($_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['front_image']) && 
@@ -157,6 +172,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'size_category' => $_POST['size_category'] ?? '',
             'selected_sizes' => $_POST['selected_sizes'] ?? ''
         ];
+        
+        // Force category to be "Perfumes" if it's any variation of "perfumes"
+        if (strtolower($productData['category'] ?? '') === 'perfumes') {
+            $productData['category'] = 'Perfumes';
+            $productData['brand'] = $_POST['brand'] ?? '';
+            $productData['gender'] = $_POST['gender'] ?? '';
+            $productData['size'] = $_POST['size'] ?? '';
+        }
 
         // Handle main product images
         if (isset($_FILES['front_image']) && $_FILES['front_image']['error'] === UPLOAD_ERR_OK) {
@@ -186,6 +209,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'size_category' => $variant['size_category'] ?? '',
                         'selected_sizes' => $variant['selected_sizes'] ?? ''
                     ];
+
+                    // Handle perfume-specific fields for variants
+                    if (strtolower($productData['category']) === 'perfumes') {
+                        $variantData['brand'] = $variant['brand'] ?? '';
+                        $variantData['gender'] = $variant['gender'] ?? '';
+                        $variantData['size'] = $variant['size'] ?? '';
+                    }
 
                     // Handle variant images
                     if (isset($_FILES['color_variants']['name'][$index]['front_image']) && 
@@ -241,6 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product - Glamour Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="includes/admin-sidebar.css">
     <style>
         * {
             margin: 0;
@@ -256,164 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 30px 0;
-            box-shadow: 5px 0 25px rgba(62, 39, 35, 0.1);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
 
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid rgba(62, 39, 35, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #3E2723;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-logo i {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
-
-        .sidebar-nav {
-            padding: 0 20px;
-        }
-
-        .nav-section {
-            margin-bottom: 30px;
-        }
-
-        .nav-section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #3E2723;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: #3E2723;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            background: rgba(41, 182, 246, 0.1);
-            color: #0288D1;
-            transform: translateX(5px);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            box-shadow: 0 5px 15px rgba(41, 182, 246, 0.3);
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-
-        .logout-btn {
-            position: absolute;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
-        }
-        
-        .sidebar-actions {
-            margin-top: 30px;
-            padding: 0 20px;
-        }
-        
-        .sidebar-action-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #29B6F6, #0288D1);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(41, 182, 246, 0.3);
-            text-decoration: none;
-            color: white;
-        }
-        
-        .sidebar-action-btn.secondary {
-            background: linear-gradient(135deg, #3E2723, #5D4037);
-        }
-        
-        .sidebar-action-btn.secondary:hover {
-            box-shadow: 0 8px 25px rgba(62, 39, 35, 0.3);
-        }
-        
-        .sidebar-action-btn.success {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-        }
-        
-        .sidebar-action-btn.success:hover {
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
 
         /* Main Content */
         .main-content {
@@ -496,6 +370,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-group.full-width {
             grid-column: 1 / -1;
         }
+        
+
 
         .form-group label {
             display: block;
@@ -962,37 +838,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #feb2b2;
         }
 
-        .mobile-menu-btn {
-            display: none;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
             .main-content {
                 margin-left: 0;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
-                background: rgba(255, 255, 255, 0.9);
-                border: none;
-                padding: 12px;
-                border-radius: 10px;
-                cursor: pointer;
-                box-shadow: 0 5px 15px rgba(62, 39, 35, 0.1);
             }
 
             .form-grid {
@@ -1329,11 +1178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <?php include 'includes/admin-sidebar.php'; ?>
 
     <!-- Main Content -->
@@ -1394,11 +1238,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="form-group">
-                            <label for="subcategory">Subcategory</label>
+                            <label for="subcategory">Subcategory <span id="subcategory-required" style="color: #dc3545;">*</span></label>
                             <select id="subcategory" name="subcategory">
                     <option value="">Select Subcategory</option>
                 </select>
                         </div>
+            
+            <div class="form-group" id="brand-group" style="display: none;">
+                <label for="brand">Brand *</label>
+                <select id="brand" name="brand">
+                    <option value="">Select Brand</option>
+                    <option value="Valentino">Valentino</option>
+                    <option value="Chanel">Chanel</option>
+                    <option value="Dior">Dior</option>
+                    <option value="Gucci">Gucci</option>
+                    <option value="Yves Saint Laurent">Yves Saint Laurent</option>
+                    <option value="Tom Ford">Tom Ford</option>
+                    <option value="Versace">Versace</option>
+                    <option value="Prada">Prada</option>
+                    <option value="Bvlgari">Bvlgari</option>
+                    <option value="Armani">Armani</option>
+                    <option value="Calvin Klein">Calvin Klein</option>
+                    <option value="Ralph Lauren">Ralph Lauren</option>
+                    <option value="Balenciaga">Balenciaga</option>
+                    <option value="Givenchy">Givenchy</option>
+                    <option value="Hermès">Hermès</option>
+                    <option value="Jo Malone">Jo Malone</option>
+                    <option value="Marc Jacobs">Marc Jacobs</option>
+                    <option value="Viktor&Rolf">Viktor&Rolf</option>
+                    <option value="Maison Margiela">Maison Margiela</option>
+                    <option value="Byredo">Byredo</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="gender-group" style="display: none;">
+                <label for="gender">Gender *</label>
+                <select id="gender" name="gender">
+                    <option value="">Select Gender</option>
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="perfume-size-group" style="display: none;">
+                <label for="perfume_size">Size *</label>
+                <select id="perfume_size" name="size">
+                    <option value="">Select Size</option>
+                    <option value="30ml">30ml</option>
+                    <option value="50ml">50ml</option>
+                    <option value="100ml">100ml</option>
+                    <option value="200ml">200ml</option>
+                </select>
+            </div>
             
             <div class="form-group">
                             <label for="size_category">Size Category</label>
@@ -1546,23 +1438,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     </div>
 
+    <script src="includes/admin-sidebar.js"></script>
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const mobileBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !mobileBtn.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
-        });
 
         // Existing JavaScript functions
         function loadSubcategories() {
@@ -1590,6 +1467,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 })
                 .catch(error => console.error('Error loading subcategories:', error));
+            
+            // Show/hide perfume-specific fields
+            togglePerfumeFields(category);
+        }
+        
+        function togglePerfumeFields(category) {
+            const brandGroup = document.getElementById('brand-group');
+            const genderGroup = document.getElementById('gender-group');
+            const perfumeSizeGroup = document.getElementById('perfume-size-group');
+            const subcategoryGroup = document.querySelector('.form-group:has(#subcategory)');
+            const sizeCategoryGroup = document.querySelector('.form-group:has(#size_category)');
+            
+            const shouldShow = category.toLowerCase() === 'perfumes';
+            
+            // Show/hide individual perfume fields
+            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            
+            // Hide subcategory and size category for perfumes
+            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            
+            // Make perfume fields required when category is Perfumes
+            const brandField = document.getElementById('brand');
+            const genderField = document.getElementById('gender');
+            const sizeField = document.getElementById('perfume_size');
+            
+            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
+            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
+            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
         }
 
         function toggleSalePrice() {
@@ -1598,10 +1506,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
 
+
+
         let colorVariantIndex = 0;
 
         function addColorVariant() {
             const container = document.getElementById('color-variants-container');
+            const currentCategory = document.getElementById('category').value;
+            const isPerfume = currentCategory.toLowerCase() === 'perfumes';
+            
             const variantHtml = `
                 <div class="variant-item">
                     <button type="button" class="remove-variant" onclick="removeColorVariant(this)">
@@ -1609,16 +1522,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </button>
                     <h4>Color Variant #${colorVariantIndex + 1}</h4>
                     
-                        <div class="form-group">
+                    <div class="form-group">
                         <label>Variant Name *</label>
                         <input type="text" name="color_variants[${colorVariantIndex}][name]" required>
-                            </div>
+                    </div>
                     
-                        <div class="form-group">
+                    <div class="form-group">
                         <label>Color *</label>
                         <input type="color" name="color_variants[${colorVariantIndex}][color]" class="variant-color-input" required>
-                            </div>
+                    </div>
                     
+                    ${isPerfume ? `
+                    <!-- Perfume-specific fields for variants -->
+                    <div class="form-group">
+                        <label>Variant Brand</label>
+                        <select name="color_variants[${colorVariantIndex}][brand]">
+                            <option value="">Select Brand</option>
+                            <option value="Valentino">Valentino</option>
+                            <option value="Chanel">Chanel</option>
+                            <option value="Dior">Dior</option>
+                            <option value="Gucci">Gucci</option>
+                            <option value="Yves Saint Laurent">Yves Saint Laurent</option>
+                            <option value="Tom Ford">Tom Ford</option>
+                            <option value="Versace">Versace</option>
+                            <option value="Prada">Prada</option>
+                            <option value="Bvlgari">Bvlgari</option>
+                            <option value="Armani">Armani</option>
+                            <option value="Calvin Klein">Calvin Klein</option>
+                            <option value="Ralph Lauren">Ralph Lauren</option>
+                            <option value="Balenciaga">Balenciaga</option>
+                            <option value="Givenchy">Givenchy</option>
+                            <option value="Hermès">Hermès</option>
+                            <option value="Jo Malone">Jo Malone</option>
+                            <option value="Marc Jacobs">Marc Jacobs</option>
+                            <option value="Viktor&Rolf">Viktor&Rolf</option>
+                            <option value="Maison Margiela">Maison Margiela</option>
+                            <option value="Byredo">Byredo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="color_variants[${colorVariantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Variant Size</label>
+                        <select name="color_variants[${colorVariantIndex}][size]">
+                            <option value="">Select Size</option>
+                            <option value="30ml">30ml</option>
+                            <option value="50ml">50ml</option>
+                            <option value="100ml">100ml</option>
+                            <option value="200ml">200ml</option>
+                        </select>
+                    </div>
+                    ` : `
+                    <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Variant Size Category</label>
                         <select name="color_variants[${colorVariantIndex}][size_category]" onchange="loadVariantSizeOptions(${colorVariantIndex})">
@@ -1642,6 +1606,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <input type="hidden" name="color_variants[${colorVariantIndex}][selected_sizes]" value="">
                     </div>
+                    `}
                     
                     <div class="variant-image-inputs">
                         <div class="image-input-group">
@@ -1649,8 +1614,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="file" name="color_variants[${colorVariantIndex}][front_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-front-${colorVariantIndex}')">
                             <div id="variant-front-${colorVariantIndex}" class="variant-image-preview">
                                 <div class="no-image">No media selected</div>
+                            </div>
                         </div>
-                    </div>
 
                         <div class="image-input-group">
                             <label>Back Media</label>
@@ -2578,9 +2543,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             
                             <div class="form-group">
-                                <label for="subcategory-${productIndex}">Subcategory</label>
+                                <label for="subcategory-${productIndex}">Subcategory <span id="subcategory-required-${productIndex}" style="color: #dc3545;">*</span></label>
                                 <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]">
                                     <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="brand-group-${productIndex}" style="display: none;">
+                                <label for="brand-${productIndex}">Brand *</label>
+                                <select id="brand-${productIndex}" name="products[${productIndex}][brand]">
+                                    <option value="">Select Brand</option>
+                                    <option value="Valentino">Valentino</option>
+                                    <option value="Chanel">Chanel</option>
+                                    <option value="Dior">Dior</option>
+                                    <option value="Gucci">Gucci</option>
+                                    <option value="Yves Saint Laurent">Yves Saint Laurent</option>
+                                    <option value="Tom Ford">Tom Ford</option>
+                                    <option value="Versace">Versace</option>
+                                    <option value="Prada">Prada</option>
+                                    <option value="Bvlgari">Bvlgari</option>
+                                    <option value="Armani">Armani</option>
+                                    <option value="Calvin Klein">Calvin Klein</option>
+                                    <option value="Ralph Lauren">Ralph Lauren</option>
+                                    <option value="Balenciaga">Balenciaga</option>
+                                    <option value="Givenchy">Givenchy</option>
+                                    <option value="Hermès">Hermès</option>
+                                    <option value="Jo Malone">Jo Malone</option>
+                                    <option value="Marc Jacobs">Marc Jacobs</option>
+                                    <option value="Viktor&Rolf">Viktor&Rolf</option>
+                                    <option value="Maison Margiela">Maison Margiela</option>
+                                    <option value="Byredo">Byredo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="gender-group-${productIndex}" style="display: none;">
+                                <label for="gender-${productIndex}">Gender *</label>
+                                <select id="gender-${productIndex}" name="products[${productIndex}][gender]">
+                                    <option value="">Select Gender</option>
+                                    <option value="men">Men</option>
+                                    <option value="women">Women</option>
+                                    <option value="unisex">Unisex</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="perfume-size-group-${productIndex}" style="display: none;">
+                                <label for="perfume_size-${productIndex}">Size *</label>
+                                <select id="perfume_size-${productIndex}" name="products[${productIndex}][size]">
+                                    <option value="">Select Size</option>
+                                    <option value="30ml">30ml</option>
+                                    <option value="50ml">50ml</option>
+                                    <option value="100ml">100ml</option>
+                                    <option value="200ml">200ml</option>
                                 </select>
                             </div>
                             
@@ -2817,7 +2830,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 })
                 .catch(error => console.error('Error loading subcategories:', error));
+            
+            // Show/hide perfume-specific fields for multi-product form
+            toggleMultiPerfumeFields(productIndex, category);
         }
+        
+        function toggleMultiPerfumeFields(productIndex, category) {
+            const brandGroup = document.getElementById(`brand-group-${productIndex}`);
+            const genderGroup = document.getElementById(`gender-group-${productIndex}`);
+            const perfumeSizeGroup = document.getElementById(`perfume-size-group-${productIndex}`);
+            const subcategoryGroup = document.querySelector(`.form-group:has(#subcategory-${productIndex})`);
+            const sizeCategoryGroup = document.querySelector(`.form-group:has(#size_category-${productIndex})`);
+            
+            const shouldShow = category.toLowerCase() === 'perfumes';
+            
+            // Show/hide individual perfume fields
+            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            
+            // Hide subcategory and size category for perfumes
+            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            
+            // Make perfume fields required when category is Perfumes
+            const brandField = document.getElementById(`brand-${productIndex}`);
+            const genderField = document.getElementById(`gender-${productIndex}`);
+            const sizeField = document.getElementById(`perfume_size-${productIndex}`);
+            
+            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
+            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
+            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+        }
+
+
 
         function loadMultiSizeOptions(productIndex) {
             const sizeCategory = document.getElementById(`size_category-${productIndex}`).value;
@@ -3332,6 +3378,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function addMultiColorVariant(productIndex) {
             const container = document.getElementById(`color-variants-container-${productIndex}`);
             const variantIndex = globalColorVariantIndexes[productIndex] || 0;
+            const currentCategory = document.querySelector(`select[name="products[${productIndex}][category]"]`).value;
+            const isPerfume = currentCategory.toLowerCase() === 'perfumes';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -3350,6 +3398,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="color" name="products[${productIndex}][color_variants][${variantIndex}][color]" class="variant-color-input" required>
                     </div>
                     
+                    ${isPerfume ? `
+                    <!-- Perfume-specific fields for variants -->
+                    <div class="form-group">
+                        <label>Variant Brand</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][brand]">
+                            <option value="">Select Brand</option>
+                            <option value="Valentino">Valentino</option>
+                            <option value="Chanel">Chanel</option>
+                            <option value="Dior">Dior</option>
+                            <option value="Gucci">Gucci</option>
+                            <option value="Yves Saint Laurent">Yves Saint Laurent</option>
+                            <option value="Tom Ford">Tom Ford</option>
+                            <option value="Versace">Versace</option>
+                            <option value="Prada">Prada</option>
+                            <option value="Bvlgari">Bvlgari</option>
+                            <option value="Armani">Armani</option>
+                            <option value="Calvin Klein">Calvin Klein</option>
+                            <option value="Ralph Lauren">Ralph Lauren</option>
+                            <option value="Balenciaga">Balenciaga</option>
+                            <option value="Givenchy">Givenchy</option>
+                            <option value="Hermès">Hermès</option>
+                            <option value="Jo Malone">Jo Malone</option>
+                            <option value="Marc Jacobs">Marc Jacobs</option>
+                            <option value="Viktor&Rolf">Viktor&Rolf</option>
+                            <option value="Maison Margiela">Maison Margiela</option>
+                            <option value="Byredo">Byredo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Variant Size</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][size]">
+                            <option value="">Select Size</option>
+                            <option value="30ml">30ml</option>
+                            <option value="50ml">50ml</option>
+                            <option value="100ml">100ml</option>
+                            <option value="200ml">200ml</option>
+                        </select>
+                    </div>
+                    ` : `
+                    <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Size Category</label>
                         <select name="products[${productIndex}][color_variants][${variantIndex}][size_category]" onchange="loadMultiVariantSizeOptions(${productIndex}, ${variantIndex})">
@@ -3373,6 +3472,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <input type="hidden" id="variant-selected_sizes-${productIndex}-${variantIndex}" name="products[${productIndex}][color_variants][${variantIndex}][selected_sizes]" value="">
                     </div>
+                    `}
                     
                     <div class="variant-image-inputs">
                         <div class="image-input-group">

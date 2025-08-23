@@ -4,13 +4,14 @@
  * Handles all category-related operations
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 
 class Category {
     private $collection;
 
     public function __construct() {
-        $db = Database::getInstance();
+        $db = MongoDB::getInstance();
         $this->collection = $db->getCollection('categories');
     }
 
@@ -152,12 +153,7 @@ class Category {
                 'description' => 'Beauty products for everyone',
                 'icon' => 'fa-magic'
             ],
-            [
-                'name' => "Electronics",
-                'subcategories' => ['Phones', 'Laptops', 'Tablets', 'Accessories', 'Smart Watches'],
-                'description' => 'Latest technology and gadgets',
-                'icon' => 'fa-mobile'
-            ],
+          
             [
                 'name' => "Sports & Fitness",
                 'subcategories' => ['Athletic Wear', 'Sports Equipment', 'Fitness Accessories', 'Outdoor Gear'],

@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 
 // Check if admins collection exists and has any data
 $db = Database::getInstance();

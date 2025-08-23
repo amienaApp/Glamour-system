@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +40,7 @@
                     </div>
                 </div>
             </li>
+<<<<<<<< HEAD:index.php
             <li><a href="pages/contact.php" class="nav-link">Contact us</a></li>
             <li><a href="#" class="nav-link">About us</a></li>
             <li><a href="#" class="nav-link">Sale</a></li>
@@ -53,6 +55,17 @@
         <div class="search-container">
             <input type="text" class="search-input" placeholder="Search">
             <i class="fas fa-search search-icon"></i>
+========
+             <li><a href="orders.php">Orders</a></li>
+             <li><a href="#schedules">About Us</a></li>
+             <li><a href="#home">Contact Us</a></li>
+             <li><a href="cart.php" style="position: relative;"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
+             </ul>
+          </nav>
+            <div class="signup-btn">
+            <button class="btn">signup</button></div>
+         
+>>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4:index.html
         </div>
 
         <!-- Somalia Flag -->
@@ -637,7 +650,7 @@
                         <h4>$12</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                                            <button onclick="openAddToCartModal('product_1')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
                     </div>
 
             </div>
@@ -658,7 +671,7 @@
                         <h4>$50</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                                            <button onclick="openAddToCartModal('product_2')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
                     </div>
 
             </div>
@@ -680,7 +693,7 @@
                         <h4>$112</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                                            <button onclick="openAddToCartModal('product_3')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
                     </div>
 
             </div>
@@ -703,7 +716,7 @@
                         <h4>$98</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                    <a href="add-to-cart.php?id=product_4" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
                     </div>
 
             </div>
@@ -725,7 +738,7 @@
                         <h4>$52</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                    <a href="add-to-cart.php?id=product_5" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
                     </div>
 
             </div>
@@ -750,7 +763,7 @@
                         <h4>$120</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                    <a href="add-to-cart.php?id=product_6" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
                     </div>
 
             </div>
@@ -769,7 +782,7 @@
                         <h4>$4</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                    <a href="add-to-cart.php?id=product_7" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
                     </div>
 
             </div>
@@ -788,7 +801,7 @@
                         <h4>$5</h4>
                </div>
                 <div class="cart">
-                    <a href="#"><i class="fa fa-shopping-cart cart" ></i></a>
+                    <a href="add-to-cart.php?id=product_8" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
                     </div>
 
             </div>
@@ -960,6 +973,7 @@
         });
     </script>
 
+<<<<<<<< HEAD:index.php
     <script src="scripts/main.js?v=<?php echo time(); ?>"></script>
     
     <!-- Header JavaScript Functionality -->
@@ -1126,7 +1140,673 @@
                 }
             });
 
+========
+    <script src="scripts/main.js"></script>
+    
+    <!-- Cart Functionality -->
+    <script>
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, loading cart count...');
+            loadCartCount();
+        });
+
+
+
+        function updateCartCount(count) {
+            try {
+                const cartIcons = document.querySelectorAll('.fa-shopping-cart');
+                console.log('Updating cart count:', count, 'Element found:', cartIcons.length > 0);
+                cartIcons.forEach((icon, index) => {
+                    try {
+                        const parent = icon.parentElement;
+                        if (parent && parent.tagName) {
+                            // Remove existing badge
+                            const existingBadge = parent.querySelector('.cart-badge');
+                            if (existingBadge) {
+                                existingBadge.remove();
+                            }
+                            
+                            // Add new badge if count > 0
+                            if (count > 0) {
+                                const badge = document.createElement('span');
+                                badge.className = 'cart-badge';
+                                badge.textContent = count;
+                                badge.style.cssText = `
+                                    position: absolute;
+                                    top: -8px;
+                                    right: -8px;
+                                    background: #e53e3e;
+                                    color: white;
+                                    border-radius: 50%;
+                                    width: 20px;
+                                    height: 20px;
+                                    font-size: 12px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-weight: bold;
+                                `;
+                                parent.style.position = 'relative';
+                                parent.appendChild(badge);
+                            }
+                        } else {
+                            console.log('Skipping cart icon', index, 'because parent is null/invalid');
+                        }
+                    } catch (error) {
+                        console.error('Error updating cart icon', index, ':', error);
+                    }
+                });
+            } catch (error) {
+                console.error('Error in updateCartCount:', error);
+            }
+        }
+
+        function loadCartCount() {
+            console.log('Loading cart count...');
+            fetch('cart-api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=get_cart_count'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.text();
+            })
+            .then(text => {
+                console.log('Raw response:', text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        updateCartCount(data.cart_count);
+                    } else {
+                        console.error('Cart API error:', data.message);
+                    }
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    console.error('Response text:', text);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading cart count:', error);
+            });
+        }
+    </script>
+
+    <!-- Add to Cart Modal -->
+    <div id="addToCartModal" class="add-to-cart-modal">
+        <div class="add-to-cart-content">
+            <div class="add-to-cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Add to Cart</h3>
+                <button class="close-add-to-cart" onclick="closeAddToCartModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="add-to-cart-body">
+                <div class="product-preview">
+                    <img id="addToCartProductImage" src="" alt="Product Image" class="preview-image">
+                    <div class="product-info-preview">
+                        <h2 id="addToCartProductName"></h2>
+                        <div class="price-preview">
+                            <span id="addToCartProductPrice"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="options-section">
+                    <div class="selection-required">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Required:</strong> Please select both a color and size before adding to cart.
+                    </div>
+                    
+                    <div class="option-group">
+                        <h4>Color</h4>
+                        <div class="color-options" id="addToCartColors">
+                            <!-- Color options will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <h4>Size</h4>
+                        <div class="size-options" id="addToCartSizes">
+                            <!-- Size options will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <h4>Quantity</h4>
+                        <div class="quantity-controls">
+                            <button onclick="changeAddToCartQuantity(-1)">-</button>
+                            <input type="number" id="addToCartQuantity" value="1" min="1" max="10" readonly>
+                            <button onclick="changeAddToCartQuantity(1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span>Selected Color:</span>
+                        <span id="addToCartSelectedColor">Please select a color</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Selected Size:</span>
+                        <span id="addToCartSelectedSize">Please select a size</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Quantity:</span>
+                        <span id="addToCartSelectedQuantity">1</span>
+                    </div>
+                </div>
+                
+                <div class="action-section">
+                    <button class="add-to-cart-final-btn" onclick="addToCartFromModal()" id="addToCartBtn" disabled>
+                        <i class="fas fa-shopping-cart"></i>
+                        Please Select Options First
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Add to Cart Modal Styles */
+        .add-to-cart-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .add-to-cart-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .add-to-cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+            background: linear-gradient(135deg, #0066cc 0%, #0056b3 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .add-to-cart-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-add-to-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-add-to-cart:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .add-to-cart-body {
+            padding: 30px;
+        }
+
+        .product-preview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .preview-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .product-info-preview h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .price-preview {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        .options-section {
+            margin-bottom: 30px;
+        }
+
+        .selection-required {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+            font-size: 0.9rem;
+        }
+
+        .option-group {
+            margin-bottom: 25px;
+        }
+
+        .option-group h4 {
+            margin: 0 0 15px 0;
+            color: #555;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #0066cc;
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .size-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .size-option {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .size-option:hover {
+            border-color: #0066cc;
+            background: #f8f9fa;
+        }
+
+        .size-option.active {
+            border-color: #0066cc;
+            background: #0066cc;
+            color: white;
+            opacity: 1;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .quantity-controls button {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0066cc;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-controls button:hover {
+            background: #0066cc;
+            color: white;
+        }
+
+        .quantity-controls input {
+            width: 60px;
+            height: 35px;
+            text-align: center;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .summary-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-section {
+            text-align: center;
+        }
+
+        .add-to-cart-final-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-to-cart-final-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .add-to-cart-final-btn:disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            opacity: 0.6 !important;
+        }
+
+        .add-to-cart-final-btn:disabled:hover {
+            background: #ccc !important;
+            transform: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .add-to-cart-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .product-preview {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .preview-image {
+                width: 120px;
+                height: 120px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+
+    <script>
+        // Add to Cart Modal Functions
+        function openAddToCartModal(productId) {
+            // Set product ID in modal for later use
+            document.getElementById('addToCartModal').setAttribute('data-product-id', productId);
+            
+            // For demo purposes, create a mock product
+            const mockProduct = {
+                name: 'Product ' + productId.replace('product_', ''),
+                price: Math.floor(Math.random() * 100) + 20,
+                colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00'],
+                sizes: ['S', 'M', 'L', 'XL'],
+                front_image: 'img/sawiro/9.jpg'
+            };
+            
+            populateAddToCartModal(mockProduct);
+            document.getElementById('addToCartModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddToCartModal() {
+            document.getElementById('addToCartModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            // Reset selections
+            window.selectedColor = '';
+            window.selectedSize = '';
+            window.selectedQuantity = 1;
+        }
+
+        function populateAddToCartModal(product) {
+            // Set product details
+            document.getElementById('addToCartProductName').textContent = product.name;
+            document.getElementById('addToCartProductImage').src = product.front_image || '';
+            document.getElementById('addToCartProductPrice').textContent = `$${parseFloat(product.price).toFixed(2)}`;
+            
+            // Populate colors
+            const colorContainer = document.getElementById('addToCartColors');
+            colorContainer.innerHTML = '';
+            const colors = product.colors || ['#000000'];
+            colors.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'color-option';
+                colorDiv.style.backgroundColor = color;
+                colorDiv.onclick = () => selectAddToCartColor(colorDiv, color);
+                colorContainer.appendChild(colorDiv);
+            });
+            
+            // Populate sizes
+            const sizeContainer = document.getElementById('addToCartSizes');
+            sizeContainer.innerHTML = '';
+            const sizes = product.sizes || ['S', 'M', 'L'];
+            sizes.forEach(size => {
+                const sizeDiv = document.createElement('div');
+                sizeDiv.className = 'size-option';
+                sizeDiv.textContent = size;
+                sizeDiv.onclick = () => selectAddToCartSize(sizeDiv, size);
+                sizeContainer.appendChild(sizeDiv);
+            });
+            
+            // Reset selections
+            window.selectedColor = '';
+            window.selectedSize = '';
+            window.selectedQuantity = 1;
+            updateAddToCartSummary();
+        }
+
+        function selectAddToCartColor(element, color) {
+            document.querySelectorAll('#addToCartColors .color-option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+            window.selectedColor = color;
+            updateAddToCartSummary();
+        }
+
+        function selectAddToCartSize(element, size) {
+            document.querySelectorAll('#addToCartSizes .size-option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+            window.selectedSize = size;
+            updateAddToCartSummary();
+        }
+
+        function changeAddToCartQuantity(change) {
+            const newQuantity = Math.max(1, Math.min(10, window.selectedQuantity + change));
+            window.selectedQuantity = newQuantity;
+            document.getElementById('addToCartQuantity').value = newQuantity;
+            updateAddToCartSummary();
+        }
+
+        function updateAddToCartSummary() {
+            document.getElementById('addToCartSelectedColor').textContent = window.selectedColor || 'Please select a color';
+            document.getElementById('addToCartSelectedSize').textContent = window.selectedSize || 'Please select a size';
+            document.getElementById('addToCartSelectedQuantity').textContent = window.selectedQuantity;
+            
+            // Enable/disable add to cart button
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            if (window.selectedColor && window.selectedSize) {
+                addToCartBtn.disabled = false;
+                addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+            } else {
+                addToCartBtn.disabled = true;
+                addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Please Select Options First';
+            }
+        }
+
+        function addToCartFromModal() {
+            if (!window.selectedColor || !window.selectedSize) {
+                alert('Please select both color and size');
+                return;
+            }
+            
+            const btn = document.getElementById('addToCartBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            
+            // Get product ID from the modal
+            const productId = document.getElementById('addToCartModal').getAttribute('data-product-id');
+            
+            // For demo purposes, simulate API call
+            setTimeout(() => {
+                alert('Product added to cart successfully!');
+                closeAddToCartModal();
+                // Update cart count
+                const currentCount = parseInt(document.querySelector('.cart-badge')?.textContent || '0');
+                updateCartCount(currentCount + 1);
+            }, 1000);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const addToCartModal = document.getElementById('addToCartModal');
+            if (event.target === addToCartModal) {
+                closeAddToCartModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const addToCartModal = document.getElementById('addToCartModal');
+                if (addToCartModal.style.display === 'block') {
+                    closeAddToCartModal();
+                }
+            }
+>>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4:index.html
         });
     </script>
 </body>
 </html>
+=======
+<?php
+/**
+ * Glamour Shopping System - Main Entry Point
+ * Redirects users to appropriate sections based on their needs
+ */
+
+session_start();
+
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user_id']);
+$isAdminLoggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+
+// Get the requested section from URL parameters
+$section = $_GET['section'] ?? '';
+
+// Redirect based on section or default to main page
+switch ($section) {
+    case 'women':
+        header('Location: womenF/index.php');
+        exit;
+    case 'men':
+        header('Location: menfolder/men.php');
+        exit;
+    case 'perfumes':
+        header('Location: perfumes/index.php');
+        exit;
+    case 'shoes':
+        header('Location: shoess/men.php');
+        exit;
+    case 'home-decor':
+        header('Location: home-decor/homedecor.php');
+        exit;
+    case 'admin':
+        if ($isAdminLoggedIn) {
+            header('Location: admin/index.php');
+        } else {
+            header('Location: admin/login.php');
+        }
+        exit;
+    case 'cart':
+        header('Location: cart.php');
+        exit;
+    case 'products':
+        header('Location: index.php');
+        exit;
+    default:
+        // Default to the main HTML page
+        include 'index.html';
+        exit;
+}
+?>
+>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4

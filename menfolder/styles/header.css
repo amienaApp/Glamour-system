@@ -502,4 +502,29 @@ body {
     font-weight: 500;
     color: #333333;
     font-family: 'Poppins', sans-serif;
-} 
+}
+
+/* Active state for image items */
+.image-item.active {
+    transform: scale(1.02);
+}
+
+.image-item.active img {
+    border: 2px solid #000;
+    transform: scale(1.05);
+}
+
+.image-item.active h3 {
+    color: #000;
+    font-weight: 600;
+}
+
+/* Cursor pointer for clickable image items */
+.image-item {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.image-item:hover {
+    transform: scale(1.02);
+}
