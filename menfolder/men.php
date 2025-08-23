@@ -21,31 +21,31 @@ $page_title = 'Galamor palace';
 
                 <!-- Image Bar Section -->
                 <div class="image-bar" >
-                    <div class="image-item">
+                    <div class="image-item" data-category="all">
                         <img src="../img/women/12.webp" alt="men Fashion 12">
                         <h3>Shop All</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="shirts">
                         <img src="../img//men/shirts/14.jpg" alt="men Fashion 13">
                         <h3>Shirts</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="tshirts">
                         <img src="../img/men/t-shirts/6.2.png" alt="men Fashion 14">
                         <h3>T-Shirts</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="suits">
                         <img src="../img/men/suits/5.6.jpg" alt="suit formal">
                         <h3>Suits</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="pants">
                         <img src="../img/men/pants/9.1.jpg" alt=" pants">
                         <h3>Pants</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="shorts">
                         <img src="../img/men/shorts/5.jpg" alt=" shorts">
                         <h3>Shorts&Underwear</h3>
                     </div>
-                    <div class="image-item">
+                    <div class="image-item" data-category="hoodies">
                         <img src="../img/men/hoodie$sweatshirt/3.jpg" alt=" hoodie">
                         <h3>Hoodies & Sweatshirts</h3>
                     </div>
