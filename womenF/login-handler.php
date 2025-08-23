@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Include required files
-    require_once __DIR__ . '/../config/database.php';
+    require_once __DIR__ . '/../config/mongodb.php';
     require_once __DIR__ . '/../models/User.php';
 
     // Get POST data

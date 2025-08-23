@@ -225,16 +225,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Quick View Sidebar Functionality
-    const quickViewSidebar = document.getElementById('quick-view-sidebar');
-    const quickViewOverlay = document.getElementById('quick-view-overlay');
-    const closeQuickView = document.getElementById('close-quick-view');
-    const quickViewButtons = document.querySelectorAll('.quick-view');
-    
-    console.log('Quick view elements found:');
-    console.log('- Sidebar:', quickViewSidebar);
-    console.log('- Overlay:', quickViewOverlay);
-    console.log('- Close button:', closeQuickView);
-    console.log('- Quick view buttons:', quickViewButtons.length);
+    function setupQuickView() {
+        const quickViewSidebar = document.getElementById('quick-view-sidebar');
+        const quickViewOverlay = document.getElementById('quick-view-overlay');
+        const closeQuickView = document.getElementById('close-quick-view');
+        const quickViewButtons = document.querySelectorAll('.quick-view');
+        
+        console.log('Quick view elements found:');
+        console.log('- Sidebar:', quickViewSidebar);
+        console.log('- Overlay:', quickViewOverlay);
+        console.log('- Close button:', closeQuickView);
+        console.log('- Quick view buttons:', quickViewButtons.length);
     
     // Test if we can find the elements
     if (!quickViewSidebar) {
@@ -255,242 +256,19 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ Found', quickViewButtons.length, 'quick view buttons');
     }
     
-    // Product data for quick view - Perfumes
-    const productData = {
-        1: {
-            name: "Sauvage dior 100ml",
-            price: "$150",
-            brand: "Dior",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/15.jpg", color: "black" },
-                { src: "../img/perfumes/15.1.jpg", color: "blue" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000" },
-                { name: "Blue", value: "blue", hex: "#0e50f6ff" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Toilette",
-            notes: "Bergamot, Pink Pepper, Ambroxan",
-            longevity: "6-8 hours",
-            sillage: "Moderate",
-            season: "All Year"
-        },
-        2: {
-            name: "strong with you Perfume 100ml",
-            price: "$220",
-            brand: "Other",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/23.jpg", color: "red" }
-            ],
-            colors: [
-                { name: "Red", value: "red", hex: "#fd0f36ff" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Cardamom, Pink Pepper, Vanilla",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "Fall/Winter"
-        },
-        
-        3: {
-            name: "Khamrah 100ml",
-            price: "$125",
-            brand: "Lattafa",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/20.jpg", color: "brown" }
-            ],
-            colors: [
-                { name: "Brown", value: "brown", hex: "#8b4513" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Oud, Amber, Vanilla",
-            longevity: "10-12 hours",
-            sillage: "Strong",
-            season: "Fall/Winter"
-        },
-        4: {
-            name: "Mss dior Eau De Parfum 100ml",
-            price: "$105",
-            brand: "Dior",
-            gender: "women",
-            images: [
-                { src: "../img/perfumes/14.avif", color: "pink" }
-            ],
-            colors: [
-                { name: "Pink", value: "pink", hex: "#eb9abcff" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Rose, Lily-of-the-Valley, Peony",
-            longevity: "6-8 hours",
-            sillage: "Moderate",
-            season: "Spring/Summer"
-        },
-        5: {
-            name: "Valentino Donna Born in Roma 30ml",
-            price: "$95",
-            brand: "Valentino",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/7.webp", color: "pink" }
-            ],
-            colors: [
-                { name: "Pink", value: "pink", hex: "#ffc0cb" }
-            ],
-            sizes: ["30ml"],
-            concentration: "Eau de Parfum",
-            notes: "Bergamot, Jasmine, Vanilla",
-            longevity: "6-8 hours",
-            sillage: "Moderate",
-            season: "All Year"
-        },
-        6: {
-            name: "Gucci Bloom Eau de Parfum 100ml",
-            price: "$180",
-            brand: "Gucci",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/22.jpg", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#050505ff" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Tuberose, Jasmine, Rangoon Creeper",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "Spring/Summer"
-        },
-        7: {
-            name: "Prada milano 50ml",
-            price: "$140",
-            brand: "Other",
-            gender: "women",
-            images: [
-                { src: "../img/perfumes/16.png", color: "pink" }
-            ],
-            colors: [
-                { name: "Pink", value: "pink", hex: "#f7a7c2ff" }
-            ],
-            sizes: ["50ml"],
-            concentration: "Eau de Parfum",
-            notes: "Iris, Vanilla, Amber",
-            longevity: "6-8 hours",
-            sillage: "Moderate",
-            season: "All Year"
-        },
-        8: {
-            name: "valentino 100ml",
-            price: "$200",
-            brand: "Valentino",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/10.webp", color: "black" },
-                { src: "../img/perfumes/10.0.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Bergamot, Lavender, Tonka Bean",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "All Year"
-        },
-        
-        9: {
-            name: "Born In Roma Extradose Eau De Parfum 30Ml",
-            price: "$120",
-            brand: "Valentino",
-            gender: "women",
-            images: [
-                { src: "../img/perfumes/4.webp", color: "pink" }
-            ],
-            colors: [
-                { name: "Pink", value: "pink", hex: "#ffc0cb" }
-            ],
-            sizes: ["30ml"],
-            concentration: "Eau de Parfum",
-            notes: "Vanilla, Bourbon, Jasmine",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "Fall/Winter"
-        },
-        10: {
-            name: "Chanel Coco Mademoiselle",
-            price: "$200",
-            brand: "Chanel",
-            gender: "women",
-            images: [
-                { src: "../img/perfumes/12.webp", color: "gold" },
-                { src: "../img/perfumes/12.0.webp", color: "gold" }
-            ],
-            colors: [
-                { name: "Gold", value: "gold", hex: "#ffd700" }
-            ],
-            sizes: ["50ml"],
-            concentration: "Eau de Parfum",
-            notes: "Orange, Jasmine, Patchouli",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "All Year"
-        },
-        11: {
-            name: "Gucci Guilty Pour Homme",
-            price: "$160",
-            brand: "Gucci",
-            gender: "men",
-            images: [
-                { src: "../img/perfumes/13.webp", color: "black" },
-                { src: "../img/perfumes/13.0.webp", color: "black" }
-            ],
-            colors: [
-                { name: "Black", value: "black", hex: "#000" }
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Toilette",
-            notes: "Lemon, Lavender, Patchouli",
-            longevity: "6-8 hours",
-            sillage: "Moderate",
-            season: "All Year"
-        },
-        12: {
-            name: "Good girl perfume 100ml",
-            price: "$250",
-            brand: "Other",
-            gender: "women",
-            images: [
-                { src: "../img/perfumes/24.jpg", color: "blue" },
-                { src: "../img/perfumes/17.jpg", color: "navy" }
-            ],
-            colors: [
-                { name: "Blue", value: "blue", hex: "#474eb9ff" },
-                { name: "navy", value: "navy", hex: "#1a2145ff" }
-
-            ],
-            sizes: ["100ml"],
-            concentration: "Eau de Parfum",
-            notes: "Jasmine, Cacao, Tonka Bean",
-            longevity: "8-10 hours",
-            sillage: "Strong",
-            season: "Fall/Winter"
-        },
-
-    };
+    // Product data is now extracted dynamically from the DOM
 
     // Open Quick View
     console.log('Setting up quick view buttons. Found:', quickViewButtons.length, 'buttons');
-    quickViewButtons.forEach(button => {
+    
+    // Debug: Log each button
+    quickViewButtons.forEach((button, index) => {
+        console.log(`Button ${index}:`, button);
+        console.log(`Button ${index} data-product-id:`, button.getAttribute('data-product-id'));
+        
         button.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             const productId = this.getAttribute('data-product-id');
             console.log('Quick view clicked for product ID:', productId);
             openQuickView(productId);
@@ -517,12 +295,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function openQuickView(productId) {
         console.log('openQuickView called with productId:', productId);
-        const product = productData[productId];
-        console.log('Found product:', product);
-        if (!product) {
-            console.log('No product found for ID:', productId);
+        
+        // Find the product card with this ID
+        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        console.log('Product card found:', productCard);
+        
+        if (!productCard) {
+            console.log('No product card found for ID:', productId);
+            console.log('All product cards:', document.querySelectorAll('[data-product-id]'));
             return;
         }
+        
+        // Extract product data from the DOM
+        const product = {
+            name: productCard.querySelector('.product-name').textContent,
+            price: productCard.querySelector('.product-price').textContent,
+            brand: productCard.querySelector('.product-brand').textContent,
+            size: productCard.querySelector('.product-size').textContent,
+            images: []
+        };
+        
+        // Get images from the product card
+        const images = productCard.querySelectorAll('.image-slider img');
+        images.forEach(img => {
+            product.images.push({
+                src: img.src,
+                color: img.getAttribute('data-color') || 'default'
+            });
+        });
+        
+        // Get colors from the product card
+        const colorCircles = productCard.querySelectorAll('.color-circle');
+        product.colors = [];
+        colorCircles.forEach((circle, index) => {
+            product.colors.push({
+                name: circle.title || circle.getAttribute('data-color'),
+                value: circle.getAttribute('data-color'),
+                hex: circle.style.backgroundColor || '#000'
+            });
+        });
+        
+        // Get sizes (for perfumes, usually just one size)
+        product.sizes = [product.size || '100ml'];
+        
+        console.log('Extracted product data:', product);
 
         // Populate product data
         document.getElementById('quick-view-title').textContent = product.name;
@@ -644,11 +460,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show sidebar
         console.log('Showing quick view sidebar...');
-        quickViewSidebar.classList.add('active');
-        quickViewOverlay.classList.add('active');
+        console.log('Sidebar element:', quickViewSidebar);
+        console.log('Overlay element:', quickViewOverlay);
+        
+        if (quickViewSidebar) {
+            quickViewSidebar.classList.add('active');
+            console.log('Added active class to sidebar');
+        } else {
+            console.error('Quick view sidebar not found!');
+        }
+        
+        if (quickViewOverlay) {
+            quickViewOverlay.classList.add('active');
+            console.log('Added active class to overlay');
+        } else {
+            console.error('Quick view overlay not found!');
+        }
+        
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        console.log('Sidebar classes:', quickViewSidebar.className);
-        console.log('Overlay classes:', quickViewOverlay.className);
+        console.log('Sidebar classes:', quickViewSidebar ? quickViewSidebar.className : 'sidebar not found');
+        console.log('Overlay classes:', quickViewOverlay ? quickViewOverlay.className : 'overlay not found');
     }
 
     function closeQuickViewSidebar() {
@@ -663,23 +494,32 @@ document.addEventListener('DOMContentLoaded', function() {
         addToBagQuick.addEventListener('click', function() {
             const selectedSize = document.querySelector('.quick-view-size-btn.active');
             if (!selectedSize) {
-                alert('Please select a size');
+                showNotification('Please select a size', 'error');
                 return;
             }
             
+            // Get the product ID from the currently open quick view
             const productName = document.getElementById('quick-view-title').textContent;
+            const productCard = document.querySelector(`[data-product-id] .product-name`);
+            let productId = null;
+            
+            // Find the product card that matches the current product name
+            document.querySelectorAll('.product-card').forEach(card => {
+                if (card.querySelector('.product-name').textContent === productName) {
+                    productId = card.getAttribute('data-product-id');
+                }
+            });
+            
+            if (!productId) {
+                showNotification('Product not found', 'error');
+                return;
+            }
+            
             const selectedColor = document.querySelector('.quick-view-color-circle.active');
             const colorName = selectedColor ? selectedColor.title : '';
             
-            console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
-            alert(`Added to cart: ${productName}`);
-            
-            // Update cart count (you can implement this)
-            const cartCount = document.querySelector('.cart-count');
-            if (cartCount) {
-                const currentCount = parseInt(cartCount.textContent) || 0;
-                cartCount.textContent = currentCount + 1;
-            }
+            console.log(`Adding to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
+            addToCart(productId, productName);
         });
     }
 
@@ -689,9 +529,11 @@ document.addEventListener('DOMContentLoaded', function() {
         addToWishlistQuick.addEventListener('click', function() {
             const productName = document.getElementById('quick-view-title').textContent;
             console.log(`Added to wishlist: ${productName}`);
-            alert(`Added to wishlist: ${productName}`);
+            showNotification(`✓ ${productName} added to wishlist!`, 'success');
         });
     }
+    
+    } // End of setupQuickView function
 
     // Modal Functionality
     const somaliaFlag = document.getElementById('somalia-flag');
@@ -818,20 +660,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Add your cart functionality here
-            console.log('Added to cart:', this.closest('.product-card').querySelector('.product-name').textContent);
+            const productCard = this.closest('.product-card');
+            const productId = productCard.getAttribute('data-product-id');
+            const productName = productCard.querySelector('.product-name').textContent;
+            
+            console.log('Adding to cart:', productName);
+            addToCart(productId, productName);
         });
     });
 
-    // Quick view functionality (old version - keeping for compatibility)
-    const quickViewButtonsOld = document.querySelectorAll('.quick-view');
-    
-    quickViewButtonsOld.forEach(button => {
-        button.addEventListener('click', function() {
-            // Add your quick view functionality here
-            console.log('Quick view:', this.closest('.product-card').querySelector('.product-name').textContent);
-        });
-    });
+    // Quick view functionality is now handled by the main event listeners above
 
     // Sorting Functionality
     const sortSelect = document.getElementById('sort-select');
@@ -1069,4 +907,139 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize filters on page load
     applyFilters();
+    
+    // Cart functionality
+    function addToCart(productId, productName) {
+        console.log('Adding to cart:', productId, productName);
+        
+        // Show loading state
+        const button = document.querySelector(`[data-product-id="${productId}"] .add-to-bag`);
+        let originalText = '';
+        if (button) {
+            originalText = button.textContent;
+            button.textContent = 'Adding...';
+            button.disabled = true;
+        }
+        
+        // Show immediate feedback notification
+        showNotification(`Adding ${productName} to cart...`, 'info');
+        
+        // Make API call to add to cart
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Cart API response:', data);
+            
+            if (data.success) {
+                // Update cart count in header
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount(data.cart_count);
+                }
+                
+                // Show success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            if (button && originalText) {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    }
+    
+    // Improved notification function
+    function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.cart-notification');
+        existingNotifications.forEach(notification => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        });
+        
+        // Create notification
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        
+        // Set colors based on type
+        let backgroundColor, icon;
+        switch (type) {
+            case 'success':
+                backgroundColor = '#28a745';
+                icon = '✓';
+                break;
+            case 'error':
+                backgroundColor = '#dc3545';
+                icon = '✗';
+                break;
+            case 'info':
+            default:
+                backgroundColor = '#17a2b8';
+                icon = 'ℹ';
+                break;
+        }
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${backgroundColor};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            font-weight: 500;
+            font-size: 14px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+        `;
+        
+        notification.textContent = `${icon} ${message}`;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Update cart count function
+    function updateCartCount(count) {
+        const cartCountElements = document.querySelectorAll('.cart-count');
+        cartCountElements.forEach(element => {
+            element.textContent = count;
+        });
+    }
+    
+    // Call setupQuickView when DOM is ready
+    setupQuickView();
 }); 

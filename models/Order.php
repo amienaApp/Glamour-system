@@ -4,7 +4,8 @@
  * Handles order operations
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
 require_once __DIR__ . '/Cart.php'; // Required for clearing cart after order
 require_once __DIR__ . '/Product.php'; // Required for enriching order details
 
@@ -13,7 +14,7 @@ class Order {
     private $collection;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('orders');
     }
 

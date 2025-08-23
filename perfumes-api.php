@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once 'config/database.php';
+require_once 'config/mongodb.php';
 require_once 'models/Perfume.php';
 
 $perfumeModel = new Perfume();

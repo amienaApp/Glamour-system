@@ -1,16 +1,37 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/Category.php';
+// Ensure vendor autoload is included first
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../models/Category.php';
 
 $categoryModel = new Category();
 $categories = $categoryModel->getAll();
 $isLoggedIn = isset($_SESSION['user_id']);
+
+// Define region options to avoid duplication
+$regionOptions = [
+    'banadir' => 'Banadir',
+    'bari' => 'Bari',
+    'bay' => 'Bay',
+    'galguduud' => 'Galguduud',
+    'gedo' => 'Gedo',
+    'hiran' => 'Hiran',
+    'jubbada-dhexe' => 'Jubbada Dhexe',
+    'jubbada-hoose' => 'Jubbada Hoose',
+    'mudug' => 'Mudug',
+    'nugaal' => 'Nugaal',
+    'sanaag' => 'Sanaag',
+    'shabeellaha-dhexe' => 'Shabeellaha Dhexe',
+    'shabeellaha-hoose' => 'Shabeellaha Hoose',
+    'sool' => 'Sool',
+    'togdheer' => 'Togdheer',
+    'woqooyi-galbeed' => 'Woqooyi Galbeed'
+];
 ?>
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <!-- Top Navigation Bar -->
 <nav class="top-nav">
@@ -155,22 +176,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
                 <label for="region-select">Choose a region (Somalia regions):</label>
                 <select id="region-select" class="form-input">
                     <option value="">Select a region</option>
-                    <option value="banadir">Banadir</option>
-                    <option value="bari">Bari</option>
-                    <option value="bay">Bay</option>
-                    <option value="galguduud">Galguduud</option>
-                    <option value="gedo">Gedo</option>
-                    <option value="hiran">Hiran</option>
-                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
-                    <option value="jubbada-hoose">Jubbada Hoose</option>
-                    <option value="mudug">Mudug</option>
-                    <option value="nugaal">Nugaal</option>
-                    <option value="sanaag">Sanaag</option>
-                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
-                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
-                    <option value="sool">Sool</option>
-                    <option value="togdheer">Togdheer</option>
-                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
+                    <?php foreach ($regionOptions as $value => $label): ?>
+                        <option value="<?php echo htmlspecialchars($value); ?>"><?php echo htmlspecialchars($label); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
@@ -281,22 +289,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
                     <div class="form-group">
                         <select id="region" class="form-input" required>
                             <option value="">Select Region *</option>
-                            <option value="banadir">Banadir</option>
-                            <option value="bari">Bari</option>
-                            <option value="bay">Bay</option>
-                            <option value="galguduud">Galguduud</option>
-                            <option value="gedo">Gedo</option>
-                            <option value="hiran">Hiran</option>
-                            <option value="jubbada-dhexe">Jubbada Dhexe</option>
-                            <option value="jubbada-hoose">Jubbada Hoose</option>
-                            <option value="mudug">Mudug</option>
-                            <option value="nugaal">Nugaal</option>
-                            <option value="sanaag">Sanaag</option>
-                            <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
-                            <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
-                            <option value="sool">Sool</option>
-                            <option value="togdheer">Togdheer</option>
-                            <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
+                            <?php foreach ($regionOptions as $value => $label): ?>
+                                <option value="<?php echo htmlspecialchars($value); ?>"><?php echo htmlspecialchars($label); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -403,7 +398,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=add_to_cart&product_id=${productId}&quantity=1`
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
         })
         .then(response => response.json())
         .then(data => {
@@ -541,13 +536,13 @@ $isLoggedIn = isset($_SESSION['user_id']);
             });
         });
 
-        // Close dropdown when clicking outside
+        // Close dropdown and modal when clicking outside
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('user-dropdown');
             const userIcon = document.getElementById('user-icon');
             
+            // Close dropdown when clicking outside
             if (userDropdown && userIcon) {
-                // Check if click is outside the dropdown and user icon
                 if (!userDropdown.contains(e.target) && !userIcon.contains(e.target)) {
                     userDropdown.style.opacity = '0';
                     userDropdown.style.visibility = 'hidden';
@@ -557,13 +552,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
             }
             
             // Close modal when clicking outside
-            if (userModal) {
-                userModal.addEventListener('click', function(e) {
-                    if (e.target === userModal && !isTransitioningToLogin) {
-                        userModal.classList.remove('show');
-                        userModal.style.display = 'none';
-                    }
-                });
+            if (userModal && e.target === userModal && !isTransitioningToLogin) {
+                userModal.classList.remove('show');
+                userModal.style.display = 'none';
             }
         });
 
@@ -609,52 +600,17 @@ $isLoggedIn = isset($_SESSION['user_id']);
 
 
 
-        // Menu item click handlers
-        const dashboardLink = document.getElementById('dashboard-link');
-        const myInfoLink = document.getElementById('my-info-link');
-        const notificationsLink = document.getElementById('notifications-link');
-        const notifyMeLink = document.getElementById('notify-me-link');
-        const giftCardsLink = document.getElementById('gift-cards-link');
-
-        // Dashboard link (placeholder)
-        if (dashboardLink) {
-            dashboardLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Dashboard feature coming soon
-            });
-        }
-
-        // My Info link (placeholder)
-        if (myInfoLink) {
-            myInfoLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                // My Info feature coming soon
-            });
-        }
-
-        // Notifications link (placeholder)
-        if (notificationsLink) {
-            notificationsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Notifications feature coming soon
-            });
-        }
-
-        // Notify Me List link (placeholder)
-        if (notifyMeLink) {
-            notifyMeLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Notify Me List feature coming soon
-            });
-        }
-
-        // Gift Cards link (placeholder)
-        if (giftCardsLink) {
-            giftCardsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Gift Cards feature coming soon
-            });
-        }
+        // Menu item click handlers (placeholder functionality)
+        const menuItems = ['dashboard-link', 'my-info-link', 'notifications-link', 'notify-me-link', 'gift-cards-link'];
+        menuItems.forEach(itemId => {
+            const element = document.getElementById(itemId);
+            if (element) {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Feature coming soon
+                });
+            }
+        });
 
         // Prevent form submission for now (placeholder)
         const loginFormElement = document.querySelector('.login-form');
@@ -818,20 +774,6 @@ $isLoggedIn = isset($_SESSION['user_id']);
 
 
         // Password visibility toggle functionality
-        function togglePasswordVisibility(fieldId) {
-            const passwordInput = document.getElementById(fieldId);
-            const toggleBtn = passwordInput.parentElement.querySelector('.show-password i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.className = 'fas fa-eye-slash';
-            } else {
-                passwordInput.type = 'password';
-                toggleBtn.className = 'fas fa-eye';
-            }
-        }
-
-        // Add click handlers for password visibility toggles
         document.addEventListener('click', function(e) {
             if (e.target.closest('.show-password')) {
                 const passwordContainer = e.target.closest('.password-container');
@@ -913,6 +855,4 @@ $isLoggedIn = isset($_SESSION['user_id']);
 
 
     });
-</script>
-</div> 
-</div> 
+</script> 

@@ -1461,7 +1461,7 @@ function renderProductCard($product) {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `action=add_to_cart&product_id=${productId}&quantity=${window.selectedQuantity}&color=${window.selectedColor}&size=${window.selectedSize}`
+                body: `action=add_to_cart&product_id=${productId}&quantity=${window.selectedQuantity}&color=${window.selectedColor}&size=${window.selectedSize}&return_url=${encodeURIComponent(window.location.href)}`
             })
             .then(response => response.json())
             .then(data => {

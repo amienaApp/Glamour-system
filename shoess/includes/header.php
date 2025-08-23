@@ -69,22 +69,28 @@
                 <label for="region-select">Choose a region (Somalia regions):</label>
                 <select id="region-select" class="form-input">
                     <option value="">Select a region</option>
-                    <option value="banadir">Banadir</option>
-                    <option value="bari">Bari</option>
-                    <option value="bay">Bay</option>
-                    <option value="galguduud">Galguduud</option>
-                    <option value="gedo">Gedo</option>
-                    <option value="hiran">Hiran</option>
-                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
-                    <option value="jubbada-hoose">Jubbada Hoose</option>
-                    <option value="mudug">Mudug</option>
-                    <option value="nugaal">Nugaal</option>
-                    <option value="sanaag">Sanaag</option>
-                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
-                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
-                    <option value="sool">Sool</option>
-                    <option value="togdheer">Togdheer</option>
-                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
+                    <?php
+                    $regionOptions = [
+                        'banadir' => 'Banadir',
+                        'bari' => 'Bari',
+                        'bay' => 'Bay',
+                        'galguduud' => 'Galguduud',
+                        'gedo' => 'Gedo',
+                        'hiran' => 'Hiran',
+                        'jubbada-dhexe' => 'Jubbada Dhexe',
+                        'jubbada-hoose' => 'Jubbada Hoose',
+                        'mudug' => 'Mudug',
+                        'nugaal' => 'Nugaal',
+                        'sanaag' => 'Sanaag',
+                        'shabeellaha-dhexe' => 'Shabeellaha Dhexe',
+                        'shabeellaha-hoose' => 'Shabeellaha Hoose',
+                        'sool' => 'Sool',
+                        'togdheer' => 'Togdheer',
+                        'woqooyi-galbeed' => 'Woqooyi Galbeed'
+                    ];
+                    foreach ($regionOptions as $value => $label): ?>
+                        <option value="<?php echo htmlspecialchars($value); ?>"><?php echo htmlspecialchars($label); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">

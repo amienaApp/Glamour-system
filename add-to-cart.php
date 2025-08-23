@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once 'config/database.php';
+require_once 'config/mongodb.php';
 require_once 'models/Product.php';
 require_once 'models/Cart.php';
 
@@ -725,7 +725,7 @@ $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `action=add_to_cart&product_id=<?php echo $product['_id']; ?>&quantity=${quantity}&color=${selectedColor}&size=${selectedSize}`
+                body: `action=add_to_cart&product_id=<?php echo $product['_id']; ?>&quantity=${quantity}&color=${selectedColor}&size=${selectedSize}&return_url=${encodeURIComponent(window.location.href)}`
             })
             .then(response => response.json())
             .then(data => {

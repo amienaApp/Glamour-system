@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once 'config/database.php';
+require_once 'config/mongodb.php';
 require_once 'models/Cart.php';
 require_once 'models/Order.php';
 require_once 'models/Product.php';
@@ -62,9 +62,15 @@ try {
                 $quantity = intval($input['quantity'] ?? 1);
                 $color = $input['color'] ?? '';
                 $size = $input['size'] ?? '';
+                $returnUrl = $input['return_url'] ?? '';
                 
                 if (empty($productId)) {
                     throw new Exception('Product ID is required');
+                }
+                
+                // Store return URL in session if provided
+                if (!empty($returnUrl)) {
+                    $_SESSION['return_url'] = $returnUrl;
                 }
                 
                 $success = $cartModel->addToCart($defaultUserId, $productId, $quantity, $color, $size);

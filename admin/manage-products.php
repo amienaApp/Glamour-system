@@ -7,10 +7,33 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/database.php';
+require_once '../config/mongodb.php';
 require_once '../models/Product.php';
 
-    $productModel = new Product();
+// Helper function to convert BSONArray to regular array
+function toArray($value) {
+    if (is_object($value) && method_exists($value, 'toArray')) {
+        $result = $value->toArray();
+        // Ensure we get a proper array
+        if (is_array($result)) {
+            return $result;
+        } else {
+            // If toArray() returns an object, try to convert it
+            return (array)$result;
+        }
+    }
+    return $value;
+}
+
+// Helper function to get count of array or BSONArray
+function getCount($value) {
+    if (is_object($value) && method_exists($value, 'count')) {
+        return $value->count();
+    }
+    return count($value);
+}
+
+$productModel = new Product();
 
 $message = '';
 $messageType = '';
@@ -787,11 +810,22 @@ $totalProducts = count($products);
                                     <div style="width: 20px; height: 20px; border-radius: 50%; background-color: <?php echo htmlspecialchars($product['color']); ?>; border: 1px solid #ddd;"></div>
                                 <?php endif; ?>
                                 <?php if (isset($product['color_variants']) && !empty($product['color_variants'])): ?>
-                                    <?php foreach (array_slice($product['color_variants'], 0, 3) as $variant): ?>
-                                        <div style="width: 20px; height: 20px; border-radius: 50%; background-color: <?php echo htmlspecialchars($variant['color']); ?>; border: 1px solid #ddd;" title="<?php echo htmlspecialchars($variant['name']); ?>"></div>
-                                    <?php endforeach; ?>
-                                    <?php if (count($product['color_variants']) > 3): ?>
-                                        <small style="color: #718096;">+<?php echo count($product['color_variants']) - 3; ?> more</small>
+                                    <?php 
+                                    $colorVariants = toArray($product['color_variants']);
+                                    if (is_array($colorVariants) && !empty($colorVariants)) {
+                                        $colorVariants = array_slice($colorVariants, 0, 3);
+                                    }
+                                    ?>
+                                    <?php if (is_array($colorVariants) && !empty($colorVariants)): ?>
+                                        <?php foreach ($colorVariants as $variant): ?>
+                                            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: <?php echo htmlspecialchars($variant['color']); ?>; border: 1px solid #ddd;" title="<?php echo htmlspecialchars($variant['name']); ?>"></div>
+                                        <?php endforeach; ?>
+                                        <?php 
+                                        $totalVariants = getCount($product['color_variants']);
+                                        if ($totalVariants > 3): 
+                                        ?>
+                                            <small style="color: #718096;">+<?php echo $totalVariants - 3; ?> more</small>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                             <?php endif; ?>
                         </div>
