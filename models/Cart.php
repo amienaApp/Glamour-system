@@ -158,16 +158,11 @@ class Cart {
                 $itemCount += $item['quantity'];
                 $items[] = $item;
                 
-                // Debug: Log item details
-                error_log("Cart item - Product: " . $product['name'] . ", Price: " . $product['price'] . ", Quantity: " . $item['quantity'] . ", Subtotal: " . $item['subtotal']);
-            } else {
-                error_log("Product not found for ID: " . $item['product_id']);
+
             }
         }
         
-        // Debug: Log final cart totals
-        error_log("Cart final total: " . $total);
-        error_log("Cart final item count: " . $itemCount);
+
         
         return [
             'items' => $items,

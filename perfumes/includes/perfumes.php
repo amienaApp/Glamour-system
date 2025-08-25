@@ -186,11 +186,11 @@ foreach ($allPerfumes as $perfume) {
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
-                            <button class="quick-view" data-product-id="<?php echo $perfume['_id']; ?>" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Quick View</button>
+                            <button class="quick-view" data-product-id="<?php echo $perfume['_id']; ?>">Quick View</button>
                             <?php if (($perfume['available'] ?? true) === false): ?>
                                 <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag" onclick="testQuickView('<?php echo $perfume['_id']; ?>')">Add To Bag</button>
+                                <button class="add-to-bag">Add To Bag</button>
                             <?php endif; ?>
                 </div>
             </div>
@@ -256,7 +256,7 @@ foreach ($allPerfumes as $perfume) {
 <!-- Quick View Sidebar -->
 <div class="quick-view-sidebar" id="quick-view-sidebar">
     <div class="quick-view-header">
-        <button class="close-quick-view" id="close-quick-view" onclick="closeQuickViewTest()">
+                        <button class="close-quick-view" id="close-quick-view">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -519,152 +519,7 @@ function initializePerfumes() {
     });
 }
 
-// Quick view function
-function testQuickView(productId) {
-    console.log('Quick view opened for product:', productId);
-    
-    // Find the product card with this ID
-    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-    if (!productCard) {
-        console.log('No product card found for ID:', productId);
-        return;
-    }
-    
-    // Extract product data from the DOM
-    const product = {
-        name: productCard.querySelector('.product-name').textContent,
-        price: productCard.querySelector('.product-price').textContent,
-        brand: productCard.querySelector('.product-brand').textContent,
-        size: productCard.querySelector('.product-size').textContent,
-        images: []
-    };
-    
-    // Get images from the product card
-    const images = productCard.querySelectorAll('.image-slider img');
-    images.forEach(img => {
-        product.images.push({
-            src: img.src,
-            color: img.getAttribute('data-color') || 'default'
-        });
-    });
-    
-    // Get colors from the product card
-    const colorCircles = productCard.querySelectorAll('.color-circle');
-    product.colors = [];
-    colorCircles.forEach((circle, index) => {
-        product.colors.push({
-            name: circle.title || circle.getAttribute('data-color'),
-            value: circle.getAttribute('data-color'),
-            hex: circle.style.backgroundColor || '#000'
-        });
-    });
-    
-    // Get sizes (for perfumes, usually just one size)
-    product.sizes = [product.size || '100ml'];
-    
-    console.log('Extracted product data:', product);
 
-    // Populate quick view with product data
-    document.getElementById('quick-view-title').textContent = product.name;
-    document.getElementById('quick-view-price').textContent = product.price;
-    document.getElementById('quick-view-brand').textContent = product.brand;
-    document.getElementById('quick-view-size').textContent = product.size;
-    
-    // Set main image
-    const mainImage = document.getElementById('quick-view-main-image');
-    if (product.images.length > 0) {
-        mainImage.src = product.images[0].src;
-        mainImage.alt = product.name;
-    }
-
-    // Populate thumbnails
-    const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
-    thumbnailsContainer.innerHTML = '';
-    
-    product.images.forEach((image, index) => {
-        const thumbnail = document.createElement('div');
-        thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
-        thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
-        
-        thumbnail.addEventListener('click', () => {
-            mainImage.src = image.src;
-            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
-            thumbnail.classList.add('active');
-        });
-        
-        thumbnailsContainer.appendChild(thumbnail);
-    });
-
-    // Populate colors
-    const colorSelection = document.getElementById('quick-view-color-selection');
-    colorSelection.innerHTML = '';
-    
-    product.colors.forEach((color, index) => {
-        const colorCircle = document.createElement('div');
-        colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
-        colorCircle.style.backgroundColor = color.hex;
-        colorCircle.setAttribute('data-color', color.value);
-        colorCircle.title = color.name;
-        
-        colorCircle.addEventListener('click', () => {
-            colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
-            colorCircle.classList.add('active');
-        });
-        
-        colorSelection.appendChild(colorCircle);
-    });
-
-    // Populate sizes
-    const sizeSelection = document.getElementById('quick-view-size-selection');
-    sizeSelection.innerHTML = '';
-    
-    product.sizes.forEach(size => {
-        const sizeBtn = document.createElement('button');
-        sizeBtn.className = 'quick-view-size-btn';
-        sizeBtn.textContent = size;
-        
-        sizeBtn.addEventListener('click', () => {
-            sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
-            sizeBtn.classList.add('active');
-        });
-        
-        sizeSelection.appendChild(sizeBtn);
-    });
-    
-    // Set up Add to Bag button functionality
-    const addToBagBtn = document.getElementById('add-to-bag-quick');
-    if (addToBagBtn) {
-        addToBagBtn.onclick = function() {
-            addToCartFromQuickView(productId, product.name);
-        };
-    }
-    
-    // Show the sidebar
-    const sidebar = document.getElementById('quick-view-sidebar');
-    const overlay = document.getElementById('quick-view-overlay');
-    
-    if (sidebar) {
-        sidebar.classList.add('active');
-    }
-    
-    if (overlay) {
-        overlay.classList.add('active');
-    }
-}
-
-// Close quick view function
-function closeQuickViewTest() {
-    const sidebar = document.getElementById('quick-view-sidebar');
-    const overlay = document.getElementById('quick-view-overlay');
-    
-    if (sidebar) {
-        sidebar.classList.remove('active');
-    }
-    
-    if (overlay) {
-        overlay.classList.remove('active');
-    }
-}
 
 // Load cart count on page load
 document.addEventListener('DOMContentLoaded', function() {

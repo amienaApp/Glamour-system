@@ -568,7 +568,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 
                                 // Create fallback if product not found
                                 if (!$product) {
-                                    error_log("Product not found for ID: " . $item['product_id']);
+                    
                                     $product = [
                                         'name' => $item['name'] ?? 'Unknown Product',
                                         'category' => 'Unknown Category',

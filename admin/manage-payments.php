@@ -700,19 +700,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <script src="includes/admin-sidebar.js"></script>
     <script>
-        // Test if JavaScript is working
-        console.log('JavaScript loaded successfully');
+
         
         // Add event listeners after DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, adding event listeners');
             
-            // Test if we can find action buttons
-            const actionButtons = document.querySelectorAll('.action-btn');
-            console.log('Found action buttons:', actionButtons.length);
-            
-            // Test action buttons are working
-            console.log('Action buttons should now work with inline onclick handlers');
         });
         function searchPayments() {
             const searchTerm = document.getElementById('searchInput').value;
@@ -722,7 +714,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         function viewPayment(paymentId) {
-            console.log('View payment clicked:', paymentId);
+    
             
             // Fetch payment details and show modal
             fetch('payment-actions.php', {
@@ -749,7 +741,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         function editPayment(paymentId) {
-            console.log('Edit payment clicked:', paymentId);
+    
             
             // Fetch payment details and show edit modal
             fetch('payment-actions.php', {
@@ -776,7 +768,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         function deletePayment(paymentId) {
-            console.log('Delete payment clicked:', paymentId);
+    
             showDeleteModal(paymentId);
         }
 

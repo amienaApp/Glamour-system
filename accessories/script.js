@@ -1,8 +1,5 @@
 // E-commerce Page JavaScript
-console.log('🚀 Script loaded successfully!');
-
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM loaded successfully!');
 
     // Scroll functionality for logo and nav-right fade
     let lastScrollTop = 0;
@@ -32,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Product Image Slider and Color Switching Functionality
     const productCards = document.querySelectorAll('.product-card');
-    console.log('Found product cards:', productCards.length);
+
     
     productCards.forEach((card, index) => {
         const imageSlider = card.querySelector('.image-slider');
@@ -42,11 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let autoSlideInterval;
         let currentImageIndex = 0; // Track current image index for each color
         
-        console.log(`Product ${index + 1}: Found ${images.length} images and ${colorCircles.length} color circles`);
-        
         // Only initialize if we have images
         if (images.length > 0) {
-            console.log(`Product ${index + 1}: Initializing slider`);
             
             // Initialize auto-sliding for the first color
             startAutoSlide();
@@ -111,8 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show next image
                     colorImages[currentImageIndex].classList.add('active');
                     
-                    console.log(`Product ${index + 1}: Manual switch to image ${currentImageIndex} for color ${currentColor}`);
-                    
                     // Restart auto-sliding timer
                     restartAutoSlide();
                 }
@@ -130,8 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show previous image
                     colorImages[currentImageIndex].classList.add('active');
                     
-                    console.log(`Product ${index + 1}: Manual switch to image ${currentImageIndex} for color ${currentColor}`);
-                    
                     // Restart auto-sliding timer
                     restartAutoSlide();
                 }
@@ -141,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
             colorCircles.forEach(circle => {
                 circle.addEventListener('click', function() {
                     const selectedColor = this.getAttribute('data-color');
-                    console.log(`Product ${index + 1}: Switching to color ${selectedColor}`);
                     
                     // Update active color circle
                     colorCircles.forEach(c => c.classList.remove('active'));
@@ -165,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show the first image of the selected color (front view)
             const colorImages = Array.from(images).filter(img => img.getAttribute('data-color') === color);
-            console.log(`Product ${index + 1}: Found ${colorImages.length} images for color ${color}`);
             
             if (colorImages.length > 0) {
                 colorImages[0].classList.add('active');
@@ -203,8 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show next image
                     colorImages[currentImageIndex].classList.add('active');
-                    
-                    console.log(`Product ${index + 1}: Auto-switching to image ${currentImageIndex} for color ${currentColor}`);
                 }
             }, 3000); // Switch every 3 seconds
         }
@@ -213,14 +199,12 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('mouseenter', () => {
             if (autoSlideInterval) {
                 clearInterval(autoSlideInterval);
-                console.log(`Product ${index + 1}: Paused auto-sliding`);
             }
         });
         
         // Resume auto-sliding when mouse leaves
         card.addEventListener('mouseleave', () => {
             startAutoSlide();
-            console.log(`Product ${index + 1}: Resumed auto-sliding`);
         });
     });
 
@@ -230,30 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeQuickView = document.getElementById('close-quick-view');
     const quickViewButtons = document.querySelectorAll('.quick-view');
     
-    console.log('Quick view elements found:');
-    console.log('- Sidebar:', quickViewSidebar);
-    console.log('- Overlay:', quickViewOverlay);
-    console.log('- Close button:', closeQuickView);
-    console.log('- Quick view buttons:', quickViewButtons.length);
-    
-    // Test if we can find the elements
-    if (!quickViewSidebar) {
-        console.error('❌ Quick view sidebar not found!');
-    } else {
-        console.log('✅ Quick view sidebar found');
-    }
-    
-    if (!quickViewOverlay) {
-        console.error('❌ Quick view overlay not found!');
-    } else {
-        console.log('✅ Quick view overlay found');
-    }
-    
-    if (quickViewButtons.length === 0) {
-        console.error('❌ No quick view buttons found!');
-    } else {
-        console.log('✅ Found', quickViewButtons.length, 'quick view buttons');
-    }
+
     
     // Product data for quick view - Accessories
     const productData = {
@@ -546,11 +507,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function openQuickView(productId) {
-        console.log('openQuickView called with productId:', productId);
         const product = productData[productId];
-        console.log('Found product:', product);
         if (!product) {
-            console.log('No product found for ID:', productId);
             return;
         }
 
@@ -698,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedColor = document.querySelector('.quick-view-color-circle.active');
             const colorName = selectedColor ? selectedColor.title : '';
             
-            console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
+
             alert(`Added to cart: ${productName}`);
             
             // Update cart count (you can implement this)
@@ -715,7 +673,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addToWishlistQuick) {
         addToWishlistQuick.addEventListener('click', function() {
             const productName = document.getElementById('quick-view-title').textContent;
-            console.log(`Added to wishlist: ${productName}`);
             alert(`Added to wishlist: ${productName}`);
         });
     }
@@ -846,7 +803,6 @@ document.addEventListener('DOMContentLoaded', function() {
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
             // Add your cart functionality here
-            console.log('Added to cart:', this.closest('.product-card').querySelector('.product-name').textContent);
         });
     });
 
@@ -856,7 +812,6 @@ document.addEventListener('DOMContentLoaded', function() {
     quickViewButtonsOld.forEach(button => {
         button.addEventListener('click', function() {
             // Add your quick view functionality here
-            console.log('Quick view:', this.closest('.product-card').querySelector('.product-name').textContent);
         });
     });
 
@@ -868,8 +823,6 @@ document.addEventListener('DOMContentLoaded', function() {
         sortSelect.addEventListener('change', function() {
             const sortValue = this.value;
             const products = Array.from(productGrid.querySelectorAll('.product-card'));
-            
-            console.log('Sorting products by:', sortValue);
             
             // Sort products based on selected option
             products.sort((a, b) => {
@@ -909,8 +862,6 @@ document.addEventListener('DOMContentLoaded', function() {
             products.forEach(product => {
                 productGrid.appendChild(product);
             });
-            
-            console.log('Products sorted successfully!');
         });
     }
 
@@ -930,11 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedCategories = getSelectedValues('category'); // category is used for bag types
         const selectedPrices = getSelectedValues('price');
         
-        console.log('Applying filters:');
-        console.log('- Selected genders:', selectedGenders);
-        console.log('- Selected sizes:', selectedSizes);
-        console.log('- Selected categories:', selectedCategories);
-        console.log('- Selected prices:', selectedPrices);
+
         
         products.forEach(product => {
             let shouldShow = true;
@@ -999,7 +946,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        console.log('Filters applied successfully!');
+
         
         // Update the style count
         updateStyleCount();
@@ -1045,7 +992,7 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
             product.style.display = 'block';
         });
-        console.log('All products shown');
+
         updateStyleCount();
     }
     

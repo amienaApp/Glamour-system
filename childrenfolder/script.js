@@ -1,8 +1,5 @@
 // E-commerce Page JavaScript
-console.log('🚀 Script loaded successfully!');
-
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM loaded successfully!');
 
     // Scroll functionality for logo and nav-right fade
     let lastScrollTop = 0;

@@ -820,7 +820,7 @@ session_start();
      <!-- Quick View Functionality -->
      <script>
          document.addEventListener('DOMContentLoaded', function() {
-             console.log('📄 DOM loaded successfully!');
+
 
              // Quick View Sidebar Functionality
              const quickViewSidebar = document.getElementById('quick-view-sidebar');
@@ -1081,7 +1081,7 @@ session_start();
                      const selectedColor = document.querySelector('.quick-view-color-circle.active');
                      const colorName = selectedColor ? selectedColor.title : '';
                      
-                     console.log(Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName});
+
                      alert(Added to cart: ${productName});
                      
                      // Update cart count (you can implement this)
@@ -1098,7 +1098,7 @@ session_start();
              if (addToWishlistQuick) {
                  addToWishlistQuick.addEventListener('click', function() {
                      const productName = document.getElementById('quick-view-title').textContent;
-                     console.log(Added to wishlist: ${productName});
+
                      alert(Added to wishlist: ${productName});
                  });
              }
@@ -1141,7 +1141,7 @@ session_start();
              addToCartButtons.forEach(button => {
                  button.addEventListener('click', function() {
                      // Add your cart functionality here
-                     console.log('Added to cart:', this.closest('.product-card').querySelector('.product-name').textContent);
+    
                  });
              });
          });
@@ -1151,7 +1151,7 @@ session_start();
      <script>
          // Load cart count on page load
          document.addEventListener('DOMContentLoaded', function() {
-             console.log('DOM loaded, loading cart count...');
+
              loadCartCount();
          });
 
@@ -1160,7 +1160,7 @@ session_start();
          function updateCartCount(count) {
              try {
                  const cartIcons = document.querySelectorAll('.fa-shopping-cart');
-                 console.log('Updating cart count:', count, 'Element found:', cartIcons.length > 0);
+
                  cartIcons.forEach((icon, index) => {
                      try {
                          const parent = icon.parentElement;
@@ -1194,8 +1194,6 @@ session_start();
                                  parent.style.position = 'relative';
                                  parent.appendChild(badge);
                              }
-                         } else {
-                             console.log('Skipping cart icon', index, 'because parent is null/invalid');
                          }
                      } catch (error) {
                          console.error('Error updating cart icon', index, ':', error);
@@ -1207,7 +1205,7 @@ session_start();
          }
 
          function loadCartCount() {
-             console.log('Loading cart count...');
+
              fetch('cart-api.php', {
                  method: 'POST',
                  headers: {
@@ -1222,7 +1220,7 @@ session_start();
                  return response.text();
              })
              .then(text => {
-                 console.log('Raw response:', text);
+
                  try {
                      const data = JSON.parse(text);
                      if (data.success) {

@@ -25,9 +25,7 @@ class Order {
         // Convert cart items to array if needed
         $cartItems = $this->toArray($cartData['items']);
         
-        // Debug: Log cart items
-        error_log("Creating order for user: $userId");
-        error_log("Cart items count: " . count($cartItems));
+
         
         // Ensure items have consistent structure
         $processedItems = [];
@@ -56,12 +54,7 @@ class Order {
             $processedItems[] = $processedItem;
         }
         
-        // Debug: Log processed items
-        error_log("Processed items count: " . count($processedItems));
-        
-        // Debug: Log cart data for order creation
-        error_log("Cart total: " . ($cartData['total'] ?? 'not set'));
-        error_log("Cart item count: " . ($cartData['item_count'] ?? 'not set'));
+
         
         $orderData = [
             'user_id' => $userId,
@@ -78,9 +71,7 @@ class Order {
             'updated_at' => date('Y-m-d H:i:s')
         ];
         
-        // Debug: Log order data being inserted
-        error_log("Order data total_amount: " . $orderData['total_amount']);
-        error_log("Order data: " . json_encode($orderData));
+
         
         $result = $this->collection->insertOne($orderData);
         
@@ -435,8 +426,6 @@ class Order {
                 'completed_orders' => $completedOrders
             ];
         } catch (Exception $e) {
-            // Log error and return default values
-            error_log("Order summary error: " . $e->getMessage());
             return [
                 'total_orders' => 0,
                 'total_revenue' => 0,

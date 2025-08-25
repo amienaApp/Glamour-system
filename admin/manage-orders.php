@@ -1202,7 +1202,7 @@ foreach ($orders as $order) {
                                     
                                     foreach (array_slice($orderItems, 0, 3) as $item): 
 
-                                        error_log("Processing item: " . json_encode($item));
+                        
                                         
                                         // Try to get product from database first
                                         $product = null;
@@ -1212,7 +1212,7 @@ foreach ($orders as $order) {
                                         
                                         // If product not found in database, use item data as fallback
                                         if (!$product) {
-                                            error_log("Product not found for ID: " . ($item['product_id'] ?? 'N/A'));
+
                                             // Create a fallback product using item data
                                             $product = [
                                                 'name' => $item['name'] ?? $item['product_name'] ?? 'Unknown Product',

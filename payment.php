@@ -4,6 +4,7 @@
  * Displays payment methods and forms for Somali payment options
  */
 
+session_start();
 require_once 'models/Payment.php';
 require_once 'models/Order.php';
 require_once 'models/Cart.php';
@@ -17,9 +18,8 @@ if (file_exists('cart-config.php')) {
 $orderId = $_GET['order_id'] ?? null;
 $userId = getCartUserId(); // Use the consistent user ID from cart config
 
-// Debug: Log user ID being used
-error_log("Payment page - User ID: " . $userId);
-error_log("Payment page - Order ID from URL: " . ($orderId ?? 'not provided'));
+
+
 
 $order = null;
 $cart = null;
@@ -28,39 +28,25 @@ if ($orderId) {
     $orderModel = new Order();
     $order = $orderModel->getById($orderId);
     
-    // Debug: Log order data
-    error_log("Order ID: " . $orderId);
-    error_log("Order found: " . ($order ? 'yes' : 'no'));
-    if ($order) {
-        error_log("Order total_amount: " . ($order['total_amount'] ?? 'not set'));
-        error_log("Order data: " . json_encode($order));
-    }
+
 } else {
     // If no order, get cart total
     $cartModel = new Cart();
     $cart = $cartModel->getCart($userId);
     
-    // Debug: Log cart data
-    error_log("Cart found: " . ($cart ? 'yes' : 'no'));
-    if ($cart) {
-        error_log("Cart total: " . ($cart['total'] ?? 'not set'));
-        error_log("Cart items count: " . count($cart['items'] ?? []));
-    }
+
 }
 
 $amount = 0;
 if ($order && isset($order['total_amount'])) {
     $amount = $order['total_amount'];
-    error_log("Using order total: " . $amount);
 } elseif ($cart && isset($cart['total'])) {
     $amount = $cart['total'];
-    error_log("Using cart total: " . $amount);
-} else {
-    error_log("No order or cart total found, using 0");
 }
 
-// Debug: Log final amount
-error_log("Final amount: " . $amount);
+
+
+
 
 // If amount is still 0, try to get cart total as fallback
 if ($amount == 0 && !$cart) {
@@ -68,8 +54,13 @@ if ($amount == 0 && !$cart) {
     $cart = $cartModel->getCart($userId);
     if ($cart && isset($cart['total']) && $cart['total'] > 0) {
         $amount = $cart['total'];
-        error_log("Fallback: Using cart total: " . $amount);
     }
+}
+
+// If amount is still 0, redirect to cart page with message
+if ($amount == 0) {
+    header('Location: cart-unified.php?message=empty_cart');
+    exit;
 }
 
 
@@ -470,15 +461,7 @@ if ($amount == 0 && !$cart) {
         <div class="amount-display">
             <h2>$<?php echo number_format($amount, 2); ?></h2>
             <p>Total Amount to Pay</p>
-            <?php if ($amount == 0): ?>
-                <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; font-size: 0.9rem;">
-                    <strong>Debug Info:</strong><br>
-                    Order ID: <?php echo htmlspecialchars($orderId ?? 'Not provided'); ?><br>
-                    User ID: <?php echo htmlspecialchars($userId); ?><br>
-                    Cart Total: $<?php echo number_format($cart['total'] ?? 0, 2); ?><br>
-                    Order Total: $<?php echo number_format($order['total_amount'] ?? 0, 2); ?>
-                </div>
-            <?php endif; ?>
+
         </div>
 
         <div class="payment-methods" id="paymentMethods">

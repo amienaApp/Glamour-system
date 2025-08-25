@@ -177,9 +177,7 @@ try {
             case 'place_order':
                 $cart = $cartModel->getCart($defaultUserId);
                 
-                // Debug: Log cart data for order creation
-                error_log("API - Cart total: " . ($cart['total'] ?? 'not set'));
-                error_log("API - Cart items count: " . count($cart['items'] ?? []));
+
                 
                 if (empty($cart['items'])) {
                     throw new Exception('Cart is empty');
@@ -194,8 +192,7 @@ try {
                 
                 $orderId = $orderModel->createOrder($defaultUserId, $cart, $orderDetails);
                 
-                // Debug: Log order creation result
-                error_log("API - Order created with ID: " . ($orderId ?? 'failed'));
+
                 
                 if ($orderId) {
                     $response = [

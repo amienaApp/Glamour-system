@@ -259,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get deleted variants from form
         if (isset($_POST['deleted_variants']) && !empty($_POST['deleted_variants'])) {
             $deletedVariants = json_decode($_POST['deleted_variants'], true) ?? [];
-            error_log('Deleted variants: ' . print_r($deletedVariants, true));
+
         }
         
         if (isset($_POST['color_variants']) && is_array($_POST['color_variants'])) {
@@ -314,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($deletedVariants as $deletedIndex) {
                 if (isset($colorVariants[$deletedIndex])) {
                     unset($colorVariants[$deletedIndex]);
-                    error_log("Removed variant at index $deletedIndex from final array");
+    
                 }
             }
             
@@ -322,14 +322,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $colorVariants = array_values($colorVariants);
 
             $productData['color_variants'] = $colorVariants;
-            error_log('Final color variants count: ' . count($colorVariants));
+
         } else {
             // If no color_variants were submitted, remove deleted variants from original
             $colorVariants = $originalVariants;
             foreach ($deletedVariants as $deletedIndex) {
                 if (isset($colorVariants[$deletedIndex])) {
                     unset($colorVariants[$deletedIndex]);
-                    error_log("Removed variant at index $deletedIndex from original variants");
+
                 }
             }
             $colorVariants = array_values($colorVariants);

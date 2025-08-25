@@ -196,11 +196,7 @@ try {
                         'products' => $processedProducts,
                         'total_count' => count($processedProducts),
                         'filters_applied' => $filters,
-                        'debug_info' => [
-                            'subcategory' => $subcategory,
-                            'input_filters' => $input,
-                            'mongo_filters' => $filters
-                        ]
+
                     ]
                 ];
                 break;

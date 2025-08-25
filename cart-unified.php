@@ -690,6 +690,15 @@ function getProductImage($product, $itemColor = '') {
 </head>
 <body>
     <div class="container">
+        <?php
+        // Handle messages from URL parameters
+        $message = $_GET['message'] ?? '';
+        if ($message === 'empty_cart'): ?>
+        <div class="alert alert-warning" style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeaa7;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Empty Cart:</strong> You need to add items to your cart before proceeding to payment.
+        </div>
+        <?php endif; ?>
         <!-- Header -->
         <div class="header">
             <h1>
