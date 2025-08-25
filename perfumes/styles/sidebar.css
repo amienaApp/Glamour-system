@@ -43,6 +43,29 @@
     font-weight: 400;
 }
 
+.clear-filters-btn {
+    background: #f8f9fa;
+    border: none;
+    color: #000000;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.clear-filters-btn:hover {
+    background: #e9ecef;
+    color: #000000;
+}
+
+.clear-filters-btn:active {
+    transform: translateY(1px);
+}
+
 /* Filter Sections */
 .filter-section {
     margin-bottom: 30px;
@@ -79,6 +102,44 @@
     gap: 12px;
     padding: 0;
     align-items: flex-start;
+}
+
+/* Size Filter Specific Styles */
+.size-count {
+    font-size: 12px;
+    color: #666666;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.size-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.size-action-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    flex: 1;
+}
+
+.size-action-btn:hover {
+    background: #e9ecef;
+    color: #000000;
+    border-color: #dee2e6;
+}
+
+.size-action-btn:active {
+    transform: translateY(1px);
 }
 
 .filter-option {

@@ -44,7 +44,8 @@ foreach ($allPerfumes as $perfume) {
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Refine By</h3>
-        <span class="style-count"><?php echo $stats['total_perfumes']; ?> Styles</span>
+        <span class="style-count" id="style-count"><?php echo $stats['total_perfumes']; ?> Styles</span>
+        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
     <div class="side">
         <div class="filter-section">
@@ -76,7 +77,7 @@ foreach ($allPerfumes as $perfume) {
             <!-- Size Filter -->
             <div class="filter-group">
                 <div class="filter-header">
-                    <h4>Size</h4>
+                    <h4>Size <span class="size-count" id="size-count"></span></h4>
                 </div>
                 <div class="filter-options">
                     <div class="size-grid">
@@ -109,6 +110,10 @@ foreach ($allPerfumes as $perfume) {
                                 <?php echo htmlspecialchars($brand); ?>
                             </label>
                         <?php endforeach; ?>
+                    </div>
+                    <div class="size-actions">
+                        <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
+                        <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
                     </div>
                 </div>
             </div>
@@ -161,12 +166,7 @@ foreach ($allPerfumes as $perfume) {
         </div>
     </div>
 
-    <!-- Clear Filters Button -->
-    <div class="filter-section">
-        <button class="clear-filters-btn" onclick="clearAllFilters()">
-            <i class="fas fa-times"></i> Clear All Filters
-        </button>
-    </div>
+
 </aside>
 
 <script>

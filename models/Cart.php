@@ -16,6 +16,34 @@ class Cart {
         $this->db = MongoDB::getInstance();
         $this->collection = $this->db->getCollection('carts');
     }
+    
+    /**
+     * Helper function to safely convert MongoDB objects to arrays
+     */
+    private function toArray($data) {
+        if (is_array($data)) {
+            return $data;
+        }
+        
+        if (is_object($data)) {
+            if (method_exists($data, 'toArray')) {
+                return $data->toArray();
+            }
+            
+            if (method_exists($data, 'getArrayCopy')) {
+                return $data->getArrayCopy();
+            }
+            
+            if ($data instanceof \Iterator) {
+                return iterator_to_array($data);
+            }
+            
+            // Fallback: convert to array using type casting
+            return (array) $data;
+        }
+        
+        return [];
+    }
 
     /**
      * Add item to cart
@@ -102,13 +130,16 @@ class Cart {
             return ['items' => [], 'total' => 0, 'item_count' => 0];
         }
         
+        // Convert BSONArray to regular array if needed
+        $cartItems = $this->toArray($cart['items']);
+        
         // Get product details for each item
         $productModel = new Product();
         $items = [];
         $total = 0;
         $itemCount = 0;
         
-        foreach ($cart['items'] as $item) {
+        foreach ($cartItems as $item) {
             // Convert string ID to ObjectId if needed
             $productId = $item['product_id'];
             if (is_string($productId)) {
@@ -126,8 +157,17 @@ class Cart {
                 $total += $item['subtotal'];
                 $itemCount += $item['quantity'];
                 $items[] = $item;
+                
+                // Debug: Log item details
+                error_log("Cart item - Product: " . $product['name'] . ", Price: " . $product['price'] . ", Quantity: " . $item['quantity'] . ", Subtotal: " . $item['subtotal']);
+            } else {
+                error_log("Product not found for ID: " . $item['product_id']);
             }
         }
+        
+        // Debug: Log final cart totals
+        error_log("Cart final total: " . $total);
+        error_log("Cart final item count: " . $itemCount);
         
         return [
             'items' => $items,
@@ -161,21 +201,19 @@ class Cart {
             return false;
         }
         
+        // Convert BSONArray to regular array if needed
+        $items = $this->toArray($cart['items']);
+        
+        // Convert productId to string for comparison
+        $productIdStr = (string)$productId;
+        
         // Find and update the specific item
         $updated = false;
-        foreach ($cart['items'] as &$item) {
-            // Handle both string and ObjectId comparisons
-            $itemProductId = $item['product_id'];
-            if (is_object($itemProductId)) {
-                $itemProductId = (string)$itemProductId;
-            }
-            if (is_object($productId)) {
-                $productIdStr = (string)$productId;
-            } else {
-                $productIdStr = $productId;
-            }
+        foreach ($items as &$item) {
+            // Convert item product_id to string for comparison
+            $itemProductIdStr = (string)$item['product_id'];
             
-            if ($itemProductId == $productIdStr) {
+            if ($itemProductIdStr === $productIdStr) {
                 $item['quantity'] = $quantity;
                 $updated = true;
                 break;
@@ -191,7 +229,7 @@ class Cart {
             ['user_id' => $userId],
             [
                 '$set' => [
-                    'items' => $cart['items'],
+                    'items' => array_values($items),
                     'updated_at' => date('Y-m-d H:i:s')
                 ]
             ]
@@ -206,15 +244,6 @@ class Cart {
      * Remove item from cart
      */
     public function removeFromCart($userId, $productId) {
-        // Convert string ID to ObjectId if needed
-        if (is_string($productId)) {
-            try {
-                $productId = new MongoDB\BSON\ObjectId($productId);
-            } catch (Exception $e) {
-                // If conversion fails, try with string
-            }
-        }
-
         // Get the current cart
         $cart = $this->collection->findOne(['user_id' => $userId]);
         
@@ -222,28 +251,27 @@ class Cart {
             return false;
         }
         
+        // Convert productId to string for comparison
+        $productIdStr = (string)$productId;
+        
+        // Convert BSONArray to regular array if needed
+        $items = $this->toArray($cart['items']);
+        
         // Remove the specific item
-        $cart['items'] = array_filter($cart['items'], function($item) use ($productId) {
-            // Handle both string and ObjectId comparisons
-            $itemProductId = $item['product_id'];
-            if (is_object($itemProductId)) {
-                $itemProductId = (string)$itemProductId;
-            }
-            if (is_object($productId)) {
-                $productIdStr = (string)$productId;
-            } else {
-                $productIdStr = $productId;
-            }
-            
-            return $itemProductId != $productIdStr;
+        $items = array_filter($items, function($item) use ($productIdStr) {
+            // Convert item product_id to string for comparison
+            $itemProductIdStr = (string)$item['product_id'];
+            return $itemProductIdStr !== $productIdStr;
         });
+        
+        $cart['items'] = array_values($items);
         
         // Update the cart with the modified items
         $result = $this->collection->updateOne(
             ['user_id' => $userId],
             [
                 '$set' => [
-                    'items' => array_values($cart['items']), // Reindex array
+                    'items' => $cart['items'], // Already reindexed above
                     'updated_at' => date('Y-m-d H:i:s')
                 ]
             ]
@@ -279,8 +307,11 @@ class Cart {
             return 0;
         }
         
+        // Convert BSONArray to regular array if needed
+        $items = $this->toArray($cart['items']);
+        
         $count = 0;
-        foreach ($cart['items'] as $item) {
+        foreach ($items as $item) {
             $count += $item['quantity'];
         }
         

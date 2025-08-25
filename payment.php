@@ -8,9 +8,18 @@ require_once 'models/Payment.php';
 require_once 'models/Order.php';
 require_once 'models/Cart.php';
 
+// Include cart configuration for consistent user ID
+if (file_exists('cart-config.php')) {
+    require_once 'cart-config.php';
+}
+
 // Get order details if order_id is provided
 $orderId = $_GET['order_id'] ?? null;
-$userId = 'demo_user_123'; // In real app, get from session
+$userId = getCartUserId(); // Use the consistent user ID from cart config
+
+// Debug: Log user ID being used
+error_log("Payment page - User ID: " . $userId);
+error_log("Payment page - Order ID from URL: " . ($orderId ?? 'not provided'));
 
 $order = null;
 $cart = null;
@@ -18,13 +27,52 @@ $cart = null;
 if ($orderId) {
     $orderModel = new Order();
     $order = $orderModel->getById($orderId);
+    
+    // Debug: Log order data
+    error_log("Order ID: " . $orderId);
+    error_log("Order found: " . ($order ? 'yes' : 'no'));
+    if ($order) {
+        error_log("Order total_amount: " . ($order['total_amount'] ?? 'not set'));
+        error_log("Order data: " . json_encode($order));
+    }
 } else {
     // If no order, get cart total
     $cartModel = new Cart();
     $cart = $cartModel->getCart($userId);
+    
+    // Debug: Log cart data
+    error_log("Cart found: " . ($cart ? 'yes' : 'no'));
+    if ($cart) {
+        error_log("Cart total: " . ($cart['total'] ?? 'not set'));
+        error_log("Cart items count: " . count($cart['items'] ?? []));
+    }
 }
 
-$amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
+$amount = 0;
+if ($order && isset($order['total_amount'])) {
+    $amount = $order['total_amount'];
+    error_log("Using order total: " . $amount);
+} elseif ($cart && isset($cart['total'])) {
+    $amount = $cart['total'];
+    error_log("Using cart total: " . $amount);
+} else {
+    error_log("No order or cart total found, using 0");
+}
+
+// Debug: Log final amount
+error_log("Final amount: " . $amount);
+
+// If amount is still 0, try to get cart total as fallback
+if ($amount == 0 && !$cart) {
+    $cartModel = new Cart();
+    $cart = $cartModel->getCart($userId);
+    if ($cart && isset($cart['total']) && $cart['total'] > 0) {
+        $amount = $cart['total'];
+        error_log("Fallback: Using cart total: " . $amount);
+    }
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -95,8 +143,8 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
         }
 
         .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 25px;
             margin-bottom: 30px;
         }
@@ -409,7 +457,7 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
 </head>
 <body>
     <div class="container">
-        <a href="cart.php" class="back-btn">
+                    <a href="cart-unified.php" class="back-btn">
             <i class="fas fa-arrow-left"></i>
             Back to Cart
         </a>
@@ -422,6 +470,15 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
         <div class="amount-display">
             <h2>$<?php echo number_format($amount, 2); ?></h2>
             <p>Total Amount to Pay</p>
+            <?php if ($amount == 0): ?>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; font-size: 0.9rem;">
+                    <strong>Debug Info:</strong><br>
+                    Order ID: <?php echo htmlspecialchars($orderId ?? 'Not provided'); ?><br>
+                    User ID: <?php echo htmlspecialchars($userId); ?><br>
+                    Cart Total: $<?php echo number_format($cart['total'] ?? 0, 2); ?><br>
+                    Order Total: $<?php echo number_format($order['total_amount'] ?? 0, 2); ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="payment-methods" id="paymentMethods">
@@ -521,6 +578,39 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                                 <input type="email" id="email-${method.id}" class="form-input" 
                                        placeholder="your.email@example.com" required>
                             </div>
+                            <div class="form-group">
+                                <label for="region-${method.id}" class="required-field">Region</label>
+                                <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
+                                    <option value="">Select Region</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="galkacyo">Galkacyo</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="hiran">Hiran</option>
+                                    <option value="jubaland">Jubaland</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="nugal">Nugal</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
+                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="togdheer">Togdheer</option>
+                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="city-${method.id}" class="required-field">City</label>
+                                <select id="city-${method.id}" class="form-input" required>
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-description-${method.id}">Product Description</label>
+                                <textarea id="product-description-${method.id}" class="form-input" 
+                                          rows="3" placeholder="Describe your products or any special requirements..."></textarea>
+                                <div class="help-text">Optional: Add details about your products or special instructions</div>
+                            </div>
                         </div>
                         
                         <div class="form-section">
@@ -560,6 +650,39 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                                 <label for="email-${method.id}" class="required-field">Email Address</label>
                                 <input type="email" id="email-${method.id}" class="form-input" 
                                        placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="region-${method.id}" class="required-field">Region</label>
+                                <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
+                                    <option value="">Select Region</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="galkacyo">Galkacyo</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="hiran">Hiran</option>
+                                    <option value="jubaland">Jubaland</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="nugal">Nugal</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
+                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="togdheer">Togdheer</option>
+                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="city-${method.id}" class="required-field">City</label>
+                                <select id="city-${method.id}" class="form-input" required>
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-description-${method.id}">Product Description</label>
+                                <textarea id="product-description-${method.id}" class="form-input" 
+                                          rows="3" placeholder="Describe your products or any special requirements..."></textarea>
+                                <div class="help-text">Optional: Add details about your products or special instructions</div>
                             </div>
                         </div>
                         
@@ -604,6 +727,39 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                                 <label for="email-${method.id}" class="required-field">Email Address</label>
                                 <input type="email" id="email-${method.id}" class="form-input" 
                                        placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="region-${method.id}" class="required-field">Region</label>
+                                <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
+                                    <option value="">Select Region</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="galkacyo">Galkacyo</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="hiran">Hiran</option>
+                                    <option value="jubaland">Jubaland</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="nugal">Nugal</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
+                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="togdheer">Togdheer</option>
+                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="city-${method.id}" class="required-field">City</label>
+                                <select id="city-${method.id}" class="form-input" required>
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-description-${method.id}">Product Description</label>
+                                <textarea id="product-description-${method.id}" class="form-input" 
+                                          rows="3" placeholder="Describe your products or any special requirements..."></textarea>
+                                <div class="help-text">Optional: Add details about your products or special instructions</div>
                             </div>
                         </div>
                         
@@ -747,7 +903,9 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     requiredFields.push(
                         { id: `fullname-${methodId}`, name: 'Full Name' },
                         { id: `email-${methodId}`, name: 'Email Address' },
-                        { id: `phone-${methodId}`, name: 'Phone Number' }
+                        { id: `phone-${methodId}`, name: 'Phone Number' },
+                        { id: `region-${methodId}`, name: 'Region' },
+                        { id: `city-${methodId}`, name: 'City' }
                     );
                     break;
                 case 'card':
@@ -756,7 +914,9 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                         { id: `email-${methodId}`, name: 'Email Address' },
                         { id: 'card-number', name: 'Card Number' },
                         { id: 'card-expiry', name: 'Expiry Date' },
-                        { id: 'card-cvv', name: 'CVV' }
+                        { id: 'card-cvv', name: 'CVV' },
+                        { id: `region-${methodId}`, name: 'Region' },
+                        { id: `city-${methodId}`, name: 'City' }
                     );
                     break;
                 case 'bank':
@@ -765,7 +925,9 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                         { id: `email-${methodId}`, name: 'Email Address' },
                         { id: 'bank-name', name: 'Bank Name' },
                         { id: 'account-number', name: 'Account Number' },
-                        { id: 'account-holder', name: 'Account Holder Name' }
+                        { id: 'account-holder', name: 'Account Holder Name' },
+                        { id: `region-${methodId}`, name: 'Region' },
+                        { id: `city-${methodId}`, name: 'City' }
                     );
                     break;
             }
@@ -800,8 +962,11 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     const phone = document.getElementById(`phone-${methodId}`).value;
                     const fullname = document.getElementById(`fullname-${methodId}`).value;
                     const email = document.getElementById(`email-${methodId}`).value;
+                    const region = document.getElementById(`region-${methodId}`).value;
+                    const city = document.getElementById(`city-${methodId}`).value;
+                    const productDescription = document.getElementById(`product-description-${methodId}`).value;
                     
-                    if (!phone || !fullname || !email) {
+                    if (!phone || !fullname || !email || !region || !city) {
                         showNotification('Please fill all required fields', 'error');
                         return null;
                     }
@@ -809,7 +974,10 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     return { 
                         phone_number: '+252' + phone,
                         full_name: fullname,
-                        email: email
+                        email: email,
+                        region: region,
+                        city: city,
+                        product_description: productDescription
                     };
                 
                 case 'card':
@@ -818,8 +986,11 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     const cvv = document.getElementById('card-cvv').value;
                     const cardFullname = document.getElementById(`fullname-${methodId}`).value;
                     const cardEmail = document.getElementById(`email-${methodId}`).value;
+                    const cardRegion = document.getElementById(`region-${methodId}`).value;
+                    const cardCity = document.getElementById(`city-${methodId}`).value;
+                    const cardProductDescription = document.getElementById(`product-description-${methodId}`).value;
                     
-                    if (!cardNumber || !expiry || !cvv || !cardFullname || !cardEmail) {
+                    if (!cardNumber || !expiry || !cvv || !cardFullname || !cardEmail || !cardRegion || !cardCity) {
                         showNotification('Please fill all required fields', 'error');
                         return null;
                     }
@@ -830,7 +1001,10 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                         cvv: cvv,
                         cardholder_name: cardFullname,
                         full_name: cardFullname,
-                        email: cardEmail
+                        email: cardEmail,
+                        region: cardRegion,
+                        city: cardCity,
+                        product_description: cardProductDescription
                     };
                 
                 case 'bank':
@@ -839,8 +1013,11 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                     const accountHolder = document.getElementById('account-holder').value;
                     const bankFullname = document.getElementById(`fullname-${methodId}`).value;
                     const bankEmail = document.getElementById(`email-${methodId}`).value;
+                    const bankRegion = document.getElementById(`region-${methodId}`).value;
+                    const bankCity = document.getElementById(`city-${methodId}`).value;
+                    const bankProductDescription = document.getElementById(`product-description-${methodId}`).value;
                     
-                    if (!bankName || !accountNumber || !accountHolder || !bankFullname || !bankEmail) {
+                    if (!bankName || !accountNumber || !accountHolder || !bankFullname || !bankEmail || !bankRegion || !bankCity) {
                         showNotification('Please fill all required fields', 'error');
                         return null;
                     }
@@ -850,12 +1027,54 @@ $amount = $order ? $order['total'] : ($cart ? $cart['total'] : 0);
                         account_number: accountNumber,
                         account_holder: accountHolder,
                         full_name: bankFullname,
-                        email: bankEmail
+                        email: bankEmail,
+                        region: bankRegion,
+                        city: bankCity,
+                        product_description: bankProductDescription
                     };
                 
                 default:
                     return {};
             }
+        }
+
+        // Update cities based on selected region
+        function updateCities(methodId) {
+            const regionSelect = document.getElementById(`region-${methodId}`);
+            const citySelect = document.getElementById(`city-${methodId}`);
+            const selectedRegion = regionSelect.value;
+            
+            // Clear existing cities
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            
+            if (!selectedRegion) return;
+            
+            // Define cities for each region
+            const cities = {
+                banadir: ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn'],
+                bari: ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban'],
+                bay: ['Baidoa', 'Buurhakaba', 'Dinsor', 'Qansaxdheere'],
+                galkacyo: ['Galkacyo', 'Garoowe', 'Burtinle', 'Dangorayo'],
+                gedo: ['Garbahaarrey', 'Bardheere', 'Luuq', 'El Wak'],
+                hiran: ['Beledweyne', 'Buulobarde', 'Jalalaqsi', 'Mahas'],
+                jubaland: ['Kismayo', 'Jamaame', 'Afmadow', 'Badhaadhe'],
+                mudug: ['Galkacyo', 'Garoowe', 'Burtinle', 'Dangorayo'],
+                nugal: ['Garoowe', 'Eyl', 'Burtinle', 'Dangorayo'],
+                sanaag: ['Ceerigaabo', 'Badhan', 'Laasqoray', 'Dhahar'],
+                shabeellaha_dhexe: ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
+                shabeellaha_hoose: ['Marka', 'Afgooye', 'Wanlaweyn', 'Qoryooley'],
+                sool: ['Laas Caanood', 'Caynabo', 'Taleex', 'Xudun'],
+                togdheer: ['Hargeisa', 'Burao', 'Oodweyne', 'Sheikh'],
+                woqooyi_galbeed: ['Hargeisa', 'Berbera', 'Gabiley', 'Burao']
+            };
+            
+            const regionCities = cities[selectedRegion] || [];
+            regionCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.toLowerCase().replace(/\s+/g, '_');
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
         }
 
         // Show notification

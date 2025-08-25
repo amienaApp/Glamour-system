@@ -1902,14 +1902,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                         <input type="file" id="front_image" name="front_image" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewMedia(this, 'front-preview')">
                     <input type="hidden" name="existing_front_image" value="<?php echo htmlspecialchars($product['front_image'] ?? ''); ?>">
                         <div id="front-preview" class="image-preview">
-                            <?php if (!empty($product['front_image'])): ?>
-                                <?php if (pathinfo($product['front_image'], PATHINFO_EXTENSION) === 'mp4' || pathinfo($product['front_image'], PATHINFO_EXTENSION) === 'webm' || pathinfo($product['front_image'], PATHINFO_EXTENSION) === 'mov'): ?>
+                            <?php 
+                            // Try to get image from color variants first
+                            $displayImage = '';
+                            if (isset($product['color_variants']) && !empty($product['color_variants'])) {
+                                $colorVariants = (array)$product['color_variants'];
+                                if (is_array($colorVariants) && !empty($colorVariants)) {
+                                    $firstVariant = $colorVariants[0];
+                                    if (isset($firstVariant['images']) && !empty($firstVariant['images'])) {
+                                        $images = (array)$firstVariant['images'];
+                                        if (!empty($images)) {
+                                            $displayImage = $images[0];
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Fallback to front_image if no color variant images
+                            if (empty($displayImage)) {
+                                $displayImage = $product['front_image'] ?? '';
+                            }
+                            
+                            if (!empty($displayImage)): 
+                            ?>
+                                <?php if (pathinfo($displayImage, PATHINFO_EXTENSION) === 'mp4' || pathinfo($displayImage, PATHINFO_EXTENSION) === 'webm' || pathinfo($displayImage, PATHINFO_EXTENSION) === 'mov'): ?>
                                     <video controls style="max-width: 200px; max-height: 200px; border-radius: 8px;">
-                                        <source src="../<?php echo htmlspecialchars($product['front_image']); ?>" type="video/<?php echo pathinfo($product['front_image'], PATHINFO_EXTENSION); ?>">
+                                        <source src="../<?php echo htmlspecialchars($displayImage); ?>" type="video/<?php echo pathinfo($displayImage, PATHINFO_EXTENSION); ?>">
                                         Your browser does not support the video tag.
                                     </video>
                                 <?php else: ?>
-                                    <img src="../<?php echo htmlspecialchars($product['front_image']); ?>" alt="Front Media">
+                                    <img src="../<?php echo htmlspecialchars($displayImage); ?>" alt="Product Image">
                                 <?php endif; ?>
                             <?php else: ?>
                                 <div class="no-image">No media selected</div>
@@ -1978,14 +2000,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <input type="file" name="color_variants[<?php echo $index; ?>][front_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-front-<?php echo $index; ?>')">
                                                 <input type="hidden" name="color_variants[<?php echo $index; ?>][existing_front_image]" value="<?php echo htmlspecialchars($variant['front_image'] ?? ''); ?>">
                                                     <div id="variant-front-<?php echo $index; ?>" class="variant-image-preview">
-                                                        <?php if (!empty($variant['front_image'])): ?>
-                                                            <?php if (pathinfo($variant['front_image'], PATHINFO_EXTENSION) === 'mp4' || pathinfo($variant['front_image'], PATHINFO_EXTENSION) === 'webm' || pathinfo($variant['front_image'], PATHINFO_EXTENSION) === 'mov'): ?>
+                                                        <?php 
+                                                        // Check for images array first (new structure)
+                                                        $variantImages = [];
+                                                        if (isset($variant['images']) && !empty($variant['images'])) {
+                                                            $variantImages = (array)$variant['images'];
+                                                        }
+                                                        
+                                                        // Fallback to front_image (old structure)
+                                                        if (empty($variantImages) && !empty($variant['front_image'])) {
+                                                            $variantImages = [$variant['front_image']];
+                                                        }
+                                                        
+                                                        if (!empty($variantImages)): 
+                                                            $firstImage = $variantImages[0];
+                                                        ?>
+                                                            <?php if (pathinfo($firstImage, PATHINFO_EXTENSION) === 'mp4' || pathinfo($firstImage, PATHINFO_EXTENSION) === 'webm' || pathinfo($firstImage, PATHINFO_EXTENSION) === 'mov'): ?>
                                                                 <video controls style="max-width: 150px; max-height: 150px; border-radius: 6px;">
-                                                                    <source src="../<?php echo htmlspecialchars($variant['front_image']); ?>" type="video/<?php echo pathinfo($variant['front_image'], PATHINFO_EXTENSION); ?>">
+                                                                    <source src="../<?php echo htmlspecialchars($firstImage); ?>" type="video/<?php echo pathinfo($firstImage, PATHINFO_EXTENSION); ?>">
                                                                     Your browser does not support the video tag.
                                                                 </video>
                                                             <?php else: ?>
-                                                                <img src="../<?php echo htmlspecialchars($variant['front_image']); ?>" alt="Variant Front">
+                                                                <img src="../<?php echo htmlspecialchars($firstImage); ?>" alt="Variant Image">
+                                                            <?php endif; ?>
+                                                            <?php if (count($variantImages) > 1): ?>
+                                                                <div class="image-count">+<?php echo count($variantImages) - 1; ?> more</div>
                                                             <?php endif; ?>
                                                         <?php else: ?>
                                                             <div class="no-image">No media</div>
@@ -2420,7 +2459,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (imageInputs) {
                     imageInputs.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Add a temporary highlight effect
+    
                     imageInputs.style.backgroundColor = '#e3f2fd';
                     setTimeout(() => {
                         imageInputs.style.backgroundColor = '';

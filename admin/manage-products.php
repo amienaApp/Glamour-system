@@ -722,13 +722,30 @@ $totalProducts = count($products);
                             <!-- Product Image -->
                             <div class="product-image">
                                 <?php 
-                                // Handle both field name formats
-                                $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
-                                $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
+                                // Try to get image from color variants first
+                                $displayImage = '';
+                                if (isset($product['color_variants']) && !empty($product['color_variants'])) {
+                    
+                                    $colorVariants = (array)$product['color_variants'];
+                                    if (is_array($colorVariants) && !empty($colorVariants)) {
+                                        $firstVariant = $colorVariants[0];
+                                        if (isset($firstVariant['images']) && !empty($firstVariant['images'])) {
+                                            $images = (array)$firstVariant['images'];
+                                            if (!empty($images)) {
+                                                $displayImage = $images[0];
+                                            }
+                                        }
+                                    }
+                                }
                                 
-                                if (!empty($frontImage)): 
-                                    $imagePath = "../" . $frontImage;
-                                    $fullImagePath = __DIR__ . "/../" . $frontImage;
+                                // Fallback to front_image if no color variant images
+                                if (empty($displayImage)) {
+                                    $displayImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                                }
+                                
+                                if (!empty($displayImage)): 
+                                    $imagePath = "../" . $displayImage;
+                                    $fullImagePath = __DIR__ . "/../" . $displayImage;
                                 ?>
                                     <img src="<?php echo htmlspecialchars($imagePath); ?>" 
                                          alt="<?php echo htmlspecialchars($product['name']); ?>" 
@@ -737,10 +754,10 @@ $totalProducts = count($products);
                                 <?php else: ?>
                                     <div class="no-image">
                                         <i class="fas fa-image"></i>
-                                        <br><small>No image path</small>
-                </div>
+                                        <br><small>No image available</small>
+                                    </div>
                                 <?php endif; ?>
-                </div>
+                            </div>
         
                             <!-- Product Info -->
                             <div class="product-info">

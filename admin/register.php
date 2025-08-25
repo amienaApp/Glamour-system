@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter a valid email address';
     } else {
         // Get admin collection
-        $db = Database::getInstance();
+        $db = MongoDB::getInstance();
         $adminCollection = $db->getCollection('admins');
         
         // Check if email already exists

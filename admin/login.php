@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please fill in all fields';
     } else {
         // Get admin collection
-        $db = Database::getInstance();
+        $db = MongoDB::getInstance();
         $adminCollection = $db->getCollection('admins');
         
         // Find admin by email

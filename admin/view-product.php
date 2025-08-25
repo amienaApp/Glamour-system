@@ -1070,9 +1070,28 @@ foreach ($allCategories as $cat) {
                                 <div class="product-header">
                                     <div class="product-image-container">
                                         <?php 
-                                        $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
-                                        if (!empty($frontImage)): 
-                                            $imagePath = "../" . $frontImage;
+                                        // Try to get image from color variants first
+                                        $displayImage = '';
+                                        if (isset($product['color_variants']) && !empty($product['color_variants'])) {
+                                            $colorVariants = (array)$product['color_variants'];
+                                            if (is_array($colorVariants) && !empty($colorVariants)) {
+                                                $firstVariant = $colorVariants[0];
+                                                if (isset($firstVariant['images']) && !empty($firstVariant['images'])) {
+                                                    $images = (array)$firstVariant['images'];
+                                                    if (!empty($images)) {
+                                                        $displayImage = $images[0];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Fallback to front_image if no color variant images
+                                        if (empty($displayImage)) {
+                                            $displayImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                                        }
+                                        
+                                        if (!empty($displayImage)): 
+                                            $imagePath = "../" . $displayImage;
                                         ?>
                                             <img src="<?php echo htmlspecialchars($imagePath); ?>" 
                                                  alt="<?php echo htmlspecialchars($product['name']); ?>" 

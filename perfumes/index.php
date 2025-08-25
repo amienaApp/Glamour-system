@@ -1,5 +1,13 @@
 <?php
 $page_title = 'Galamor palace';
+
+// Get subcategory from URL parameter
+$subcategory = $_GET['subcategory'] ?? '';
+
+// Set page title based on subcategory
+if ($subcategory) {
+    $page_title = ucfirst($subcategory) . ' - ' . $page_title;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

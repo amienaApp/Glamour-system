@@ -580,50 +580,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 ?>
                                 <div class="item">
                                                                             <?php 
-                                        $imageSrc = '../img/download.webp'; // Default fallback (using existing image)
-                                        $foundImage = false;
+                                        // Use the same image logic as cart.php
+                                        $imageSrc = '../img/women/1.jpg'; // Default fallback
                                         
                                         if ($product) {
-                                            // Try different image field formats
+                                            // Try the most common image fields first
                                             $productImage = '';
-                                            if (isset($product['front_image']) && !empty($product['front_image'])) {
+                                            if (!empty($product['front_image'])) {
                                                 $productImage = $product['front_image'];
-                                                $foundImage = true;
-                                            } elseif (isset($product['image']) && !empty($product['image'])) {
+                                            } elseif (!empty($product['image_front'])) {
+                                                $productImage = $product['image_front'];
+                                            } elseif (!empty($product['image'])) {
                                                 $productImage = $product['image'];
-                                                $foundImage = true;
                                             } elseif (isset($product['images']) && is_array($product['images'])) {
-                                                if (isset($product['images']['front']) && !empty($product['images']['front'])) {
+                                                if (isset($product['images']['front'])) {
                                                     $productImage = $product['images']['front'];
-                                                    $foundImage = true;
-                                                } elseif (isset($product['images'][0]) && !empty($product['images'][0])) {
+                                                } elseif (!empty($product['images'])) {
                                                     $productImage = $product['images'][0];
-                                                    $foundImage = true;
                                                 }
                                             }
                                             
-                                            if ($foundImage && !empty($productImage)) {
-                                                // Clean the image path
-                                                $productImage = trim($productImage);
+                                            if (!empty($productImage)) {
+                                                // Normalize the image path
+                                                $productImage = ltrim($productImage, '/.');
                                                 
-                                                // Check if it's a valid image file extension
-                                                $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                                                $extension = strtolower(pathinfo($productImage, PATHINFO_EXTENSION));
+                                                // If path already starts with ../, remove it first
+                                                if (strpos($productImage, '../') === 0) {
+                                                    $productImage = substr($productImage, 3);
+                                                }
                                                 
-                                                if (in_array($extension, $validExtensions)) {
-                                                    // If the image path already starts with '../' or '/', use it as is
-                                                    if (strpos($productImage, '../') === 0 || strpos($productImage, '/') === 0) {
-                                                        $imageSrc = $productImage;
+                                                // If path doesn't start with 'uploads/' or 'img/', add appropriate prefix
+                                                if (strpos($productImage, 'uploads/') !== 0 && strpos($productImage, 'img/') !== 0) {
+                                                    // Check if it's an uploaded product image
+                                                    if (strpos($productImage, 'products/') !== false) {
+                                                        $productImage = 'uploads/' . $productImage;
                                                     } else {
-                                                        // Otherwise, prepend '../' to make it relative to admin directory
-                                                        $imageSrc = '../' . $productImage;
+                                                        $productImage = 'img/' . $productImage;
                                                     }
-                                                    
-                                                    // Ensure the path doesn't have double slashes
-                                                    $imageSrc = str_replace('//', '/', $imageSrc);
-                                                } else {
-                                                    // Invalid file extension, use placeholder
-                                                    error_log("Invalid image extension for product: " . ($product['name'] ?? 'Unknown') . " - " . $productImage);
+                                                }
+                                                
+                                                // Add '../' prefix for admin directory
+                                                $imageSrc = '../' . $productImage;
+                                                
+                                                // Check if the image file exists, if not use simple fallback
+                                                if (!file_exists($imageSrc)) {
+                                                    $imageSrc = '../img/women/1.jpg';
                                                 }
                                             }
                                         }
@@ -631,7 +632,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                         <img src="<?php echo $imageSrc; ?>" 
                                              alt="<?php echo htmlspecialchars($product['name'] ?? 'Product'); ?>" 
                                              class="item-image" 
-                                             onerror="this.onerror=null; this.src='../img/download.webp';"
+                                             onerror="this.onerror=null; this.src='../img/women/1.jpg';"
                                              onload="this.style.opacity='1';"
                                              style="opacity: 0; transition: opacity 0.3s ease;">
                                     <div class="item-details">

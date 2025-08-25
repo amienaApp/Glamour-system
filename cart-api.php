@@ -1,9 +1,15 @@
 <?php
+// Prevent any output before JSON response
+ob_start();
+
 // Disable error reporting to prevent HTML output
 error_reporting(0);
 ini_set('display_errors', 0);
 
-session_start();
+// Start session without output
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
@@ -18,42 +24,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-require_once 'config/mongodb.php';
-require_once 'models/Cart.php';
-require_once 'models/Order.php';
-require_once 'models/Product.php';
-
-// Get user ID from session or use demo user
-$defaultUserId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'demo_user_123';
-
-// For testing purposes, let's check if there's a cart with items and use that user ID
-$db = Database::getInstance();
-$cartsCollection = $db->getCollection('carts');
-$cartsWithItems = $cartsCollection->find(['items' => ['$ne' => []]]);
-$cartsArray = iterator_to_array($cartsWithItems);
-
-if (!empty($cartsArray)) {
-    $cartWithItems = $cartsArray[0];
-    $defaultUserId = $cartWithItems['user_id'];
+// Include required files with error handling
+try {
+    require_once 'config/mongodb.php';
+    require_once 'models/Cart.php';
+    require_once 'models/Order.php';
+    require_once 'models/Product.php';
+} catch (Exception $e) {
+    ob_end_clean();
+    echo json_encode([
+        'success' => false,
+        'message' => 'System configuration error: ' . $e->getMessage()
+    ]);
+    exit();
 }
 
-$cartModel = new Cart();
-$orderModel = new Order();
+// Include cart configuration for consistent user ID
+try {
+    if (file_exists('cart-config.php')) {
+        require_once 'cart-config.php';
+    }
+} catch (Exception $e) {
+    ob_end_clean();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Cart configuration error: ' . $e->getMessage()
+    ]);
+    exit();
+}
+
+// Get user ID from session or use consistent default
+$defaultUserId = $_SESSION['user_id'] ?? $_SESSION['current_cart_user_id'] ?? 'main_user_1756062003';
+
+try {
+    $cartModel = new Cart();
+    $orderModel = new Order();
+} catch (Exception $e) {
+    ob_end_clean();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database connection error: ' . $e->getMessage()
+    ]);
+    exit();
+}
 
 $response = ['success' => false, 'message' => ''];
 
 try {
-    // Debug: Log the request
-    error_log("Cart API called with method: " . $_SERVER['REQUEST_METHOD']);
-    
     // Get POST data (handle both JSON and form data)
     $input = json_decode(file_get_contents('php://input'), true);
     if (!$input) {
         $input = $_POST;
     }
-    
-    // Debug: Log the input
-    error_log("Cart API input: " . json_encode($input));
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($input['action'])) {
         switch ($input['action']) {
@@ -155,6 +177,10 @@ try {
             case 'place_order':
                 $cart = $cartModel->getCart($defaultUserId);
                 
+                // Debug: Log cart data for order creation
+                error_log("API - Cart total: " . ($cart['total'] ?? 'not set'));
+                error_log("API - Cart items count: " . count($cart['items'] ?? []));
+                
                 if (empty($cart['items'])) {
                     throw new Exception('Cart is empty');
                 }
@@ -167,6 +193,9 @@ try {
                 ];
                 
                 $orderId = $orderModel->createOrder($defaultUserId, $cart, $orderDetails);
+                
+                // Debug: Log order creation result
+                error_log("API - Order created with ID: " . ($orderId ?? 'failed'));
                 
                 if ($orderId) {
                     $response = [
@@ -227,8 +256,8 @@ try {
     ];
 }
 
-// Debug: Log the response
-error_log("Cart API response: " . json_encode($response));
-
+// Clear any output buffer and send clean JSON response
+ob_end_clean();
 echo json_encode($response);
+exit();
 ?>

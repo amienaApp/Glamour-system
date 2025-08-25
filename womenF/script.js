@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize header modals functionality
     initializeHeaderModals();
     
+    // Initialize filter functionality
+    initializeFilters();
+    
     // Quick View functionality
     const sidebar = document.getElementById('quick-view-sidebar');
     const overlay = document.getElementById('quick-view-overlay');
@@ -629,7 +632,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handle subcategory item clicks
         document.addEventListener('click', function(e) {
             if (e.target.closest('.subcategory-item')) {
-                e.preventDefault();
                 const subcategoryItem = e.target.closest('.subcategory-item');
                 const category = subcategoryItem.getAttribute('data-category');
                 const subcategory = subcategoryItem.getAttribute('data-subcategory');
@@ -639,6 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Navigate to the section if href is provided
                 if (href && href.startsWith('#')) {
+                    e.preventDefault();
                     const targetSection = document.querySelector(href);
                     if (targetSection) {
                         // Close all modals
@@ -655,6 +658,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         console.log(`Navigating to section: ${href}`);
                     }
+                } else if (href && !href.startsWith('#')) {
+                    // Allow navigation to full URLs (don't prevent default)
+                    console.log(`Navigating to URL: ${href}`);
+                    // Close modals before navigation
+                    categoryModals.forEach(modal => {
+                        modal.style.opacity = '0';
+                        modal.style.visibility = 'hidden';
+                    });
                 } else if (subcategory) {
                     console.log(`Navigating to ${category} > ${subcategory}`);
                     // Fallback for other subcategories that don't have sections yet
@@ -895,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send login request
-                fetch('login-handler.php', {
+                fetch('login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -977,7 +988,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send registration request
-                fetch('register-handler.php', {
+                fetch('register.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1137,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Logout function
         function logout() {
-            fetch('logout-handler.php', {
+            fetch('logout.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1171,4 +1182,356 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+    
+    // Filter Functionality
+    function initializeFilters() {
+        console.log('Initializing filters...');
+        
+        // Get current subcategory from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSubcategory = urlParams.get('subcategory') || '';
+        
+        // Filter state
+        let filterState = {
+            sizes: [],
+            colors: [],
+            price_ranges: [],
+            categories: [],
+            lengths: []
+        };
+        
+        // Add event listeners to all filter checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.hasAttribute('data-filter')) {
+                const filterType = e.target.getAttribute('data-filter');
+                const filterValue = e.target.value;
+                const isChecked = e.target.checked;
+                
+                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                
+                // Update filter state
+                if (isChecked) {
+                    if (!filterState[filterType + 's'].includes(filterValue)) {
+                        filterState[filterType + 's'].push(filterValue);
+                    }
+                } else {
+                    const index = filterState[filterType + 's'].indexOf(filterValue);
+                    if (index > -1) {
+                        filterState[filterType + 's'].splice(index, 1);
+                    }
+                }
+                
+                console.log('Current filter state:', filterState);
+                
+                // Apply filters
+                applyFilters();
+            }
+        });
+        
+        // Clear filters button
+        const clearFiltersBtn = document.getElementById('clear-filters');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function() {
+                clearAllFilters();
+            });
+        }
+        
+        function applyFilters() {
+            console.log('Applying filters...');
+            
+            // Show loading state
+            showFilterLoading();
+            
+            // Prepare filter data
+            const filterData = {
+                action: 'filter_products',
+                subcategory: currentSubcategory,
+                sizes: filterState.sizes,
+                colors: filterState.colors,
+                price_ranges: filterState.price_ranges,
+                categories: filterState.categories,
+                lengths: filterState.lengths
+            };
+            
+            console.log('Sending filter data:', filterData);
+            
+            // Send filter request
+            fetch('filter-api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filterData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Filter response:', data);
+                
+                if (data.success) {
+                    updateProductGrid(data.data.products);
+                    updateStyleCount(data.data.total_count);
+                    hideFilterLoading();
+                } else {
+                    console.error('Filter error:', data.message);
+                    hideFilterLoading();
+                    showFilterError(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Filter request error:', error);
+                hideFilterLoading();
+                showFilterError('Network error occurred');
+            });
+        }
+        
+        function clearAllFilters() {
+            console.log('Clearing all filters...');
+            
+            // Uncheck all filter checkboxes
+            document.querySelectorAll('input[data-filter]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset filter state
+            filterState = {
+                sizes: [],
+                colors: [],
+                price_ranges: [],
+                categories: [],
+                lengths: []
+            };
+            
+            // Apply filters (will show all products)
+            applyFilters();
+        }
+        
+        // Make clearAllFilters globally accessible
+        window.clearAllFilters = clearAllFilters;
+        
+        function updateProductGrid(products) {
+            console.log(`Updating product grid with ${products.length} products`);
+            
+            // Get the appropriate product grid based on current subcategory
+            let productGrid;
+            if (currentSubcategory) {
+                productGrid = document.getElementById('filtered-products-grid');
+            } else {
+                // Try different grid IDs for main page
+                productGrid = document.getElementById('dresses-grid') || 
+                             document.getElementById('filtered-products-grid') ||
+                             document.querySelector('.product-grid');
+            }
+            
+            if (!productGrid) {
+                console.error('Product grid not found');
+                return;
+            }
+            
+            // Clear existing products
+            productGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <p>No products found matching your filters.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add products to grid
+            products.forEach(product => {
+                const productCard = createProductCard(product);
+                productGrid.appendChild(productCard);
+            });
+            
+            // Reinitialize product cards
+            const newProductCards = productGrid.querySelectorAll('.product-card');
+            newProductCards.forEach(card => {
+                initializeProductCard(card);
+            });
+        }
+        
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', product.id);
+            
+            // Get the best image for the product
+            const imagePath = getProductImage(product);
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <div class="image-slider">
+                        <img src="../${imagePath}" 
+                             alt="${product.name}" 
+                             class="active" 
+                             data-color="${product.color}">
+                    </div>
+                    <button class="heart-button">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
+                        ${product.available ? 
+                            '<button class="add-to-bag">Add To Bag</button>' : 
+                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>'
+                        }
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="color-options">
+                        <span class="color-circle active" 
+                              style="background-color: ${product.color};" 
+                              title="${product.color}" 
+                              data-color="${product.color}"></span>
+                    </div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${product.price}</div>
+                    ${!product.available ? 
+                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' : 
+                        (product.stock <= 5 && product.stock > 0 ? 
+                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : 
+                            ''
+                        )
+                    }
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function getProductImage(product) {
+            if (product.front_image) {
+                return product.front_image;
+            } else if (product.back_image) {
+                return product.back_image;
+            } else if (product.color_variants && product.color_variants.length > 0) {
+                return product.color_variants[0].front_image || product.color_variants[0].back_image || 'img/default-product.jpg';
+            }
+            return 'img/default-product.jpg';
+        }
+        
+        function updateStyleCount(count) {
+            const styleCountElement = document.getElementById('style-count');
+            if (styleCountElement) {
+                styleCountElement.textContent = `${count} Styles`;
+            }
+        }
+        
+        function showFilterLoading() {
+            // Add loading overlay to product grid
+            const productGrid = document.getElementById('filtered-products-grid') || 
+                               document.getElementById('dresses-grid') ||
+                               document.querySelector('.product-grid');
+            if (productGrid) {
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'filter-loading';
+                loadingOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(255, 255, 255, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                `;
+                loadingOverlay.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+                        <p>Filtering products...</p>
+                    </div>
+                `;
+                productGrid.style.position = 'relative';
+                productGrid.appendChild(loadingOverlay);
+                
+                // Also add loading state to sidebar
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.classList.add('filter-loading');
+                }
+            }
+        }
+        
+        function hideFilterLoading() {
+            const loadingOverlay = document.getElementById('filter-loading');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+            
+            // Remove loading state from sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('filter-loading');
+            }
+        }
+        
+        function showFilterError(message) {
+            // Show error notification
+            showNotification(`Filter error: ${message}`, 'error');
+        }
+        
+        // Add CSS for loading animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Size Filter Enhancement Functions
+    function selectAllSizes() {
+        console.log('Selecting all sizes...');
+        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        sizeCheckboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    
+    function clearSizeFilters() {
+        console.log('Clearing size filters...');
+        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        sizeCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    
+    function updateSizeCount() {
+        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        const sizeCountElement = document.getElementById('size-count');
+        if (sizeCountElement) {
+            const count = sizeCheckboxes.length;
+            sizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
+        }
+    }
+    
+    // Make functions globally accessible
+    window.selectAllSizes = selectAllSizes;
+    window.clearSizeFilters = clearSizeFilters;
+    window.updateSizeCount = updateSizeCount;
+    
+    // Add event listener for size count updates
+    document.addEventListener('change', function(e) {
+        if (e.target.closest('#size-filter')) {
+            updateSizeCount();
+        }
+    });
+    
+    // Initialize size count on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSizeCount();
+    });
 });

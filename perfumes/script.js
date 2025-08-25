@@ -1042,4 +1042,67 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Call setupQuickView when DOM is ready
     setupQuickView();
+    
+    // Size Filter Enhancement Functions
+    function selectAllSizes() {
+        console.log('Selecting all sizes...');
+        const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
+        sizeCheckboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    
+    function clearSizeFilters() {
+        console.log('Clearing size filters...');
+        const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
+        sizeCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    
+    function updateSizeCount() {
+        const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]:checked');
+        const sizeCountElement = document.getElementById('size-count');
+        if (sizeCountElement) {
+            const count = sizeCheckboxes.length;
+            sizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
+        }
+    }
+    
+    function clearAllFilters() {
+        console.log('Clearing all filters...');
+        const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateSizeCount();
+    }
+    
+    // Make functions globally accessible
+    window.selectAllSizes = selectAllSizes;
+    window.clearSizeFilters = clearSizeFilters;
+    window.updateSizeCount = updateSizeCount;
+    window.clearAllFilters = clearAllFilters;
+    
+    // Add event listener for size count updates
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'size[]') {
+            updateSizeCount();
+        }
+    });
+    
+    // Add event listener for clear all filters button
+    document.addEventListener('DOMContentLoaded', function() {
+        const clearFiltersBtn = document.getElementById('clear-filters');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', clearAllFilters);
+        }
+        updateSizeCount();
+    });
 }); 

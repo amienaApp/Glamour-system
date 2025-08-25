@@ -1756,7 +1756,7 @@ $categories = $categoryModel->getAll();
         }
 
         function showMessage(message, type) {
-            // Create temporary message element
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             messageDiv.style.position = 'fixed';

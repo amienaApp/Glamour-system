@@ -4,6 +4,9 @@ require_once __DIR__ . '/../../models/Product.php';
 
 $productModel = new Product();
 
+// Get subcategory from URL parameter
+$subcategory = $_GET['subcategory'] ?? '';
+
 // Get query parameters for filtering
 $gender = $_GET['gender'] ?? null;
 $brand = $_GET['brand'] ?? null;
@@ -16,6 +19,7 @@ $skip = intval($_GET['skip'] ?? 0);
 
 // Build filters
 $filters = [];
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
 if ($brand) $filters['brand'] = $brand;
 if ($size) $filters['size'] = $size;
@@ -70,7 +74,15 @@ foreach ($allPerfumes as $perfume) {
 <!-- Main Content Section -->
 <main class="main-content">
     <div class="content-header">
-        <h1 class="page-title">Perfumes</h1>
+        <h1 class="page-title">
+            <?php 
+            if ($subcategory) {
+                echo htmlspecialchars(ucfirst($subcategory)) . ' Perfumes';
+            } else {
+                echo 'Perfumes';
+            }
+            ?>
+        </h1>
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select">Sort:</label>

@@ -1,11 +1,9 @@
-/* Filter group styling removed */
 /* Main Content */
 .main-content {
     flex: 1;
     padding: 20px 40px;
     background-color: #fff;
     min-width: 0;
-    width: 100%;
 }
 
 .content-header {
@@ -83,7 +81,7 @@
     background-color: #fff;
     border-radius: 0;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
     border: none;
 }
@@ -100,6 +98,26 @@
     overflow: hidden;
 }
 
+/* View indicator */
+.view-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-slider:hover .view-indicator {
+    opacity: 1;
+}
+
 .image-slider {
     position: relative;
     width: 100%;
@@ -107,7 +125,8 @@
     cursor: pointer;
 }
 
-.image-slider img {
+.image-slider img,
+.image-slider video {
     position: absolute;
     top: 0;
     left: 0;
@@ -115,11 +134,37 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 1;
 }
 
-.image-slider img.active {
+.image-slider img.active,
+.image-slider video.active {
     opacity: 1;
+    z-index: 2;
+}
+
+/* Auto-play videos when they become active */
+.image-slider video.active {
+    animation: fadeInVideo 0.3s ease-in-out;
+}
+
+@keyframes fadeInVideo {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+.image-slider img:hover,
+.image-slider video:hover {
+    transform: scale(1.02);
 }
 
 /* Add subtle hover effect to indicate interactivity */
@@ -134,9 +179,10 @@
     padding: 8px 12px;
     border-radius: 20px;
     font-size: 12px;
-    opacity: 0;
-    animation: fadeInOut 2s ease-in-out;
+    opacity: 1;
+    transition: opacity 0.2s ease;
     pointer-events: none;
+    z-index: 10;
 }
 
 @keyframes fadeInOut {
@@ -192,6 +238,7 @@
     opacity: 0;
     transition: all 0.3s ease;
     min-width: 120px;
+    z-index: 15;
 }
 
 .product-card:hover .product-actions {
@@ -267,6 +314,8 @@
     box-shadow: 0 0 0 1px #ddd;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
 }
 
 .color-circle:hover {
@@ -355,14 +404,16 @@
     border-radius: 8px;
 }
 
-#quick-view-main-image {
+#quick-view-main-image,
+#quick-view-main-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-#quick-view-main-image:hover {
+#quick-view-main-image:hover,
+#quick-view-main-video:hover {
     transform: scale(1.05);
 }
 
@@ -388,7 +439,8 @@
     border-color: #000;
 }
 
-.thumbnail-item img {
+.thumbnail-item img,
+.thumbnail-item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -446,33 +498,37 @@
 }
 
 .quick-view-color-circle {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2px solid #ddd;
     transition: all 0.3s ease;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .quick-view-color-circle:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .quick-view-color-circle.active {
     border-color: #000;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
 }
 
 .quick-view-color-circle::after {
     content: '';
     position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
     border: 2px solid transparent;
     border-radius: 50%;
     transition: border-color 0.3s ease;
+    pointer-events: none;
 }
 
 .quick-view-color-circle.active::after {
@@ -594,6 +650,14 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
+    .page-layout {
+        max-width: 100%;
+    }
+    
+    .sidebar {
+        width: 250px;
+    }
+    
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
@@ -601,7 +665,19 @@
 }
 
 @media (max-width: 768px) {
+    .page-layout {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        order: 2;
+    }
+    
     .main-content {
+        order: 1;
         padding: 20px;
     }
     
@@ -640,6 +716,71 @@
         font-size: 12px;
     }
 } 
+
+/* Loading Spinner */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Quick View Loading State */
+.quick-view-content .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.quick-view-content .loading-state i {
+    margin-bottom: 15px;
+}
+
+.quick-view-content .loading-state p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Quick View Error State */
+.quick-view-content .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.quick-view-content .error-state i {
+    margin-bottom: 15px;
+    color: #f44336;
+}
+
+.quick-view-content .error-state p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.quick-view-content .error-state button {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.quick-view-content .error-state button:hover {
+    background: #333;
+}
 
 /* Responsive Design for Quick View */
 @media (max-width: 768px) {
@@ -685,49 +826,4 @@
         font-size: 13px;
         min-width: 40px;
     }
-}
-
-/* Filter Animation Styles */
-.product-card {
-    transition: all 0.3s ease;
-}
-
-.product-card.filtered-out {
-    opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
-}
-
-.product-card.filtered-in {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-}
-
-/* Clear Filters Button */
-.clear-filters-btn {
-    background: #f8f9fa !important;
-    border: 1px solid #ddd !important;
-    padding: 5px 10px !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    font-size: 12px !important;
-    margin-top: 10px !important;
-    transition: all 0.3s ease !important;
-}
-
-.clear-filters-btn:hover {
-    background: #e9ecef !important;
-    border-color: #adb5bd !important;
-}
-
-/* Filter Checkbox Animation */
-.filter-option input[type="checkbox"]:checked + .checkmark {
-    animation: checkmarkPulse 0.3s ease;
-}
-
-@keyframes checkmarkPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
 } 

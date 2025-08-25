@@ -22,9 +22,16 @@ class Order {
      * Create a new order from cart
      */
     public function createOrder($userId, $cartData, $orderDetails = []) {
+        // Convert cart items to array if needed
+        $cartItems = $this->toArray($cartData['items']);
+        
+        // Debug: Log cart items
+        error_log("Creating order for user: $userId");
+        error_log("Cart items count: " . count($cartItems));
+        
         // Ensure items have consistent structure
         $processedItems = [];
-        foreach ($cartData['items'] as $item) {
+        foreach ($cartItems as $item) {
             $processedItem = [
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
@@ -49,6 +56,13 @@ class Order {
             $processedItems[] = $processedItem;
         }
         
+        // Debug: Log processed items
+        error_log("Processed items count: " . count($processedItems));
+        
+        // Debug: Log cart data for order creation
+        error_log("Cart total: " . ($cartData['total'] ?? 'not set'));
+        error_log("Cart item count: " . ($cartData['item_count'] ?? 'not set'));
+        
         $orderData = [
             'user_id' => $userId,
             'items' => $processedItems,
@@ -64,13 +78,13 @@ class Order {
             'updated_at' => date('Y-m-d H:i:s')
         ];
         
+        // Debug: Log order data being inserted
+        error_log("Order data total_amount: " . $orderData['total_amount']);
+        error_log("Order data: " . json_encode($orderData));
+        
         $result = $this->collection->insertOne($orderData);
         
         if ($result->getInsertedId()) {
-            // Clear the user's cart after successful order
-            $cartModel = new Cart();
-            $cartModel->clearCart($userId);
-            
             return $result->getInsertedId();
         }
         
@@ -95,6 +109,28 @@ class Order {
     }
 
     /**
+     * Helper function to safely convert MongoDB objects to arrays
+     */
+    private function toArray($data) {
+        if (is_array($data)) {
+            return $data;
+        }
+        if (is_object($data)) {
+            if (method_exists($data, 'toArray')) {
+                return $data->toArray();
+            }
+            if (method_exists($data, 'getArrayCopy')) {
+                return $data->getArrayCopy();
+            }
+            if ($data instanceof \Iterator) {
+                return iterator_to_array($data);
+            }
+            return (array) $data;
+        }
+        return [];
+    }
+
+    /**
      * Enrich order with product details
      */
     private function enrichOrderWithProductDetails($order) {
@@ -102,10 +138,16 @@ class Order {
             return $order;
         }
         
+        // Convert BSONArray to regular array if needed
+        $items = $this->toArray($order['items']);
+        if (empty($items)) {
+            return $order;
+        }
+        
         $productModel = new Product();
         $enrichedItems = [];
         
-        foreach ($order['items'] as $item) {
+        foreach ($items as $item) {
             $enrichedItem = $item;
             
             // If product details are missing, try to get them from the product ID
@@ -136,21 +178,52 @@ class Order {
      * Get order by ID
      */
     public function getOrderById($orderId) {
-        // Convert string ID to ObjectId if needed
-        if (is_string($orderId)) {
+        // Early return if orderId is null or empty
+        if (empty($orderId)) {
+            return null;
+        }
+        
+        // Handle MongoDB BSONDocument objects
+        if (is_object($orderId)) {
+            // If it's already an ObjectId, use it directly
+            if ($orderId instanceof MongoDB\BSON\ObjectId) {
+                $objectId = $orderId;
+            } else {
+                // Try to extract the ObjectId from BSONDocument
+                try {
+                    if (method_exists($orderId, 'toArray')) {
+                        $array = $orderId->toArray();
+                        if (isset($array['$oid'])) {
+                            $objectId = new MongoDB\BSON\ObjectId($array['$oid']);
+                        } else {
+                            return null; // No valid ObjectId found
+                        }
+                    } else {
+                        return null; // Can't convert this object
+                    }
+                } catch (Exception $e) {
+                    return null; // Conversion failed
+                }
+            }
+        } else {
+            // Handle string IDs
             try {
-                $orderId = new MongoDB\BSON\ObjectId($orderId);
+                $objectId = new MongoDB\BSON\ObjectId($orderId);
             } catch (Exception $e) {
-                // If conversion fails, try with string
+                return null; // Invalid ObjectId string
             }
         }
         
-        $order = $this->collection->findOne(['_id' => $orderId]);
-        if ($order) {
-            return $this->enrichOrderWithProductDetails($order);
+        // Now we have a valid ObjectId, query the database
+        try {
+            $order = $this->collection->findOne(['_id' => $objectId]);
+            if ($order) {
+                return $this->enrichOrderWithProductDetails($order);
+            }
+            return null;
+        } catch (Exception $e) {
+            return null; // Database query failed
         }
-        
-        return $order;
     }
 
     /**
@@ -303,7 +376,7 @@ class Order {
         
         $orderList = [];
         foreach ($orders as $order) {
-            $orderList[] = $order;
+            $orderList[] = $this->enrichOrderWithProductDetails($order);
         }
         
         return $orderList;

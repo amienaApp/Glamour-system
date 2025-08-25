@@ -4,9 +4,9 @@
  * Handles payment processing requests for Somali payment methods
  */
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Disable error reporting for production
+error_reporting(0);
+ini_set('display_errors', 0);
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -41,9 +41,7 @@ if (!$input) {
 $action = $input['action'] ?? '';
 
 try {
-    // Debug: Log the request
-    error_log("Payment API called with method: " . $_SERVER['REQUEST_METHOD']);
-    error_log("Payment API input: " . json_encode($input));
+
     
     $paymentModel = new Payment();
     $orderModel = new Order();
@@ -74,8 +72,7 @@ try {
     }
 
 } catch (Exception $e) {
-    // Debug: Log the error
-    error_log("Payment API error: " . $e->getMessage());
+
     echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
 }
 

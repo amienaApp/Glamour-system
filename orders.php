@@ -390,10 +390,19 @@ $paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] ==
                             </div>
                         </div>
 
-                        <?php if (!empty($order['items'])): ?>
+                        <?php 
+                        // Safely convert items to array if needed
+                        $orderItems = $order['items'] ?? [];
+                        if (is_object($orderItems) && method_exists($orderItems, 'toArray')) {
+                            $orderItems = $orderItems->toArray();
+                        } elseif (!is_array($orderItems)) {
+                            $orderItems = [];
+                        }
+                        
+                        if (!empty($orderItems)): ?>
                             <div class="order-items">
                                 <h4><i class="fas fa-box"></i> Order Items</h4>
-                                <?php foreach ($order['items'] as $item): ?>
+                                <?php foreach ($orderItems as $item): ?>
                                     <?php 
                                     // Get product information
                                     $productName = 'Unknown Product';
