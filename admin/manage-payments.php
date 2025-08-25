@@ -8,6 +8,23 @@ require_once '../models/Payment.php';
 require_once '../models/User.php';
 require_once '../models/Order.php';
 
+/**
+ * Helper function to safely format order ID for display
+ */
+function formatOrderId($orderId) {
+    if (is_object($orderId)) {
+        if (method_exists($orderId, 'toArray')) {
+            $array = $orderId->toArray();
+            if (isset($array['$oid'])) {
+                return $array['$oid'];
+            }
+        }
+        // Don't try to convert to string, just return a safe fallback
+        return 'Unknown Order';
+    }
+    return $orderId;
+}
+
 $paymentModel = new Payment();
 $userModel = new User();
 $orderModel = new Order();
@@ -313,6 +330,119 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             gap: 10px;
         }
 
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #0066cc;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0,102,204,0.1);
+        }
+
+        .modal-actions {
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background: #ccc;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-cancel:hover {
+            background: #bbb;
+        }
+
+        .btn-submit:hover {
+            background: #0052a3;
+        }
+
         .btn-delete, .btn-clear {
             padding: 8px 16px;
             border: none;
@@ -424,6 +554,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <button class="search-btn" onclick="searchPayments()">
                     <i class="fas fa-search"></i> Search
                 </button>
+
             </div>
 
             <!-- Payments Table -->
@@ -438,7 +569,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <div class="bulk-actions-content">
                         <span id="selected-count">0 payments selected</span>
                         <div class="bulk-actions-buttons">
-                            <button type="button" class="btn-delete" onclick="deleteSelectedPayments()">
+                            <button type="button" class="btn-delete" onclick="bulkDeletePayments()">
                                 <i class="fas fa-trash"></i> Delete Selected
                             </button>
                             <button type="button" class="btn-clear" onclick="clearSelection()">
@@ -503,8 +634,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                     </td>
                                     <td>
                                         <?php 
+                                        try {
                                         $order = $orderModel->getOrderById($payment['order_id']);
-                                        echo $order ? $order['order_number'] : $payment['order_id'];
+                                            if ($order && isset($order['order_number'])) {
+                                                echo $order['order_number'];
+                                            } else {
+                                                echo formatOrderId($payment['order_id']);
+                                            }
+                                        } catch (Exception $e) {
+                                            echo formatOrderId($payment['order_id']);
+                                        }
                                         ?>
                                     </td>
                                     <td>$<?php echo number_format($payment['amount'], 2); ?></td>
@@ -520,13 +659,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                     </td>
                                     <td><?php echo date('M j, Y H:i', strtotime($payment['created_at'])); ?></td>
                                     <td>
-                                        <button class="action-btn btn-view" onclick="viewPayment('<?php echo $payment['_id']; ?>')">
+                                        <button class="action-btn btn-view" onclick="viewPayment('<?php echo (string)$payment['_id']; ?>')" type="button">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="action-btn btn-edit" onclick="editPayment('<?php echo $payment['_id']; ?>')">
+                                        <button class="action-btn btn-edit" onclick="editPayment('<?php echo (string)$payment['_id']; ?>')" type="button">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="action-btn btn-delete" onclick="deletePayment('<?php echo $payment['_id']; ?>')">
+                                        <button class="action-btn btn-delete" onclick="deletePayment('<?php echo (string)$payment['_id']; ?>')" type="button">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -561,6 +700,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <script src="includes/admin-sidebar.js"></script>
     <script>
+        // Test if JavaScript is working
+        console.log('JavaScript loaded successfully');
+        
+        // Add event listeners after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, adding event listeners');
+            
+            // Test if we can find action buttons
+            const actionButtons = document.querySelectorAll('.action-btn');
+            console.log('Found action buttons:', actionButtons.length);
+            
+            // Test action buttons are working
+            console.log('Action buttons should now work with inline onclick handlers');
+        });
         function searchPayments() {
             const searchTerm = document.getElementById('searchInput').value;
             if (searchTerm.trim()) {
@@ -569,19 +722,406 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         function viewPayment(paymentId) {
-            // Implement payment view modal
-            alert('View payment details for: ' + paymentId);
+            console.log('View payment clicked:', paymentId);
+            
+            // Fetch payment details and show modal
+            fetch('payment-actions.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'view',
+                    payment_id: paymentId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPaymentModal('View Payment', data.payment, 'view');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
         }
 
         function editPayment(paymentId) {
-            // Implement payment edit functionality
-            alert('Edit payment: ' + paymentId);
+            console.log('Edit payment clicked:', paymentId);
+            
+            // Fetch payment details and show edit modal
+            fetch('payment-actions.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'get',
+                    payment_id: paymentId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPaymentModal('Edit Payment', data.payment, 'edit');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
         }
 
         function deletePayment(paymentId) {
-            if (confirm('Are you sure you want to delete this payment?')) {
-                // Implement payment deletion
-                alert('Delete payment: ' + paymentId);
+            console.log('Delete payment clicked:', paymentId);
+            showDeleteModal(paymentId);
+        }
+
+        function showDeleteModal(paymentId) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+
+            modalContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                    <h2 style="margin: 0; color: #333;">Delete Payment</h2>
+                </div>
+                <p style="margin-bottom: 25px; color: #666; line-height: 1.5;">
+                    Are you sure you want to delete this payment?<br>
+                    <strong>This action cannot be undone.</strong>
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+                    <button onclick="confirmDelete('${paymentId}', this)" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete Payment</button>
+                </div>
+            `;
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+        }
+
+        function showBulkDeleteModal(paymentIds) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+
+            modalContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                    <h2 style="margin: 0; color: #333;">Delete Multiple Payments</h2>
+                </div>
+                <p style="margin-bottom: 25px; color: #666; line-height: 1.5;">
+                    Are you sure you want to delete <strong>${paymentIds.length} payment(s)</strong>?<br>
+                    <strong>This action cannot be undone.</strong>
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+                    <button onclick="confirmBulkDelete(${JSON.stringify(paymentIds)}, this)" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Delete ${paymentIds.length} Payment(s)</button>
+                </div>
+            `;
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+        }
+
+        function confirmBulkDelete(paymentIds, button) {
+            // Disable button and show loading
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            fetch('payment-actions.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'bulk_delete',
+                    payment_ids: paymentIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const modal = button.closest('.modal');
+                    const modalContent = modal.querySelector('div');
+                    modalContent.innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <i class="fas fa-check-circle" style="font-size: 48px; color: #28a745; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 0; color: #333;">Success!</h2>
+                        </div>
+                        <p style="margin-bottom: 25px; color: #666;">
+                            Successfully deleted ${data.deleted_count} payment(s)!
+                        </p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+                    `;
+                } else {
+                    // Show error message
+                    const modal = button.closest('.modal');
+                    const modalContent = modal.querySelector('div');
+                    modalContent.innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <i class="fas fa-times-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 0; color: #333;">Error</h2>
+                        </div>
+                        <p style="margin-bottom: 25px; color: #666;">
+                            ${data.message}
+                        </p>
+                        <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                    `;
+                }
+            })
+            .catch(error => {
+                // Show error message
+                const modal = button.closest('.modal');
+                const modalContent = modal.querySelector('div');
+                modalContent.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <i class="fas fa-times-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                        <h2 style="margin: 0; color: #333;">Error</h2>
+                    </div>
+                    <p style="margin-bottom: 25px; color: #666;">
+                        ${error.message}
+                    </p>
+                    <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                `;
+            });
+        }
+
+        function confirmDelete(paymentId, button) {
+            // Disable button and show loading
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            fetch('payment-actions.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'delete',
+                    payment_id: paymentId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const modal = button.closest('.modal');
+                    const modalContent = modal.querySelector('div');
+                    modalContent.innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <i class="fas fa-check-circle" style="font-size: 48px; color: #28a745; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 0; color: #333;">Success!</h2>
+                        </div>
+                        <p style="margin-bottom: 25px; color: #666;">
+                            Payment deleted successfully!
+                        </p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+                    `;
+                } else {
+                    // Show error message
+                    const modal = button.closest('.modal');
+                    const modalContent = modal.querySelector('div');
+                    modalContent.innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <i class="fas fa-times-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 0; color: #333;">Error</h2>
+                        </div>
+                        <p style="margin-bottom: 25px; color: #666;">
+                            ${data.message}
+                        </p>
+                        <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                    `;
+                }
+            })
+            .catch(error => {
+                // Show error message
+                const modal = button.closest('.modal');
+                const modalContent = modal.querySelector('div');
+                modalContent.innerHTML = `
+                    <div style="margin-bottom: 20px;">
+                        <i class="fas fa-times-circle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                        <h2 style="margin: 0; color: #333;">Error</h2>
+                    </div>
+                    <p style="margin-bottom: 25px; color: #666;">
+                        ${error.message}
+                    </p>
+                    <button onclick="this.closest('.modal').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                `;
+            });
+        }
+
+        function showPaymentModal(title, payment, mode) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+            `;
+
+            let content = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; color: #0066cc;">${title}</h2>
+                    <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+            `;
+
+            if (mode === 'view') {
+                content += `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Payment ID:</strong> ${payment._id}<br>
+                        <strong>Order ID:</strong> ${payment.order_id}<br>
+                        <strong>User ID:</strong> ${payment.user_id}<br>
+                        <strong>Amount:</strong> $${parseFloat(payment.amount).toFixed(2)}<br>
+                        <strong>Payment Method:</strong> ${payment.payment_method}<br>
+                        <strong>Status:</strong> <span style="color: ${payment.status === 'completed' ? 'green' : payment.status === 'pending' ? 'orange' : 'red'};">${payment.status}</span><br>
+                        <strong>Created:</strong> ${payment.created_at}<br>
+                        <strong>Updated:</strong> ${payment.updated_at}
+                    </div>
+                `;
+
+                if (payment.payment_details) {
+                    content += '<div style="margin-top: 20px;"><strong>Payment Details:</strong><br>';
+                    for (const [key, value] of Object.entries(payment.payment_details)) {
+                        content += `${key}: ${value}<br>`;
+                    }
+                    content += '</div>';
+                }
+            } else if (mode === 'edit') {
+                content += `
+                    <form id="editPaymentForm">
+                        <input type="hidden" name="payment_id" value="${payment._id}">
+                        <div style="margin-bottom: 15px;">
+                            <label><strong>Status:</strong></label><br>
+                            <select name="status" style="width: 100%; padding: 8px; margin-top: 5px;">
+                                <option value="pending" ${payment.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="completed" ${payment.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                <option value="failed" ${payment.status === 'failed' ? 'selected' : ''}>Failed</option>
+                                <option value="cancelled" ${payment.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label><strong>Payment Method:</strong></label><br>
+                            <select name="payment_method" style="width: 100%; padding: 8px; margin-top: 5px;">
+                                <option value="waafi" ${payment.payment_method === 'waafi' ? 'selected' : ''}>Waafi</option>
+                                <option value="card" ${payment.payment_method === 'card' ? 'selected' : ''}>Card</option>
+                                <option value="bank" ${payment.payment_method === 'bank' ? 'selected' : ''}>Bank</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label><strong>Amount:</strong></label><br>
+                            <input type="number" name="amount" value="${payment.amount}" step="0.01" style="width: 100%; padding: 8px; margin-top: 5px;">
+                        </div>
+                        <div style="text-align: right;">
+                            <button type="button" onclick="this.closest('.modal').remove()" style="padding: 10px 20px; margin-right: 10px; background: #ccc; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 5px; cursor: pointer;">Update Payment</button>
+                        </div>
+                    </form>
+                `;
+            }
+
+            modalContent.innerHTML = content;
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Handle form submission for edit mode
+            if (mode === 'edit') {
+                const form = modal.querySelector('#editPaymentForm');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+                    data.action = 'update';
+
+                    fetch('payment-actions.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Payment updated successfully!');
+                            modal.remove();
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error: ' + error.message);
+                    });
+                });
             }
         }
 
@@ -622,41 +1162,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update select all checkbox state
             const totalCheckboxes = document.querySelectorAll('.payment-select');
             selectAllCheckbox.checked = selectedCountValue === totalCheckboxes.length && totalCheckboxes.length > 0;
-            selectAllCheckbox.indeterminate = selectedCountValue > 0 && selectedCountValue < totalCheckboxes.length;
         }
 
-        function deleteSelectedPayments() {
+        function bulkDeletePayments() {
             const selectedCheckboxes = document.querySelectorAll('.payment-select:checked');
-            const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+            const paymentIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
             
-            if (selectedIds.length === 0) {
-                alert('Please select payments to delete.');
+            if (paymentIds.length === 0) {
+                alert('Please select payments to delete');
                 return;
             }
             
-            if (confirm(`Are you sure you want to delete ${selectedIds.length} payment${selectedIds.length !== 1 ? 's' : ''}? This action cannot be undone.`)) {
-                // Create form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.style.display = 'none';
-                
-                const actionInput = document.createElement('input');
-                actionInput.type = 'hidden';
-                actionInput.name = 'action';
-                actionInput.value = 'bulk_delete';
-                form.appendChild(actionInput);
-                
-                selectedIds.forEach(id => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'payment_ids[]';
-                    input.value = id;
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
+            showBulkDeleteModal(paymentIds);
         }
 
         function clearSelection() {

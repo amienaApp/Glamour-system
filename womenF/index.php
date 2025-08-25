@@ -1,5 +1,13 @@
 <?php
 $page_title = 'Galamor palace';
+
+// Get subcategory from URL parameter
+$subcategory = $_GET['subcategory'] ?? '';
+
+// Set page title based on subcategory
+if ($subcategory) {
+    $page_title = ucfirst($subcategory) . ' - ' . $page_title;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,34 +29,34 @@ $page_title = 'Galamor palace';
 
                 <!-- Image Bar Section -->
                 <div class="image-bar">
-                    <div class="image-item">
+                    <a href="index.php" class="image-item">
                         <img src="../img/women/dresses/12.webp" alt="Women Fashion 12">
                         <h3>Shop All</h3>
-                    </div>
-                    <div class="image-item">
+                    </a>
+                    <a href="index.php?subcategory=dresses" class="image-item">
                         <img src="../img/women/13.webp" alt="Women Fashion 13">
-                        <h3>New In</h3>
-                    </div>
-                    <div class="image-item">
+                        <h3>Dresses</h3>
+                    </a>
+                    <a href="index.php?subcategory=wedding-guest" class="image-item">
                         <img src="../img/women/14.avif" alt="Women Fashion 14">
                         <h3>Wedding Guest</h3>
-                    </div>
-                    <div class="image-item">
+                    </a>
+                    <a href="index.php?subcategory=wedding-dress" class="image-item">
                         <img src="../img/women/dresses/17.webp" alt="Women Fashion 17">
                         <h3>Wedding-dress</h3>
-                    </div>
-                    <div class="image-item">
+                    </a>
+                    <a href="index.php?subcategory=abaya" class="image-item">
                         <img src="../img/women/NEW/11.webp" alt="Women Fashion 12">
-                        <h3>abaya</h3>
-                    </div>
-                    <div class="image-item">
+                        <h3>Abaya</h3>
+                    </a>
+                    <a href="index.php?subcategory=summer-dresses" class="image-item">
                         <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
                         <h3>Summer-dresses</h3>
-                    </div>
-                    <div class="image-item">
+                    </a>
+                    <a href="index.php?subcategory=homecoming" class="image-item">
                         <img src="../img/women/14.avif" alt="Women Fashion 14">
                         <h3>Homecoming</h3>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="page-layout">

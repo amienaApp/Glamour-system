@@ -89,6 +89,10 @@ class Payment {
         // Update order status if payment is successful
         if ($result && $result['success']) {
             $this->updateOrderStatus($payment['order_id'], 'confirmed');
+            $cartCleared = $this->clearUserCart($payment['user_id']);
+            if (!$cartCleared) {
+                error_log("Warning: Failed to clear cart for user: " . $payment['user_id']);
+            }
             $result['message'] = "🎉 Congratulations! Your order is successful!";
         }
 
@@ -385,6 +389,20 @@ class Payment {
             return $orderModel->updateOrderStatus($orderId, $status);
         } catch (Exception $e) {
             error_log("Failed to update order status: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Clear user's cart after successful payment
+     */
+    private function clearUserCart($userId) {
+        try {
+            require_once __DIR__ . '/Cart.php';
+            $cartModel = new Cart();
+            return $cartModel->clearCart($userId);
+        } catch (Exception $e) {
+            error_log("Failed to clear user cart: " . $e->getMessage());
             return false;
         }
     }

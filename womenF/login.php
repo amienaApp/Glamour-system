@@ -6,6 +6,65 @@ if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Include required files
+        require_once '../config/mongodb.php';
+        require_once '../models/User.php';
+
+        // Get POST data
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$input) {
+            $input = $_POST;
+        }
+
+        // Validate required fields
+        if (empty($input['username']) || empty($input['password'])) {
+            throw new Exception("Username/Email and password are required");
+        }
+
+        // Create User model instance
+        $userModel = new User();
+
+        // Attempt login
+        $user = $userModel->login($input['username'], $input['password']);
+
+        // Update last login time
+        $userModel->updateLastLogin($user['_id']);
+
+        // Start session and store user data
+        $_SESSION['user_id'] = $user['_id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['user_role'] = $user['role'];
+
+        // Return success response
+        echo json_encode([
+            'success' => true,
+            'message' => 'Login successful! Welcome back, ' . $user['username'] . '!',
+            'user' => $user
+        ]);
+        exit;
+
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+        exit;
+    } catch (Error $e) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Internal server error. Please try again later.'
+        ]);
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -413,7 +472,7 @@ if (isset($_SESSION['user_id'])) {
                 hideMessage();
                 
                 // Send login request
-                const response = await fetch('login-handler.php', {
+                const response = await fetch('login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

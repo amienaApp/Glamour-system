@@ -2,7 +2,8 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Refine By</h3>
-        <span class="style-count">4146 Styles</span>
+        <span class="style-count" id="style-count">17 Styles</span>
+        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
     
     <!-- Gender Filter -->
@@ -54,7 +55,7 @@
     <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Size</h4>
+                <h4>Size <span class="size-count" id="size-count"></span></h4>
             </div>
             <div class="filter-options">
                 <!-- Adult Sizes -->
@@ -241,6 +242,10 @@
                             </label>
                         </div>
                     </div>
+                </div>
+                <div class="size-actions">
+                    <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
+                    <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
                 </div>
             </div>
         </div>

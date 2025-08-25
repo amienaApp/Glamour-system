@@ -6,6 +6,111 @@ if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+
+// Handle registration form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Production error handling
+error_reporting(0);
+ini_set('display_errors', 0);
+    
+    try {
+        // Include required files
+        require_once '../config/mongodb.php';
+        require_once '../models/User.php';
+
+        // Get POST data
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if (!$input) {
+            $input = $_POST;
+        }
+        
+
+        error_log("Registration input: " . json_encode($input));
+
+        // Validate required fields
+        $requiredFields = ['username', 'email', 'contact_number', 'gender', 'region', 'city', 'password', 'confirm_password'];
+        foreach ($requiredFields as $field) {
+            if (empty($input[$field])) {
+                throw new Exception("Field '$field' is required");
+            }
+        }
+
+        // Validate email format
+        if (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid email format");
+        }
+
+        // Validate password match
+        if ($input['password'] !== $input['confirm_password']) {
+            throw new Exception("Passwords do not match");
+        }
+
+        // Validate password (allow any password)
+        if (strlen($input['password']) < 1) {
+            throw new Exception("Password is required");
+        }
+
+        // Validate gender
+        if (!in_array($input['gender'], ['male', 'female'])) {
+            throw new Exception("Invalid gender selection");
+        }
+
+        // Validate region (Somalia regions)
+        $validRegions = [
+            'banadir', 'bari', 'bay', 'galguduud', 'gedo', 'hiran', 
+            'jubbada-dhexe', 'jubbada-hoose', 'mudug', 'nugaal', 
+            'sanaag', 'shabeellaha-dhexe', 'shabeellaha-hoose', 
+            'sool', 'togdheer', 'woqooyi-galbeed'
+        ];
+        
+        if (!in_array($input['region'], $validRegions)) {
+            throw new Exception("Invalid region selection");
+        }
+
+        // Create User model instance
+        $userModel = new User();
+
+        // Prepare user data
+        $userData = [
+            'username' => trim($input['username']),
+            'email' => trim($input['email']),
+            'contact_number' => trim($input['contact_number']),
+            'gender' => $input['gender'],
+            'region' => $input['region'],
+            'city' => trim($input['city']),
+            'password' => $input['password']
+        ];
+
+        // Register user
+        $registeredUser = $userModel->register($userData);
+
+        // Return success response (don't auto-login)
+        echo json_encode([
+            'success' => true,
+            'message' => 'Account created successfully! You can now sign in.',
+            'user' => $registeredUser
+        ]);
+        exit;
+
+    } catch (Exception $e) {
+        error_log("Registration Exception: " . $e->getMessage());
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+        exit;
+    } catch (Error $e) {
+        error_log("Registration Error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Internal server error. Please try again later.'
+        ]);
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -541,7 +646,7 @@ if (isset($_SESSION['user_id'])) {
             if (selectedRegion && citiesByRegion[selectedRegion]) {
                 citiesByRegion[selectedRegion].forEach(city => {
                     const option = document.createElement('option');
-                    option.value = city.toLowerCase().replace(/\s+/g, '-');
+                    option.value = city;
                     option.textContent = city;
                     citySelect.appendChild(option);
                 });
@@ -561,7 +666,7 @@ if (isset($_SESSION['user_id'])) {
             const data = {
                 username: formData.get('username'),
                 email: formData.get('email'),
-                contact_number: formData.get('contact_number'),
+                contact_number: '+252' + formData.get('contact_number'),
                 gender: formData.get('gender'),
                 region: formData.get('region'),
                 city: formData.get('city'),
@@ -577,7 +682,7 @@ if (isset($_SESSION['user_id'])) {
                 hideMessage();
                 
                 // Send registration request
-                const response = await fetch('register-handler.php', {
+                const response = await fetch('register.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

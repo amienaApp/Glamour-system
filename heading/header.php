@@ -9,6 +9,80 @@ $categoryModel = new Category();
 $categories = $categoryModel->getAll();
 $isLoggedIn = isset($_SESSION['user_id']);
 
+// Function to get the correct URL for each category
+function getCategoryUrl($categoryName) {
+    $categoryMap = [
+        "Women's Clothing" => '../womenF/index.php',
+        "Men's Clothing" => '../menfolder/men.php',
+        "Kids' Clothing" => '#kids',
+        "Accessories" => '#accessories',
+        "Home & Living" => '#home-decor',
+        "Beauty & Cosmetics" => '../perfumes/index.php',
+        "Sports & Fitness" => '#sports',
+        "Perfumes" => '../perfumes/index.php',
+        "Shoes" => '../shoess/shoes.php'
+    ];
+    
+    return $categoryMap[$categoryName] ?? '#';
+}
+
+    // Function to get the correct URL for subcategories
+    function getSubcategoryUrl($categoryName, $subcategoryName) {
+        $subcategoryMap = [
+            "Women's Clothing" => [
+                "Dresses" => '../womenF/index.php#products-section',
+                "Tops" => '../womenF/index.php#tops-section',
+                "Bottoms" => '../womenF/index.php?subcategory=bottoms',
+                "Outerwear" => '../womenF/index.php?subcategory=outerwear',
+                "Activewear" => '../womenF/index.php?subcategory=activewear',
+                "Lingerie" => '../womenF/index.php?subcategory=lingerie',
+                "Swimwear" => '../womenF/index.php?subcategory=swimwear',
+                "Wedding Guest" => '../womenF/index.php?subcategory=wedding-guest',
+                "Wedding-dress" => '../womenF/index.php?subcategory=wedding-dress',
+                "Abaya" => '../womenF/index.php?subcategory=abaya',
+                "Summer-dresses" => '../womenF/index.php?subcategory=summer-dresses',
+                "Homecoming" => '../womenF/index.php?subcategory=homecoming'
+            ],
+            "Men's Clothing" => [
+                "Shirts" => '../menfolder/men.php#shirts-section',
+                "T-Shirts" => '../menfolder/men.php#tshirts-section',
+                "Suits" => '../menfolder/men.php#suits-section',
+                "Pants" => '../menfolder/men.php#pants-section',
+                "Shorts" => '../menfolder/men.php#shorts-section',
+                "Hoodies & Sweatshirts" => '../menfolder/men.php#hoodies-section',
+                "Jackets" => '../menfolder/men.php?subcategory=jackets',
+                "Activewear" => '../menfolder/men.php?subcategory=activewear',
+                "Underwear" => '../menfolder/men.php?subcategory=underwear',
+                "Swimwear" => '../menfolder/men.php?subcategory=swimwear'
+            ],
+        "Accessories" => [
+            "Shoes" => '../shoess/shoes.php',
+            "Bags" => '#bags',
+            "Jewelry" => '#jewelry',
+            "Hats" => '#hats',
+            "Scarves" => '#scarves',
+            "Belts" => '#belts'
+        ],
+        "Shoes" => [
+            "Men's Shoes" => '../shoess/shoes.php?subcategory=menshoes',
+            "Women's Shoes" => '../shoess/shoes.php?subcategory=womenshoes',
+            "Children's Shoes" => '../shoess/shoes.php?subcategory=childrenshoes',
+            "Sports Shoes" => '../shoess/shoes.php?subcategory=sportsshoes',
+            "Formal Shoes" => '../shoess/shoes.php?subcategory=formalshoes',
+            "Casual Shoes" => '../shoess/shoes.php?subcategory=casualshoes'
+        ],
+        "Beauty & Cosmetics" => [
+            "Fragrances" => '../perfumes/index.php',
+            "Skincare" => '#skincare',
+            "Makeup" => '#makeup',
+            "Hair Care" => '#hair-care',
+            "Tools" => '#tools'
+        ]
+    ];
+    
+    return $subcategoryMap[$categoryName][$subcategoryName] ?? getCategoryUrl($categoryName);
+}
+
 // Define region options to avoid duplication
 $regionOptions = [
     'banadir' => 'Banadir',
@@ -51,7 +125,7 @@ $regionOptions = [
             <?php if (!empty($categories)): ?>
                 <?php foreach ($categories as $category): ?>
                     <li class="nav-item-modal">
-                        <a href="#" class="nav-link modal-trigger" data-category="<?php echo htmlspecialchars($category['name']); ?>">
+                        <a href="<?php echo getCategoryUrl($category['name']); ?>" class="nav-link modal-trigger" data-category="<?php echo htmlspecialchars($category['name']); ?>">
                             <?php echo htmlspecialchars($category['name']); ?>
                         </a>
                         <!-- Category Modal -->
@@ -64,7 +138,7 @@ $regionOptions = [
                                 <div class="modal-content">
                                     <div class="subcategories-grid">
                                         <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                            <a href="#<?php echo strtolower(str_replace(' ', '-', $subcategory)); ?>-section" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory); ?>">
+                                            <a href="<?php echo getSubcategoryUrl($category['name'], $subcategory); ?>" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory); ?>">
                                                 <div class="subcategory-icon">
                                                     <i class="fas fa-chevron-right"></i>
                                                 </div>
@@ -82,11 +156,11 @@ $regionOptions = [
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Fallback static menu if no categories found -->
-                <li><a href="#" class="nav-link">Dresses</a></li>
-                <li><a href="#" class="nav-link">Clothing</a></li>
-                <li><a href="#" class="nav-link">Tops</a></li>
-                <li><a href="#" class="nav-link">Accessories</a></li>
-                <li><a href="#" class="nav-link">Sale</a></li>
+                <li><a href="../womenF/index.php" class="nav-link">Women's Clothing</a></li>
+                <li><a href="../menfolder/men.php" class="nav-link">Men's Clothing</a></li>
+                <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
+                <li><a href="../shoess/shoes.php" class="nav-link">Shoes</a></li>
+                <li><a href="#accessories" class="nav-link">Accessories</a></li>
             <?php endif; ?>
         </ul>
     </div>
@@ -148,7 +222,7 @@ $regionOptions = [
                 <i class="fas fa-heart"></i>
             </div>
             <div class="shopping-cart" title="Cart" style="position: relative;">
-                <a href="../cart.php" style="text-decoration: none; color: inherit;">
+                <a href="../cart-unified.php" style="text-decoration: none; color: inherit;">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
                 </a>
@@ -442,14 +516,16 @@ $regionOptions = [
                 const userDropdown = document.getElementById('user-dropdown');
                 
                 if (userDropdown) {
-                    const isVisible = userDropdown.style.opacity === '1' || userDropdown.classList.contains('show');
+                    const isVisible = userDropdown.classList.contains('show');
                     
                     if (isVisible) {
                         // Hide dropdown
-                        userDropdown.style.opacity = '0';
-                        userDropdown.style.visibility = 'hidden';
-                        userDropdown.style.transform = 'translateY(-10px)';
                         userDropdown.classList.remove('show');
+                        setTimeout(() => {
+                            userDropdown.style.opacity = '0';
+                            userDropdown.style.visibility = 'hidden';
+                            userDropdown.style.transform = 'translateY(-10px)';
+                        }, 300);
                     } else {
                         // Show dropdown
                         userDropdown.style.opacity = '1';
@@ -544,10 +620,12 @@ $regionOptions = [
             // Close dropdown when clicking outside
             if (userDropdown && userIcon) {
                 if (!userDropdown.contains(e.target) && !userIcon.contains(e.target)) {
-                    userDropdown.style.opacity = '0';
-                    userDropdown.style.visibility = 'hidden';
-                    userDropdown.style.transform = 'translateY(-10px)';
                     userDropdown.classList.remove('show');
+                    setTimeout(() => {
+                        userDropdown.style.opacity = '0';
+                        userDropdown.style.visibility = 'hidden';
+                        userDropdown.style.transform = 'translateY(-10px)';
+                    }, 300);
                 }
             }
             
@@ -598,6 +676,34 @@ $regionOptions = [
             }
         });
 
+        // Close dropdown when scrolling
+        let scrollTimeout;
+        document.addEventListener('scroll', function() {
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown && userDropdown.classList.contains('show')) {
+                userDropdown.classList.remove('show');
+                setTimeout(() => {
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                }, 300);
+            }
+        }, { passive: true });
+
+        // Validation modal close functionality
+        const validationBtn = document.getElementById('validation-btn');
+        if (validationBtn) {
+            validationBtn.addEventListener('click', function() {
+                const validationModal = document.getElementById('validation-modal');
+                if (validationModal) {
+                    validationModal.classList.remove('show');
+                    setTimeout(() => {
+                        validationModal.style.display = 'none';
+                    }, 300);
+                }
+            });
+        }
+
 
 
         // Menu item click handlers (placeholder functionality)
@@ -640,7 +746,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                 
                 // Send login request
-                fetch('./login-handler.php', {
+                fetch('login-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -650,23 +756,29 @@ $regionOptions = [
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Show success message
+                        showValidationMessage('success', 'Login Successful', data.message);
+                        
                         // Clear the login form
                         loginFormElement.reset();
                         
-                        // Close the modal immediately
-                        if (userModal) {
-                            userModal.classList.remove('show');
-                            userModal.style.display = 'none';
-                        }
-                        
-                        // Refresh page to show logged-in state
+                        // Close the modal after a short delay
                         setTimeout(() => {
+                            if (userModal) {
+                                userModal.classList.remove('show');
+                                userModal.style.display = 'none';
+                            }
+                            
+                            // Refresh page to show logged-in state
                             window.location.reload();
-                        }, 300);
+                        }, 1500);
+                    } else {
+                        showValidationMessage('error', 'Login Failed', data.message);
                     }
                 })
                 .catch(error => {
-                    // Silent error handling
+                    console.error('Login error:', error);
+                    showValidationMessage('error', 'Login Error', 'An error occurred during login. Please try again.');
                 })
                 .finally(() => {
                     // Reset button state
@@ -712,7 +824,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                 
                 // Send registration request
-                fetch('./register-handler.php', {
+                fetch('register-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -722,6 +834,9 @@ $regionOptions = [
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Show success message
+                        showValidationMessage('success', 'Registration Successful', data.message);
+                        
                         // Set flag to prevent login form from being hidden
                         isTransitioningToLogin = true;
                         
@@ -736,7 +851,6 @@ $regionOptions = [
                         if (loginForm) {
                             loginForm.style.display = 'flex';
                             loginForm.classList.add('show');
-    
                         }
                         
                         // Keep the modal open for login
@@ -750,7 +864,6 @@ $regionOptions = [
                             if (loginForm && loginForm.style.display !== 'flex') {
                                 loginForm.style.display = 'flex';
                                 loginForm.classList.add('show');
-
                             }
                         }, 100);
                         
@@ -758,10 +871,13 @@ $regionOptions = [
                         setTimeout(() => {
                             isTransitioningToLogin = false;
                         }, 2000);
+                    } else {
+                        showValidationMessage('error', 'Registration Failed', data.message);
                     }
                 })
                 .catch(error => {
-                    // Silent error handling
+                    console.error('Registration error:', error);
+                    showValidationMessage('error', 'Registration Error', 'An error occurred during registration. Please try again.');
                 })
                 .finally(() => {
                     // Reset button state
@@ -832,9 +948,45 @@ $regionOptions = [
             });
         }
 
+        // Show validation message function
+        function showValidationMessage(type, title, message) {
+            const validationModal = document.getElementById('validation-modal');
+            const validationIcon = document.getElementById('validation-icon');
+            const validationTitle = document.getElementById('validation-title');
+            const validationMessage = document.getElementById('validation-message');
+            const validationBtn = document.getElementById('validation-btn');
+            
+            if (validationModal && validationIcon && validationTitle && validationMessage && validationBtn) {
+                // Set icon and title based on type
+                if (type === 'success') {
+                    validationIcon.className = 'fas fa-check-circle';
+                    validationIcon.style.color = '#28a745';
+                    validationTitle.textContent = title;
+                    validationMessage.textContent = message;
+                } else {
+                    validationIcon.className = 'fas fa-exclamation-circle';
+                    validationIcon.style.color = '#dc3545';
+                    validationTitle.textContent = title;
+                    validationMessage.textContent = message;
+                }
+                
+                // Show modal
+                validationModal.style.display = 'flex';
+                validationModal.classList.add('show');
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    validationModal.classList.remove('show');
+                    setTimeout(() => {
+                        validationModal.style.display = 'none';
+                    }, 300);
+                }, 3000);
+            }
+        }
+
         // Logout function
         window.logout = function() {
-            fetch('./logout-handler.php', {
+            fetch('logout-handler.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -843,13 +995,17 @@ $regionOptions = [
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    showValidationMessage('success', 'Logout Successful', data.message);
                     setTimeout(() => {
                         window.location.reload();
-                    }, 500);
+                    }, 1500);
+                } else {
+                    showValidationMessage('error', 'Logout Failed', data.message);
                 }
             })
             .catch(error => {
-                // Silent error handling
+                console.error('Logout error:', error);
+                showValidationMessage('error', 'Logout Error', 'An error occurred during logout. Please try again.');
             });
         }
 

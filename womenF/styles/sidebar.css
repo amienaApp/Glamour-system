@@ -27,6 +27,9 @@
     padding: 0 20px 20px 20px;
     border-bottom: 1px solid #e8e8e8;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .sidebar-header h3 {
@@ -41,6 +44,74 @@
     font-size: 14px;
     color: #666666;
     font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.clear-filters-btn {
+    background: #f8f9fa;
+    border: none;
+    color: #000000;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.clear-filters-btn:hover {
+    background: #e9ecef;
+    color: #000000;
+}
+
+.clear-filters-btn:active {
+    transform: translateY(1px);
+}
+
+/* Filter loading states */
+.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.filter-loading .filter-option {
+    cursor: not-allowed;
+}
+
+/* No products message */
+.no-products {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-products p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Filter active states */
+.filter-option input[type="checkbox"]:checked + .checkmark {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Color option active states */
+.color-option input[type="checkbox"]:checked + .color-swatch {
+    box-shadow: 0 0 0 2px #000;
+    transform: scale(1.1);
 }
 
 /* Filter Sections */
@@ -79,6 +150,44 @@
     gap: 12px;
     padding: 0;
     align-items: flex-start;
+}
+
+/* Size Filter Specific Styles */
+.size-count {
+    font-size: 12px;
+    color: #666666;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.size-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.size-action-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    flex: 1;
+}
+
+.size-action-btn:hover {
+    background: #e9ecef;
+    color: #000000;
+    border-color: #dee2e6;
+}
+
+.size-action-btn:active {
+    transform: translateY(1px);
 }
 
 .filter-option {

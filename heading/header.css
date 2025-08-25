@@ -9,6 +9,8 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #fff;
     color: #333;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 /* Top Navigation Bar */
@@ -23,6 +25,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 /* Logo Container - Left Side */
@@ -283,6 +287,7 @@ body {
 /* User Dropdown Container */
 .user-dropdown-container {
     position: relative;
+    z-index: 9999;
 }
 
 .user-icon, .heart-icon, .shopping-cart {
@@ -350,9 +355,11 @@ body {
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    z-index: 1001;
+    z-index: 9999;
     margin-top: 8px;
     overflow: hidden;
+    pointer-events: none;
+    transition: all 0.3s ease;
 }
 
 
@@ -362,6 +369,7 @@ body {
     opacity: 1 !important;
     visibility: visible !important;
     transform: translateY(0) !important;
+    pointer-events: auto !important;
 }
 
 
@@ -1631,6 +1639,13 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+}
+
+.image-item:hover {
+    transform: translateY(-5px);
 }
 
 .image-item img {

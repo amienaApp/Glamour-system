@@ -25,7 +25,7 @@ switch ($section) {
         header('Location: perfumes/index.php');
         exit;
     case 'shoes':
-        header('Location: shoess/men.php');
+        header('Location: shoess/shoes.php');
         exit;
     case 'home-decor':
         header('Location: home-decor/homedecor.php');
@@ -38,10 +38,25 @@ switch ($section) {
         }
         exit;
     case 'cart':
-        header('Location: cart.php');
+        header('Location: cart-unified.php');
         exit;
     case 'products':
         header('Location: index.php');
+        exit;
+    case 'kids':
+        // Kids section - could be implemented later
+        header('Location: index.html#kids');
+        exit;
+    case 'accessories':
+        // Accessories section - could be implemented later
+        header('Location: index.html#accessories');
+        exit;
+    case 'beauty':
+        header('Location: perfumes/index.php');
+        exit;
+    case 'sports':
+        // Sports section - could be implemented later
+        header('Location: index.html#sports');
         exit;
     default:
         // Default to the main HTML page

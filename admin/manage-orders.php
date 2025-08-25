@@ -11,10 +11,24 @@ require_once '../config/mongodb.php';
 require_once '../models/Order.php';
 require_once '../models/Payment.php';
 require_once '../models/Product.php';
+require_once '../models/User.php';
 
 $orderModel = new Order();
 $paymentModel = new Payment();
 $productModel = new Product();
+$userModel = new User();
+
+// Helper function to safely convert BSONArray to regular array
+function ensureArray($data) {
+    // Check if MongoDB classes are available
+    if (class_exists('MongoDB\Model\BSONArray') && $data instanceof MongoDB\Model\BSONArray) {
+        return $data->toArray();
+    } elseif (is_array($data)) {
+        return $data;
+    } else {
+        return [];
+    }
+}
 
 $message = '';
 $messageType = '';
@@ -1122,10 +1136,44 @@ foreach ($orders as $order) {
                                             $customerPhone = $payment['phone_number'];
                                         }
                                     } else {
-                                        // If no payment found, show order information
+                                        // If no payment found, try to get customer info from User model
                                         $customerName = 'Customer (ID: ' . substr($order['user_id'], -6) . ')';
-                                        $customerEmail = 'Payment pending';
-                                        $customerPhone = 'Payment pending';
+                                        $customerEmail = 'No payment info';
+                                        $customerPhone = 'No payment info';
+                                        
+                                        // Try to get user information from database
+                                        if (!empty($order['user_id'])) {
+                                            try {
+                                                $user = $userModel->getById($order['user_id']);
+                                                if ($user) {
+                                                    if (!empty($user['username'])) {
+                                                        $customerName = $user['username'];
+                                                    } elseif (!empty($user['email'])) {
+                                                        $customerName = $user['email'];
+                                                    }
+                                                    
+                                                    if (!empty($user['email'])) {
+                                                        $customerEmail = $user['email'];
+                                                    }
+                                                    
+                                                    if (!empty($user['contact_number'])) {
+                                                        $customerPhone = $user['contact_number'];
+                                                    } elseif (!empty($user['phone'])) {
+                                                        $customerPhone = $user['phone'];
+                                                    }
+                                                } else {
+                                                    // User not found in database
+                                                    $customerName = 'Guest Customer (ID: ' . substr($order['user_id'], -6) . ')';
+                                                    $customerEmail = 'Guest order - no account';
+                                                    $customerPhone = 'Guest order - no account';
+                                                }
+                                            } catch (Exception $e) {
+                                                // If user lookup fails, show guest customer info
+                                                $customerName = 'Guest Customer (ID: ' . substr($order['user_id'], -6) . ')';
+                                                $customerEmail = 'Guest order - lookup failed';
+                                                $customerPhone = 'Guest order - lookup failed';
+                                            }
+                                        }
                                         
                                         // Add a note about the order status
                                         if ($order['status'] === 'pending') {
@@ -1142,80 +1190,103 @@ foreach ($orders as $order) {
                                 <div class="order-items">
                                     <?php 
                                     $orderItems = $order['items'] ?? [];
+                                    
+
+                                    
+                                    // Convert to array safely
+                                    if (is_object($orderItems) && method_exists($orderItems, 'toArray')) {
+                                        $orderItems = $orderItems->toArray();
+                                    } elseif (!is_array($orderItems)) {
+                                        $orderItems = [];
+                                    }
+                                    
                                     foreach (array_slice($orderItems, 0, 3) as $item): 
-                                        $product = $productModel->getById($item['product_id']);
+
+                                        error_log("Processing item: " . json_encode($item));
                                         
-                                        // Debug: Check if product exists and has image
+                                        // Try to get product from database first
+                                        $product = null;
+                                        if (isset($item['product_id']) && !empty($item['product_id'])) {
+                                            $product = $productModel->getById($item['product_id']);
+                                        }
+                                        
+                                        // If product not found in database, use item data as fallback
                                         if (!$product) {
-                                            error_log("Product not found for ID: " . $item['product_id']);
-                                            // Create a fallback product for display
+                                            error_log("Product not found for ID: " . ($item['product_id'] ?? 'N/A'));
+                                            // Create a fallback product using item data
                                             $product = [
-                                                'name' => $item['name'] ?? 'Unknown Product',
-                                                'image' => null,
-                                                'front_image' => null,
-                                                'images' => []
+                                                'name' => $item['name'] ?? $item['product_name'] ?? 'Unknown Product',
+                                                'image' => $item['image'] ?? null,
+                                                'front_image' => $item['front_image'] ?? null,
+                                                'images' => $item['images'] ?? []
                                             ];
                                         }
+                                        
+                                        // Ensure we have a product name
+                                        $productName = $product['name'] ?? $item['name'] ?? $item['product_name'] ?? 'Unknown Product';
+                                        $itemQuantity = $item['quantity'] ?? 1;
+                                        $itemPrice = $item['price'] ?? 0;
                                     ?>
                                     <div class="order-item">
                                         <?php 
-                                        $imageSrc = '../img/download.webp'; // Default fallback (using existing image)
-                                        $foundImage = false;
+                                        // Use the same image logic as cart.php
+                                        $imageSrc = '../img/women/1.jpg'; // Default fallback
                                         
                                         if ($product) {
-                                            // Try different image field formats
+                                            // Try the most common image fields first
                                             $productImage = '';
-                                            if (isset($product['front_image']) && !empty($product['front_image'])) {
+                                            if (!empty($product['front_image'])) {
                                                 $productImage = $product['front_image'];
-                                                $foundImage = true;
-                                            } elseif (isset($product['image']) && !empty($product['image'])) {
+                                            } elseif (!empty($product['image_front'])) {
+                                                $productImage = $product['image_front'];
+                                            } elseif (!empty($product['image'])) {
                                                 $productImage = $product['image'];
-                                                $foundImage = true;
                                             } elseif (isset($product['images']) && is_array($product['images'])) {
-                                                if (isset($product['images']['front']) && !empty($product['images']['front'])) {
+                                                if (isset($product['images']['front'])) {
                                                     $productImage = $product['images']['front'];
-                                                    $foundImage = true;
-                                                } elseif (isset($product['images'][0]) && !empty($product['images'][0])) {
+                                                } elseif (!empty($product['images'])) {
                                                     $productImage = $product['images'][0];
-                                                    $foundImage = true;
                                                 }
                                             }
                                             
-                                            if ($foundImage && !empty($productImage)) {
-                                                // Clean the image path
-                                                $productImage = trim($productImage);
+                                            if (!empty($productImage)) {
+                                                // Normalize the image path
+                                                $productImage = ltrim($productImage, '/.');
                                                 
-                                                // Check if it's a valid image file extension
-                                                $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                                                $extension = strtolower(pathinfo($productImage, PATHINFO_EXTENSION));
+                                                // If path already starts with ../, remove it first
+                                                if (strpos($productImage, '../') === 0) {
+                                                    $productImage = substr($productImage, 3);
+                                                }
                                                 
-                                                if (in_array($extension, $validExtensions)) {
-                                                    // If the image path already starts with '../' or '/', use it as is
-                                                    if (strpos($productImage, '../') === 0 || strpos($productImage, '/') === 0) {
-                                                        $imageSrc = $productImage;
+                                                // If path doesn't start with 'uploads/' or 'img/', add appropriate prefix
+                                                if (strpos($productImage, 'uploads/') !== 0 && strpos($productImage, 'img/') !== 0) {
+                                                    // Check if it's an uploaded product image
+                                                    if (strpos($productImage, 'products/') !== false) {
+                                                        $productImage = 'uploads/' . $productImage;
                                                     } else {
-                                                        // Otherwise, prepend '../' to make it relative to admin directory
-                                                        $imageSrc = '../' . $productImage;
+                                                        $productImage = 'img/' . $productImage;
                                                     }
-                                                    
-                                                    // Ensure the path doesn't have double slashes
-                                                    $imageSrc = str_replace('//', '/', $imageSrc);
-                                                } else {
-                                                    // Invalid file extension, use placeholder
-                                                    error_log("Invalid image extension for product: " . ($product['name'] ?? 'Unknown') . " - " . $productImage);
+                                                }
+                                                
+                                                // Add '../' prefix for admin directory
+                                                $imageSrc = '../' . $productImage;
+                                                
+                                                // Check if the image file exists, if not use simple fallback
+                                                if (!file_exists($imageSrc)) {
+                                                    $imageSrc = '../img/women/1.jpg';
                                                 }
                                             }
                                         }
                                         ?>
                                         <img src="<?php echo $imageSrc; ?>" 
-                                             alt="<?php echo htmlspecialchars($product['name'] ?? 'Product'); ?>" 
+                                             alt="<?php echo htmlspecialchars($productName); ?>" 
                                              class="item-image" 
-                                             onerror="this.onerror=null; this.src='../img/download.webp';"
+                                             onerror="this.onerror=null; this.src='../img/women/1.jpg';"
                                              onload="this.style.opacity='1';"
                                              style="opacity: 0; transition: opacity 0.3s ease;">
                                         <div class="item-details">
-                                            <div class="item-name"><?php echo htmlspecialchars($product['name'] ?? 'Product'); ?></div>
-                                            <div class="item-price">Qty: <?php echo $item['quantity']; ?> × $<?php echo number_format($item['price'] ?? 0, 2); ?></div>
+                                            <div class="item-name"><?php echo htmlspecialchars($productName); ?></div>
+                                            <div class="item-price">Qty: <?php echo $itemQuantity; ?> × $<?php echo number_format($itemPrice, 2); ?></div>
                                         </div>
                                     </div>
                                     <?php endforeach; ?>

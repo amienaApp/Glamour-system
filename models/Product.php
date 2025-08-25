@@ -32,7 +32,15 @@ class Product {
     }
 
     public function getById($id) {
-        return $this->collection->findOne(['_id' => $id]);
+        try {
+            // Convert string ID to ObjectId if needed
+            if (is_string($id) && strlen($id) === 24) {
+                $id = new MongoDB\BSON\ObjectId($id);
+            }
+            return $this->collection->findOne(['_id' => $id]);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     public function create($productData) {
@@ -41,13 +49,29 @@ class Product {
     }
 
     public function update($id, $updateData) {
-        $result = $this->collection->updateOne(['_id' => $id], ['$set' => $updateData]);
-        return $result->getModifiedCount() > 0;
+        try {
+            // Convert string ID to ObjectId if needed
+            if (is_string($id) && strlen($id) === 24) {
+                $id = new MongoDB\BSON\ObjectId($id);
+            }
+            $result = $this->collection->updateOne(['_id' => $id], ['$set' => $updateData]);
+            return $result->getModifiedCount() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function delete($id) {
-        $result = $this->collection->deleteOne(['_id' => $id]);
-        return $result->getDeletedCount() > 0;
+        try {
+            // Convert string ID to ObjectId if needed
+            if (is_string($id) && strlen($id) === 24) {
+                $id = new MongoDB\BSON\ObjectId($id);
+            }
+            $result = $this->collection->deleteOne(['_id' => $id]);
+            return $result->getDeletedCount() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     // Category Operations
@@ -202,6 +226,10 @@ class Product {
             'categories' => $categories,
             'subcategories' => $subcategories
         ];
+    }
+
+    public function getByNameAndSubcategory($name, $subcategory) {
+        return $this->collection->findOne(['name' => $name, 'subcategory' => $subcategory]);
     }
 }
 ?>
