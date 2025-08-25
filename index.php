@@ -1,4 +1,6 @@
-<<<<<<< HEAD
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,202 +9,19 @@
     <title>Glamor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <!-- Include the home header CSS -->
+    <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
+     
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+   
 </head>
 <body>
     
-<!-- Top Navigation Bar -->
-<nav class="top-nav">
-    <!-- Logo Container - Left Edge -->
-    <div class="logo-container">
-        <div class="logo">
-            <a href="#" class="logo-text">Glomour</a>
-        </div>
-    </div>
-
-    <!-- Navigation Menu - Center -->
-    <div class="nav-menu-container">
-        <ul class="nav-menu">
-            <li><a href="index.php" class="nav-link">Home</a></li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link">Categories</a>
-                <div class="dropdown-menu">
-                    <div class="dropdown-content">
-                        <a href="womenF/index.php">Women Clothing</a>
-                        <a href="menfolder/men.php">Men</a>
-                        <a href="childrenfolder/children.php">Children</a>
-                        <a href="shoess/men.php">Shoes</a>
-                        <a href="perfumes/index.php">Perfumes</a>
-                        <a href="home-decor/homedecor.php">Home Decor</a>
-                        <a href="bagsfolder/bags.php">Bags</a>
-                        <a href="#">Beauty & Cosmetics</a>
-                        <a href="accessories/accessories.php">Accessories</a>
-                    </div>
-                </div>
-            </li>
-<<<<<<<< HEAD:index.php
-            <li><a href="pages/contact.php" class="nav-link">Contact us</a></li>
-            <li><a href="#" class="nav-link">About us</a></li>
-            <li><a href="#" class="nav-link">Sale</a></li>
-        </ul>
-    </div>
-
-
+    <!-- Include the home header -->
+    <?php include 'heading/home-header.php'; ?>
+     
    
-    <!-- Right Side Elements - Right Edge -->
-    <div class="nav-right-container">
-        <!-- Search Box -->
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search">
-            <i class="fas fa-search search-icon"></i>
-========
-             <li><a href="orders.php">Orders</a></li>
-             <li><a href="#schedules">About Us</a></li>
-             <li><a href="#home">Contact Us</a></li>
-             <li><a href="cart.php" style="position: relative;"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a></li>
-             </ul>
-          </nav>
-            <div class="signup-btn">
-            <button class="btn">signup</button></div>
-         
->>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4:index.html
-        </div>
-
-        <!-- Somalia Flag -->
-        <div class="flag-container">
-            <img src="img/flag.jpg" alt="Somalia Flag" class="flag" id="somalia-flag">
-        </div>
-
-        <!-- User Icon -->
-        <div class="user-icon" id="user-icon">
-            <i class="fas fa-user"></i>
-        </div>
-
-        <!-- Heart Icon -->
-        <div class="heart-icon">
-            <i class="fas fa-heart"></i>
-        </div>
-
-        <!-- Shopping Cart -->
-        <div class="shopping-cart">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-count">0</span>
-        </div>
-    </div>
-</nav>
-
-<!-- Region Selection Modal -->
-<div class="modal" id="region-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Choose Region</h3>
-            <button class="close-btn" id="close-region-modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="region-select">Choose a region (Somalia regions):</label>
-                <select id="region-select" class="form-input">
-                    <option value="">Select a region</option>
-                    <option value="banadir">Banadir</option>
-                    <option value="bari">Bari</option>
-                    <option value="bay">Bay</option>
-                    <option value="galguduud">Galguduud</option>
-                    <option value="gedo">Gedo</option>
-                    <option value="hiran">Hiran</option>
-                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
-                    <option value="jubbada-hoose">Jubbada Hoose</option>
-                    <option value="mudug">Mudug</option>
-                    <option value="nugaal">Nugaal</option>
-                    <option value="sanaag">Sanaag</option>
-                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
-                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
-                    <option value="sool">Sool</option>
-                    <option value="togdheer">Togdheer</option>
-                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="currency-select">Choose currency:</label>
-                <select id="currency-select" class="form-input">
-                    <option value="">Select currency</option>
-                    <option value="usd">US Dollar ($)</option>
-                    <option value="sos">Somali Shilling (SOS)</option>
-                </select>
-            </div>
-            <button class="save-btn">Save Settings</button>
-        </div>
-    </div>
-</div>
-
-<!-- User Login Modal -->
-<div class="modal" id="user-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Welcome, love!</h3>
-            <button class="close-btn" id="close-user-modal">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="tab-container">
-                <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="signin">Sign In</button>
-                    <button class="tab-btn" data-tab="signup">Create Account</button>
-                </div>
-
-                <!-- Sign In Tab -->
-                <div class="tab-content active" id="signin-tab">
-                    <form class="login-form">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <div class="password-container">
-                                <input type="password" id="password" class="form-input" required>
-                                <span class="show-password">Show</span>
-                            </div>
-                        </div>
-                        <button type="submit" class="signin-btn">Sign In</button>
-                        <a href="#" class="forgot-password">Forgot your Password?</a>
-                    </form>
-                </div>
-
-                <!-- Sign Up Tab -->
-                <div class="tab-content" id="signup-tab">
-                    <form class="signup-form">
-                        <div class="form-group">
-                            <label for="signup-name">Full Name</label>
-                            <input type="text" id="signup-name" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-email">Email</label>
-                            <input type="email" id="signup-email" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-password">Password</label>
-                            <div class="password-container">
-                                <input type="password" id="signup-password" class="form-input" required>
-                                <span class="show-password">Show</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-confirm-password">Confirm Password</label>
-                            <div class="password-container">
-                                <input type="password" id="signup-confirm-password" class="form-input" required>
-                                <span class="show-password">Show</span>
-                            </div>
-                        </div>
-                        <button type="submit" class="signup-btn">Create Account</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Chat Button -->
 <div class="chat-button">
@@ -210,135 +29,31 @@
 </div> 
 
 
-    
-
- 
-    <!-- <section class="dashboard">
-          <div class="dashboard-slogans">       
-            <h4 class="fade-in">Welcome to Glamor – Where Style Meets Convenience</h4>
-            <h5 class="fade-in delay-1">Trendy looks, trusted tech, and timeless treasures — all in one place</h5>
-            <h6 class="fade-in delay-2">Start shopping — because you deserves something special</h6>
-            <button class="buy-btn">Buy now</button>
-         </div> 
-
-         
-             Swiper 
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-
-                    <div class="swiper-slide">
-                        <img src="img/arrival-bg.jpg">
-                        <div class="only-text">
-                            <h4 class="fade-in">Welcome to Glamor – Where Style Meets Convenience</h4>
-                             <button class="shop-now-button">
-                                SHOP NOW
-                                <span class="icon">🛒</span> 
-                            </button>
-                        </div>
-                    </div>
-                            
-                        
-                        
-                    
-                    <div class="swiper-slide">
-                        <img src="img/banner1.jpg">
-                        <div class="slide-text">
-                            <p class="fade-in delay-1">Where Style Meets Smart</p>
-                            <button class="shop-now-button">
-                                    SHOP NOW
-                                    <span class="icon">🛒</span> 
-                                </button>
-                        </div>
-                              
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="img/main-banner.jpg">
-                        <div class="slide-text">Start shopping — because you deserves something special</h6>
-                        <p><button class="shop-now-button">
-                                SHOP NOW
-                                <span class="icon">🛒</span> 
-                            </button></p>
-                        </div>
-                    </div>
-              
-                </div>
-                
-            </div>
-    </section> -->
-    <!-- Banner Image Swiper -->
     <section class="banner-swiper-section">
         <div class="swiper banner-swiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="img/banner3.jpg" alt="Banner 3">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Welcome to Glamor</h2>
-                        <p class="fade-in delay-1">Where Style Meets Convenience</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            SHOP NOW
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
+                    <img src="img/banner9.webp" alt="Banner 3">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner4.jpg" alt="Banner 4">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Trendy Collections</h2>
-                        <p class="fade-in delay-1">Discover the Latest Fashion Trends</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            EXPLORE NOW
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
+                    <img src="img/banner14.webp" alt="Banner 4">
                 </div>
                 
                 <div class="swiper-slide">
                     <img src="img/banner5.png" alt="Banner 5">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Elegant Style</h2>
-                        <p class="fade-in delay-1">Timeless Fashion for Every Occasion</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            SHOP COLLECTION
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
                 </div>
                 
                 <div class="swiper-slide">
                     <img src="img/banner6.jpg" alt="Banner 6">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Premium Quality</h2>
-                        <p class="fade-in delay-1">Exclusive Designs & Superior Craftsmanship</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            VIEW PRODUCTS
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
                 </div>
-                
+                1
                 <div class="swiper-slide">
                     <img src="img/banner7.jpg" alt="Banner 7">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Fashion Forward</h2>
-                        <p class="fade-in delay-1">Stay Ahead with Our Latest Collections</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            DISCOVER MORE
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
                 </div>
                 
                 <div class="swiper-slide">
                     <img src="img/banner8.jpg" alt="Banner 8">
-                    <div class="slide-content">
-                        <h2 class="fade-in">Your Style, Your Way</h2>
-                        <p class="fade-in delay-1">Express Yourself with Our Fashion Collection</p>
-                        <button class="shop-now-button fade-in delay-2">
-                            START SHOPPING
-                            <span class="icon">🛒</span> 
-                        </button>
-                    </div>
                 </div>
             </div>
             
@@ -368,446 +83,601 @@
 
         <div class="pro-container container">
 
-    <div class="card">
-                <img src="img/menn/men.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Men's Collection</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+        <div class="card">
+                 <img src="img/menn/men.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Men's Collection</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="menfolder/men.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
 
 
 
-              <div class="card">
-                <img src="img/women/1.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Women's Collection</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                             <div class="card">
+                 <img src="img/women/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Women's Collection</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="womenF/index.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
               
 
            
 
 
-               <div class="card">
-                <img src="img/child/1.webp" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Children's Collection</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                               <div class="card">
+                 <img src="img/child/1.webp" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Children's Collection</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="childrenfolder/children.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
 
 
-                <div class="card">
-                <img src="img/perfumes/1.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Perfumes</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                                 <div class="card">
+                 <img src="img/perfumes/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Perfumes</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="perfumes/index.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
-               <div class="card">
-                <img src="img/beauty/1.png" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Beauty</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                                                               <div class="card">
+                 <img src="img/beauty/1.png" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Beauty</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
-
-               <div class="card">
-                <img src="img/shoes/1.webp" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Shoes</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                                                               <div class="card">
+                 <img src="img/cosmatics/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Cosmatics</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
-               <div class="card">
-                <img src="img/cosmatics/1.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Cosmatics</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                               <div class="card">
+                 <img src="img/shoes/1.webp" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Shoes</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="shoess/men.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
 
-
-               <div class="card">
-                <img src="img/sports/1.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Sports Items</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                               <div class="card">
+                 <img src="img/sports/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Sports Items</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="womenF/index.php?category=sports"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
 
-               <div class="card">
-                <img src="img/home-decor/1.webp" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Home Decoration</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                               <div class="card">
+                 <img src="img/home-decor/1.webp" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Home Decoration</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="womenF/index.php?category=home-decor"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
 
-               <div class="card">
-                <img src="img/bags/1.avif" cover / center no-repeat>
-                <div class="card-content">
-                   <h3>Bags</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                               <div class="card">
+                 <img src="img/bags/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Bags</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                                             <a href="bagsfolder/bags.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
-              <div class="card">
-                <img src="img/accessories/1.jpeg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3> Accessories</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                                                           <div class="card">
+                 <img src="img/accessories/men/watches/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3> Accessories</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                      <a href="accessories/accessories.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
               
 
 
 
-               <div class="card">
-                <img src="img/electronics/1.jpg" cover / center no-repeat>
-                <div class="card-content">
-                   <h3> Electronics</h3>
-                    <P>Trending style & Timeless Classic</P>   
-                     <a href="#"> <a href="#"><button class="btn">Explore Collection</button></a></a>
+                                                               <div class="card">
+                 <img src="img/accessories/1.jpeg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3> Jewelry</h3>
+                     <P>Trending style & Timeless Classic</P>   
+                      <a href="accessories/accessories.php"><button class="btn">Shop Now</button></a>
+                 </div>
                 </div>
-               </div>
 
 
            </div>
 
        </section>
 
-       <!-- Laci Kaye Booth Edit Section -->
-  <section class="laci-section">
-    <!-- Left: Large Feature Image with Text Overlay -->
-    <div class="laci-left">
-          <div class="category4">
-            <video src="./img/sawiro/dressvideo.mp4" autoplay loop muted controls> </video>
-            <div class="overlay4">Wedding Dresses</div>
-          </div>
-          </div>
-    
-    
-      <!-- center -->
-      <div class="gallery">
-        <div class="container4">
-            <div class="polaroid">
-               <img src="./img/sawiro/9.jpg" alt="Photo 1">
-            </div>
+               <!-- Laci Kaye Booth Edit Section -->
+   <section class="laci-section">
+     <!-- Left: Large Feature Image with Text Overlay -->
+     <div class="laci-left">
+           <div class="category4">
+             <a href="womenF/index.php?category=dresses">
+               <video src="./img/sawiro/dressvideo.mp4" autoplay loop muted controls> </video>
+               <div class="overlay4">Wedding Dresses</div>
+             </a>
+           </div>
+           </div>
+      
+      
+       <!-- center -->
+       <div class="gallery">
+         <div class="container4">
+             <div class="polaroid">
+                <a href="womenF/index.php?category=dresses">
+                   <img src="./img/sawiro/9.jpg" alt="Photo 1">
+                </a>
+             </div>
 
-            <div class="polaroid">
-               <img src="./img/sawiro/8.jpg" alt="Photo 2">
-            </div>
-            
+             <div class="polaroid">
+                <a href="womenF/index.php?category=dresses">
+                   <img src="./img/sawiro/8.jpg" alt="Photo 2">
+                </a>
+             </div>
+             
 
-            <div class="polaroid">
-               <img src="./img/sawiro/10.jpg" alt="Photo 3">
-            </div>
+             <div class="polaroid">
+                <a href="womenF/index.php?category=dresses">
+                   <img src="./img/sawiro/10.jpg" alt="Photo 3">
+                </a>
+             </div>
 
-            <div class="polaroid">
-               <img src="./img/sawiro/fride.jpg" alt="Photo 4">
-            </div>
+             <div class="polaroid">
+                <a href="accessories/accessories.php?category=sunglasses">
+                   <img src="./img/accessories/men/sunglasses/7.jpg" alt="Photo 4">
+                </a>
+             </div>
 
-            <div class="polaroid">
-               <img src="./img/sawiro/7.jpg" alt="Photo 5">
-            </div>
+             <div class="polaroid">
+                <a href="womenF/index.php?category=dresses">
+                   <img src="./img/sawiro/7.jpg" alt="Photo 5">
+                </a>
+             </div>
 
-            <div class="polaroid">
-               <img src="./img/sawiro/21.webp" alt="Photo 6">
-            </div>
+             <div class="polaroid">
+                <a href="womenF/index.php?category=dresses">
+                   <img src="./img/sawiro/21.webp" alt="Photo 6">
+                </a>
+             </div>
 
-            <div class="polaroid">
-              <img src="./img/sawiro/kidshoe.jpg" alt="Photo 7">
-            </div>
+             <div class="polaroid">
+               <a href="shoess/men.php?category=children">
+                  <img src="./img/sawiro/kidshoe.jpg" alt="Photo 7">
+               </a>
+             </div>
 
-            <div class="polaroid">
-              <img src="./img/sawiro/12.jpg" alt="Photo 8">
-            </div>
+             <div class="polaroid">
+               <a href="womenF/index.php?category=dresses">
+                  <img src="./img/sawiro/12.jpg" alt="Photo 8">
+               </a>
+             </div>
 
-            <div class="polaroid">
-              <img src="./img/sawiro/13.jpg" alt="Photo 9">
-            </div>
+             <div class="polaroid">
+               <a href="womenF/index.php?category=dresses">
+                  <img src="./img/sawiro/13.jpg" alt="Photo 9">
+               </a>
+             </div>
+   
+
+             
+             
+         </div>
+      </div>
+        
+        
+     <!-- Right: Promo with Button -->
+     <div class="laci-right">
+           <div class="category1">
+                 <a href="menfolder/men.php">
+                   <video src="./img/sawiro/manvideo.mp4" autoplay loop muted controls> </video>
+                 </a>
+           
+               </div>
+          
+           <div class="laci-right-content">
+             <p>Classic Style</p>
+             <a href="menfolder/men.php">Shop Now</a>
+       </div>  
+      </section>
+
+           <!-- section contains only pictures and some videos -->
+   <section>
+   <div class="container5" >
+       <div class="category5">
+         <a href="menfolder/men.php?category=suits">
+           <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
+           <div class="overlay5">suit Dresses</div>
+         </a>
+       </div>
+      
+       <div class="category5">
+         <a href="womenF/index.php?category=dresses">
+           <img src="./img/sawiro/22.webp" alt="Formal Dresses">
+           <div class="overlay5">Formal Dresses</div>
+         </a>
+       </div>
+
+         <div class="category5">
+       <a href="womenF/index.php?category=dresses">
+         <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
+         <div class="overlay5">Bride Dresses</div>
+       </a>
+       </div>
+       
+       <div class="category5">
+         <a href="womenF/index.php?category=beauty">
+           <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">makeup</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="bagsfolder/bags.php">
+           <img src="./img/sawiro/handbag1.jpg" alt="Formal Dresses">
+           <div class="overlay5">Handbag</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="womenF/index.php?category=dresses">
+           <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Formal Dresses</div>
+         </a>
+       </div>
   
 
-            
-            
-        </div>
-     </div>
-      
-      
-    <!-- Right: Promo with Button -->
-    <div class="laci-right">
-          <div class="category1">
-                <video src="./img/sawiro/manvideo.mp4" autoplay loop muted controls> </video>
-          
-              </div>
-        
-          <div class="laci-right-content">
-            <p>Classic Style</p>
-            <a href="#">Shop Now</a>
-      </div>  
-     </section>
+       <div class="category5">
+        <a href="shoess/men.php">
+         <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
+         <div class="overlay5">Casual Shoes</div>
+        </a>
+       </div>
 
-     <!-- section contains only pictures and some videos -->
-  <section>
-  <div class="container5" >
-      <div class="category5">
-        <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
-        <div class="overlay5">suit Dresses</div>
-      </div>
-     
-      <div class="category5">
-        <img src="./img/sawiro/22.webp" alt="Formal Dresses">
-        <div class="overlay5">Formal Dresses</div>
-      </div>
+       <div class="category5">
+         <a href="accessories/accessories.php?category=watches">
+           <video src="./img/sawiro/watch.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Watches</div>
+         </a>
+       </div>
 
-        <div class="category5">
-      <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
-        <div class="overlay5">Bride Dresses</div>
-      </div>
-      
-      <div class="category5">
-        <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
-        <div class="overlay5">makeup</div>
-      </div>
+       <div class="category5">
+         <a href="accessories/accessories.php?category=jewelry">
+           <img src="./img/sawiro/jwel2.jpg" alt="Formal Dresses">
+           <div class="overlay5">Jewelry</div>
+         </a>
+       </div>
 
-      <div class="category5">
-        <img src="./img/sawiro/handbag1.jpg" alt="Formal Dresses">
-        <div class="overlay5">Handbag</div>
-      </div>
-
-      <div class="category5">
-        <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
-        <div class="overlay5">Formal Dresses</div>
-      </div>
- 
-
-      <div class="category5">
-       <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
-        <div class="overlay5">Casual Shoes</div>
-      </div>
-
-      <div class="category5">
-        <video src="./img/sawiro/watch.mp4" autoplay loop muted controls ></video>
-        <div class="overlay5"></div>
-      </div>
-
-      <div class="category5">
-        <img src="./img/sawiro/jwel2.jpg" alt="Formal Dresses">
-        <div class="overlay5"></div>
-      </div>
-
-      
-  </div>
-   </section>
+       
+   </div>
+    </section>
   
    <!-- featured products -->
-     <section class="featured-products">
-        <div class="title">
-        <h2>New Arrivals</h2>
-        <div class="pro-container container">
-            <div class="card-1">
-                <img src="img/men/shirts/shirt3.2.avif">
-                <div class="feature-content">
-                    <h5>Long Sleeve Plaid Hooded Flannel Shirt</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$12</h4>
-               </div>
-                <div class="cart">
-                                            <button onclick="openAddToCartModal('product_1')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
-                    </div>
+    
 
+
+
+<!-- featured products Section -->
+<main class="main-content">
+    <div class="content-header" >
+        <h1 class="page-title">Featured Products</h1>
+        <div class="content-controls">
+            <div class="sort-control">
+                <label for="sort-select">Sort:</label>
+                <select id="sort-select" class="sort-select">
+                    <option value="featured" selected>Featured</option>
+                    <option value="newest">Newest</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="popular">Most Popular</option>
+                </select>
             </div>
-     
-
-
-             <div class="card-1">
-                <img src="./img/sawiro/23.jpg">
-                <div class="feature-content">
-                    <h5>perfume</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$50</h4>
-               </div>
-                <div class="cart">
-                                            <button onclick="openAddToCartModal('product_2')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
-                    </div>
-
+            <div class="view-control">
+                <span>View:</span>
+                <a href="#" class="view-option active">60</a>
+                <span>|</span>
+                <a href="#" class="view-option">120</a>
             </div>
+        </div>
+    </div>
+    
 
-
-
-
-             <div class="card-1">
-                <img src="./img/sawiro/watch2.jpg">
-                <div class="feature-content">
-                    <h5>smart watch</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$112</h4>
-               </div>
-                <div class="cart">
-                                            <button onclick="openAddToCartModal('product_3')" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></button>
-                    </div>
-
+    <div class="product-grid" data-category="shirts">
+       
+        <div class="product-card" data-product-id="1">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/23.jpg" alt="Product 23 - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="1">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
-
-
-
-
-
-             <div class="card-1">
-                <img src="./img/sawiro/20.webp">
-                <div class="feature-content">
-                    <h5>Bride dress</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$98</h4>
-               </div>
-                <div class="cart">
-                    <a href="add-to-cart.php?id=product_4" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
-                    </div>
-
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #96e0f3ff;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 1</h3>
+                <div class="product-price">$25</div>
             </div>
+        </div>
 
-
-
-
-             <div class="card-1">
-                <img src="./img/sawiro/barca.jpg">
-                <div class="feature-content">
-                    <h5>Home Kit</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$52</h4>
-               </div>
-                <div class="cart">
-                    <a href="add-to-cart.php?id=product_5" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
-                    </div>
-
+        <!-- Product 2 -->
+        <div class="product-card" data-product-id="2">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/24.jpg" alt="Product 24 - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="2">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
-
-
-
-
-
-
-
-             <div class="card-1 category4">
-               <img src="./img/sawiro/handbag2.jpg">
-                <div class="feature-content">
-                    <h5>handbag</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$120</h4>
-               </div>
-                <div class="cart">
-                    <a href="add-to-cart.php?id=product_6" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
-                    </div>
-
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color:#060606ff;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 2</h3>
+                <div class="product-price">$30</div>
             </div>
+        </div>
 
-            <div class="card-1">
-                <img src="./img/sawiro/glas2.jpg">
-                <div class="feature-content">
-                    <h5>Glasses</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$4</h4>
-               </div>
-                <div class="cart">
-                    <a href="add-to-cart.php?id=product_7" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
-                    </div>
-
+        <!-- Product 3 -->
+        <div class="product-card" data-product-id="3">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/20.webp" alt="Product 20 - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="3">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
             </div>
-
-            <div class="card-1">
-                <img src="./img/sawiro/neck1.jpg">
-                <div class="feature-content">
-                    <h5>neclace</h5>
-                      <div class="star">
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                        <i class="fa fa-star" ></i>
-                    </div>   
-                        <h4>$5</h4>
-               </div>
-                <div class="cart">
-                    <a href="add-to-cart.php?id=product_8" class="add-to-cart-link"><i class="fa fa-shopping-cart"></i></a>
-                    </div>
-
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 3</h3>
+                <div class="product-price">$28</div>
             </div>
-             
-       </section>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" data-product-id="4">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/barca.jpg" alt="Barca Product - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="4">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #001f3f;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 4</h3>
+                <div class="product-price">$35</div>
+            </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card" data-product-id="5">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/glas2.jpg" alt="Designer Glasses - Front" class="active" data-color="maroon">
+                    <img src="img/sawiro/glas1.jpg" alt="Designer Glasses - Front" data-color="black">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="5">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #8B0000;" title="Maroon" data-color="maroon"></span>
+                    <span class="color-circle" style="background-color: #000000;" title="Black" data-color="black"></span>
+                </div>
+                <h3 class="product-name">Designer Glasses</h3>
+                <div class="product-price">$45</div>
+            </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card" data-product-id="6">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/handbag2.jpg" alt="Handbag Product - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="6">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #ffffffff;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 6</h3>
+                <div class="product-price">$55</div>
+            </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card" data-product-id="7">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/jwel2.jpg" alt="Jewelry Product - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="7">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #14220cff" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 7</h3>
+                <div class="product-price">$38</div>
+            </div>
+        </div>
+
+            
+
+        <!-- Product 8 -->
+        <div class="product-card" data-product-id="8">
+            <div class="product-image">
+                <div class="image-slider">
+                    <img src="img/sawiro/watch2.jpg" alt="Watch Product - Front" class="active" data-color="default">
+                </div>
+                <button class="heart-button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="product-actions">
+                    <button class="quick-view" data-product-id="8">Quick View</button>
+                    <button class="add-to-bag">Add To Bag</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="color-options">
+                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
+                </div>
+                <h3 class="product-name">Featured Product 8</h3>
+                <div class="product-price">$65</div>
+            </div>
+        </div>
+
+    </div>
+
    
+
+        
+    </div>
+
+</main>
+
+<!-- Quick View Sidebar -->
+<div class="quick-view-sidebar" id="quick-view-sidebar">
+    <div class="quick-view-header">
+        <button class="close-quick-view" id="close-quick-view">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <div class="quick-view-content">
+        <!-- Product Images -->
+        <div class="quick-view-images">
+            <div class="main-image-container">
+                <img id="quick-view-main-image" src="" alt="Product Image">
+            </div>
+            <div class="thumbnail-images" id="quick-view-thumbnails">
+                <!-- Thumbnails will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Product Details -->
+        <div class="quick-view-details">
+            <h2 id="quick-view-title"></h2>
+            <div class="quick-view-price" id="quick-view-price"></div>
+            <div class="quick-view-reviews">
+                <span class="stars">★★★★★</span>
+                <span class="review-count">(0 Reviews)</span>
+            </div>
+            
+            <!-- Color Selection -->
+            <div class="quick-view-colors">
+                <h4>Color</h4>
+                <div class="color-selection" id="quick-view-color-selection">
+                    <!-- Colors will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Size Selection -->
+            <div class="quick-view-sizes">
+                <h4>Size</h4>
+                <div class="size-selection" id="quick-view-size-selection">
+                    <!-- Sizes will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="quick-view-actions">
+                <button class="add-to-bag-quick" id="add-to-bag-quick">
+                    <i class="fas fa-shopping-bag"></i>
+                    Add to Bag
+                </button>
+                <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
+                    <i class="fas fa-heart"></i>
+                    + Wishlist
+                </button>
+            </div>
+            
+            <!-- Product Description -->
+            <div class="quick-view-description">
+                <p></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick View Overlay -->
+<div class="quick-view-overlay" id="quick-view-overlay"></div> 
 
   <!-- Footer Start -->
     <footer class="custom-footer">
@@ -845,7 +715,7 @@
                 <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 01-2.828.775 4.932 4.932 0 002.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 00-8.38 4.482C7.691 8.095 4.066 6.13 1.64 3.161c-.542.929-.856 2.01-.857 3.17 0 2.188 1.115 4.117 2.823 5.254a4.904 4.904 0 01-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 01-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 010 21.543a13.94 13.94 0 007.548 2.209c9.142 0 14.307-7.721 13.995-14.646A9.936 9.936 0 0024 4.557z"/></svg>
             </a>
             <a href="https://www.tiktok.com/" target="_blank" title="TikTok">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12.004 2.003c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V2.003zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm-12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V8.006zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V8.006zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V8.006zm-6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001z"/></svg>
+                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12.004 2.003c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V2.003zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm-12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001z"/></svg>
             </a>
             <a href="https://facebook.com/" target="_blank" title="Facebook">
                 <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.326 24H12.82v-9.294H9.692v-3.622h3.127V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
@@ -888,9 +758,12 @@
             // Enable loop
             loop: true,
             
-            // Enable autoplay
+            // Speed up transitions
+            speed: 600,
+            
+            // Enable autoplay with faster timing
             autoplay: {
-                delay: 5000,
+                delay: 3000,
                 disableOnInteraction: false,
             },
             
@@ -906,11 +779,8 @@
                 prevEl: '.swiper-button-prev',
             },
             
-            // Enable fade effect
-            effect: 'fade',
-            fadeEffect: {
-                crossFade: true
-            },
+            // Use slide effect instead of fade (faster)
+            effect: 'slide',
             
             // Responsive breakpoints
             breakpoints: {
@@ -926,36 +796,8 @@
             }
         });
         
-        // Add fade-in animation for slide content
-        bannerSwiper.on('slideChange', function () {
-            const activeSlide = this.slides[this.activeIndex];
-            const content = activeSlide.querySelector('.slide-content');
-            
-            // Reset animations
-            content.style.opacity = '0';
-            content.style.transform = 'translateY(20px)';
-            
-            // Trigger animations after a short delay
-            setTimeout(() => {
-                content.style.transition = 'all 0.8s ease-out';
-                content.style.opacity = '1';
-                content.style.transform = 'translateY(0)';
-            }, 300);
-        });
-        
-        // Initialize first slide animation
+        // Handle image loading for faster performance
         document.addEventListener('DOMContentLoaded', function() {
-            const firstSlide = document.querySelector('.banner-swiper .swiper-slide-active');
-            if (firstSlide) {
-                const content = firstSlide.querySelector('.slide-content');
-                setTimeout(() => {
-                    content.style.transition = 'all 0.8s ease-out';
-                    content.style.opacity = '1';
-                    content.style.transform = 'translateY(0)';
-                }, 500);
-            }
-            
-            // Handle image loading
             const bannerImages = document.querySelectorAll('.banner-swiper .swiper-slide img');
             bannerImages.forEach(img => {
                 if (img.complete) {
@@ -973,840 +815,432 @@
         });
     </script>
 
-<<<<<<<< HEAD:index.php
-    <script src="scripts/main.js?v=<?php echo time(); ?>"></script>
-    
-    <!-- Header JavaScript Functionality -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Scroll functionality for logo and nav-right fade
-            let lastScrollTop = 0;
-            const logoContainer = document.querySelector('.logo-container');
-            const navRightContainer = document.querySelector('.nav-right-container');
-            
-            window.addEventListener('scroll', function() {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
-                // Fade out when scrolling down, fade in when scrolling up or at top
-                if (scrollTop > lastScrollTop && scrollTop > 100) {
-                    // Scrolling down and not at top
-                    logoContainer.style.opacity = '0';
-                    logoContainer.style.transform = 'translateX(-20px)';
-                    navRightContainer.style.opacity = '0';
-                    navRightContainer.style.transform = 'translateX(20px)';
-                } else {
-                    // Scrolling up or at top
-                    logoContainer.style.opacity = '1';
-                    logoContainer.style.transform = 'translateX(0)';
-                    navRightContainer.style.opacity = '1';
-                    navRightContainer.style.transform = 'translateX(0)';
-                }
-                
-                lastScrollTop = scrollTop;
-            });
-
-            // Modal Functionality
-            const somaliaFlag = document.getElementById('somalia-flag');
-            const userIcon = document.getElementById('user-icon');
-            const regionModal = document.getElementById('region-modal');
-            const userModal = document.getElementById('user-modal');
-            const closeRegionModal = document.getElementById('close-region-modal');
-            const closeUserModal = document.getElementById('close-user-modal');
-
-            // Open Region Modal
-            if (somaliaFlag) {
-                somaliaFlag.addEventListener('click', function() {
-                    regionModal.classList.add('active');
-                });
-            }
-
-            // Open User Modal
-            if (userIcon) {
-                userIcon.addEventListener('click', function() {
-                    userModal.classList.add('active');
-                });
-            }
-
-            // Close Modals
-            if (closeRegionModal) {
-                closeRegionModal.addEventListener('click', function() {
-                    regionModal.classList.remove('active');
-                });
-            }
-
-            if (closeUserModal) {
-                closeUserModal.addEventListener('click', function() {
-                    userModal.classList.remove('active');
-                });
-            }
-
-            // Close modal when clicking outside content
-            if (regionModal) {
-                regionModal.addEventListener('click', function(event) {
-                    if (event.target === regionModal) {
-                        regionModal.classList.remove('active');
-                    }
-                });
-            }
-
-            if (userModal) {
-                userModal.addEventListener('click', function(event) {
-                    if (event.target === userModal) {
-                        userModal.classList.remove('active');
-                    }
-                });
-            }
-
-            // Tab functionality for user modal
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const tab = button.dataset.tab;
-
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-
-                    button.classList.add('active');
-                    document.getElementById(tab + '-tab').classList.add('active');
-                });
-            });
-
-            // Show/Hide Password functionality
-            const passwordContainers = document.querySelectorAll('.password-container');
-            
-            passwordContainers.forEach(container => {
-                const input = container.querySelector('input');
-                const showPassword = container.querySelector('.show-password');
-                
-                if (showPassword && input) {
-                    showPassword.addEventListener('click', function() {
-                        if (input.type === 'password') {
-                            input.type = 'text';
-                            this.textContent = 'Hide';
-                        } else {
-                            input.type = 'password';
-                            this.textContent = 'Show';
-                        }
-                    });
-                }
-            });
-
-            // Dropdown Menu Functionality
-            const dropdownItems = document.querySelectorAll('.nav-item.dropdown');
-            console.log('Found dropdown items:', dropdownItems.length);
-            
-            dropdownItems.forEach(item => {
-                const dropdownMenu = item.querySelector('.dropdown-menu');
-                console.log('Dropdown menu found:', dropdownMenu);
-                
-                // Show dropdown on hover
-                item.addEventListener('mouseenter', function() {
-                    console.log('Mouse enter on dropdown');
-                    if (dropdownMenu) {
-                        dropdownMenu.style.opacity = '1';
-                        dropdownMenu.style.visibility = 'visible';
-                        dropdownMenu.style.transform = 'translateX(-50%) translateY(0)';
-                        dropdownMenu.style.pointerEvents = 'auto';
-                    }
-                });
-                
-                // Hide dropdown when mouse leaves
-                item.addEventListener('mouseleave', function() {
-                    console.log('Mouse leave on dropdown');
-                    if (dropdownMenu) {
-                        dropdownMenu.style.opacity = '0';
-                        dropdownMenu.style.visibility = 'hidden';
-                        dropdownMenu.style.transform = 'translateX(-50%) translateY(-10px)';
-                        dropdownMenu.style.pointerEvents = 'none';
-                    }
-                });
-                
-                // Also handle click for mobile devices
-                const dropdownLink = item.querySelector('.nav-link');
-                if (dropdownLink) {
-                    dropdownLink.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        console.log('Click on dropdown link');
-                        if (dropdownMenu) {
-                            const isVisible = dropdownMenu.style.opacity === '1';
-                            dropdownMenu.style.opacity = isVisible ? '0' : '1';
-                            dropdownMenu.style.visibility = isVisible ? 'hidden' : 'visible';
-                            dropdownMenu.style.transform = isVisible ? 'translateX(-50%) translateY(-10px)' : 'translateX(-50%) translateY(0)';
-                            dropdownMenu.style.pointerEvents = isVisible ? 'none' : 'auto';
-                        }
-                    });
-                }
-            });
-
-========
-    <script src="scripts/main.js"></script>
-    
-    <!-- Cart Functionality -->
-    <script>
-        // Load cart count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, loading cart count...');
-            loadCartCount();
-        });
-
-
-
-        function updateCartCount(count) {
-            try {
-                const cartIcons = document.querySelectorAll('.fa-shopping-cart');
-                console.log('Updating cart count:', count, 'Element found:', cartIcons.length > 0);
-                cartIcons.forEach((icon, index) => {
-                    try {
-                        const parent = icon.parentElement;
-                        if (parent && parent.tagName) {
-                            // Remove existing badge
-                            const existingBadge = parent.querySelector('.cart-badge');
-                            if (existingBadge) {
-                                existingBadge.remove();
-                            }
-                            
-                            // Add new badge if count > 0
-                            if (count > 0) {
-                                const badge = document.createElement('span');
-                                badge.className = 'cart-badge';
-                                badge.textContent = count;
-                                badge.style.cssText = `
-                                    position: absolute;
-                                    top: -8px;
-                                    right: -8px;
-                                    background: #e53e3e;
-                                    color: white;
-                                    border-radius: 50%;
-                                    width: 20px;
-                                    height: 20px;
-                                    font-size: 12px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    font-weight: bold;
-                                `;
-                                parent.style.position = 'relative';
-                                parent.appendChild(badge);
-                            }
-                        } else {
-                            console.log('Skipping cart icon', index, 'because parent is null/invalid');
-                        }
-                    } catch (error) {
-                        console.error('Error updating cart icon', index, ':', error);
-                    }
-                });
-            } catch (error) {
-                console.error('Error in updateCartCount:', error);
-            }
-        }
-
-        function loadCartCount() {
-            console.log('Loading cart count...');
-            fetch('cart-api.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=get_cart_count'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('HTTP error! status: ' + response.status);
-                }
-                return response.text();
-            })
-            .then(text => {
-                console.log('Raw response:', text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        updateCartCount(data.cart_count);
-                    } else {
-                        console.error('Cart API error:', data.message);
-                    }
-                } catch (e) {
-                    console.error('JSON parse error:', e);
-                    console.error('Response text:', text);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading cart count:', error);
-            });
-        }
-    </script>
-
-    <!-- Add to Cart Modal -->
-    <div id="addToCartModal" class="add-to-cart-modal">
-        <div class="add-to-cart-content">
-            <div class="add-to-cart-header">
-                <h3><i class="fas fa-shopping-cart"></i> Add to Cart</h3>
-                <button class="close-add-to-cart" onclick="closeAddToCartModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="add-to-cart-body">
-                <div class="product-preview">
-                    <img id="addToCartProductImage" src="" alt="Product Image" class="preview-image">
-                    <div class="product-info-preview">
-                        <h2 id="addToCartProductName"></h2>
-                        <div class="price-preview">
-                            <span id="addToCartProductPrice"></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="options-section">
-                    <div class="selection-required">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Required:</strong> Please select both a color and size before adding to cart.
-                    </div>
-                    
-                    <div class="option-group">
-                        <h4>Color</h4>
-                        <div class="color-options" id="addToCartColors">
-                            <!-- Color options will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <h4>Size</h4>
-                        <div class="size-options" id="addToCartSizes">
-                            <!-- Size options will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <h4>Quantity</h4>
-                        <div class="quantity-controls">
-                            <button onclick="changeAddToCartQuantity(-1)">-</button>
-                            <input type="number" id="addToCartQuantity" value="1" min="1" max="10" readonly>
-                            <button onclick="changeAddToCartQuantity(1)">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="summary-section">
-                    <div class="summary-item">
-                        <span>Selected Color:</span>
-                        <span id="addToCartSelectedColor">Please select a color</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Selected Size:</span>
-                        <span id="addToCartSelectedSize">Please select a size</span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Quantity:</span>
-                        <span id="addToCartSelectedQuantity">1</span>
-                    </div>
-                </div>
-                
-                <div class="action-section">
-                    <button class="add-to-cart-final-btn" onclick="addToCartFromModal()" id="addToCartBtn" disabled>
-                        <i class="fas fa-shopping-cart"></i>
-                        Please Select Options First
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        /* Add to Cart Modal Styles */
-        .add-to-cart-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .add-to-cart-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 0;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .add-to-cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            border-bottom: 1px solid #eee;
-            background: linear-gradient(135deg, #0066cc 0%, #0056b3 100%);
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .add-to-cart-header h3 {
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .close-add-to-cart {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: background-color 0.3s ease;
-        }
-
-        .close-add-to-cart:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .add-to-cart-body {
-            padding: 30px;
-        }
-
-        .product-preview {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .preview-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-        }
-
-        .product-info-preview h2 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-            color: #333;
-        }
-
-        .price-preview {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #0066cc;
-        }
-
-        .options-section {
-            margin-bottom: 30px;
-        }
-
-        .selection-required {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #ffeaa7;
-            font-size: 0.9rem;
-        }
-
-        .option-group {
-            margin-bottom: 25px;
-        }
-
-        .option-group h4 {
-            margin: 0 0 15px 0;
-            color: #555;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .color-options {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .color-option {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid #e9ecef;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        .color-option.active {
-            border-color: #0066cc;
-            transform: scale(1.1);
-            opacity: 1;
-        }
-
-        .size-options {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .size-option {
-            padding: 12px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            font-weight: 500;
-            opacity: 0.7;
-        }
-
-        .size-option:hover {
-            border-color: #0066cc;
-            background: #f8f9fa;
-        }
-
-        .size-option.active {
-            border-color: #0066cc;
-            background: #0066cc;
-            color: white;
-            opacity: 1;
-        }
-
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: #f8f9fa;
-            padding: 10px 20px;
-            border-radius: 10px;
-            width: fit-content;
-        }
-
-        .quantity-controls button {
-            width: 35px;
-            height: 35px;
-            border: none;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #0066cc;
-            transition: all 0.3s ease;
-        }
-
-        .quantity-controls button:hover {
-            background: #0066cc;
-            color: white;
-        }
-
-        .quantity-controls input {
-            width: 60px;
-            height: 35px;
-            text-align: center;
-            border: none;
-            background: white;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .summary-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
-
-        .summary-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .action-section {
-            text-align: center;
-        }
-
-        .add-to-cart-final-btn {
-            width: 100%;
-            padding: 15px 30px;
-            background: #0066cc;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .add-to-cart-final-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        .add-to-cart-final-btn:disabled {
-            background: #ccc !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-            opacity: 0.6 !important;
-        }
-
-        .add-to-cart-final-btn:disabled:hover {
-            background: #ccc !important;
-            transform: none !important;
-        }
-
-        @media (max-width: 768px) {
-            .add-to-cart-content {
-                width: 95%;
-                margin: 10% auto;
-            }
-
-            .product-preview {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .preview-image {
-                width: 120px;
-                height: 120px;
-                margin: 0 auto;
-            }
-        }
-    </style>
-
-    <script>
-        // Add to Cart Modal Functions
-        function openAddToCartModal(productId) {
-            // Set product ID in modal for later use
-            document.getElementById('addToCartModal').setAttribute('data-product-id', productId);
-            
-            // For demo purposes, create a mock product
-            const mockProduct = {
-                name: 'Product ' + productId.replace('product_', ''),
-                price: Math.floor(Math.random() * 100) + 20,
-                colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00'],
-                sizes: ['S', 'M', 'L', 'XL'],
-                front_image: 'img/sawiro/9.jpg'
-            };
-            
-            populateAddToCartModal(mockProduct);
-            document.getElementById('addToCartModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAddToCartModal() {
-            document.getElementById('addToCartModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-            // Reset selections
-            window.selectedColor = '';
-            window.selectedSize = '';
-            window.selectedQuantity = 1;
-        }
-
-        function populateAddToCartModal(product) {
-            // Set product details
-            document.getElementById('addToCartProductName').textContent = product.name;
-            document.getElementById('addToCartProductImage').src = product.front_image || '';
-            document.getElementById('addToCartProductPrice').textContent = `$${parseFloat(product.price).toFixed(2)}`;
-            
-            // Populate colors
-            const colorContainer = document.getElementById('addToCartColors');
-            colorContainer.innerHTML = '';
-            const colors = product.colors || ['#000000'];
-            colors.forEach(color => {
-                const colorDiv = document.createElement('div');
-                colorDiv.className = 'color-option';
-                colorDiv.style.backgroundColor = color;
-                colorDiv.onclick = () => selectAddToCartColor(colorDiv, color);
-                colorContainer.appendChild(colorDiv);
-            });
-            
-            // Populate sizes
-            const sizeContainer = document.getElementById('addToCartSizes');
-            sizeContainer.innerHTML = '';
-            const sizes = product.sizes || ['S', 'M', 'L'];
-            sizes.forEach(size => {
-                const sizeDiv = document.createElement('div');
-                sizeDiv.className = 'size-option';
-                sizeDiv.textContent = size;
-                sizeDiv.onclick = () => selectAddToCartSize(sizeDiv, size);
-                sizeContainer.appendChild(sizeDiv);
-            });
-            
-            // Reset selections
-            window.selectedColor = '';
-            window.selectedSize = '';
-            window.selectedQuantity = 1;
-            updateAddToCartSummary();
-        }
-
-        function selectAddToCartColor(element, color) {
-            document.querySelectorAll('#addToCartColors .color-option').forEach(opt => opt.classList.remove('active'));
-            element.classList.add('active');
-            window.selectedColor = color;
-            updateAddToCartSummary();
-        }
-
-        function selectAddToCartSize(element, size) {
-            document.querySelectorAll('#addToCartSizes .size-option').forEach(opt => opt.classList.remove('active'));
-            element.classList.add('active');
-            window.selectedSize = size;
-            updateAddToCartSummary();
-        }
-
-        function changeAddToCartQuantity(change) {
-            const newQuantity = Math.max(1, Math.min(10, window.selectedQuantity + change));
-            window.selectedQuantity = newQuantity;
-            document.getElementById('addToCartQuantity').value = newQuantity;
-            updateAddToCartSummary();
-        }
-
-        function updateAddToCartSummary() {
-            document.getElementById('addToCartSelectedColor').textContent = window.selectedColor || 'Please select a color';
-            document.getElementById('addToCartSelectedSize').textContent = window.selectedSize || 'Please select a size';
-            document.getElementById('addToCartSelectedQuantity').textContent = window.selectedQuantity;
-            
-            // Enable/disable add to cart button
-            const addToCartBtn = document.getElementById('addToCartBtn');
-            if (window.selectedColor && window.selectedSize) {
-                addToCartBtn.disabled = false;
-                addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
-            } else {
-                addToCartBtn.disabled = true;
-                addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Please Select Options First';
-            }
-        }
-
-        function addToCartFromModal() {
-            if (!window.selectedColor || !window.selectedSize) {
-                alert('Please select both color and size');
-                return;
-            }
-            
-            const btn = document.getElementById('addToCartBtn');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-            
-            // Get product ID from the modal
-            const productId = document.getElementById('addToCartModal').getAttribute('data-product-id');
-            
-            // For demo purposes, simulate API call
-            setTimeout(() => {
-                alert('Product added to cart successfully!');
-                closeAddToCartModal();
-                // Update cart count
-                const currentCount = parseInt(document.querySelector('.cart-badge')?.textContent || '0');
-                updateCartCount(currentCount + 1);
-            }, 1000);
-        }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const addToCartModal = document.getElementById('addToCartModal');
-            if (event.target === addToCartModal) {
-                closeAddToCartModal();
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const addToCartModal = document.getElementById('addToCartModal');
-                if (addToCartModal.style.display === 'block') {
-                    closeAddToCartModal();
-                }
-            }
->>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4:index.html
-        });
-    </script>
-</body>
-</html>
-=======
-<?php
-/**
- * Glamour Shopping System - Main Entry Point
- * Redirects users to appropriate sections based on their needs
- */
-
-session_start();
-
-// Check if user is logged in
-$isLoggedIn = isset($_SESSION['user_id']);
-$isAdminLoggedIn = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-// Get the requested section from URL parameters
-$section = $_GET['section'] ?? '';
-
-// Redirect based on section or default to main page
-switch ($section) {
-    case 'women':
-        header('Location: womenF/index.php');
-        exit;
-    case 'men':
-        header('Location: menfolder/men.php');
-        exit;
-    case 'perfumes':
-        header('Location: perfumes/index.php');
-        exit;
-    case 'shoes':
-        header('Location: shoess/men.php');
-        exit;
-    case 'home-decor':
-        header('Location: home-decor/homedecor.php');
-        exit;
-    case 'admin':
-        if ($isAdminLoggedIn) {
-            header('Location: admin/index.php');
-        } else {
-            header('Location: admin/login.php');
-        }
-        exit;
-    case 'cart':
-        header('Location: cart.php');
-        exit;
-    case 'products':
-        header('Location: index.php');
-        exit;
-    default:
-        // Default to the main HTML page
-        include 'index.html';
-        exit;
-}
-?>
->>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4
+         <script src="scripts/main.js"></script>
+     
+     <!-- Quick View Functionality -->
+     <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             console.log('📄 DOM loaded successfully!');
+
+             // Quick View Sidebar Functionality
+             const quickViewSidebar = document.getElementById('quick-view-sidebar');
+             const quickViewOverlay = document.getElementById('quick-view-overlay');
+             const closeQuickView = document.getElementById('close-quick-view');
+             const quickViewButtons = document.querySelectorAll('.quick-view');
+             
+             // Product data for quick view - Updated for featured products
+             const productData = {
+                 1: {
+                     name: "Featured Product 1",
+                     price: "$25",
+                     images: [
+                         { src: "img/sawiro/23.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#96e0f3ff" }
+                     ],
+                     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+                     soldOutSizes: []
+                 },
+                 2: {
+                     name: "Featured Product 2",
+                     price: "$30",
+                     images: [
+                         { src: "img/sawiro/24.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#060606ff" }
+                     ],
+                     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+                     soldOutSizes: []
+                 },
+                 3: {
+                     name: "Featured Product 3",
+                     price: "$28",
+                     images: [
+                         { src: "img/sawiro/20.webp", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#000" }
+                     ],
+                     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+                     soldOutSizes: []
+                 },
+                 4: {
+                     name: "Featured Product 4",
+                     price: "$35",
+                     images: [
+                         { src: "img/sawiro/barca.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#001f3f" }
+                     ],
+                     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+                     soldOutSizes: []
+                 },
+                 5: {
+                     name: "Designer Glasses",
+                     price: "$45",
+                     images: [
+                         { src: "img/sawiro/glas2.jpg", color: "maroon" },
+                         { src: "img/sawiro/glas1.jpg", color: "black" }
+                     ],
+                     colors: [
+                         { name: "Maroon", value: "maroon", hex: "#8B0000" },
+                         { name: "Black", value: "black", hex: "#000000" }
+                     ],
+                     sizes: ["One Size"],
+                     soldOutSizes: []
+                 },
+                 6: {
+                     name: "Featured Product 6",
+                     price: "$55",
+                     images: [
+                         { src: "img/sawiro/handbag2.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#ffffffff" }
+                     ],
+                     sizes: ["One Size"],
+                     soldOutSizes: []
+                 },
+                 7: {
+                     name: "Featured Product 7",
+                     price: "$38",
+                     images: [
+                         { src: "img/sawiro/jwel2.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#14220cff" }
+                     ],
+                     sizes: ["One Size"],
+                     soldOutSizes: []
+                 },
+                 8: {
+                     name: "Featured Product 8",
+                     price: "$65",
+                     images: [
+                         { src: "img/sawiro/watch2.jpg", color: "default" }
+                     ],
+                     colors: [
+                         { name: "Default", value: "default", hex: "#000" }
+                     ],
+                     sizes: ["One Size"],
+                     soldOutSizes: []
+                 }
+             };
+
+             // Open Quick View
+             quickViewButtons.forEach(button => {
+                 button.addEventListener('click', function(e) {
+                     e.preventDefault();
+                     const productId = this.getAttribute('data-product-id');
+                     openQuickView(productId);
+                 });
+             });
+
+             // Close Quick View
+             if (closeQuickView) {
+                 closeQuickView.addEventListener('click', closeQuickViewSidebar);
+             }
+
+             if (quickViewOverlay) {
+                 quickViewOverlay.addEventListener('click', closeQuickViewSidebar);
+             }
+
+             // Close on escape key
+             document.addEventListener('keydown', function(e) {
+                 if (e.key === 'Escape' && quickViewSidebar.classList.contains('active')) {
+                     closeQuickViewSidebar();
+                 }
+             });
+
+             function openQuickView(productId) {
+                 const product = productData[productId];
+                 if (!product) return;
+
+                 // Populate product data
+                 document.getElementById('quick-view-title').textContent = product.name;
+                 document.getElementById('quick-view-price').textContent = product.price;
+                 
+                 // Set main image
+                 const mainImage = document.getElementById('quick-view-main-image');
+                 mainImage.src = product.images[0].src;
+                 mainImage.alt = product.name;
+
+                 // Populate thumbnails
+                 const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+                 thumbnailsContainer.innerHTML = '';
+                 
+                 product.images.forEach((image, index) => {
+                     const thumbnail = document.createElement('div');
+                     thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                     thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
+                     
+                     thumbnail.addEventListener('click', () => {
+                         // Update main image
+                         mainImage.src = image.src;
+                         
+                         // Update active thumbnail
+                         thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                         thumbnail.classList.add('active');
+                     });
+                     
+                     thumbnailsContainer.appendChild(thumbnail);
+                 });
+
+                 // Populate colors
+                 const colorSelection = document.getElementById('quick-view-color-selection');
+                 colorSelection.innerHTML = '';
+                 
+                 product.colors.forEach((color, index) => {
+                     const colorCircle = document.createElement('div');
+                     colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
+                     colorCircle.style.backgroundColor = color.hex;
+                     colorCircle.setAttribute('data-color', color.value);
+                     colorCircle.title = color.name;
+                     
+                     colorCircle.addEventListener('click', () => {
+                         // Update active color
+                         colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
+                         colorCircle.classList.add('active');
+                         
+                         // Filter images by color
+                         const selectedColor = color.value;
+                         const colorImages = product.images.filter(img => img.color === selectedColor);
+                         
+                         if (colorImages.length > 0) {
+                             // Update main image and thumbnails
+                             mainImage.src = colorImages[0].src;
+                             
+                             // Update thumbnails
+                             thumbnailsContainer.innerHTML = '';
+                             colorImages.forEach((image, imgIndex) => {
+                                 const thumbnail = document.createElement('div');
+                                 thumbnail.className = `thumbnail-item ${imgIndex === 0 ? 'active' : ''}`;
+                                 thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${imgIndex}">`;
+                                 
+                                 thumbnail.addEventListener('click', () => {
+                                     mainImage.src = image.src;
+                                     thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                                     thumbnail.classList.add('active');
+                                 });
+                                 
+                                 thumbnailsContainer.appendChild(thumbnail);
+                             });
+                         }
+                     });
+                     
+                     colorSelection.appendChild(colorCircle);
+                 });
+
+                 // Populate sizes
+                 const sizeSelection = document.getElementById('quick-view-size-selection');
+                 sizeSelection.innerHTML = '';
+                 
+                 product.sizes.forEach(size => {
+                     const sizeBtn = document.createElement('button');
+                     sizeBtn.className = 'quick-view-size-btn';
+                     sizeBtn.textContent = size;
+                     
+                     if (product.soldOutSizes.includes(size)) {
+                         sizeBtn.classList.add('sold-out');
+                     } else {
+                         sizeBtn.addEventListener('click', () => {
+                             sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
+                             sizeBtn.classList.add('active');
+                         });
+                     }
+                     
+                     sizeSelection.appendChild(sizeBtn);
+                 });
+
+                 // Show sidebar
+                 quickViewSidebar.classList.add('active');
+                 quickViewOverlay.classList.add('active');
+                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
+             }
+
+             function closeQuickViewSidebar() {
+                 quickViewSidebar.classList.remove('active');
+                 quickViewOverlay.classList.remove('active');
+                 document.body.style.overflow = ''; // Restore scrolling
+             }
+
+             // Add to bag functionality for quick view
+             const addToBagQuick = document.getElementById('add-to-bag-quick');
+             if (addToBagQuick) {
+                 addToBagQuick.addEventListener('click', function() {
+                     const selectedSize = document.querySelector('.quick-view-size-btn.active');
+                     if (!selectedSize) {
+                         alert('Please select a size');
+                         return;
+                     }
+                     
+                     const productName = document.getElementById('quick-view-title').textContent;
+                     const selectedColor = document.querySelector('.quick-view-color-circle.active');
+                     const colorName = selectedColor ? selectedColor.title : '';
+                     
+                     console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
+                     alert(`Added to cart: ${productName}`);
+                     
+                     // Update cart count (you can implement this)
+                     const cartCount = document.querySelector('.cart-count');
+                     if (cartCount) {
+                         const currentCount = parseInt(cartCount.textContent) || 0;
+                         cartCount.textContent = currentCount + 1;
+                     }
+                 });
+             }
+
+             // Add to wishlist functionality for quick view
+             const addToWishlistQuick = document.getElementById('add-to-wishlist-quick');
+             if (addToWishlistQuick) {
+                 addToWishlistQuick.addEventListener('click', function() {
+                     const productName = document.getElementById('quick-view-title').textContent;
+                     console.log(`Added to wishlist: ${productName}`);
+                     alert(`Added to wishlist: ${productName}`);
+                 });
+             }
+
+             // Heart button functionality
+             const heartButtons = document.querySelectorAll('.heart-button');
+             
+             heartButtons.forEach(button => {
+                 button.addEventListener('click', function() {
+                     const icon = this.querySelector('i');
+                     if (icon.classList.contains('fas')) {
+                         icon.classList.remove('fas');
+                         icon.classList.add('far');
+                     } else {
+                         icon.classList.remove('far');
+                         icon.classList.add('fas');
+                     }
+                 });
+             });
+
+             // Color circle selection functionality
+             const colorCircles = document.querySelectorAll('.color-circle');
+             
+             colorCircles.forEach(circle => {
+                 circle.addEventListener('click', function() {
+                     const productCard = this.closest('.product-card');
+                     const circles = productCard.querySelectorAll('.color-circle');
+                     
+                     // Remove active class from all circles in this product
+                     circles.forEach(c => c.classList.remove('active'));
+                     
+                     // Add active class to clicked circle
+                     this.classList.add('active');
+                 });
+             });
+
+             // Add to cart functionality
+             const addToCartButtons = document.querySelectorAll('.add-to-bag');
+             
+             addToCartButtons.forEach(button => {
+                 button.addEventListener('click', function() {
+                     // Add your cart functionality here
+                     console.log('Added to cart:', this.closest('.product-card').querySelector('.product-name').textContent);
+                 });
+             });
+         });
+     </script>
+     
+     <!-- Cart Functionality -->
+     <script>
+         // Load cart count on page load
+         document.addEventListener('DOMContentLoaded', function() {
+             console.log('DOM loaded, loading cart count...');
+             loadCartCount();
+         });
+
+
+
+         function updateCartCount(count) {
+             try {
+                 const cartIcons = document.querySelectorAll('.fa-shopping-cart');
+                 console.log('Updating cart count:', count, 'Element found:', cartIcons.length > 0);
+                 cartIcons.forEach((icon, index) => {
+                     try {
+                         const parent = icon.parentElement;
+                         if (parent && parent.tagName) {
+                             // Remove existing badge
+                             const existingBadge = parent.querySelector('.cart-badge');
+                             if (existingBadge) {
+                                 existingBadge.remove();
+                             }
+                             
+                             // Add new badge if count > 0
+                             if (count > 0) {
+                                 const badge = document.createElement('span');
+                                 badge.className = 'cart-badge';
+                                 badge.textContent = count;
+                                 badge.style.cssText = `
+                                     position: absolute;
+                                     top: -8px;
+                                     right: -8px;
+                                     background: #e53e3e;
+                                     color: white;
+                                     border-radius: 50%;
+                                     width: 20px;
+                                     height: 20px;
+                                     font-size: 12px;
+                                     display: flex;
+                                     align-items: center;
+                                     justify-content: center;
+                                     font-weight: bold;
+                                 `;
+                                 parent.style.position = 'relative';
+                                 parent.appendChild(badge);
+                             }
+                         } else {
+                             console.log('Skipping cart icon', index, 'because parent is null/invalid');
+                         }
+                     } catch (error) {
+                         console.error('Error updating cart icon', index, ':', error);
+                     }
+                 });
+             } catch (error) {
+                 console.error('Error in updateCartCount:', error);
+             }
+         }
+
+         function loadCartCount() {
+             console.log('Loading cart count...');
+             fetch('cart-api.php', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/x-www-form-urlencoded',
+                 },
+                 body: 'action=get_cart_count'
+             })
+             .then(response => {
+                 if (!response.ok) {
+                     throw new Error('HTTP error! status: ' + response.status);
+                 }
+                 return response.text();
+             })
+             .then(text => {
+                 console.log('Raw response:', text);
+                 try {
+                     const data = JSON.parse(text);
+                     if (data.success) {
+                         updateCartCount(data.cart_count);
+                     } else {
+                         console.error('Cart API error:', data.message);
+                     }
+                 } catch (e) {
+                     console.error('JSON parse error:', e);
+                     console.error('Response text:', text);
+                 }
+             })
+             .catch(error => {
+                 console.error('Error loading cart count:', error);
+             });
+         }
+     </script>
+
+     
+ </body>
+ </html>

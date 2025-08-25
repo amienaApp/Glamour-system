@@ -48,46 +48,83 @@ $regionOptions = [
     <!-- Navigation Menu - Center -->
     <div class="nav-menu-container">
         <ul class="nav-menu">
-            <?php if (!empty($categories)): ?>
-                <?php foreach ($categories as $category): ?>
-                    <li class="nav-item-modal">
-                        <a href="#" class="nav-link modal-trigger" data-category="<?php echo htmlspecialchars($category['name']); ?>">
-                            <?php echo htmlspecialchars($category['name']); ?>
-                        </a>
-                        <!-- Category Modal -->
-                        <div class="category-modal" data-category="<?php echo htmlspecialchars($category['name']); ?>">
-                            <div class="modal-header">
-                                <h3><?php echo htmlspecialchars($category['name']); ?></h3>
-                                <p><?php echo htmlspecialchars($category['description'] ?? ''); ?></p>
-                            </div>
-                            <?php if (!empty($category['subcategories'])): ?>
-                                <div class="modal-content">
-                                    <div class="subcategories-grid">
-                                        <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                            <a href="#<?php echo strtolower(str_replace(' ', '-', $subcategory)); ?>-section" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory); ?>">
-                                                <div class="subcategory-icon">
-                                                    <i class="fas fa-chevron-right"></i>
-                                                </div>
-                                                <div class="subcategory-info">
-                                                    <h4><?php echo htmlspecialchars($subcategory); ?></h4>
-                                                    <span>Shop <?php echo htmlspecialchars($subcategory); ?></span>
-                                                </div>
-                                            </a>
-                                        <?php endforeach; ?>
+            <li><a href="../index.php" class="nav-link">Home</a></li>
+            <li class="nav-item-modal">
+                <a href="#" class="nav-link modal-trigger">Categories</a>
+                <!-- Categories Modal -->
+                <div class="category-modal">
+                    <div class="modal-header">
+                        <h3>Categories</h3>
+                        <p>Browse our product categories</p>
+                    </div>
+                    <div class="modal-content">
+                        <div class="subcategories-grid">
+                            <?php if (!empty($categories)): ?>
+                                <?php foreach ($categories as $category): ?>
+                                    <a href="#" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>">
+                                        <div class="subcategory-icon">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                        <div class="subcategory-info">
+                                            <h4><?php echo htmlspecialchars($category['name']); ?></h4>
+                                            <span>Shop <?php echo htmlspecialchars($category['name']); ?></span>
+                                        </div>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <!-- Fallback static categories if no categories found -->
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
                                     </div>
-                                </div>
+                                    <div class="subcategory-info">
+                                        <h4>Dresses</h4>
+                                        <span>Shop Dresses</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Clothing</h4>
+                                        <span>Shop Clothing</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Tops</h4>
+                                        <span>Shop Tops</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Accessories</h4>
+                                        <span>Shop Accessories</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Sale</h4>
+                                        <span>Shop Sale</span>
+                                    </div>
+                                </a>
                             <?php endif; ?>
                         </div>
-                    </li>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <!-- Fallback static menu if no categories found -->
-                <li><a href="#" class="nav-link">Dresses</a></li>
-                <li><a href="#" class="nav-link">Clothing</a></li>
-                <li><a href="#" class="nav-link">Tops</a></li>
-                <li><a href="#" class="nav-link">Accessories</a></li>
-                <li><a href="#" class="nav-link">Sale</a></li>
-            <?php endif; ?>
+                    </div>
+                </div>
+            </li>
+            <li><a href="../pages/contact.php" class="nav-link">Contact us</a></li>
+            <li><a href="../pages/about.php" class="nav-link">About us</a></li>
         </ul>
     </div>
 
