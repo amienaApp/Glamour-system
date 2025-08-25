@@ -436,4 +436,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceEl = document.getElementById('quick-view-price');
         const addToBagBtn = document.getElementById('add-to-bag-quick');
         
-        if (titleEl) titleEl.tex
+        if (titleEl) titleEl.textContent = name;
+        if (priceEl) priceEl.textContent = price;
+        if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
+        
+        // Show quick view
+        if (sidebar) sidebar.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+    }
+    
+    function closeQuickView() {
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+    }
+
+    console.log('✅ Men\'s filter script initialized successfully!');
+});

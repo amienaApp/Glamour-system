@@ -16,7 +16,11 @@
     });
     
 
+<<<<<<< HEAD
 // Category link toggle
+=======
+// Check if categoryLink element exists before adding event listener
+>>>>>>> b9ed1e544e8e4356d490807919ac547bcf8670c5
 const categoryLink = document.getElementById('categoryLink');
 if (categoryLink) {
   categoryLink.addEventListener('click', function(event) {
@@ -29,6 +33,7 @@ if (categoryLink) {
 }
 
 // Mobile menu toggle
+<<<<<<< HEAD
 const menuBtn = document.getElementById('menu-btn');
 if (menuBtn) {
   menuBtn.addEventListener('click', function() {
@@ -38,3 +43,24 @@ if (menuBtn) {
     }
   });
 }
+=======
+    const menuBtn = document.getElementById('menu-btn');
+    if (menuBtn) {
+      menuBtn.addEventListener('click', function() {
+        var menu = document.getElementById('mobile-menu');
+        if (menu) {
+          menu.classList.toggle('hidden');
+        }
+      });
+    }
+
+// Debug: Check if Categories link is present
+document.addEventListener('DOMContentLoaded', function() {
+  const categoriesLink = document.querySelector('.nav-item.dropdown .nav-link');
+  if (categoriesLink) {
+    console.log('Categories link found:', categoriesLink.textContent);
+  } else {
+    console.log('Categories link not found');
+  }
+});
+>>>>>>> b9ed1e544e8e4356d490807919ac547bcf8670c5
