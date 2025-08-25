@@ -15,7 +15,7 @@ function getCategoryUrl($categoryName) {
         "Women's Clothing" => '../womenF/index.php',
         "Men's Clothing" => '../menfolder/men.php',
         "Kids' Clothing" => '#kids',
-        "Accessories" => '#accessories',
+        "Accessories" => '../accessories/accessories.php',
         "Home & Living" => '#home-decor',
         "Beauty & Cosmetics" => '../perfumes/index.php',
         "Sports & Fitness" => '#sports',
@@ -112,7 +112,7 @@ $regionOptions = [
     <!-- Logo Container - Left Side -->
     <div class="logo-container">
         <div class="logo">
-            <a href="#" class="logo-text">
+            <a href="../index.php" class="logo-text">
                 <span class="logo-main">Glamour</span>
                 <span class="logo-accent">Palace</span>
             </a>
@@ -200,7 +200,7 @@ $regionOptions = [
                 <li><a href="../menfolder/men.php" class="nav-link">Men's Clothing</a></li>
                 <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
                 <li><a href="../shoess/shoes.php" class="nav-link">Shoes</a></li>
-                <li><a href="#accessories" class="nav-link">Accessories</a></li>
+                <li><a href="../accessories/accessories.php" class="nav-link">Accessories</a></li>
             <?php endif; ?>
         </ul>
     </div>
