@@ -17,10 +17,17 @@
     
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Category link toggle
 =======
 // Check if categoryLink element exists before adding event listener
 >>>>>>> b9ed1e544e8e4356d490807919ac547bcf8670c5
+=======
+// Check if categoryLink element exists before adding event listener
+=======
+// Category link toggle
+>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4
+>>>>>>> 9ea09c8ed4f25ba1e47155a24ba427f76879b7ea
 const categoryLink = document.getElementById('categoryLink');
 if (categoryLink) {
   categoryLink.addEventListener('click', function(event) {
@@ -34,6 +41,7 @@ if (categoryLink) {
 
 // Mobile menu toggle
 <<<<<<< HEAD
+<<<<<<< HEAD
 const menuBtn = document.getElementById('menu-btn');
 if (menuBtn) {
   menuBtn.addEventListener('click', function() {
@@ -44,6 +52,8 @@ if (menuBtn) {
   });
 }
 =======
+=======
+>>>>>>> 9ea09c8ed4f25ba1e47155a24ba427f76879b7ea
     const menuBtn = document.getElementById('menu-btn');
     if (menuBtn) {
       menuBtn.addEventListener('click', function() {
@@ -63,4 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Categories link not found');
   }
 });
+<<<<<<< HEAD
 >>>>>>> b9ed1e544e8e4356d490807919ac547bcf8670c5
+=======
+=======
+const menuBtn = document.getElementById('menu-btn');
+if (menuBtn) {
+  menuBtn.addEventListener('click', function() {
+    var menu = document.getElementById('mobile-menu');
+    if (menu) {
+      menu.classList.toggle('hidden');
+    }
+  });
+}
+>>>>>>> 026227e30f69d7328596d1585a8495130bac8bf4
+>>>>>>> 9ea09c8ed4f25ba1e47155a24ba427f76879b7ea

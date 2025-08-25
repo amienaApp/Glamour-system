@@ -149,7 +149,47 @@ $regionOptions = [
                                             </a>
                                         <?php endforeach; ?>
                                     </div>
-                                </div>
+                                    <div class="subcategory-info">
+                                        <h4>Dresses</h4>
+                                        <span>Shop Dresses</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Clothing</h4>
+                                        <span>Shop Clothing</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Tops</h4>
+                                        <span>Shop Tops</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Accessories</h4>
+                                        <span>Shop Accessories</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="subcategory-item">
+                                    <div class="subcategory-icon">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                    <div class="subcategory-info">
+                                        <h4>Sale</h4>
+                                        <span>Shop Sale</span>
+                                    </div>
+                                </a>
                             <?php endif; ?>
                         </div>
                     </li>
