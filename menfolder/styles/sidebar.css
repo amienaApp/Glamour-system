@@ -9,6 +9,12 @@
     position: sticky;
     top: 80px;
     flex-shrink: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
 }
 
 /* Side class - aligns items to the left like the logo */
@@ -45,21 +51,22 @@
 
 .clear-filters-btn {
     background: #f8f9fa;
-    border: none;
-    color: #000000;
-    padding: 10px 16px;
-    border-radius: 4px;
-    font-size: 12px;
+    border: 1px solid #e9ecef;
+    color: #6c757d;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-weight: 500;
-    margin-top: 8px;
+    margin-top: 10px;
     width: 100%;
 }
 
 .clear-filters-btn:hover {
     background: #e9ecef;
-    color: #000000;
+    color: #495057;
+    border-color: #dee2e6;
 }
 
 .clear-filters-btn:active {
@@ -102,6 +109,54 @@
     gap: 12px;
     padding: 0;
     align-items: flex-start;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.filter-option:hover {
+    color: #007bff;
+}
+
+.filter-option input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+    margin-right: 10px;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.filter-option input[type="checkbox"]:checked + .checkmark {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.filter-option:hover .checkmark {
+    border-color: #007bff;
 }
 
 /* Size Filter Specific Styles */
@@ -157,32 +212,6 @@
 
 .filter-option:hover {
     color: #333333;
-}
-
-/* Clear All Button */
-.clear-all-btn {
-    margin: 10px 20px;
-    padding: 10px 16px;
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #666;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    width: calc(100% - 40px);
-}
-
-.clear-all-btn:hover {
-    background-color: #e8e8e8;
-    color: #333;
-    border-color: #ccc;
-}
-
-.clear-all-btn:active {
-    transform: translateY(1px);
 }
 
 /* Custom Checkbox Styling */

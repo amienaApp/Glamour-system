@@ -1,5 +1,13 @@
 <?php
 $page_title = 'Galamor palace';
+
+// Get subcategory from URL parameter
+$subcategory = $_GET['subcategory'] ?? '';
+
+// Set page title based on subcategory
+if ($subcategory) {
+    $page_title = ucfirst($subcategory) . ' - ' . $page_title;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,29 +19,21 @@ $page_title = 'Galamor palace';
     <meta http-equiv="Expires" content="0">
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Centralized Header CSS -->
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
-    <!-- Page-specific CSS -->
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
+    <script src="search.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
-    <?php include '../heading/header.php'; ?>
+                    <?php include '../heading/header.php'; ?>
 
-<<<<<<< HEAD:accessories/accessories.php
-    <div class="page-layout">
-        <?php include 'includes/sidebar.php'; ?>
-        <?php include 'includes/main-content.php'; ?>
-    </div>
-=======
                 
 
                 <div class="page-layout">
                     <?php include 'includes/sidebar.php'; ?>
-                    <?php include 'includes/decor.php'; ?>
+                    <?php include 'includes/perfumes.php'; ?>
                 </div>
->>>>>>> 5f89362498a01114289d7ec3c164a05dd6a7cf7e:home-decor/homedecor.php
 
 </body>
 </html> 

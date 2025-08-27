@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Product Image Slider and Color Switching Functionality
     const productCards = document.querySelectorAll('.product-card');
-
+    console.log('Found product cards:', productCards.length);
     
     productCards.forEach((card, index) => {
         const imageSlider = card.querySelector('.image-slider');
@@ -39,8 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let autoSlideInterval;
         let currentImageIndex = 0; // Track current image index for each color
         
+        console.log(`Product ${index + 1}: Found ${images.length} images and ${colorCircles.length} color circles`);
+        
         // Only initialize if we have images
         if (images.length > 0) {
+            console.log(`Product ${index + 1}: Initializing slider`);
             
             // Initialize auto-sliding for the first color
             startAutoSlide();
@@ -105,6 +108,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show next image
                     colorImages[currentImageIndex].classList.add('active');
                     
+                    console.log(`Product ${index + 1}: Manual switch to image ${currentImageIndex} for color ${currentColor}`);
+                    
                     // Restart auto-sliding timer
                     restartAutoSlide();
                 }
@@ -122,6 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show previous image
                     colorImages[currentImageIndex].classList.add('active');
                     
+                    console.log(`Product ${index + 1}: Manual switch to image ${currentImageIndex} for color ${currentColor}`);
+                    
                     // Restart auto-sliding timer
                     restartAutoSlide();
                 }
@@ -131,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
             colorCircles.forEach(circle => {
                 circle.addEventListener('click', function() {
                     const selectedColor = this.getAttribute('data-color');
+                    console.log(`Product ${index + 1}: Switching to color ${selectedColor}`);
                     
                     // Update active color circle
                     colorCircles.forEach(c => c.classList.remove('active'));
@@ -154,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show the first image of the selected color (front view)
             const colorImages = Array.from(images).filter(img => img.getAttribute('data-color') === color);
+            console.log(`Product ${index + 1}: Found ${colorImages.length} images for color ${color}`);
             
             if (colorImages.length > 0) {
                 colorImages[0].classList.add('active');
@@ -191,6 +200,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show next image
                     colorImages[currentImageIndex].classList.add('active');
+                    
+                    console.log(`Product ${index + 1}: Auto-switching to image ${currentImageIndex} for color ${currentColor}`);
                 }
             }, 3000); // Switch every 3 seconds
         }
@@ -199,12 +210,14 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('mouseenter', () => {
             if (autoSlideInterval) {
                 clearInterval(autoSlideInterval);
+                console.log(`Product ${index + 1}: Paused auto-sliding`);
             }
         });
         
         // Resume auto-sliding when mouse leaves
         card.addEventListener('mouseleave', () => {
             startAutoSlide();
+            console.log(`Product ${index + 1}: Resumed auto-sliding`);
         });
     });
 
@@ -214,449 +227,274 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeQuickView = document.getElementById('close-quick-view');
     const quickViewButtons = document.querySelectorAll('.quick-view');
     
-<<<<<<< HEAD:accessories/script.js
-
+    console.log('Quick view elements found:');
+    console.log('- Sidebar:', quickViewSidebar);
+    console.log('- Overlay:', quickViewOverlay);
+    console.log('- Close button:', closeQuickView);
+    console.log('- Quick view buttons:', quickViewButtons.length);
     
-    // Product data for quick view - Accessories
-=======
-    // Product data for quick view - Home Decor Products
->>>>>>> 5f89362498a01114289d7ec3c164a05dd6a7cf7e:home-decor/script.js
+    // Test if we can find the elements
+    if (!quickViewSidebar) {
+        console.error('❌ Quick view sidebar not found!');
+    } else {
+        console.log('✅ Quick view sidebar found');
+    }
+    
+    if (!quickViewOverlay) {
+        console.error('❌ Quick view overlay not found!');
+    } else {
+        console.log('✅ Quick view overlay found');
+    }
+    
+    if (quickViewButtons.length === 0) {
+        console.error('❌ No quick view buttons found!');
+    } else {
+        console.log('✅ Found', quickViewButtons.length, 'quick view buttons');
+    }
+    
+    // Product data for quick view - Perfumes
     const productData = {
         1: {
-            name: "Luxury Bedroom Furniture Set",
-            price: "$899",
-            brand: "Luxury Home",
-            category: "bedroom",
+            name: "Sauvage dior 100ml",
+            price: "$150",
+            brand: "Dior",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/bedroom/1.avif", color: "purple" },
-                
+                { src: "../img/perfumes/15.jpg", color: "black" },
+                { src: "../img/perfumes/15.1.jpg", color: "blue" }
             ],
             colors: [
-                { name: "purple", value: "purple", hex: "#8b136fff" }
+                { name: "Black", value: "black", hex: "#000" },
+                { name: "Blue", value: "blue", hex: "#0e50f6ff" }
             ],
-            sizes: ["Queen", "King", "California King"],
-            dimensions: "72\" W x 84\" L x 42\" H",
-            material: "Solid Wood",
-            style: "Traditional",
-            room: "Bedroom",
-            assembly: "Required",
-            weight: "85 lbs",
-            warranty: "5 Years",
-            care: "Wipe with damp cloth"
+            sizes: ["100ml"],
+            concentration: "Eau de Toilette",
+            notes: "Bergamot, Pink Pepper, Ambroxan",
+            longevity: "6-8 hours",
+            sillage: "Moderate",
+            season: "All Year"
         },
         2: {
-            name: "Elegant Bedroom Decor Set",
-            price: "$245",
-            brand: "Elegant Home",
-            category: "bedroom",
+            name: "strong with you Perfume 100ml",
+            price: "$220",
+            brand: "Other",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/bedroom/7.jpg", color: "white" }
-                
+                { src: "../img/perfumes/23.jpg", color: "red" }
             ],
             colors: [
-                { name: "White", value: "white", hex: "#ffffff" }
+                { name: "Red", value: "red", hex: "#fd0f36ff" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "24\" W x 18\" L x 12\" H",
-            material: "Premium Fabric",
-            style: "Contemporary",
-            room: "Bedroom",
-            assembly: "No Assembly Required",
-            weight: "8 lbs",
-            warranty: "1 Year",
-            care: "Spot clean only"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Cardamom, Pink Pepper, Vanilla",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "Fall/Winter"
         },
+        
         3: {
-            name: "Cozy Bedroom Accessories",
-            price: "$89",
-            brand: "Cozy Home",
-            category: "bedroom",
+            name: "Khamrah 100ml",
+            price: "$125",
+            brand: "Lattafa",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/bedroom/6.jpg", color: "brown" }
-                
+                { src: "../img/perfumes/20.jpg", color: "brown" }
             ],
             colors: [
-                { name: "brown", value: "brown", hex: " #964B00" }
+                { name: "Brown", value: "brown", hex: "#8b4513" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "16\" W x 12\" L x 8\" H",
-            material: "Soft Textile",
-            style: "Cozy",
-            room: "Bedroom",
-            assembly: "No Assembly Required",
-            weight: "3 lbs",
-            warranty: "6 Months",
-            care: "Machine washable"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Oud, Amber, Vanilla",
+            longevity: "10-12 hours",
+            sillage: "Strong",
+            season: "Fall/Winter"
         },
         4: {
-            name: "Modern Living Room Furniture Set",
-            price: "$1,299",
-            brand: "Modern Home",
-            category: "livingroom",
+            name: "Mss dior Eau De Parfum 100ml",
+            price: "$105",
+            brand: "Dior",
+            gender: "women",
             images: [
-                { src: "../img/home-decor/livingroom/1.avif", color: "beige" }
-                
+                { src: "../img/perfumes/14.avif", color: "pink" }
             ],
             colors: [
-                { name: "Beige", value: "beige", hex: "#f5f5dc" }
+                { name: "Pink", value: "pink", hex: "#eb9abcff" }
             ],
-            sizes: ["3-Seater", "5-Seater", "7-Seater"],
-            dimensions: "84\" W x 35\" L x 32\" H",
-            material: "Premium Fabric & Wood",
-            style: "Modern",
-            room: "Living Room",
-            assembly: "Professional Assembly Required",
-            weight: "120 lbs",
-            warranty: "3 Years",
-            care: "Professional cleaning recommended"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Rose, Lily-of-the-Valley, Peony",
+            longevity: "6-8 hours",
+            sillage: "Moderate",
+            season: "Spring/Summer"
         },
         5: {
-            name: "Stylish Living Room",
-            price: "$600",
-            brand: "Stylish Home",
-            category: "livingroom",
+            name: "Valentino Donna Born in Roma 30ml",
+            price: "$95",
+            brand: "Valentino",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/livingroom/3.jpg", color: "pink" }
+                { src: "../img/perfumes/7.webp", color: "pink" }
             ],
             colors: [
-                { name: "Pink", value: "pink", hex: "#ff69B4" }
+                { name: "Pink", value: "pink", hex: "#ffc0cb" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "28\" W x 20\" L x 15\" H",
-            material: "Premium Materials",
-            style: "Contemporary",
-            room: "Living Room",
-            assembly: "Minimal Assembly Required",
-            weight: "12 lbs",
-            warranty: "1 Year",
-            care: "Dust regularly"
+            sizes: ["30ml"],
+            concentration: "Eau de Parfum",
+            notes: "Bergamot, Jasmine, Vanilla",
+            longevity: "6-8 hours",
+            sillage: "Moderate",
+            season: "All Year"
         },
         6: {
-            name: "Elegant Living Room",
-            price: "$600",
-            brand: "Elegant Home",
-            category: "livingroom",
+            name: "Gucci Bloom Eau de Parfum 100ml",
+            price: "$180",
+            brand: "Gucci",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/livingroom/5.jpg", color: "black" }
+                { src: "../img/perfumes/22.jpg", color: "black" }
             ],
             colors: [
-                { name: "Black", value: "black", hex: "#000000ff" }
+                { name: "Black", value: "black", hex: "#050505ff" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "32\" W x 24\" L x 18\" H",
-            material: "Premium Fabric",
-            style: "Elegant",
-            room: "Living Room",
-            assembly: "No Assembly Required",
-            weight: "15 lbs",
-            warranty: "1 Year",
-            care: "Professional cleaning recommended"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Tuberose, Jasmine, Rangoon Creeper",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "Spring/Summer"
         },
         7: {
-            name: "Classic Dining Room Furniture Set",
-            price: "$899",
-            brand: "Classic Home",
-            category: "diningroom",
+            name: "Prada milano 50ml",
+            price: "$140",
+            brand: "Other",
+            gender: "women",
             images: [
-                { src: "../img/home-decor/diningarea/1.jpg", color: "beige" }
+                { src: "../img/perfumes/16.png", color: "pink" }
             ],
             colors: [
-                { name: "Beige", value: "beige", hex: "#bc9f8f" }
+                { name: "Pink", value: "pink", hex: "#f7a7c2ff" }
             ],
-            sizes: ["4-Seater", "6-Seater", "8-Seater"],
-            dimensions: "60\" W x 36\" L x 30\" H",
-            material: "Solid Wood",
-            style: "Classic",
-            room: "Dining Room",
-            assembly: "Professional Assembly Required",
-            weight: "95 lbs",
-            warranty: "5 Years",
-            care: "Wipe with damp cloth"
+            sizes: ["50ml"],
+            concentration: "Eau de Parfum",
+            notes: "Iris, Vanilla, Amber",
+            longevity: "6-8 hours",
+            sillage: "Moderate",
+            season: "All Year"
         },
         8: {
-            name: "Elegant Dining Room Decor",
-            price: "$750",
-            brand: "Elegant Home",
-            category: "diningroom",
+            name: "valentino 100ml",
+            price: "$200",
+            brand: "Valentino",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/diningarea/3.jpg", color: "silver" },
-                { src: "../img/home-decor/diningarea/4.jpg", color: "silver" }
+                { src: "../img/perfumes/10.webp", color: "black" },
+                { src: "../img/perfumes/10.0.webp", color: "black" }
             ],
             colors: [
-                { name: "Silver", value: "silver", hex: "#c0c0c0" }
+                { name: "Black", value: "black", hex: "#000" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "20\" W x 16\" L x 12\" H",
-            material: "Premium Metal",
-            style: "Elegant",
-            room: "Dining Room",
-            assembly: "No Assembly Required",
-            weight: "8 lbs",
-            warranty: "2 Years",
-            care: "Polish with soft cloth"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Bergamot, Lavender, Tonka Bean",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "All Year"
         },
+        
         9: {
-            name: "Luxury Crystal Chandelier",
-            price: "$80",
-            brand: "Luxury Lights",
-            category: "lighting",
+            name: "Born In Roma Extradose Eau De Parfum 30Ml",
+            price: "$120",
+            brand: "Valentino",
+            gender: "women",
             images: [
-                { src: "../img/home-decor/light/1.avif", color: "crystal" }
+                { src: "../img/perfumes/4.webp", color: "pink" }
             ],
             colors: [
-                { name: "Crystal", value: "crystal", hex: "#e6e6fa" }
+                { name: "Pink", value: "pink", hex: "#ffc0cb" }
             ],
-            sizes: ["Standard", "Large"],
-            dimensions: "24\" Diameter x 36\" Height",
-            material: "Crystal & Metal",
-            style: "Luxury",
-            room: "Any Room",
-            assembly: "Professional Installation Required",
-            weight: "25 lbs",
-            warranty: "3 Years",
-            care: "Dust regularly"
+            sizes: ["30ml"],
+            concentration: "Eau de Parfum",
+            notes: "Vanilla, Bourbon, Jasmine",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "Fall/Winter"
         },
         10: {
-            name: "Modern Table Lamp",
-            price: "$89",
-            brand: "Modern Lights",
-            category: "lighting",
+            name: "Chanel Coco Mademoiselle",
+            price: "$200",
+            brand: "Chanel",
+            gender: "women",
             images: [
-                { src: "../img/home-decor/light/3.webp", color: "white" }
+                { src: "../img/perfumes/12.webp", color: "gold" },
+                { src: "../img/perfumes/12.0.webp", color: "gold" }
             ],
             colors: [
-                { name: "White", value: "white", hex: "#f8f5f5ff" }
+                { name: "Gold", value: "gold", hex: "#ffd700" }
             ],
-            sizes: ["Standard"],
-            dimensions: "12\" W x 12\" L x 24\" H",
-            material: "Metal & Fabric",
-            style: "Modern",
-            room: "Any Room",
-            assembly: "No Assembly Required",
-            weight: "5 lbs",
-            warranty: "1 Year",
-            care: "Wipe with damp cloth"
+            sizes: ["50ml"],
+            concentration: "Eau de Parfum",
+            notes: "Orange, Jasmine, Patchouli",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "All Year"
         },
         11: {
-            name: "Elegant Wall Sconce",
-            price: "$67",
-            brand: "Elegant Lights",
-            category: "lighting",
+            name: "Gucci Guilty Pour Homme",
+            price: "$160",
+            brand: "Gucci",
+            gender: "men",
             images: [
-                { src: "../img/home-decor/light/4.webp", color: "pink" }
+                { src: "../img/perfumes/13.webp", color: "black" },
+                { src: "../img/perfumes/13.0.webp", color: "black" }
             ],
             colors: [
-                { name: "Pink", value: "pink", hex: "#ff69B4" }
+                { name: "Black", value: "black", hex: "#000" }
             ],
-            sizes: ["Standard"],
-            dimensions: "8\" W x 6\" L x 12\" H",
-            material: "Metal & Glass",
-            style: "Elegant",
-            room: "Any Room",
-            assembly: "Professional Installation Required",
-            weight: "3 lbs",
-            warranty: "1 Year",
-            care: "Dust regularly"
+            sizes: ["100ml"],
+            concentration: "Eau de Toilette",
+            notes: "Lemon, Lavender, Patchouli",
+            longevity: "6-8 hours",
+            sillage: "Moderate",
+            season: "All Year"
         },
         12: {
-            name: "Abstract Modern Painting",
-            price: "$234",
-            brand: "Art Gallery",
-            category: "artwork",
+            name: "Good girl perfume 100ml",
+            price: "$250",
+            brand: "Other",
+            gender: "women",
             images: [
-                { src: "../img/home-decor/artwork/1.jpg", color: "multicolor" }
+                { src: "../img/perfumes/24.jpg", color: "blue" },
+                { src: "../img/perfumes/17.jpg", color: "navy" }
             ],
             colors: [
-                { name: "Multicolor", value: "multicolor", hex: "linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)" }
+                { name: "Blue", value: "blue", hex: "#474eb9ff" },
+                { name: "navy", value: "navy", hex: "#1a2145ff" }
+
             ],
-            sizes: ["24\" x 36\"", "36\" x 48\"", "48\" x 60\""],
-            dimensions: "24\" W x 36\" L x 2\" D",
-            material: "Canvas & Acrylic",
-            style: "Abstract",
-            room: "Any Room",
-            assembly: "No Assembly Required",
-            weight: "8 lbs",
-            warranty: "1 Year",
-            care: "Dust with soft brush"
+            sizes: ["100ml"],
+            concentration: "Eau de Parfum",
+            notes: "Jasmine, Cacao, Tonka Bean",
+            longevity: "8-10 hours",
+            sillage: "Strong",
+            season: "Fall/Winter"
         },
-        13: {
-            name: "Serene Landscape Artwork",
-            price: "$189",
-            brand: "Nature Art",
-            category: "artwork",
-            images: [
-                { src: "../img/home-decor/artwork/3.jpg", color: "lightgrey" }
-            ],
-            colors: [
-                { name: "Light Grey", value: "lightgrey", hex: "#787b78ff" }
-            ],
-            sizes: ["20\" x 30\"", "30\" x 40\"", "40\" x 50\""],
-            dimensions: "20\" W x 30\" L x 2\" D",
-            material: "Canvas & Oil Paint",
-            style: "Landscape",
-            room: "Any Room",
-            assembly: "No Assembly Required",
-            weight: "6 lbs",
-            warranty: "1 Year",
-            care: "Dust with soft brush"
-        },
-        14: {
-            name: "Contemporary Art Piece",
-            price: "$312",
-            brand: "Modern Art",
-            category: "artwork",
-            images: [
-                { src: "../img/home-decor/artwork/5.jpg", color: "beige" }
-            ],
-            colors: [
-                { name: "Beige", value: "beige", hex: "#dfd7c4ff" }
-            ],
-            sizes: ["28\" x 40\"", "40\" x 56\"", "56\" x 72\""],
-            dimensions: "28\" W x 40\" L x 2\" D",
-            material: "Canvas & Mixed Media",
-            style: "Contemporary",
-            room: "Any Room",
-            assembly: "No Assembly Required",
-            weight: "10 lbs",
-            warranty: "1 Year",
-            care: "Dust with soft brush"
-        },
-        15: {
-            name: "Modern Kitchen Decor Set",
-            price: "$400",
-            brand: "Kitchen Style",
-            category: "kitchen",
-            images: [
-                { src: "../img/home-decor/kitchen/1.avif", color: "beige" }
-            ],
-            colors: [
-                { name: "Beige", value: "beige", hex: "#dfd7c4ff" }
-            ],
-            sizes: ["Standard", "Large"],
-            dimensions: "18\" W x 14\" L x 10\" H",
-            material: "Stainless Steel & Wood",
-            style: "Modern",
-            room: "Kitchen",
-            assembly: "Minimal Assembly Required",
-            weight: "12 lbs",
-            warranty: "2 Years",
-            care: "Wipe with damp cloth"
-        },
-        16: {
-            name: "Culinary Kitchen Decor",
-            price: "$600",
-            brand: "Culinary Home",
-            category: "kitchen",
-            images: [
-                { src: "../img/home-decor/kitchen/5.jpg", color: "white" }
-            ],
-            colors: [
-                { name: "White", value: "white", hex: "#ffffff" }
-            ],
-            sizes: ["Standard", "Large"],
-            dimensions: "24\" W x 18\" L x 12\" H",
-            material: "Premium Materials",
-            style: "Culinary",
-            room: "Kitchen",
-            assembly: "No Assembly Required",
-            weight: "15 lbs",
-            warranty: "2 Years",
-            care: "Wipe with damp cloth"
-        },
-        17: {
-            name: "Comfortable Living Room Sofa",
-            price: "$789",
-            brand: "Comfort Home",
-            category: "livingroom",
-            images: [
-                { src: "../img/home-decor/livingroom/7.jpg", color: "pink" }
-            ],
-            colors: [
-                { name: "Pink", value: "pink", hex: "#ff69B4" }
-            ],
-            sizes: ["3-Seater", "5-Seater"],
-            dimensions: "84\" W x 35\" L x 32\" H",
-            material: "Premium Fabric & Wood",
-            style: "Comfortable",
-            room: "Living Room",
-            assembly: "Professional Assembly Required",
-            weight: "110 lbs",
-            warranty: "3 Years",
-            care: "Professional cleaning recommended"
-        },
-        18: {
-            name: "Elegant Bedroom Light Fixture",
-            price: "$123",
-            brand: "Bedroom Lights",
-            category: "lighting",
-            images: [
-                { src: "../img/home-decor/light/6.0.webp", color: "green" }
-            ],
-            colors: [
-                { name: "Green", value: "green", hex: "#2d5d5cff" }
-            ],
-            sizes: ["Standard"],
-            dimensions: "16\" Diameter x 24\" Height",
-            material: "Metal & Glass",
-            style: "Elegant",
-            room: "Bedroom",
-            assembly: "Professional Installation Required",
-            weight: "8 lbs",
-            warranty: "2 Years",
-            care: "Dust regularly"
-        },
-        19: {
-            name: "Elegant Dining Room Chairs Set",
-            price: "$900",
-            brand: "Dining Elegance",
-            category: "diningroom",
-            images: [
-                { src: "../img/home-decor/diningarea/5.jpg", color: "walnut" }
-            ],
-            colors: [
-                { name: "Walnut", value: "walnut", hex: "#795c79ff" }
-            ],
-            sizes: ["4-Chair Set", "6-Chair Set", "8-Chair Set"],
-            dimensions: "18\" W x 20\" L x 36\" H per chair",
-            material: "Solid Wood",
-            style: "Elegant",
-            room: "Dining Room",
-            assembly: "Minimal Assembly Required",
-            weight: "120 lbs",
-            warranty: "5 Years",
-            care: "Wipe with damp cloth"
-        },
-        20: {
-            name: "Modern Wall Art Collection",
-            price: "$178",
-            brand: "Wall Art",
-            category: "artwork",
-            images: [
-                { src: "../img/home-decor/artwork/7.jpg", color: "white" }
-            ],
-            colors: [
-                { name: "White", value: "white", hex: "#d0c3c0ff" }
-            ],
-            sizes: ["16\" x 24\"", "24\" x 36\"", "36\" x 48\""],
-            dimensions: "16\" W x 24\" L x 1\" D",
-            material: "Canvas & Acrylic",
-            style: "Modern",
-            room: "Any Room",
-            assembly: "No Assembly Required",
-            weight: "4 lbs",
-            warranty: "1 Year",
-            care: "Dust with soft brush"
-        }
+
     };
 
     // Open Quick View
+    console.log('Setting up quick view buttons. Found:', quickViewButtons.length, 'buttons');
     quickViewButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const productId = this.getAttribute('data-product-id');
+            console.log('Quick view clicked for product ID:', productId);
             openQuickView(productId);
         });
     });
+    
+
 
     // Close Quick View
     if (closeQuickView) {
@@ -675,59 +513,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function openQuickView(productId) {
+        console.log('openQuickView called with productId:', productId);
         const product = productData[productId];
-<<<<<<< HEAD:accessories/script.js
+        console.log('Found product:', product);
         if (!product) {
+            console.log('No product found for ID:', productId);
             return;
         }
-=======
-        if (!product) return;
->>>>>>> 5f89362498a01114289d7ec3c164a05dd6a7cf7e:home-decor/script.js
 
         // Populate product data
         document.getElementById('quick-view-title').textContent = product.name;
         document.getElementById('quick-view-price').textContent = product.price;
         
-        // Populate additional product details if elements exist
+        // Add brand information if available
         const brandElement = document.getElementById('quick-view-brand');
         if (brandElement && product.brand) {
             brandElement.textContent = product.brand;
-        }
-        
-        // Populate product details
-        const materialElement = document.getElementById('quick-view-material');
-        if (materialElement && product.material) {
-            materialElement.textContent = product.material;
-        }
-        
-        const styleElement = document.getElementById('quick-view-style');
-        if (styleElement && product.style) {
-            styleElement.textContent = product.style;
-        }
-        
-        const roomElement = document.getElementById('quick-view-room');
-        if (roomElement && product.room) {
-            roomElement.textContent = product.room;
-        }
-        
-        const assemblyElement = document.getElementById('quick-view-assembly');
-        if (assemblyElement && product.assembly) {
-            assemblyElement.textContent = product.assembly;
-        }
-        
-        const weightElement = document.getElementById('quick-view-weight');
-        if (weightElement && product.weight) {
-            weightElement.textContent = product.weight;
-        }
-        
-        const warrantyElement = document.getElementById('quick-view-warranty');
-        if (warrantyElement && product.warranty) {
-            warrantyElement.textContent = product.warranty;
-        }
-        
-        const careElement = document.getElementById('quick-view-care');
-        if (careElement && product.care) {
-            careElement.textContent = product.care;
         }
         
         // Set main image
@@ -801,54 +602,50 @@ document.addEventListener('DOMContentLoaded', function() {
             colorSelection.appendChild(colorCircle);
         });
 
-        // Populate sizes/dimensions
+        // Populate sizes
         const sizeSelection = document.getElementById('quick-view-size-selection');
-        if (sizeSelection) {
         sizeSelection.innerHTML = '';
-            
-            if (product.dimensions) {
-                // For home decor, show dimensions
-                const dimensionDiv = document.createElement('div');
-                dimensionDiv.className = 'dimension-info';
-                dimensionDiv.innerHTML = `
-                    <div class="dimension-item">
-                        <span class="dimension-label">Dimensions:</span>
-                        <span class="dimension-value">${product.dimensions}</span>
-                    </div>
-                `;
-                sizeSelection.appendChild(dimensionDiv);
-            }
-            
-            // Also show available sizes if they exist
-            if (product.sizes && product.sizes.length > 0) {
-                const sizeLabel = document.createElement('div');
-                sizeLabel.className = 'size-label';
-                sizeLabel.textContent = 'Available Options:';
-                sizeSelection.appendChild(sizeLabel);
         
         product.sizes.forEach(size => {
             const sizeBtn = document.createElement('button');
             sizeBtn.className = 'quick-view-size-btn';
             sizeBtn.textContent = size;
             
-                    if (product.soldOutSizes && product.soldOutSizes.includes(size)) {
-                sizeBtn.classList.add('sold-out');
-            } else {
-                sizeBtn.addEventListener('click', () => {
-                    sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
-                    sizeBtn.classList.add('active');
-                });
-            }
+            // For perfumes, we don't have soldOutSizes, so just add click event
+            sizeBtn.addEventListener('click', () => {
+                sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
+                sizeBtn.classList.add('active');
+            });
             
             sizeSelection.appendChild(sizeBtn);
         });
+        
+        // Add perfume-specific information
+        const descriptionElement = document.querySelector('.quick-view-description p');
+        if (descriptionElement && product.concentration) {
+            let description = `A luxurious ${product.concentration} fragrance. `;
+            if (product.notes) {
+                description += `Features notes of ${product.notes}. `;
             }
+            if (product.longevity) {
+                description += `Longevity: ${product.longevity}. `;
+            }
+            if (product.sillage) {
+                description += `Sillage: ${product.sillage}. `;
+            }
+            if (product.season) {
+                description += `Perfect for ${product.season}.`;
+            }
+            descriptionElement.textContent = description;
         }
 
         // Show sidebar
+        console.log('Showing quick view sidebar...');
         quickViewSidebar.classList.add('active');
         quickViewOverlay.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        console.log('Sidebar classes:', quickViewSidebar.className);
+        console.log('Overlay classes:', quickViewOverlay.className);
     }
 
     function closeQuickViewSidebar() {
@@ -862,18 +659,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addToBagQuick) {
         addToBagQuick.addEventListener('click', function() {
             const selectedSize = document.querySelector('.quick-view-size-btn.active');
+            if (!selectedSize) {
+                alert('Please select a size');
+                return;
+            }
+            
             const productName = document.getElementById('quick-view-title').textContent;
             const selectedColor = document.querySelector('.quick-view-color-circle.active');
             const colorName = selectedColor ? selectedColor.title : '';
             
-<<<<<<< HEAD:accessories/script.js
-
-=======
-            // For home decor, size selection is optional
-            const sizeInfo = selectedSize ? selectedSize.textContent : 'Standard';
-            
-            console.log(`Added to cart: ${productName} - Size: ${sizeInfo}, Color: ${colorName}`);
->>>>>>> 5f89362498a01114289d7ec3c164a05dd6a7cf7e:home-decor/script.js
+            console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
             alert(`Added to cart: ${productName}`);
             
             // Update cart count (you can implement this)
@@ -890,6 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addToWishlistQuick) {
         addToWishlistQuick.addEventListener('click', function() {
             const productName = document.getElementById('quick-view-title').textContent;
+            console.log(`Added to wishlist: ${productName}`);
             alert(`Added to wishlist: ${productName}`);
         });
     }
@@ -1020,6 +816,7 @@ document.addEventListener('DOMContentLoaded', function() {
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
             // Add your cart functionality here
+            console.log('Added to cart:', this.closest('.product-card').querySelector('.product-name').textContent);
         });
     });
 
@@ -1029,6 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
     quickViewButtonsOld.forEach(button => {
         button.addEventListener('click', function() {
             // Add your quick view functionality here
+            console.log('Quick view:', this.closest('.product-card').querySelector('.product-name').textContent);
         });
     });
 
@@ -1040,6 +838,8 @@ document.addEventListener('DOMContentLoaded', function() {
         sortSelect.addEventListener('change', function() {
             const sortValue = this.value;
             const products = Array.from(productGrid.querySelectorAll('.product-card'));
+            
+            console.log('Sorting products by:', sortValue);
             
             // Sort products based on selected option
             products.sort((a, b) => {
@@ -1079,31 +879,32 @@ document.addEventListener('DOMContentLoaded', function() {
             products.forEach(product => {
                 productGrid.appendChild(product);
             });
+            
+            console.log('Products sorted successfully!');
         });
     }
 
     // Filtering Functionality
     const filterCheckboxes = document.querySelectorAll('input[type="checkbox"]');
     
-    console.log('Found filter checkboxes:', filterCheckboxes.length);
-    
     filterCheckboxes.forEach(checkbox => {
-        console.log('Checkbox:', checkbox.name, checkbox.value);
         checkbox.addEventListener('change', function() {
-            console.log('Checkbox changed:', this.name, this.value, this.checked);
             applyFilters();
         });
     });
     
-<<<<<<< HEAD:accessories/script.js
     function applyFilters() {
         const products = Array.from(productGrid.querySelectorAll('.product-card'));
         const selectedGenders = getSelectedValues('gender');
         const selectedSizes = getSelectedValues('size');
-        const selectedCategories = getSelectedValues('category'); // category is used for bag types
+        const selectedBrands = getSelectedValues('category'); // category is used for brands
         const selectedPrices = getSelectedValues('price');
         
-
+        console.log('Applying filters:');
+        console.log('- Selected genders:', selectedGenders);
+        console.log('- Selected sizes:', selectedSizes);
+        console.log('- Selected brands:', selectedBrands);
+        console.log('- Selected prices:', selectedPrices);
         
         products.forEach(product => {
             let shouldShow = true;
@@ -1124,10 +925,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Check category filter
-            if (selectedCategories.length > 0 && shouldShow) {
-                const productCategory = product.getAttribute('data-category');
-                if (!selectedCategories.includes(productCategory)) {
+            // Check brand filter
+            if (selectedBrands.length > 0 && shouldShow) {
+                const productBrand = product.getAttribute('data-brand');
+                if (!selectedBrands.includes(productBrand)) {
                     shouldShow = false;
                 }
             }
@@ -1140,17 +941,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 selectedPrices.forEach(priceRange => {
                     switch(priceRange) {
-                        case '0-100':
-                            if (productPrice >= 0 && productPrice <= 100) priceInRange = true;
+                        case '90-110':
+                            if (productPrice >= 90 && productPrice <= 110) priceInRange = true;
                             break;
-                        case '100-200':
-                            if (productPrice >= 100 && productPrice <= 200) priceInRange = true;
+                        case '110-150':
+                            if (productPrice >= 110 && productPrice <= 150) priceInRange = true;
                             break;
-                        case '200-400':
-                            if (productPrice >= 200 && productPrice <= 400) priceInRange = true;
+                        case '150-200':
+                            if (productPrice >= 150 && productPrice <= 200) priceInRange = true;
                             break;
-                        case '400+':
-                            if (productPrice >= 400) priceInRange = true;
+                        case '200-250':
+                            if (productPrice >= 200 && productPrice <= 250) priceInRange = true;
+                            break;
+                        case '250+':
+                            if (productPrice >= 250) priceInRange = true;
                             break;
                     }
                 });
@@ -1168,7 +972,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-
+        console.log('Filters applied successfully!');
         
         // Update the style count
         updateStyleCount();
@@ -1182,8 +986,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return Array.from(checkboxes).map(cb => cb.value);
     }
     
-=======
->>>>>>> 5f89362498a01114289d7ec3c164a05dd6a7cf7e:home-decor/script.js
     // Add "Clear All" functionality
     function addClearAllButton() {
         const sidebar = document.querySelector('.sidebar');
@@ -1216,101 +1018,8 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
             product.style.display = 'block';
         });
-
+        console.log('All products shown');
         updateStyleCount();
-    }
-    
-    function applyFilters() {
-        const productGrid = document.querySelector('.product-grid');
-        const products = Array.from(productGrid.querySelectorAll('.product-card'));
-        const selectedCategories = getSelectedValues('category');
-        const selectedPrices = getSelectedValues('price');
-        
-        console.log('Selected categories:', selectedCategories);
-        console.log('Selected prices:', selectedPrices);
-        
-        // If no filters are selected, show all products
-        if (selectedCategories.length === 0 && selectedPrices.length === 0) {
-            showAllProducts();
-            return;
-        }
-        
-        products.forEach(product => {
-            let shouldShow = true;
-            
-            // Check category filter
-            if (selectedCategories.length > 0) {
-                const productCategory = product.getAttribute('data-category');
-                console.log(`Product ${product.getAttribute('data-product-id')} category: ${productCategory}`);
-                if (!selectedCategories.includes(productCategory)) {
-                    shouldShow = false;
-                }
-            }
-            
-            // Check price filter
-            if (selectedPrices.length > 0 && shouldShow) {
-                const productPrice = parseInt(product.getAttribute('data-price'));
-                let priceInRange = false;
-                
-                selectedPrices.forEach(priceRange => {
-                    switch(priceRange) {
-                        case '0-300':
-                            if (productPrice >= 0 && productPrice <= 300) priceInRange = true;
-                            break;
-                        case '300-600':
-                            if (productPrice >= 300 && productPrice <= 600) priceInRange = true;
-                            break;
-                        case '600-900':
-                            if (productPrice >= 600 && productPrice <= 900) priceInRange = true;
-                            break;
-                        case '900+':
-                            if (productPrice >= 900) priceInRange = true;
-                            break;
-                    }
-                });
-                
-                if (!priceInRange) {
-                    shouldShow = false;
-                }
-            }
-            
-            // Show/hide product
-            if (shouldShow) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-        
-        console.log('Filters applied successfully!');
-        
-        // Update the style count
-        updateStyleCount();
-        
-        // Add visual feedback for active filters
-        updateFilterIndicators();
-    }
-    
-    function updateFilterIndicators() {
-        const selectedCategories = getSelectedValues('category');
-        const selectedPrices = getSelectedValues('price');
-        
-        // Update sidebar header to show active filters
-        const sidebarHeader = document.querySelector('.sidebar-header h3');
-        if (sidebarHeader) {
-            if (selectedCategories.length > 0 || selectedPrices.length > 0) {
-                const activeFilters = [];
-                if (selectedCategories.length > 0) {
-                    activeFilters.push(`${selectedCategories.length} category`);
-                }
-                if (selectedPrices.length > 0) {
-                    activeFilters.push(`${selectedPrices.length} price`);
-                }
-                sidebarHeader.textContent = `Refine By (${activeFilters.join(', ')} active)`;
-            } else {
-                sidebarHeader.textContent = 'Refine By';
-            }
-        }
     }
     
     function updateStyleCount() {
@@ -1321,9 +1030,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function getSelectedValues(name) {
-        const checkboxes = document.querySelectorAll(`input[name="${name}[]"]:checked`);
-        return Array.from(checkboxes).map(cb => cb.value);
+    function updateFilterIndicators() {
+        const selectedGenders = getSelectedValues('gender');
+        const selectedSizes = getSelectedValues('size');
+        const selectedBrands = getSelectedValues('category');
+        const selectedPrices = getSelectedValues('price');
+        
+        // Update sidebar header to show active filters
+        const sidebarHeader = document.querySelector('.sidebar-header h3');
+        if (sidebarHeader) {
+            const activeFilters = [];
+            if (selectedGenders.length > 0) {
+                activeFilters.push(`${selectedGenders.length} gender`);
+            }
+            if (selectedSizes.length > 0) {
+                activeFilters.push(`${selectedSizes.length} size`);
+            }
+            if (selectedBrands.length > 0) {
+                activeFilters.push(`${selectedBrands.length} brand`);
+            }
+            if (selectedPrices.length > 0) {
+                activeFilters.push(`${selectedPrices.length} price`);
+            }
+            
+            if (activeFilters.length > 0) {
+                sidebarHeader.textContent = `Refine By (${activeFilters.join(', ')} active)`;
+            } else {
+                sidebarHeader.textContent = 'Refine By';
+            }
+        }
     }
     
     // Initialize the clear all button
