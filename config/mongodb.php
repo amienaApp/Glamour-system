@@ -1,3 +1,5 @@
+
+
 <?php
 /**
  * MongoDB Configuration
@@ -9,6 +11,8 @@ class MongoDB {
     private $client;
     private $database;
     private $collections = [];
+
+    
 
     private function __construct() {
         try {
