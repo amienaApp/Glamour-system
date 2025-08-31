@@ -220,7 +220,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'available' => isset($_POST['available']),
             'stock' => (int)($_POST['stock'] ?? 0),
             'size_category' => $_POST['size_category'] ?? '',
-            'selected_sizes' => $_POST['selected_sizes'] ?? ''
+            'selected_sizes' => $_POST['selected_sizes'] ?? '',
+            'shoe_type' => $_POST['shoe_type'] ?? ''
         ];
 
         // Handle perfume-specific fields
@@ -1801,6 +1802,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             
+            <div class="form-group" id="shoe-type-group" style="display: none;">
+                <label for="shoe_type">Shoe Type</label>
+                <select id="shoe_type" name="shoe_type">
+                    <option value="">Select Shoe Type</option>
+                    <option value="boots" <?php echo ($product['shoe_type'] ?? '') === 'boots' ? 'selected' : ''; ?>>Boots</option>
+                    <option value="sandals" <?php echo ($product['shoe_type'] ?? '') === 'sandals' ? 'selected' : ''; ?>>Sandals</option>
+                    <option value="heels" <?php echo ($product['shoe_type'] ?? '') === 'heels' ? 'selected' : ''; ?>>Heels</option>
+                    <option value="flats" <?php echo ($product['shoe_type'] ?? '') === 'flats' ? 'selected' : ''; ?>>Flats</option>
+                    <option value="sneakers" <?php echo ($product['shoe_type'] ?? '') === 'sneakers' ? 'selected' : ''; ?>>Sneakers</option>
+                    <option value="sport-shoes" <?php echo ($product['shoe_type'] ?? '') === 'sport-shoes' ? 'selected' : ''; ?>>Sport Shoes</option>
+                    <option value="slippers" <?php echo ($product['shoe_type'] ?? '') === 'slippers' ? 'selected' : ''; ?>>Slippers</option>
+                    <option value="formal-shoes" <?php echo ($product['shoe_type'] ?? '') === 'formal-shoes' ? 'selected' : ''; ?>>Formal Shoes</option>
+                    <option value="casual-shoes" <?php echo ($product['shoe_type'] ?? '') === 'casual-shoes' ? 'selected' : ''; ?>>Casual Shoes</option>
+                </select>
+            </div>
+            
             <div class="form-group" id="brand-group" style="display: none;">
                 <label for="brand">Brand *</label>
                 <select id="brand" name="brand">
@@ -2175,28 +2192,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const brandGroup = document.getElementById('brand-group');
             const genderGroup = document.getElementById('gender-group');
             const perfumeSizeGroup = document.getElementById('perfume-size-group');
+            const shoeTypeGroup = document.getElementById('shoe-type-group');
             const subcategoryGroup = document.getElementById('subcategory-group');
             const sizeCategoryGroup = document.getElementById('size-category-group');
             
-            const shouldShow = category.toLowerCase() === 'perfumes';
+            const isPerfume = category.toLowerCase() === 'perfumes';
+            const isShoes = category.toLowerCase() === 'shoes';
             
             // Show/hide individual perfume fields
-            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
-            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = isPerfume ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
+            
+            // Show/hide shoe type field
+            if (shoeTypeGroup) shoeTypeGroup.style.display = isShoes ? 'block' : 'none';
             
             // Hide subcategory and size category for perfumes
-            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
-            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (subcategoryGroup) subcategoryGroup.style.display = isPerfume ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = isPerfume ? 'none' : 'block';
             
             // Make perfume fields required when category is Perfumes
             const brandField = document.getElementById('brand');
             const genderField = document.getElementById('gender');
             const sizeField = document.getElementById('perfume_size');
             
-            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
-            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
-            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+            if (brandField) brandField.required = isPerfume;
+            if (genderField) genderField.required = isPerfume;
+            if (sizeField) sizeField.required = isPerfume;
         }
 
         function toggleSalePrice() {
@@ -3583,6 +3605,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             updateMultiVariantSelectedSizesDisplay(productIndex, variantIndex);
         }
+        
+        // Initialize fields based on current product category
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentCategory = '<?php echo $product['category'] ?? ''; ?>';
+            if (currentCategory) {
+                togglePerfumeFields(currentCategory);
+            }
+        });
     </script>
     </div>
 

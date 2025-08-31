@@ -44,6 +44,12 @@ class Product {
     }
 
     public function create($productData) {
+        // Convert color_variants to MongoDB BSONArray if it's a regular array
+        if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
+            // MongoDB will automatically convert arrays to BSONArray when inserting
+            // No need to manually convert - just let MongoDB handle it
+        }
+        
         $result = $this->collection->insertOne($productData);
         return $result->getInsertedId();
     }
@@ -54,6 +60,10 @@ class Product {
             if (is_string($id) && strlen($id) === 24) {
                 $id = new MongoDB\BSON\ObjectId($id);
             }
+            
+            // MongoDB will automatically convert arrays to BSONArray when updating
+            // No need to manually convert - just let MongoDB handle it
+            
             $result = $this->collection->updateOne(['_id' => $id], ['$set' => $updateData]);
             return $result->getModifiedCount() > 0;
         } catch (Exception $e) {
@@ -230,6 +240,7 @@ class Product {
 
     public function getByNameAndSubcategory($name, $subcategory) {
         return $this->collection->findOne(['name' => $name, 'subcategory' => $subcategory]);
+
     }
 }
 ?>

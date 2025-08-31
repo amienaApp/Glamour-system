@@ -50,6 +50,38 @@
                     <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
                     <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
                 </div>
+                <script>
+                    // Ensure size filter functions are available
+                    if (typeof selectAllSizes === 'undefined') {
+                        window.selectAllSizes = function() {
+                            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                            sizeCheckboxes.forEach(checkbox => {
+                                checkbox.checked = true;
+                                const changeEvent = new Event('change', { bubbles: true });
+                                checkbox.dispatchEvent(changeEvent);
+                            });
+                            // Update count if function exists
+                            if (typeof updateSizeCount === 'function') {
+                                updateSizeCount();
+                            }
+                        };
+                    }
+                    
+                    if (typeof clearSizeFilters === 'undefined') {
+                        window.clearSizeFilters = function() {
+                            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                            sizeCheckboxes.forEach(checkbox => {
+                                checkbox.checked = false;
+                                const changeEvent = new Event('change', { bubbles: true });
+                                checkbox.dispatchEvent(changeEvent);
+                            });
+                            // Update count if function exists
+                            if (typeof updateSizeCount === 'function') {
+                                updateSizeCount();
+                            }
+                        };
+                    }
+                </script>
             </div>
         </div>
 

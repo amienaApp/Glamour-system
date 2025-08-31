@@ -84,20 +84,23 @@ try {
                     $priceFilters = [];
                     foreach ($input['price_ranges'] as $range) {
                         switch ($range) {
+                            case 'on-sale':
+                                $priceFilters[] = ['sale' => true];
+                                break;
                             case '0-25':
                                 $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
                                 break;
                             case '25-50':
                                 $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
                                 break;
-                            case '50-100':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 100]];
+                            case '50-75':
+                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
                                 break;
-                            case '100-200':
-                                $priceFilters[] = ['price' => ['$gte' => 100, '$lte' => 200]];
+                            case '75-100':
+                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
                                 break;
-                            case '200+':
-                                $priceFilters[] = ['price' => ['$gte' => 200]];
+                            case '100+':
+                                $priceFilters[] = ['price' => ['$gte' => 100]];
                                 break;
                         }
                     }
@@ -111,47 +114,18 @@ try {
                     $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
                 }
                 
-                // Brand filter
-                if (!empty($input['brands']) && is_array($input['brands'])) {
-                    $andConditions[] = ['brand' => ['$in' => $input['brands']]];
-                }
-                
-                // Style filter
-                if (!empty($input['styles']) && is_array($input['styles'])) {
-                    $andConditions[] = ['style' => ['$in' => $input['styles']]];
-                }
-                
-                // Material filter
-                if (!empty($input['materials']) && is_array($input['materials'])) {
-                    $andConditions[] = ['material' => ['$in' => $input['materials']]];
-                }
-                
-                // Fit filter
-                if (!empty($input['fits']) && is_array($input['fits'])) {
-                    $andConditions[] = ['fit' => ['$in' => $input['fits']]];
-                }
-                
-                // Availability filter
-                if (!empty($input['availability']) && is_array($input['availability'])) {
-                    $availabilityConditions = [];
-                    foreach ($input['availability'] as $availability) {
-                        switch ($availability) {
-                            case 'in-stock':
-                                $availabilityConditions[] = ['stock' => ['$gt' => 0]];
-                                break;
-                            case 'on-sale':
-                                $availabilityConditions[] = ['sale' => true];
-                                break;
-                            case 'new-arrival':
-                                // Products created in the last 30 days
-                                $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
-                                $availabilityConditions[] = ['created_at' => ['$gte' => $thirtyDaysAgo]];
-                                break;
-                        }
+                // Dress length filter
+                if (!empty($input['lengths']) && is_array($input['lengths'])) {
+                    $lengthFilters = [];
+                    foreach ($input['lengths'] as $length) {
+                        $lengthFilters[] = new MongoDB\BSON\Regex($length, 'i');
                     }
-                    if (!empty($availabilityConditions)) {
-                        $andConditions[] = ['$or' => $availabilityConditions];
-                    }
+                    $andConditions[] = [
+                        '$or' => [
+                            ['description' => ['$in' => $lengthFilters]],
+                            ['name' => ['$in' => $lengthFilters]]
+                        ]
+                    ];
                 }
                 
                 // Combine all conditions
@@ -182,8 +156,7 @@ try {
                         'back_image' => $product['back_image'] ?? '',
                         'color_variants' => $product['color_variants'] ?? [],
                         'sizes' => $product['sizes'] ?? [],
-                        'selected_sizes' => $product['selected_sizes'] ?? '',
-                        'brand' => $product['brand'] ?? ''
+                        'selected_sizes' => $product['selected_sizes'] ?? ''
                     ];
                     
                     $processedProducts[] = $processedProduct;
@@ -195,8 +168,7 @@ try {
                     'data' => [
                         'products' => $processedProducts,
                         'total_count' => count($processedProducts),
-                        'filters_applied' => $filters,
-
+                        'filters_applied' => $filters
                     ]
                 ];
                 break;
@@ -209,16 +181,13 @@ try {
                     'sizes' => [],
                     'colors' => [],
                     'categories' => [],
-                    'brands' => [],
-                    'styles' => [],
-                    'materials' => [],
-                    'fits' => [],
                     'price_ranges' => [
+                        'on-sale' => 0,
                         '0-25' => 0,
                         '25-50' => 0,
-                        '50-100' => 0,
-                        '100-200' => 0,
-                        '200+' => 0
+                        '50-75' => 0,
+                        '75-100' => 0,
+                        '100+' => 0
                     ]
                 ];
                 
@@ -254,46 +223,21 @@ try {
                         }
                     }
                     
-                    // Extract brands
-                    if (!empty($product['brand'])) {
-                        if (!in_array($product['brand'], $filterOptions['brands'])) {
-                            $filterOptions['brands'][] = $product['brand'];
-                        }
-                    }
-                    
-                    // Extract styles
-                    if (!empty($product['style'])) {
-                        if (!in_array($product['style'], $filterOptions['styles'])) {
-                            $filterOptions['styles'][] = $product['style'];
-                        }
-                    }
-                    
-                    // Extract materials
-                    if (!empty($product['material'])) {
-                        if (!in_array($product['material'], $filterOptions['materials'])) {
-                            $filterOptions['materials'][] = $product['material'];
-                        }
-                    }
-                    
-                    // Extract fits
-                    if (!empty($product['fit'])) {
-                        if (!in_array($product['fit'], $filterOptions['fits'])) {
-                            $filterOptions['fits'][] = $product['fit'];
-                        }
-                    }
-                    
                     // Count price ranges
                     $price = $product['price'] ?? 0;
+                    if ($product['sale'] ?? false) {
+                        $filterOptions['price_ranges']['on-sale']++;
+                    }
                     if ($price >= 0 && $price <= 25) {
                         $filterOptions['price_ranges']['0-25']++;
                     } elseif ($price > 25 && $price <= 50) {
                         $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 100) {
-                        $filterOptions['price_ranges']['50-100']++;
-                    } elseif ($price > 100 && $price <= 200) {
-                        $filterOptions['price_ranges']['100-200']++;
-                    } elseif ($price > 200) {
-                        $filterOptions['price_ranges']['200+']++;
+                    } elseif ($price > 50 && $price <= 75) {
+                        $filterOptions['price_ranges']['50-75']++;
+                    } elseif ($price > 75 && $price <= 100) {
+                        $filterOptions['price_ranges']['75-100']++;
+                    } elseif ($price > 100) {
+                        $filterOptions['price_ranges']['100+']++;
                     }
                 }
                 
