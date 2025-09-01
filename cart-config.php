@@ -1,17 +1,15 @@
 <?php
 // Cart Configuration
 // This file ensures consistent user ID across all cart operations
+// Only works with authenticated users - no default users allowed
 
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 'main_user_1756062003';
-}
-
-if (!isset($_SESSION['current_cart_user_id'])) {
-    $_SESSION['current_cart_user_id'] = 'main_user_1756062003';
-}
-
-// Function to get consistent user ID
+// Function to get user ID (returns null if not authenticated)
 function getCartUserId() {
-    return $_SESSION['user_id'] ?? 'main_user_1756062003';
+    return $_SESSION['user_id'] ?? null;
+}
+
+// Function to check if user is authenticated
+function isUserAuthenticated() {
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 ?>

@@ -47,7 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'available' => isset($productPost['available']),
                 'stock' => (int)($productPost['stock'] ?? 0),
                 'size_category' => $productPost['size_category'] ?? '',
-                'selected_sizes' => $productPost['selected_sizes'] ?? ''
+                'selected_sizes' => $productPost['selected_sizes'] ?? '',
+                'shoe_type' => $productPost['shoe_type'] ?? '',
+                'material' => $productPost['material'] ?? '',
+                'length' => $productPost['length'] ?? '',
+                'width' => $productPost['width'] ?? '',
+                'bedding_size' => $productPost['bedding_size'] ?? '',
+                'chair_count' => $productPost['chair_count'] ?? '',
+                'table_length' => $productPost['table_length'] ?? '',
+                'table_width' => $productPost['table_width'] ?? '',
+                'sofa_count' => $productPost['sofa_count'] ?? ''
             ];
             
             // Force category to be "Perfumes" if it's any variation of "perfumes"
@@ -56,6 +65,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $productData['brand'] = $productPost['brand'] ?? '';
                 $productData['gender'] = $productPost['gender'] ?? '';
                 $productData['size'] = $productPost['size'] ?? '';
+            }
+            
+            // Handle bags category with gender
+            if (strtolower($productData['category'] ?? '') === 'bags') {
+                $productData['gender'] = $productPost['gender'] ?? '';
+            }
+            
+            // Handle accessories category with gender dropdown
+            if (strtolower($productData['category'] ?? '') === 'accessories') {
+                $productData['gender'] = $productPost['accessories_gender'] ?? '';
+            }
+            
+            // Handle Home & Living category with specific fields
+            if (strtolower($productData['category'] ?? '') === 'home & living') {
+                $productData['material'] = $productPost['material'] ?? '';
+                $productData['length'] = $productPost['length'] ?? '';
+                $productData['width'] = $productPost['width'] ?? '';
+                $productData['bedding_size'] = $productPost['bedding_size'] ?? '';
+                $productData['chair_count'] = $productPost['chair_count'] ?? '';
+                $productData['table_length'] = $productPost['table_length'] ?? '';
+                $productData['table_width'] = $productPost['table_width'] ?? '';
+                $productData['sofa_count'] = $productPost['sofa_count'] ?? '';
             }
 
             // Handle main product images for this product
@@ -94,6 +125,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantData['brand'] = $variant['brand'] ?? '';
                             $variantData['gender'] = $variant['gender'] ?? '';
                             $variantData['size'] = $variant['size'] ?? '';
+                        }
+                        
+                        // Handle bags-specific fields for variants
+                        if (strtolower($productData['category']) === 'bags') {
+                            $variantData['gender'] = $variant['gender'] ?? '';
+                        }
+                        
+                        // Handle accessories-specific fields for variants
+                        if (strtolower($productData['category']) === 'accessories') {
+                            $variantData['gender'] = $variant['accessories_gender'] ?? '';
                         }
 
                         // Handle variant images
@@ -170,7 +211,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'available' => isset($_POST['available']),
             'stock' => (int)($_POST['stock'] ?? 0),
             'size_category' => $_POST['size_category'] ?? '',
-            'selected_sizes' => $_POST['selected_sizes'] ?? ''
+            'selected_sizes' => $_POST['selected_sizes'] ?? '',
+            'shoe_type' => $_POST['shoe_type'] ?? '',
+            'material' => $_POST['material'] ?? '',
+            'length' => $_POST['length'] ?? '',
+            'width' => $_POST['width'] ?? '',
+            'bedding_size' => $_POST['bedding_size'] ?? '',
+            'chair_count' => $_POST['chair_count'] ?? '',
+            'table_length' => $_POST['table_length'] ?? '',
+            'table_width' => $_POST['table_width'] ?? '',
+            'sofa_count' => $_POST['sofa_count'] ?? ''
         ];
         
         // Force category to be "Perfumes" if it's any variation of "perfumes"
@@ -179,6 +229,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $productData['brand'] = $_POST['brand'] ?? '';
             $productData['gender'] = $_POST['gender'] ?? '';
             $productData['size'] = $_POST['size'] ?? '';
+        }
+        
+        // Handle bags category with gender
+        if (strtolower($productData['category'] ?? '') === 'bags') {
+            $productData['gender'] = $_POST['gender'] ?? '';
+        }
+        
+        // Handle accessories category with gender dropdown
+        if (strtolower($productData['category'] ?? '') === 'accessories') {
+            $productData['gender'] = $_POST['accessories_gender'] ?? '';
+        }
+        
+        // Handle Home & Living category with specific fields
+        if (strtolower($productData['category'] ?? '') === 'home & living') {
+            $productData['material'] = $_POST['material'] ?? '';
+            $productData['length'] = $_POST['length'] ?? '';
+            $productData['width'] = $_POST['width'] ?? '';
+            $productData['bedding_size'] = $_POST['bedding_size'] ?? '';
+            $productData['chair_count'] = $_POST['chair_count'] ?? '';
+            $productData['table_length'] = $_POST['table_length'] ?? '';
+            $productData['table_width'] = $_POST['table_width'] ?? '';
+            $productData['sofa_count'] = $_POST['sofa_count'] ?? '';
         }
 
         // Handle main product images
@@ -215,6 +287,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $variantData['brand'] = $variant['brand'] ?? '';
                         $variantData['gender'] = $variant['gender'] ?? '';
                         $variantData['size'] = $variant['size'] ?? '';
+                    }
+                    
+                    // Handle bags-specific fields for variants
+                    if (strtolower($productData['category']) === 'bags') {
+                        $variantData['gender'] = $variant['gender'] ?? '';
+                    }
+                    
+                    // Handle accessories-specific fields for variants
+                    if (strtolower($productData['category']) === 'accessories') {
+                        $variantData['gender'] = $variant['accessories_gender'] ?? '';
                     }
 
                     // Handle variant images
@@ -731,6 +813,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin: 0;
         }
         
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+        
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 8px;
+            position: relative;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkmark {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked + .checkmark:after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .checkbox-label:hover .checkmark {
+            border-color: #667eea;
+        }
+        
         .add-variant-btn {
             background: linear-gradient(135deg, #29B6F6, #0288D1);
             color: white;
@@ -1237,12 +1364,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             
+            <div class="form-group" id="accessories-gender-group" style="display: none;">
+                <label for="accessories_gender">Gender *</label>
+                <select id="accessories_gender" name="accessories_gender">
+                    <option value="">Select Gender</option>
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+            </div>
+            
             <div class="form-group">
                             <label for="subcategory">Subcategory <span id="subcategory-required" style="color: #dc3545;">*</span></label>
-                            <select id="subcategory" name="subcategory">
+                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory()">
                     <option value="">Select Subcategory</option>
                 </select>
                         </div>
+            
+            <!-- Home & Living specific fields -->
+            <div class="form-group" id="home-living-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="material">Material</label>
+                    <select id="material" name="material">
+                        <option value="">Select Material</option>
+                        <option value="Wood">Wood</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Fabric">Fabric</option>
+                        <option value="Glass">Glass</option>
+                        <option value="Ceramic">Ceramic</option>
+                        <option value="Plastic">Plastic</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="length">Length (cm)</label>
+                    <input type="number" id="length" name="length" placeholder="Length in centimeters">
+                </div>
+                
+                <div class="form-group">
+                    <label for="width">Width (cm)</label>
+                    <input type="number" id="width" name="width" placeholder="Width in centimeters">
+                </div>
+                
+                <!-- Bedding specific fields -->
+                <div class="form-group" id="bedding-fields" style="display: none;">
+                    <label for="bedding_size">Bedding Size</label>
+                    <select id="bedding_size" name="bedding_size">
+                        <option value="">Select Bedding Size</option>
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Queen">Queen</option>
+                        <option value="King">King</option>
+                        <option value="Super King">Super King</option>
+                    </select>
+                </div>
+                
+                <!-- Dining specific fields -->
+                <div class="form-group" id="dining-fields" style="display: none;">
+                    <label for="chair_count">Number of Chairs</label>
+                    <input type="number" id="chair_count" name="chair_count" placeholder="Number of chairs" min="1">
+                    
+                    <label for="table_length">Table Length (cm)</label>
+                    <input type="number" id="table_length" name="table_length" placeholder="Table length in centimeters">
+                    
+                    <label for="table_width">Table Width (cm)</label>
+                    <input type="number" id="table_width" name="table_width" placeholder="Table width in centimeters">
+                </div>
+                
+                <!-- Living Room specific fields -->
+                <div class="form-group" id="living-fields" style="display: none;">
+                    <label for="sofa_count">Number of Sofas</label>
+                    <input type="number" id="sofa_count" name="sofa_count" placeholder="Number of sofas" min="1">
+                </div>
+            </div>
+            
+            <div class="form-group" id="shoe-type-group" style="display: none;">
+                <label for="shoe_type">Shoe Type</label>
+                <select id="shoe_type" name="shoe_type">
+                    <option value="">Select Shoe Type</option>
+                    <option value="boots">Boots</option>
+                    <option value="sandals">Sandals</option>
+                    <option value="heels">Heels</option>
+                    <option value="flats">Flats</option>
+                    <option value="sneakers">Sneakers</option>
+                    <option value="sport-shoes">Sport Shoes</option>
+                    <option value="slippers">Slippers</option>
+                    <option value="formal-shoes">Formal Shoes</option>
+                    <option value="casual-shoes">Casual Shoes</option>
+                </select>
+            </div>
             
             <div class="form-group" id="brand-group" style="display: none;">
                 <label for="brand">Brand *</label>
@@ -1275,9 +1485,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="gender">Gender *</label>
                 <select id="gender" name="gender">
                     <option value="">Select Gender</option>
-                    <option value="men">Men</option>
-                    <option value="women">Women</option>
-                    <option value="unisex">Unisex</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
                 </select>
             </div>
             
@@ -1475,35 +1684,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function togglePerfumeFields(category) {
             const brandGroup = document.getElementById('brand-group');
             const genderGroup = document.getElementById('gender-group');
+            const accessoriesGenderGroup = document.getElementById('accessories-gender-group');
             const perfumeSizeGroup = document.getElementById('perfume-size-group');
+            const shoeTypeGroup = document.getElementById('shoe-type-group');
+            const homeLivingGroup = document.getElementById('home-living-fields');
             const subcategoryGroup = document.querySelector('.form-group:has(#subcategory)');
             const sizeCategoryGroup = document.querySelector('.form-group:has(#size_category)');
             
-            const shouldShow = category.toLowerCase() === 'perfumes';
+            const isPerfume = category.toLowerCase() === 'perfumes';
+            const isShoes = category.toLowerCase() === 'shoes';
+            const isBags = category.toLowerCase() === 'bags';
+            const isAccessories = category.toLowerCase() === 'accessories';
+            const isHomeLiving = category.toLowerCase() === 'home & living';
             
             // Show/hide individual perfume fields
-            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
-            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = (isPerfume || isBags) ? 'block' : 'none';
+            if (accessoriesGenderGroup) accessoriesGenderGroup.style.display = isAccessories ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
+            
+            // Show/hide shoe type field
+            if (shoeTypeGroup) shoeTypeGroup.style.display = isShoes ? 'block' : 'none';
+            
+            // Show/hide Home & Living fields
+            if (homeLivingGroup) homeLivingGroup.style.display = isHomeLiving ? 'block' : 'none';
             
             // Hide subcategory and size category for perfumes
-            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
-            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (subcategoryGroup) subcategoryGroup.style.display = isPerfume ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = isPerfume ? 'none' : 'block';
             
             // Make perfume fields required when category is Perfumes
             const brandField = document.getElementById('brand');
             const genderField = document.getElementById('gender');
             const sizeField = document.getElementById('perfume_size');
             
-            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
-            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
-            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+            if (brandField) brandField.required = isPerfume;
+            if (genderField) genderField.required = (isPerfume || isBags);
+            if (sizeField) sizeField.required = isPerfume;
+            
+            // Make accessories gender dropdown required
+            const accessoriesGenderField = document.getElementById('accessories_gender');
+            if (accessoriesGenderField) accessoriesGenderField.required = isAccessories;
         }
 
         function toggleSalePrice() {
             const saleCheckbox = document.getElementById('sale');
             const salePriceGroup = document.getElementById('salePriceGroup');
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
+        }
+        
+        // Function to handle subcategory changes for Home & Living
+        function handleHomeLivingSubcategory() {
+            const subcategorySelect = document.getElementById('subcategory');
+            const categorySelect = document.getElementById('category');
+            const subcategory = subcategorySelect.value;
+            const category = categorySelect.value;
+            
+            if (category.toLowerCase() !== 'home & living') return;
+            
+            // Get all subcategory-specific field groups
+            const beddingFields = document.getElementById('bedding-fields');
+            const diningFields = document.getElementById('dining-fields');
+            const livingFields = document.getElementById('living-fields');
+            
+            // Hide all subcategory fields first
+            if (beddingFields) beddingFields.style.display = 'none';
+            if (diningFields) diningFields.style.display = 'none';
+            if (livingFields) livingFields.style.display = 'none';
+            
+            // Show relevant fields based on subcategory
+            if (subcategory.toLowerCase() === 'bedding' && beddingFields) {
+                beddingFields.style.display = 'block';
+            } else if ((subcategory.toLowerCase() === 'dining room' || subcategory.toLowerCase() === 'dinning room') && diningFields) {
+                diningFields.style.display = 'block';
+            } else if (subcategory.toLowerCase() === 'living room' && livingFields) {
+                livingFields.style.display = 'block';
+            }
         }
 
 
@@ -1514,6 +1770,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const container = document.getElementById('color-variants-container');
             const currentCategory = document.getElementById('category').value;
             const isPerfume = currentCategory.toLowerCase() === 'perfumes';
+            const isBags = currentCategory.toLowerCase() === 'bags';
+            const isAccessories = currentCategory.toLowerCase() === 'accessories';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -1582,6 +1840,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
                     ` : `
+                    ${isBags ? `
+                    <!-- Bags-specific gender field for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="color_variants[${colorVariantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
+                    ${isAccessories ? `
+                    <!-- Accessories-specific gender dropdown for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender *</label>
+                        <select name="color_variants[${colorVariantIndex}][accessories_gender]">
+                            <option value="">Select Gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
                     <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Variant Size Category</label>
@@ -2544,8 +2827,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="subcategory-${productIndex}">Subcategory <span id="subcategory-required-${productIndex}" style="color: #dc3545;">*</span></label>
-                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]">
+                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]" onchange="handleMultiHomeLivingSubcategory(${productIndex})">
                                     <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Home & Living specific fields for multi-product -->
+                            <div class="form-group" id="home-living-fields-${productIndex}" style="display: none;">
+                                <div class="form-group">
+                                    <label for="material-${productIndex}">Material</label>
+                                    <select id="material-${productIndex}" name="products[${productIndex}][material]">
+                                        <option value="">Select Material</option>
+                                        <option value="Wood">Wood</option>
+                                        <option value="Metal">Metal</option>
+                                        <option value="Fabric">Fabric</option>
+                                        <option value="Glass">Glass</option>
+                                        <option value="Ceramic">Ceramic</option>
+                                        <option value="Plastic">Plastic</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="length-${productIndex}">Length (cm)</label>
+                                    <input type="number" id="length-${productIndex}" name="products[${productIndex}][length]" placeholder="Length in centimeters">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="width-${productIndex}">Width (cm)</label>
+                                    <input type="number" id="width-${productIndex}" name="products[${productIndex}][width]" placeholder="Width in centimeters">
+                                </div>
+                                
+                                <!-- Bedding specific fields -->
+                                <div class="form-group" id="bedding-fields-${productIndex}" style="display: none;">
+                                    <label for="bedding_size-${productIndex}">Bedding Size</label>
+                                    <select id="bedding_size-${productIndex}" name="products[${productIndex}][bedding_size]">
+                                        <option value="">Select Bedding Size</option>
+                                        <option value="Single">Single</option>
+                                        <option value="Double">Double</option>
+                                        <option value="Queen">Queen</option>
+                                        <option value="King">King</option>
+                                        <option value="Super King">Super King</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Dining specific fields -->
+                                <div class="form-group" id="dining-fields-${productIndex}" style="display: none;">
+                                    <label for="chair_count-${productIndex}">Number of Chairs</label>
+                                    <input type="number" id="chair_count-${productIndex}" name="products[${productIndex}][chair_count]" placeholder="Number of chairs" min="1">
+                                    
+                                    <label for="table_length-${productIndex}">Table Length (cm)</label>
+                                    <input type="number" id="table_length-${productIndex}" name="products[${productIndex}][table_length]" placeholder="Table length in centimeters">
+                                    
+                                    <label for="table_width-${productIndex}">Table Width (cm)</label>
+                                    <input type="number" id="table_width-${productIndex}" name="products[${productIndex}][table_width]" placeholder="Table width in centimeters">
+                                </div>
+                                
+                                <!-- Living Room specific fields -->
+                                <div class="form-group" id="living-fields-${productIndex}" style="display: none;">
+                                    <label for="sofa_count-${productIndex}">Number of Sofas</label>
+                                    <input type="number" id="sofa_count-${productIndex}" name="products[${productIndex}][sofa_count]" placeholder="Number of sofas" min="1">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" id="shoe-type-group-${productIndex}" style="display: none;">
+                                <label for="shoe_type-${productIndex}">Shoe Type</label>
+                                <select id="shoe_type-${productIndex}" name="products[${productIndex}][shoe_type]">
+                                    <option value="">Select Shoe Type</option>
+                                    <option value="boots">Boots</option>
+                                    <option value="sandals">Sandals</option>
+                                    <option value="heels">Heels</option>
+                                    <option value="flats">Flats</option>
+                                    <option value="sneakers">Sneakers</option>
+                                    <option value="sport-shoes">Sport Shoes</option>
+                                    <option value="slippers">Slippers</option>
+                                    <option value="formal-shoes">Formal Shoes</option>
+                                    <option value="casual-shoes">Casual Shoes</option>
                                 </select>
                             </div>
                             
@@ -2839,28 +3195,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const brandGroup = document.getElementById(`brand-group-${productIndex}`);
             const genderGroup = document.getElementById(`gender-group-${productIndex}`);
             const perfumeSizeGroup = document.getElementById(`perfume-size-group-${productIndex}`);
+            const shoeTypeGroup = document.getElementById(`shoe-type-group-${productIndex}`);
+            const homeLivingGroup = document.getElementById(`home-living-fields-${productIndex}`);
             const subcategoryGroup = document.querySelector(`.form-group:has(#subcategory-${productIndex})`);
             const sizeCategoryGroup = document.querySelector(`.form-group:has(#size_category-${productIndex})`);
             
-            const shouldShow = category.toLowerCase() === 'perfumes';
+            const isPerfume = category.toLowerCase() === 'perfumes';
+            const isShoes = category.toLowerCase() === 'shoes';
+            const isBags = category.toLowerCase() === 'bags';
+            const isHomeLiving = category.toLowerCase() === 'home & living';
             
             // Show/hide individual perfume fields
-            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
-            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = (isPerfume || isBags) ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
+            
+            // Show/hide shoe type field
+            if (shoeTypeGroup) shoeTypeGroup.style.display = isShoes ? 'block' : 'none';
+            
+            // Show/hide Home & Living fields
+            if (homeLivingGroup) homeLivingGroup.style.display = isHomeLiving ? 'block' : 'none';
             
             // Hide subcategory and size category for perfumes
-            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
-            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (subcategoryGroup) subcategoryGroup.style.display = isPerfume ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = isPerfume ? 'none' : 'block';
             
             // Make perfume fields required when category is Perfumes
             const brandField = document.getElementById(`brand-${productIndex}`);
             const genderField = document.getElementById(`gender-${productIndex}`);
             const sizeField = document.getElementById(`perfume_size-${productIndex}`);
             
-            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
-            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
-            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+            if (brandField) brandField.required = isPerfume;
+            if (genderField) genderField.required = (isPerfume || isBags);
+            if (sizeField) sizeField.required = isPerfume;
         }
 
 
@@ -2893,8 +3260,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 });
             }, 100);
+                }
+        
+        // Function to handle subcategory changes for Home & Living in multi-product form
+        function handleMultiHomeLivingSubcategory(productIndex) {
+            const subcategorySelect = document.getElementById(`subcategory-${productIndex}`);
+            const categorySelect = document.getElementById(`category-${productIndex}`);
+            const subcategory = subcategorySelect.value;
+            const category = categorySelect.value;
+            
+            if (category.toLowerCase() !== 'home & living') return;
+            
+            // Get all subcategory-specific field groups
+            const beddingFields = document.getElementById(`bedding-fields-${productIndex}`);
+            const diningFields = document.getElementById(`dining-fields-${productIndex}`);
+            const livingFields = document.getElementById(`living-fields-${productIndex}`);
+            
+            // Hide all subcategory fields first
+            if (beddingFields) beddingFields.style.display = 'none';
+            if (diningFields) diningFields.style.display = 'none';
+            if (livingFields) livingFields.style.display = 'none';
+            
+            // Show relevant fields based on subcategory
+            if (subcategory.toLowerCase() === 'bedding' && beddingFields) {
+                beddingFields.style.display = 'block';
+            } else if ((subcategory.toLowerCase() === 'dining room' || subcategory.toLowerCase() === 'dinning room') && diningFields) {
+                diningFields.style.display = 'block';
+            } else if (subcategory.toLowerCase() === 'living room' && livingFields) {
+                livingFields.style.display = 'block';
+            }
         }
-
+        
         function generateMultiClothingSizes(productIndex) {
             return `
                 <div class="size-category">
@@ -3380,6 +3776,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const variantIndex = globalColorVariantIndexes[productIndex] || 0;
             const currentCategory = document.querySelector(`select[name="products[${productIndex}][category]"]`).value;
             const isPerfume = currentCategory.toLowerCase() === 'perfumes';
+            const isBags = currentCategory.toLowerCase() === 'bags';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -3448,6 +3845,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
                     ` : `
+                    ${isBags ? `
+                    <!-- Bags-specific gender field for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
                     <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Size Category</label>

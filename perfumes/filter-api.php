@@ -47,7 +47,7 @@ try {
                 // Get subcategory from URL or input
                 $subcategory = $input['subcategory'] ?? '';
                 
-                // Base filter - only perfumes
+                // Base filter - only perfume products
                 $filters['category'] = "Perfumes";
                 
                 // Apply subcategory filter if provided (but only if no category filters are selected)
@@ -55,7 +55,7 @@ try {
                     $filters['subcategory'] = ucfirst($subcategory);
                 }
                 
-                // Size filter (for perfume bottle sizes)
+                // Size filter (for perfume bottles)
                 if (!empty($input['sizes']) && is_array($input['sizes'])) {
                     $sizeFilters = [];
                     foreach ($input['sizes'] as $size) {
@@ -84,20 +84,23 @@ try {
                     $priceFilters = [];
                     foreach ($input['price_ranges'] as $range) {
                         switch ($range) {
+                            case 'on-sale':
+                                $priceFilters[] = ['sale' => true];
+                                break;
                             case '0-25':
                                 $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
                                 break;
                             case '25-50':
                                 $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
                                 break;
-                            case '50-100':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 100]];
+                            case '50-75':
+                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
                                 break;
-                            case '100-200':
-                                $priceFilters[] = ['price' => ['$gte' => 100, '$lte' => 200]];
+                            case '75-100':
+                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
                                 break;
-                            case '200+':
-                                $priceFilters[] = ['price' => ['$gte' => 200]];
+                            case '100+':
+                                $priceFilters[] = ['price' => ['$gte' => 100]];
                                 break;
                         }
                     }
@@ -111,9 +114,18 @@ try {
                     $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
                 }
                 
-                // Brand filter
-                if (!empty($input['brands']) && is_array($input['brands'])) {
-                    $andConditions[] = ['brand' => ['$in' => $input['brands']]];
+                // Fragrance type filter
+                if (!empty($input['fragrance_types']) && is_array($input['fragrance_types'])) {
+                    $fragranceFilters = [];
+                    foreach ($input['fragrance_types'] as $type) {
+                        $fragranceFilters[] = new MongoDB\BSON\Regex($type, 'i');
+                    }
+                    $andConditions[] = [
+                        '$or' => [
+                            ['description' => ['$in' => $fragranceFilters]],
+                            ['name' => ['$in' => $fragranceFilters]]
+                        ]
+                    ];
                 }
                 
                 // Combine all conditions
@@ -144,8 +156,7 @@ try {
                         'back_image' => $product['back_image'] ?? '',
                         'color_variants' => $product['color_variants'] ?? [],
                         'sizes' => $product['sizes'] ?? [],
-                        'selected_sizes' => $product['selected_sizes'] ?? '',
-                        'brand' => $product['brand'] ?? ''
+                        'selected_sizes' => $product['selected_sizes'] ?? ''
                     ];
                     
                     $processedProducts[] = $processedProduct;
@@ -163,40 +174,30 @@ try {
                 break;
                 
             case 'get_filter_options':
-                // Get all perfumes products to extract filter options
+                // Get all perfume products to extract filter options
                 $allProducts = $productModel->getByCategory("Perfumes");
                 
                 $filterOptions = [
                     'sizes' => [],
                     'colors' => [],
                     'categories' => [],
-                    'brands' => [],
+                    'fragrance_types' => [],
                     'price_ranges' => [
+                        'on-sale' => 0,
                         '0-25' => 0,
                         '25-50' => 0,
-                        '50-100' => 0,
-                        '100-200' => 0,
-                        '200+' => 0
+                        '50-75' => 0,
+                        '75-100' => 0,
+                        '100+' => 0
                     ]
                 ];
                 
                 foreach ($allProducts as $product) {
                     // Extract sizes
-                    if (!empty($product['sizes'])) {
-                        if (is_array($product['sizes'])) {
-                            foreach ($product['sizes'] as $size) {
-                                if (!in_array($size, $filterOptions['sizes'])) {
-                                    $filterOptions['sizes'][] = $size;
-                                }
-                            }
-                        } elseif (is_string($product['sizes'])) {
-                            $parsedSizes = json_decode($product['sizes'], true);
-                            if (is_array($parsedSizes)) {
-                                foreach ($parsedSizes as $size) {
-                                    if (!in_array($size, $filterOptions['sizes'])) {
-                                        $filterOptions['sizes'][] = $size;
-                                    }
-                                }
+                    if (!empty($product['sizes']) && is_array($product['sizes'])) {
+                        foreach ($product['sizes'] as $size) {
+                            if (!in_array($size, $filterOptions['sizes'])) {
+                                $filterOptions['sizes'][] = $size;
                             }
                         }
                     }
@@ -223,25 +224,21 @@ try {
                         }
                     }
                     
-                    // Extract brands
-                    if (!empty($product['brand'])) {
-                        if (!in_array($product['brand'], $filterOptions['brands'])) {
-                            $filterOptions['brands'][] = $product['brand'];
-                        }
-                    }
-                    
                     // Count price ranges
                     $price = $product['price'] ?? 0;
+                    if ($product['sale'] ?? false) {
+                        $filterOptions['price_ranges']['on-sale']++;
+                    }
                     if ($price >= 0 && $price <= 25) {
                         $filterOptions['price_ranges']['0-25']++;
                     } elseif ($price > 25 && $price <= 50) {
                         $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 100) {
-                        $filterOptions['price_ranges']['50-100']++;
-                    } elseif ($price > 100 && $price <= 200) {
-                        $filterOptions['price_ranges']['100-200']++;
-                    } elseif ($price > 200) {
-                        $filterOptions['price_ranges']['200+']++;
+                    } elseif ($price > 50 && $price <= 75) {
+                        $filterOptions['price_ranges']['50-75']++;
+                    } elseif ($price > 75 && $price <= 100) {
+                        $filterOptions['price_ranges']['75-100']++;
+                    } elseif ($price > 100) {
+                        $filterOptions['price_ranges']['100+']++;
                     }
                 }
                 

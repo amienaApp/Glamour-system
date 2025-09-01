@@ -12,7 +12,8 @@ require_once '../models/Product.php';
 
 // Helper function to convert BSONArray to regular array
 function toArray($value) {
-    if (is_object($value) && method_exists($value, 'toArray')) {
+    if (is_object($value)) {
+        if (method_exists($value, 'toArray')) {
         $result = $value->toArray();
         // Ensure we get a proper array
         if (is_array($result)) {
@@ -20,6 +21,12 @@ function toArray($value) {
         } else {
             // If toArray() returns an object, try to convert it
             return (array)$result;
+            }
+        } elseif (method_exists($value, 'getArrayCopy')) {
+            return $value->getArrayCopy();
+        } else {
+            // Try to convert object to array
+            return (array)$value;
         }
     }
     return $value;
@@ -783,6 +790,8 @@ $totalProducts = count($products);
                                     <?php if (!empty($product['size'])): ?>
                                         <br><small style="color: #718096;">Size: <?php echo htmlspecialchars($product['size']); ?></small>
                                     <?php endif; ?>
+                                <?php elseif ($product['category'] === 'Shoes' && !empty($product['shoe_type'])): ?>
+                                    <br><small style="color: #718096;">Type: <?php echo htmlspecialchars(ucfirst(str_replace('-', ' ', $product['shoe_type']))); ?></small>
                                 <?php endif; ?>
                 </div>
 
@@ -828,17 +837,53 @@ $totalProducts = count($products);
                                 <?php endif; ?>
                                 <?php if (isset($product['color_variants']) && !empty($product['color_variants'])): ?>
                                     <?php 
-                                    $colorVariants = toArray($product['color_variants']);
-                                    if (is_array($colorVariants) && !empty($colorVariants)) {
+                                    // Handle color variants - properly convert MongoDB objects to arrays
+                                    $colorVariants = [];
+                                    if (is_array($product['color_variants'])) {
+                                        $colorVariants = $product['color_variants'];
+                                    } elseif (is_string($product['color_variants'])) {
+                                        $colorVariants = json_decode($product['color_variants'], true) ?: [];
+                                    } elseif (is_object($product['color_variants'])) {
+                                        // Handle MongoDB objects (BSONArray, etc.)
+                                        if (method_exists($product['color_variants'], 'toArray')) {
+                                            $colorVariants = $product['color_variants']->toArray();
+                                        } elseif (method_exists($product['color_variants'], 'getArrayCopy')) {
+                                            $colorVariants = $product['color_variants']->getArrayCopy();
+                                        } else {
+                                            // Try to convert object to array
+                                            $colorVariants = (array)$product['color_variants'];
+                                        }
+                                    }
+                                    
+                                    // Ensure we have a proper array
+                                    if (!is_array($colorVariants)) {
+                                        $colorVariants = [];
+                                    }
+                                    
+                                    if (!empty($colorVariants)) {
                                         $colorVariants = array_slice($colorVariants, 0, 3);
                                     }
                                     ?>
                                     <?php if (is_array($colorVariants) && !empty($colorVariants)): ?>
                                         <?php foreach ($colorVariants as $variant): ?>
-                                            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: <?php echo htmlspecialchars($variant['color']); ?>; border: 1px solid #ddd;" title="<?php echo htmlspecialchars($variant['name']); ?>"></div>
+                                            <?php if (isset($variant['color']) && !empty($variant['color'])): ?>
+                                                <div style="width: 20px; height: 20px; border-radius: 50%; background-color: <?php echo htmlspecialchars($variant['color']); ?>; border: 1px solid #ddd;" title="<?php echo htmlspecialchars($variant['name'] ?? $variant['color']); ?>"></div>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                         <?php 
-                                        $totalVariants = getCount($product['color_variants']);
+                                        // Calculate total variants properly
+                                        $totalVariants = 0;
+                                        if (isset($product['color_variants']) && !empty($product['color_variants'])) {
+                                            if (is_array($product['color_variants'])) {
+                                                $totalVariants = count($product['color_variants']);
+                                            } elseif (is_object($product['color_variants'])) {
+                                                if (method_exists($product['color_variants'], 'count')) {
+                                                    $totalVariants = $product['color_variants']->count();
+                                                } elseif (method_exists($product['color_variants'], 'toArray')) {
+                                                    $totalVariants = count($product['color_variants']->toArray());
+                                                }
+                                            }
+                                        }
                                         if ($totalVariants > 3): 
                                         ?>
                                             <small style="color: #718096;">+<?php echo $totalVariants - 3; ?> more</small>

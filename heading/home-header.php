@@ -94,7 +94,7 @@ $regionOptions = [
                 <!-- Categories Dropdown -->
                 <div class="category-dropdown">
                     <div class="dropdown-item">
-                        <a href=womenF/index.php" class="dropdown-link">
+                        <a href="womenF/women.php" class="dropdown-link">
                             <i class="fas fa-female"></i>
                             <span>Women Clothing</span>
                         </a>
@@ -129,26 +129,26 @@ $regionOptions = [
                             <span>Accessories</span>
                         </a>
                     </div>
+                                         <div class="dropdown-item">
+                         <a href="homedecor/homedecor.php" class="dropdown-link">
+                             <i class="fas fa-home"></i>
+                             <span>Home Decor</span>
+                         </a>
+                     </div>
+                     <div class="dropdown-item">
+                         <a href="bagsfolder/bags.php" class="dropdown-link">
+                             <i class="fas fa-shopping-bag"></i>
+                             <span>Bags</span>
+                         </a>
+                     </div>
                     <div class="dropdown-item">
-                        <a href="#" class="dropdown-link">
-                            <i class="fas fa-home"></i>
-                            <span>Home Decor</span>
-                        </a>
-                    </div>
-                    <div class="dropdown-item">
-                        <a href="Glamour-system/bagsfolder/bags.php" class="dropdown-link">
-                            <i class="fas fa-shopping-bag"></i>
-                            <span>Bags</span>
-                        </a>
-                    </div>
-                    <div class="dropdown-item">
-                        <a href="#" class="dropdown-link">
+                        <a href="perfumes/index.php" class="dropdown-link">
                             <i class="fas fa-palette"></i>
                             <span>Beauty & Cosmetics</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="#" class="dropdown-link">
+                        <a href="shoess/men.php?category=sportsshoes" class="dropdown-link">
                             <i class="fas fa-running"></i>
                             <span>Sports Items</span>
                         </a>

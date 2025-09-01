@@ -1,5 +1,23 @@
 <?php
 session_start();
+
+// Include database connection and models
+require_once 'config/mongodb.php';
+require_once 'models/Product.php';
+
+// Initialize product model
+$productModel = new Product();
+
+// Get featured products (or all products if no featured ones)
+$featuredProducts = $productModel->getFeatured();
+if (empty($featuredProducts)) {
+    // If no featured products, get some products with variants
+    $featuredProducts = $productModel->getAll(['color_variants' => ['$exists' => true, '$ne' => []]], [], 12);
+}
+if (empty($featuredProducts)) {
+    // If still empty, get any products
+    $featuredProducts = $productModel->getAll([], [], 12);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,102 +119,60 @@ session_start();
                  <div class="card-content">
                     <h3>Women's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php"><button class="btn">Shop Now</button></a>
+                      <a href="womenF/women.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
-              
-
-           
 
 
-                               <div class="card">
-                 <img src="img/child/1.webp" cover / center no-repeat>
+                             <div class="card">
+                 <img src="img/child/child.webp" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Children's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="childrenfolder/children.php"><button class="btn">Shop Now</button></a>
+                      <a href="childrenfolder/children.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
 
 
-
-                                 <div class="card">
-                 <img src="img/perfumes/1.jpg" cover / center no-repeat>
-                 <div class="card-content">
-                    <h3>Perfumes</h3>
-                     <P>Trending style & Timeless Classic</P>   
-                                             <a href="perfumes/index.php"><button class="btn">Shop Now</button></a>
-                 </div>
-                </div>
-
-                                                               <div class="card">
-                 <img src="img/beauty/1.png" cover / center no-repeat>
-                 <div class="card-content">
-                    <h3>Beauty</h3>
-                     <P>Trending style & Timeless Classic</P>   
-                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
-                 </div>
-                </div>
-
-
-                                                               <div class="card">
-                 <img src="img/cosmatics/1.jpg" cover / center no-repeat>
-                 <div class="card-content">
-                    <h3>Cosmatics</h3>
-                     <P>Trending style & Timeless Classic</P>   
-                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
-                 </div>
-                </div>
-
-
-                               <div class="card">
+                             <div class="card">
                  <img src="img/shoes/1.webp" cover / center no-repeat>
                  <div class="card-content">
-                    <h3>Shoes</h3>
+                    <h3>Shoes Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="shoess/men.php"><button class="btn">Shop Now</button></a>
+                      <a href="shoess/shoes.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
 
 
-                               <div class="card">
-                 <img src="img/sports/1.jpg" cover / center no-repeat>
+                             <div class="card">
+                 <img src="img/bags/1.avif" cover / center no-repeat>
                  <div class="card-content">
-                    <h3>Sports Items</h3>
+                    <h3>Bags Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php?category=sports"><button class="btn">Shop Now</button></a>
+                      <a href="bagsfolder/bags.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
 
 
-                               <div class="card">
-                 <img src="img/home-decor/1.webp" cover / center no-repeat>
+                             <div class="card">
+                 <img src="img/perfumes/15.jpg" cover / center no-repeat>
                  <div class="card-content">
-                    <h3>Home Decoration</h3>
+                    <h3>Perfumes Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php?category=home-decor"><button class="btn">Shop Now</button></a>
+                      <a href="perfumes/index.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
 
 
-                               <div class="card">
-                 <img src="img/bags/1.jpg" cover / center no-repeat>
+                             <div class="card">
+                 <img src="img/accessories/1.jpeg" cover / center no-repeat>
                  <div class="card-content">
-                    <h3>Bags</h3>
-                     <P>Trending style & Timeless Classic</P>   
-                                             <a href="bagsfolder/bags.php"><button class="btn">Shop Now</button></a>
-                 </div>
-                </div>
-
-                                                           <div class="card">
-                 <img src="img/accessories/men/watches/1.jpg" cover / center no-repeat>
-                 <div class="card-content">
-                    <h3> Accessories</h3>
+                    <h3>Accessories Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
                       <a href="accessories/accessories.php"><button class="btn">Shop Now</button></a>
                  </div>
@@ -216,6 +192,17 @@ session_start();
                 </div>
 
 
+
+                                                               <div class="card">
+                 <img src="img/home-decor/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Home Decor</h3>
+                     <P>Beautiful home styling & decoration</P>   
+                      <a href="homedecor/homedecor.php"><button class="btn">Shop Now</button></a>
+                 </div>
+                </div>
+
+
            </div>
 
        </section>
@@ -225,7 +212,7 @@ session_start();
      <!-- Left: Large Feature Image with Text Overlay -->
      <div class="laci-left">
            <div class="category4">
-             <a href="womenF/index.php?category=dresses">
+             <a href="womenF/women.php?category=dresses">
                <video src="./img/sawiro/dressvideo.mp4" autoplay loop muted controls> </video>
                <div class="overlay4">Wedding Dresses</div>
              </a>
@@ -237,20 +224,20 @@ session_start();
        <div class="gallery">
          <div class="container4">
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/9.jpg" alt="Photo 1">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/8.jpg" alt="Photo 2">
                 </a>
              </div>
              
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/10.jpg" alt="Photo 3">
                 </a>
              </div>
@@ -262,13 +249,13 @@ session_start();
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/7.jpg" alt="Photo 5">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/21.webp" alt="Photo 6">
                 </a>
              </div>
@@ -280,16 +267,17 @@ session_start();
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?category=dresses">
                   <img src="./img/sawiro/12.jpg" alt="Photo 8">
-               </a>
+                </a>
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?category=dresses">
                   <img src="./img/sawiro/13.jpg" alt="Photo 9">
                </a>
              </div>
+
    
 
              
@@ -324,21 +312,21 @@ session_start();
        </div>
       
        <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+         <a href="womenF/women.php?category=dresses">
            <img src="./img/sawiro/22.webp" alt="Formal Dresses">
            <div class="overlay5">Formal Dresses</div>
          </a>
        </div>
 
          <div class="category5">
-       <a href="womenF/index.php?category=dresses">
+       <a href="womenF/women.php?category=dresses">
          <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
          <div class="overlay5">Bride Dresses</div>
        </a>
        </div>
        
        <div class="category5">
-         <a href="womenF/index.php?category=beauty">
+         <a href="womenF/women.php?category=beauty">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">makeup</div>
          </a>
@@ -352,7 +340,7 @@ session_start();
        </div>
 
        <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+         <a href="womenF/women.php?category=dresses">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">Formal Dresses</div>
          </a>
@@ -414,195 +402,145 @@ session_start();
     </div>
     
 
-    <div class="product-grid" data-category="shirts">
-       
-        <div class="product-card" data-product-id="1">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/23.jpg" alt="Product 23 - Front" class="active" data-color="default">
+    <div class="product-grid" data-category="featured">
+        <?php 
+        if (!empty($featuredProducts)): ?>
+            <?php foreach ($featuredProducts as $product): ?>
+                <?php 
+                $variantCount = isset($product['color_variants']) ? count($product['color_variants']) : 0;
+                ?>
+                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            $displayImage = '';
+                            $colorVariants = [];
+                            
+                            // Try to get images from color variants first
+                            if (isset($product['color_variants']) && !empty($product['color_variants'])) {
+                                $colorVariants = (array)$product['color_variants'];
+                                if (!empty($colorVariants)) {
+                                    $firstVariant = $colorVariants[0];
+                                    if (isset($firstVariant['front_image']) && !empty($firstVariant['front_image'])) {
+                                        $displayImage = $firstVariant['front_image'];
+                                    }
+                                }
+                            }
+                            
+                            // Fallback to front_image if no color variant images
+                            if (empty($displayImage)) {
+                                $displayImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            }
+                            
+                            if (!empty($displayImage)) {
+                                $extension = pathinfo($displayImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($extension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="<?php echo htmlspecialchars($displayImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="default"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="<?php echo htmlspecialchars($displayImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="default">
+                                <?php endif; ?>
+                            <?php } ?>
+                            
+                            <?php 
+                            // Display color variant images
+                            if (!empty($colorVariants)):
+                                foreach ($colorVariants as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <button class="add-to-bag">Add To Bag</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($colorVariants)):
+                                foreach ($colorVariants as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php if (($product['available'] ?? true) === false): ?>
+                            <div class="out-of-stock">Out of Stock</div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No featured products found.</p>
             </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #96e0f3ff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 1</h3>
-                <div class="product-price">$25</div>
-            </div>
-        </div>
-
-        <!-- Product 2 -->
-        <div class="product-card" data-product-id="2">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/24.jpg" alt="Product 24 - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="2">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color:#060606ff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 2</h3>
-                <div class="product-price">$30</div>
-            </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="product-card" data-product-id="3">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/20.webp" alt="Product 20 - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="3">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 3</h3>
-                <div class="product-price">$28</div>
-            </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="product-card" data-product-id="4">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/barca.jpg" alt="Barca Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="4">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #001f3f;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 4</h3>
-                <div class="product-price">$35</div>
-            </div>
-        </div>
-
-        <!-- Product 5 -->
-        <div class="product-card" data-product-id="5">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/glas2.jpg" alt="Designer Glasses - Front" class="active" data-color="maroon">
-                    <img src="img/sawiro/glas1.jpg" alt="Designer Glasses - Front" data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="5">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #8B0000;" title="Maroon" data-color="maroon"></span>
-                    <span class="color-circle" style="background-color: #000000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Designer Glasses</h3>
-                <div class="product-price">$45</div>
-            </div>
-        </div>
-
-        <!-- Product 6 -->
-        <div class="product-card" data-product-id="6">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/handbag2.jpg" alt="Handbag Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="6">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ffffffff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 6</h3>
-                <div class="product-price">$55</div>
-            </div>
-        </div>
-
-        <!-- Product 7 -->
-        <div class="product-card" data-product-id="7">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/jwel2.jpg" alt="Jewelry Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="7">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #14220cff" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 7</h3>
-                <div class="product-price">$38</div>
-            </div>
-        </div>
-
-            
-
-        <!-- Product 8 -->
-        <div class="product-card" data-product-id="8">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/watch2.jpg" alt="Watch Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="8">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 8</h3>
-                <div class="product-price">$65</div>
-            </div>
-        </div>
-
+        <?php endif; ?>
     </div>
 
    
@@ -1239,6 +1177,8 @@ session_start();
          }
      </script>
 
+     <!-- Include main JavaScript file -->
+     <script src="scripts/main.js"></script>
      
  </body>
- </html> bn
+ </html>

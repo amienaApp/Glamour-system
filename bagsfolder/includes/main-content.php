@@ -1,14 +1,43 @@
 
+<?php
+require_once __DIR__ . '/../../config/mongodb.php';
+require_once __DIR__ . '/../../models/Product.php';
 
+$productModel = new Product();
+
+// Get subcategory from URL parameter
+$subcategory = $_GET['subcategory'] ?? '';
+
+// Get products based on subcategory or all bags
+if ($subcategory) {
+    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $pageTitle = ucfirst($subcategory);
+} else {
+    // Get all bag products
+    $products = $productModel->getByCategory("Bags");
+    $pageTitle = "Bags";
+}
+
+// Get all handbags from the database
+$handbags = $productModel->getBySubcategory('Handbags');
+
+// Get all backpacks from the database
+$backpacks = $productModel->getBySubcategory('Backpacks');
+
+// Get all clutches from the database
+$clutches = $productModel->getBySubcategory('Clutches');
+
+?>
 
 <!-- Main Content Section -->
 <main class="main-content">
-    <div class="content-header">
-        <h1 class="page-title">Bags</h1>
+    <!-- Products Section -->
+    <div class="content-header" id="products-section">
+        <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
             <div class="sort-control">
-                <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select">
+                <label for="sort-select-bags">Sort:</label>
+                <select id="sort-select-bags" class="sort-select">
                     <option value="featured" selected>Featured</option>
                     <option value="newest">Newest</option>
                     <option value="price-low">Price: Low to High</option>
@@ -25,309 +54,307 @@
         </div>
     </div>
 
-    <div class="product-grid">
-        <!-- Product 1 - Women's Shoulder Bag -->
-        <div class="product-card" data-product-id="1" data-gender="women" data-category="shoulderbag" data-size="mini" data-price="120">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/sh1.webp" alt="Women's Shoulder Bag - Front" class="active" data-color="black">
-                    <img src="../img/bags/womenbags/sh1.0.jpg" alt="Women's Shoulder Bag - Back" data-color="black">
+    <?php if ($subcategory): ?>
+    <!-- Filtered Products Grid -->
+    <div class="product-grid" id="filtered-products-grid">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $index => $product): ?>
+                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            // Main product images
+                            $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <?php if (($product['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php if (($product['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No products found for this category.</p>
             </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Elegant Shoulder Bag</h3>
-                <div class="product-price">$120</div>
-            </div>
-        </div>
-        
-        <!-- Product 2 - Women's Tote Bag -->
-        <div class="product-card" data-product-id="2" data-gender="women" data-category="totebag" data-size="medium" data-price="180">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/totebags/1.jpg" alt="Women's Tote Bag - Front" class="active" data-color="brown">
-                    <img src="../img/bags/womenbags/totebags/10.jpg" alt="Women's Tote Bag - Back" data-color="brown">
-                    
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="2">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Classic Tote Bag</h3>
-                <div class="product-price">$180</div>
-            </div>
-        </div>
-
-        <!-- Product 3 - Women's Shoulder Bag -->
-        <div class="product-card" data-product-id="3" data-gender="women" data-category="shoulderbag" data-size="small" data-price="150">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/sh2.avif" alt="Women's Shoulder Bag - Front" class="active" data-color="black">
-                    <img src="../img/bags/womenbags/sh2.0.avif" alt="Women's Shoulder Bag - Back" data-color="black">
-                    <img src="../img/bags/womenbags/sh2.1.avif" alt="Women's Shoulder Bag - Front" data-color="silver">
-                    <img src="../img/bags/womenbags/sh2.1.0.avif" alt="Women's Shoulder Bag - Back" data-color="silver">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="3">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                    <span class="color-circle" style="background-color: #c0c0c0;" title="Silver" data-color="silver"></span>
-                </div>
-                <h3 class="product-name">Stylish Shoulder Bag</h3>
-                <div class="product-price">$150</div>
-            </div>
-        </div>
-
-        <!-- Product 4 - Women's clutches Bag -->
-        <div class="product-card" data-product-id="4" data-gender="women" data-category="clutchesbag" data-size="small" data-price="95">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/cluthesbags/4.jpeg" alt="Women's Clutch Bag - Front" class="active" data-color="black">
-                    <img src="../img/bags/womenbags/cluthesbags/4.0.jpeg" alt="Women's Clutch Bag - Side" data-color="black">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="4">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">small clutch Bag</h3>
-                <div class="product-price">$95</div>
-            </div>
-        </div>
-
-        <!-- Product 5 - Men's Backpack -->
-        <div class="product-card" data-product-id="5" data-gender="men" data-category="backpacks" data-size="large" data-price="200">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/menbags/backpacks/1.jpeg" alt="Men's Backpack - Front" class="active" data-color="black">
-                    <img src="../img/bags/menbags/backpacks/1.0.jpeg" alt="Men's Backpack - Back"  data-color="black">
-                
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="5">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Men Backpack</h3>
-                <div class="product-price">$200</div>
-            </div>
-        </div>
-
-        <!-- Product 6 - Women's Crossbody Bag -->
-        <div class="product-card" data-product-id="6" data-gender="women" data-category="crossbodybag" data-size="small" data-price="140">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/crossbodybags/1.jpg" alt="Women's Crossbody Bag - Front" class="active" data-color="brown">
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="6">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Casual Crossbody Bag</h3>
-                <div class="product-price">$140</div>
-            </div>
-        </div>
-
-        <!-- Product 7 - men's Clutch Bag -->
-        <div class="product-card" data-product-id="7" data-gender="men" data-category="clutchesbag" data-size="mini" data-price="80">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/menbags/cluthesbags/1.webp" alt="men's Clutch Bag - Front" class="active" data-color="black">
-                     <img src="../img/bags/menbags/cluthesbags/1.0.webp" alt="men's Clutch Bag - Back"  data-color="black">
-
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="7">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000000ff;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">men Clutch Bag</h3>
-                <div class="product-price">$80</div>
-            </div>
-        </div>
-
-        <!-- Product 8 - Men's Briefcase -->
-        <div class="product-card" data-product-id="8" data-gender="men" data-category="briefcases" data-size="large" data-price="250">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/menbags/briefcases/2.jpeg" alt="Men's Briefcase - Front" class="active" data-color="black">
-                    <img src="../img/bags/menbags/briefcases/2.0.jpeg" alt="Men's Briefcase - Back"  data-color="black">
-               
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="8">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Professional Briefcase</h3>
-                <div class="product-price">$250</div>
-            </div>
-        </div>
-
-        <!-- Product 9 - Women's Laptop Bag -->
-       
-         <div class="product-card" data-product-id="9" data-gender="women" data-category="backpacks" data-size="medium" data-price="200">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/backpacks/1.jpeg" alt="women's Backpack - Front" class="active" data-color="black">
-                    <img src="../img/bags/womenbags/backpacks/1.0.jpeg" alt="women's Backpack - Back"  data-color="black">
-                
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="9">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">women Backpack</h3>
-                <div class="product-price">$200</div>
-            </div>
-        </div>
-        
-        <!-- Product 10 - Women's Waist Bag -->
-        <div class="product-card" data-product-id="10" data-gender="women" data-category="waistbags" data-size="small" data-price="60">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/waistbags/1.0.jpeg" alt="Women's Waist Bag - Front" class="active" data-color="pink">
-                    <img src="../img/bags/womenbags/waistbags/1.jpeg" alt="Women's Waist Bag - Side"  data-color="pink">
-                
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="10">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #d186b2ff;" title="Pink" data-color="Pink"></span>
-                </div>
-                <h3 class="product-name">Sporty Waist Bag</h3>
-                <div class="product-price">$60</div>
-            </div>
-        </div>
-
-        <!-- Product 11 - Women's Wallet -->
-        <div class="product-card" data-product-id="11" data-gender="women" data-category="wallets" data-size="mini" data-price="45">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/womenbags/wallets/1.0.jpeg" alt="Women's Wallet - Front" class="active" data-color="black">
-                    <img src="../img/bags/womenbags/wallets/1.jpeg" alt="Women's Wallet - Back" data-color="black">
-                
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="11">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle" style="background-color: #000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Leather Wallet</h3>
-                <div class="product-price">$45</div>
-            </div>
-        </div>
-
-        
-        <!-- Product 12 - men's Waist Bag -->
-        <div class="product-card" data-product-id="12" data-gender="men" data-category="waistbags" data-size="small" data-price="40">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="../img/bags/menbags/waistbags/1.jpeg" alt="men's Waist Bag - Front" class="active" data-color="black">
-                    <img src="../img/bags/menbags/waistbags/1.0.jpeg" alt="men's Waist Bag - Side"  data-color="black">
-                
-                </div>
-                <button class="heart-button">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="12">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000000ff;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">men Waist Bag</h3>
-                <div class="product-price">$40</div>
-            </div>
-        </div>
-
+        <?php endif; ?>
     </div>
-
+    <?php else: ?>
+    <!-- All Bags Display -->
+    <div class="product-grid" id="all-bags-grid">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $index => $product): ?>
+                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            // Main product images
+                            $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <?php if (($product['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php if (($product['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No bags found.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </main>
 
 <!-- Quick View Sidebar -->

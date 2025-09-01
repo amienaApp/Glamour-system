@@ -3,7 +3,7 @@ session_start();
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: men.php');
     exit;
 }
 ?>
@@ -300,7 +300,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
     <div class="login-container">
-        <button class="back-btn" onclick="window.location.href='index.php'">
+        <button class="back-btn" onclick="window.location.href='men.php'">
             <i class="fas fa-arrow-left"></i>
         </button>
 
@@ -381,7 +381,7 @@ if (isset($_SESSION['user_id'])) {
             
             if (type === 'success') {
                 setTimeout(() => {
-                    window.location.href = 'index.php';
+                    window.location.href = 'men.php';
                 }, 2000);
             }
         }
@@ -425,6 +425,19 @@ if (isset($_SESSION['user_id'])) {
                 
                 if (result.success) {
                     showMessage(result.message, 'success');
+                    // Redirect to the specified page after successful login
+                    setTimeout(() => {
+                        // Check if there's a redirect parameter
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirect = urlParams.get('redirect');
+                        if (redirect === 'cart') {
+                            window.location.href = '../cart-unified.php?mode=view';
+                        } else if (result.redirect) {
+                            window.location.href = result.redirect;
+                        } else {
+                            window.location.href = 'men.php';
+                        }
+                    }, 2000);
                 } else {
                     showMessage(result.message, 'error');
                 }

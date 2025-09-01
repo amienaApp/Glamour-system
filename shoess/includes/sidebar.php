@@ -251,48 +251,27 @@
         </div>
     </div>
 
-    <!-- Category Filter -->
+    <!-- Shoe Type Filter -->
     <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Category</h4>
+                <h4>Shoe Type</h4>
             </div>
             <div class="filter-options">
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="sneakers">
-                    <span class="checkmark"></span>
-                    Sneakers
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="heels">
-                    <span class="checkmark"></span>
-                    Heels
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="boots">
-                    <span class="checkmark"></span>
-                    Boots
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="sandals">
-                    <span class="checkmark"></span>
-                    Sandals
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="flats">
-                    <span class="checkmark"></span>
-                    Flats
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="sports-shoes">
-                    <span class="checkmark"></span>
-                    Sports Shoes
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="slippers">
-                    <span class="checkmark"></span>
-                    Slippers
-                </label>
+                <div class="dropdown-filter">
+                    <select id="shoe-type-dropdown" name="shoe_type" class="shoe-type-select">
+                        <option value="">All Shoe Types</option>
+                        <option value="boots">Boots</option>
+                        <option value="sandals">Sandals</option>
+                        <option value="heels">Heels</option>
+                        <option value="flats">Flats</option>
+                        <option value="sneakers">Sneakers</option>
+                        <option value="sport-shoes">Sport Shoes</option>
+                        <option value="slippers">Slippers</option>
+                        <option value="formal-shoes">Formal Shoes</option>
+                        <option value="casual-shoes">Casual Shoes</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>

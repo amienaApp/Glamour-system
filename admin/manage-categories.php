@@ -1496,7 +1496,8 @@ $categories = $categoryModel->getAll();
                         option.value = index;
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
-
+                    });
+                }
             } else {
                 console.error('Subcategory select element not found!');
             }

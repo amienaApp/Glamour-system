@@ -1,0 +1,13 @@
+# Allow access to PHP files
+<Files "*.php">
+    Require all granted
+</Files>
+
+# Allow access to all files in this directory
+Require all granted
+
+# Enable directory browsing (optional)
+Options +Indexes
+
+# Set default file
+DirectoryIndex women.php index.php

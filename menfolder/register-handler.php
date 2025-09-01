@@ -27,13 +27,15 @@ try {
     if (!$input) {
         $input = $_POST;
     }
-    
 
+    // Debug: Log received data
+    error_log("Registration data received: " . print_r($input, true));
 
     // Validate required fields
     $requiredFields = ['username', 'email', 'contact_number', 'gender', 'region', 'city', 'password', 'confirm_password'];
     foreach ($requiredFields as $field) {
-        if (empty($input[$field])) {
+        if (empty(trim($input[$field] ?? ''))) {
+            error_log("Missing field: $field, value: " . ($input[$field] ?? 'NULL'));
             throw new Exception("Field '$field' is required");
         }
     }
