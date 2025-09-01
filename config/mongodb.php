@@ -17,14 +17,11 @@ class MongoDB {
                 require_once __DIR__ . '/../vendor/autoload.php';
             }
             
-<<<<<<< HEAD
             // MongoDB connection string - update with your actual MongoDB connection
             $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system
 ';
-=======
             // MongoDB connection string - connecting to friend's computer
             $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
->>>>>>> 05780db6dd32fa1463428bbd2708ca22f198896c
             $databaseName = 'glamour_system';
             
             // Create MongoDB client
