@@ -39,12 +39,96 @@ if (menuBtn) {
   });
 }
 
-// Debug: Check if Categories link is present
+
+
+// Color variant switching functionality
 document.addEventListener('DOMContentLoaded', function() {
-  const categoriesLink = document.querySelector('.nav-item.dropdown .nav-link');
-  if (categoriesLink) {
-    console.log('Categories link found:', categoriesLink.textContent);
-  } else {
-    console.log('Categories link not found');
-  }
+    // Handle color circle clicks for product variants
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('color-circle')) {
+            const productCard = e.target.closest('.product-card');
+            if (!productCard) return;
+            
+            const selectedColor = e.target.getAttribute('data-color');
+            const imageSlider = productCard.querySelector('.image-slider');
+            
+            if (imageSlider) {
+                // Remove active class from all color circles in this product
+                const allColorCircles = productCard.querySelectorAll('.color-circle');
+                allColorCircles.forEach(circle => circle.classList.remove('active'));
+                
+                // Add active class to clicked color circle
+                e.target.classList.add('active');
+                
+                // Hide all images/videos
+                const allMedia = imageSlider.querySelectorAll('img, video');
+                allMedia.forEach(media => {
+                    media.style.display = 'none';
+                    media.classList.remove('active');
+                });
+                
+                // Show images/videos for selected color
+                const selectedMedia = imageSlider.querySelectorAll(`[data-color="${selectedColor}"]`);
+                selectedMedia.forEach(media => {
+                    media.style.display = 'block';
+                    media.classList.add('active');
+                });
+                
+                // If no media found for selected color, show default
+                if (selectedMedia.length === 0) {
+                    const defaultMedia = imageSlider.querySelectorAll('[data-color="default"]');
+                    defaultMedia.forEach(media => {
+                        media.style.display = 'block';
+                        media.classList.add('active');
+                    });
+                }
+            }
+        }
+    });
+    
+    // Initialize product image hover effects
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        const imageSlider = card.querySelector('.image-slider');
+        if (!imageSlider) return;
+        
+        const images = imageSlider.querySelectorAll('img, video');
+        if (images.length < 2) return;
+        
+        // Show first image by default
+        images.forEach((img, index) => {
+            if (index === 0) {
+                img.style.display = 'block';
+                img.classList.add('active');
+            } else {
+                img.style.display = 'none';
+            }
+        });
+        
+        // Hover effect to show back image
+        card.addEventListener('mouseenter', function() {
+            const activeImage = imageSlider.querySelector('.active');
+            const nextImage = activeImage.nextElementSibling;
+            
+            if (nextImage && nextImage.tagName) {
+                activeImage.style.display = 'none';
+                activeImage.classList.remove('active');
+                nextImage.style.display = 'block';
+                nextImage.classList.add('active');
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const allImages = imageSlider.querySelectorAll('img, video');
+            allImages.forEach((img, index) => {
+                if (index === 0) {
+                    img.style.display = 'block';
+                    img.classList.add('active');
+                } else {
+                    img.style.display = 'none';
+                    img.classList.remove('active');
+                }
+            });
+        });
+    });
 });

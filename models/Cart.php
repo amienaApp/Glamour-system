@@ -333,5 +333,21 @@ class Cart {
         
         return $cart !== null;
     }
+
+    /**
+     * Transfer cart from one user ID to another
+     */
+    public function transferCart($fromUserId, $toUserId) {
+        try {
+            $result = $this->collection->updateOne(
+                ['user_id' => $fromUserId],
+                ['$set' => ['user_id' => $toUserId]]
+            );
+            return $result->getModifiedCount() > 0;
+        } catch (Exception $e) {
+            error_log('Cart transfer failed: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

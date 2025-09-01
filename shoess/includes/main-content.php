@@ -9,40 +9,34 @@ $subcategory = $_GET['subcategory'] ?? '';
 
 // Get products based on subcategory or all shoes
 if ($subcategory) {
-    $shoesProducts = $productModel->getBySubcategory(ucfirst($subcategory));
-    $pageTitle = ucfirst($subcategory) . ' Shoes';
+    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $pageTitle = ucfirst($subcategory);
 } else {
-    // Get all shoes products
-    $shoesProducts = $productModel->getByCategory('Shoes');
-    $pageTitle = 'Shoes';
+    // Get all shoe products
+    $products = $productModel->getByCategory("Shoes");
+    $pageTitle = "Shoes";
 }
 
-// Helper function to convert BSONArray to regular array
-function toArray($value) {
-    if (is_object($value) && method_exists($value, 'toArray')) {
-        $result = $value->toArray();
-        return is_array($result) ? $result : (array)$result;
-    }
-    return $value;
-}
+// Get all men's shoes from the database
+$mensShoes = $productModel->getBySubcategory("Men's Shoes");
 
-// Helper function to get count of array or BSONArray
-function getCount($value) {
-    if (is_object($value) && method_exists($value, 'count')) {
-        return $value->count();
-    }
-    return count($value);
-}
+// Get all women's shoes from the database
+$womensShoes = $productModel->getBySubcategory("Women's Shoes");
+
+// Get all children's shoes from the database
+$childrensShoes = $productModel->getBySubcategory("Children's Shoes");
+
 ?>
 
 <!-- Main Content Section -->
 <main class="main-content">
-    <div class="content-header">
+    <!-- Products Section -->
+    <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
             <div class="sort-control">
-                <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select">
+                <label for="sort-select-shoes">Sort:</label>
+                <select id="sort-select-shoes" class="sort-select">
                     <option value="featured" selected>Featured</option>
                     <option value="newest">Newest</option>
                     <option value="price-low">Price: Low to High</option>
@@ -59,90 +53,307 @@ function getCount($value) {
         </div>
     </div>
 
-    <div class="product-grid">
-        <?php if (!empty($shoesProducts)): ?>
-            <?php foreach ($shoesProducts as $product): ?>
+    <?php if ($subcategory): ?>
+    <!-- Filtered Products Grid -->
+    <div class="product-grid" id="filtered-products-grid">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $index => $product): ?>
                 <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
-                            $displayImage = '';
-                            $colorVariants = [];
+                            // Main product images
+                            $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
                             
-                            // Try to get images from color variants first
-                            if (isset($product['color_variants']) && !empty($product['color_variants'])) {
-                                $colorVariants = (array)$product['color_variants'];
-                                if (!empty($colorVariants)) {
-                                    $firstVariant = $colorVariants[0];
-                                    if (isset($firstVariant['images']) && !empty($firstVariant['images'])) {
-                                        $images = (array)$firstVariant['images'];
-                                        if (!empty($images)) {
-                                            $displayImage = $images[0];
-                                        }
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
                                     }
-                                }
-                            }
-                            
-                            // Fallback to front_image if no color variant images
-                            if (empty($displayImage)) {
-                                $displayImage = $product['front_image'] ?? $product['image_front'] ?? '';
-                            }
-                            
-                            if (!empty($displayImage)) {
-                                // Handle both ../img/ and img/ paths
-                                if (strpos($displayImage, '../') === 0) {
-                                    // Already has ../ prefix, use as is
-                                    $imagePath = $displayImage;
-                                } else {
-                                    // Add ../ prefix
-                                    $imagePath = '../' . $displayImage;
-                                }
-                                echo "<img src=\"{$imagePath}\" alt=\"{$product['name']}\" class=\"active\" data-color=\"default\">";
-                            } else {
-                                // Final fallback with an existing image
-                                echo "<img src=\"../img/shoes/womenshoes/1.avif\" alt=\"{$product['name']}\" class=\"active\" data-color=\"default\">";
-                            }
-                            ?>
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <button class="heart-button">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <button class="add-to-bag">Add To Bag</button>
+                            <?php if (($product['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag">Add To Bag</button>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
-                            if (!empty($colorVariants)) {
-                                foreach ($colorVariants as $index => $variant) {
-                                    $isActive = $index === 0 ? 'active' : '';
-                                    $colorCode = $variant['color'] ?? '#000';
-                                    $colorName = $variant['name'] ?? 'Unknown';
-                                    echo "<span class=\"color-circle {$isActive}\" style=\"background-color: {$colorCode};\" title=\"{$colorName}\" data-color=\"{$colorName}\"></span>";
-                                }
-                            } else {
-                                // Fallback for products without color variants
-                                if (!empty($product['color'])) {
-                                    echo "<span class=\"color-circle active\" style=\"background-color: {$product['color']};\" title=\"Default\" data-color=\"default\"></span>";
-                                } else {
-                                    echo "<span class=\"color-circle active\" style=\"background-color: #000;\" title=\"Default\" data-color=\"default\"></span>";
-                                }
-                            }
-                            ?>
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($product['price'], 2); ?></div>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php if (($product['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="no-products">
-                <p>No shoes products found.</p>
+                <p>No products found for this category.</p>
             </div>
         <?php endif; ?>
     </div>
+    <?php else: ?>
+    <!-- All Shoes Display -->
+    <div class="product-grid" id="all-shoes-grid">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $index => $product): ?>
+                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            // Main product images
+                            $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <?php if (($product['available'] ?? true) === false): ?>
+                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php if (($product['available'] ?? true) === false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No shoes found.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </main>
 
 <!-- Quick View Sidebar -->

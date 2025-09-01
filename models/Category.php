@@ -143,7 +143,7 @@ class Category {
             ],
             [
                 'name' => "Home & Living",
-                'subcategories' => ['Bedding', 'Bath', 'Kitchen', 'Decor', 'Furniture'],
+                'subcategories' => ['Bedding', 'living room', 'Kitchen', 'artwork', 'dinning room' , 'lighting'],
                 'description' => 'Beautiful items for your home',
                 'icon' => 'fa-home'
             ],

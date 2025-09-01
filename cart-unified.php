@@ -16,15 +16,16 @@ if (file_exists('cart-config.php')) {
     require_once 'cart-config.php';
 }
 
-// Get user ID from session or use consistent default
-$userId = $_SESSION['user_id'] ?? $_SESSION['current_cart_user_id'] ?? 'main_user_1756062003';
+// Get user ID from session - allow cart operations without auth
+$userId = $_SESSION['user_id'] ?? null;
 
 $cartModel = new Cart();
 $productModel = new Product();
 $orderModel = new Order();
 
-// Get current cart
-$cart = $cartModel->getCart($userId);
+// Get current cart (use session-based cart for unauthenticated users)
+$cartUserId = $userId ?: 'session_' . session_id();
+$cart = $cartModel->getCart($cartUserId);
 
 // Get return URL from session or default to main page
 $returnUrl = $_SESSION['return_url'] ?? 'index.php';
@@ -739,6 +740,7 @@ function getProductImage($product, $itemColor = '') {
         <!-- Cart View -->
         <div class="content-section">
             <?php if (empty($cart['items'])): ?>
+            <!-- Authenticated but empty cart -->
             <div class="empty-cart">
                 <i class="fas fa-shopping-cart"></i>
                 <h3>Your cart is empty</h3>
@@ -969,6 +971,118 @@ function getProductImage($product, $itemColor = '') {
         </div>
     </div>
 
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: #0066cc; margin: 0;">Authentication Required</h3>
+                <button onclick="closeAuthModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+            </div>
+            
+            <p style="color: #666; margin-bottom: 20px; text-align: center;">
+                You need to sign in or create an account to proceed with checkout.
+            </p>
+
+            <!-- Login Form -->
+            <div id="loginForm" style="display: block;">
+                <form id="checkoutLoginForm">
+                    <div class="form-group">
+                        <label for="checkoutUsername">Username or Email *</label>
+                        <input type="text" id="checkoutUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutPassword">Password *</label>
+                        <input type="password" id="checkoutPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                <div style="text-align: center;">
+                    <p style="color: #666; margin: 10px 0;">Don't have an account?</p>
+                    <button onclick="switchToRegister()" class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <form id="checkoutRegisterForm">
+                    <div class="form-group">
+                        <label for="checkoutRegUsername">Username *</label>
+                        <input type="text" id="checkoutRegUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegEmail">Email Address *</label>
+                        <input type="email" id="checkoutRegEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegContact">Contact Number *</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #f8f9fa; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; color: #666;">+252</span>
+                            <input type="tel" id="checkoutRegContact" name="contact_number" placeholder="123456789" maxlength="9" pattern="[0-9]{9}" required style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender *</label>
+                        <div style="display: flex; gap: 20px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 5px; font-weight: normal;">
+                                <input type="radio" name="gender" value="male" required> Male
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; font-weight: normal;">
+                                <input type="radio" name="gender" value="female" required> Female
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegRegion">Region *</label>
+                        <select id="checkoutRegRegion" name="region" required>
+                            <option value="">Select Region</option>
+                            <option value="banadir">Banadir</option>
+                            <option value="bari">Bari</option>
+                            <option value="bay">Bay</option>
+                            <option value="galguduud">Galguduud</option>
+                            <option value="gedo">Gedo</option>
+                            <option value="hiran">Hiran</option>
+                            <option value="jubbada-dhexe">Jubbada Dhexe</option>
+                            <option value="jubbada-hoose">Jubbada Hoose</option>
+                            <option value="mudug">Mudug</option>
+                            <option value="nugaal">Nugaal</option>
+                            <option value="sanaag">Sanaag</option>
+                            <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
+                            <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
+                            <option value="sool">Sool</option>
+                            <option value="togdheer">Togdheer</option>
+                            <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegCity">City *</label>
+                        <input type="text" id="checkoutRegCity" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegPassword">Password *</label>
+                        <input type="password" id="checkoutRegPassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkoutRegConfirmPassword">Confirm Password *</label>
+                        <input type="password" id="checkoutRegConfirmPassword" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px;">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+                <div style="text-align: center;">
+                    <p style="color: #666; margin: 10px 0;">Already have an account?</p>
+                    <button onclick="switchToLogin()" class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentAction = null;
         let currentCallback = null;
@@ -1015,6 +1129,8 @@ function getProductImage($product, $itemColor = '') {
                             const data = JSON.parse(text);
                             if (data.success) {
                                 location.reload();
+                            } else if (data.requires_auth) {
+                                showAuthenticationModal();
                             } else {
                                 showModal('Error', 'Error: ' + data.message, closeModal);
                             }
@@ -1055,6 +1171,8 @@ function getProductImage($product, $itemColor = '') {
                     const data = JSON.parse(text);
                     if (data.success) {
                         location.reload();
+                    } else if (data.requires_auth) {
+                        showAuthenticationModal();
                     } else {
                         showModal('Error', 'Error: ' + data.message, closeModal);
                     }
@@ -1090,6 +1208,8 @@ function getProductImage($product, $itemColor = '') {
                                     closeModal();
                                     location.reload();
                                 });
+                            } else if (data.requires_auth) {
+                                showAuthenticationModal();
                             } else {
                                 showModal('Error', 'Error: ' + data.message, closeModal);
                             }
@@ -1179,6 +1299,10 @@ function getProductImage($product, $itemColor = '') {
                         closeModal();
                         window.location.href = 'cart-unified.php?mode=view';
                     });
+                } else if (data.requires_auth) {
+                    showAuthenticationModal();
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 } else {
                     showModal('Error', 'Error adding product to cart: ' + data.message, closeModal);
                     btn.disabled = false;
@@ -1194,7 +1318,44 @@ function getProductImage($product, $itemColor = '') {
 
         // Checkout functions
         function proceedToCheckout() {
-            // Create order from cart first
+            // Check if user is authenticated
+            checkAuthenticationStatus()
+                .then(isAuthenticated => {
+                    if (isAuthenticated) {
+                        // User is logged in, proceed with checkout
+                        createOrderAndRedirect();
+                    } else {
+                        // User is not logged in, redirect to registration
+                        window.location.href = 'menfolder/register.php?redirect=cart';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking authentication:', error);
+                    // If there's an error checking auth, redirect to registration as fallback
+                    window.location.href = 'menfolder/register.php?redirect=cart';
+                });
+        }
+
+        // Check authentication status
+        function checkAuthenticationStatus() {
+            return fetch('auth-check.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                return data.authenticated === true;
+            })
+            .catch(error => {
+                console.error('Auth check failed:', error);
+                return false;
+            });
+        }
+
+        // Create order and redirect (original checkout logic)
+        function createOrderAndRedirect() {
             const formData = new FormData();
             formData.append('action', 'place_order');
             formData.append('shipping_address', 'Will be collected during payment');
@@ -1216,6 +1377,47 @@ function getProductImage($product, $itemColor = '') {
             .catch(error => {
                 showModal('Error', 'Error creating order: ' + error.message, closeModal);
             });
+        }
+
+        // Show authentication modal
+        function showAuthenticationModal() {
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+                authModal.style.display = 'block';
+            }
+        }
+
+        // Close authentication modal
+        function closeAuthModal() {
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+                authModal.style.display = 'none';
+            }
+        }
+
+        // Switch to login form in auth modal
+        function switchToLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        // Switch to register form in auth modal
+        function switchToRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        // Handle successful authentication
+        function onAuthenticationSuccess(redirectUrl = null) {
+            closeAuthModal();
+            
+            if (redirectUrl) {
+                // Redirect to the specified URL (e.g., back to cart)
+                window.location.href = redirectUrl;
+            } else {
+                // Default behavior: proceed with checkout
+                createOrderAndRedirect();
+            }
         }
 
         function selectPaymentMethod(method) {
@@ -1256,6 +1458,10 @@ function getProductImage($product, $itemColor = '') {
                             closeModal();
                             window.location.href = 'orders.php?order_id=' + data.order_id;
                         });
+                    } else if (data.requires_auth) {
+                        showAuthenticationModal();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
                     } else {
                         showModal('Error', 'Error placing order: ' + data.message, closeModal);
                         submitBtn.disabled = false;
@@ -1274,6 +1480,115 @@ function getProductImage($product, $itemColor = '') {
         <?php if ($mode === 'add'): ?>
         updateAddToCartButton();
         <?php endif; ?>
+
+        // Authentication form handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form handler
+            const checkoutLoginForm = document.getElementById('checkoutLoginForm');
+            if (checkoutLoginForm) {
+                checkoutLoginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const loginData = {
+                        username: formData.get('username'),
+                        password: formData.get('password'),
+                        redirect: 'cart'
+                    };
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    
+                    try {
+                        const response = await fetch('menfolder/login-handler.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(loginData)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showModal('Success', result.message, function() {
+                                closeModal();
+                                // Pass the redirect URL from the server response
+                                onAuthenticationSuccess(result.redirect);
+                            });
+                        } else {
+                            showModal('Error', result.message, closeModal);
+                        }
+                    } catch (error) {
+                        showModal('Error', 'Login failed: ' + error.message, closeModal);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
+
+            // Register form handler
+            const checkoutRegisterForm = document.getElementById('checkoutRegisterForm');
+            if (checkoutRegisterForm) {
+                checkoutRegisterForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const registerData = {
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        contact_number: '+252' + formData.get('contact_number'),
+                        gender: formData.get('gender'),
+                        region: formData.get('region'),
+                        city: formData.get('city'),
+                        password: formData.get('password'),
+                        confirm_password: formData.get('confirm_password')
+                    };
+                    
+                    // Validate passwords match
+                    if (registerData.password !== registerData.confirm_password) {
+                        showModal('Error', 'Passwords do not match', closeModal);
+                        return;
+                    }
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+                    
+                    try {
+                        const response = await fetch('menfolder/register-handler.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(registerData)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showModal('Success', result.message, function() {
+                                closeModal();
+                                // Switch to login form after successful registration
+                                switchToLogin();
+                                showModal('Info', 'Please sign in with your new account to continue checkout.', closeModal);
+                            });
+                        } else {
+                            showModal('Error', result.message, closeModal);
+                        }
+                    } catch (error) {
+                        showModal('Error', 'Registration failed: ' + error.message, closeModal);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

@@ -27,6 +27,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-plus"></i>
                 Add Product
             </a>
+            <a href="view-products.php" class="nav-item <?php echo $currentPage === 'view-products.php' ? 'active' : ''; ?>">
+                <i class="fas fa-eye"></i>
+                View Products
+            </a>
             <a href="manage-products.php" class="nav-item <?php echo $currentPage === 'manage-products.php' ? 'active' : ''; ?>">
                 <i class="fas fa-boxes"></i>
                 Manage Products

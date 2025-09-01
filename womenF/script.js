@@ -1490,23 +1490,57 @@ document.addEventListener('DOMContentLoaded', function() {
     function selectAllSizes() {
         console.log('Selecting all sizes...');
         const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
         sizeCheckboxes.forEach(checkbox => {
             if (!checkbox.checked) {
                 checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
             }
         });
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            console.log('Size selection changed, updating filters...');
+            // Trigger filter update if filter function exists
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
     }
     
     function clearSizeFilters() {
         console.log('Clearing size filters...');
         const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
         sizeCheckboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 checkbox.checked = false;
-                checkbox.dispatchEvent(new Event('change'));
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
             }
         });
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            console.log('Size selection cleared, updating filters...');
+            // Trigger filter update if filter function exists
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
     }
     
     function updateSizeCount() {
@@ -1518,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Make functions globally accessible
+    // Make functions globally accessible immediately
     window.selectAllSizes = selectAllSizes;
     window.clearSizeFilters = clearSizeFilters;
     window.updateSizeCount = updateSizeCount;
@@ -1534,4 +1568,31 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         updateSizeCount();
     });
+    
+    // Ensure functions are available globally even if there are timing issues
+    if (!window.selectAllSizes) {
+        window.selectAllSizes = function() {
+            console.log('Fallback selectAllSizes called...');
+            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            updateSizeCount();
+        };
+    }
+    
+    if (!window.clearSizeFilters) {
+        window.clearSizeFilters = function() {
+            console.log('Fallback clearSizeFilters called...');
+            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            updateSizeCount();
+        };
+    }
 });

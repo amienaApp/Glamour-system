@@ -202,8 +202,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($successCount > 0) {
-            // Redirect to manage products
-            header('Location: manage-products.php?action=bulk_updated&count=' . $successCount);
+            // Redirect back to view products
+            header('Location: view-products.php?action=bulk_updated&count=' . $successCount);
             exit;
         }
     } else {
@@ -220,7 +220,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'available' => isset($_POST['available']),
             'stock' => (int)($_POST['stock'] ?? 0),
             'size_category' => $_POST['size_category'] ?? '',
-            'selected_sizes' => $_POST['selected_sizes'] ?? ''
+            'selected_sizes' => $_POST['selected_sizes'] ?? '',
+            'shoe_type' => $_POST['shoe_type'] ?? ''
         ];
 
         // Handle perfume-specific fields
@@ -259,10 +260,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get deleted variants from form
         if (isset($_POST['deleted_variants']) && !empty($_POST['deleted_variants'])) {
             $deletedVariants = json_decode($_POST['deleted_variants'], true) ?? [];
-
+            error_log('Deleted variants from form: ' . print_r($deletedVariants, true));
+        } else {
+            error_log('No deleted variants found in form');
         }
         
         if (isset($_POST['color_variants']) && is_array($_POST['color_variants'])) {
+            error_log('Processing color variants: ' . count($_POST['color_variants']) . ' variants found');
             $colorVariants = [];
             
             foreach ($_POST['color_variants'] as $index => $variant) {
@@ -318,22 +322,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
+            // Final safety check - ensure we have a proper array before array_values()
+            if (!is_array($colorVariants)) {
+                error_log('CRITICAL: colorVariants is not an array before array_values() (branch 1), type: ' . gettype($colorVariants));
+                $colorVariants = [];
+            }
+            
             // Reindex the array to remove gaps
             $colorVariants = array_values($colorVariants);
 
             $productData['color_variants'] = $colorVariants;
+            error_log('Final color variants count (branch 1): ' . count($colorVariants));
 
         } else {
             // If no color_variants were submitted, remove deleted variants from original
-            $colorVariants = $originalVariants;
-            foreach ($deletedVariants as $deletedIndex) {
-                if (isset($colorVariants[$deletedIndex])) {
-                    unset($colorVariants[$deletedIndex]);
-
+            // Create a completely new array to avoid BSON object issues
+            $colorVariants = [];
+            
+            if (!empty($originalVariants)) {
+                // Convert each variant individually to ensure we have clean data
+                foreach ($originalVariants as $index => $variant) {
+                    // Skip deleted variants
+                    if (in_array($index, $deletedVariants)) {
+                        continue;
+                    }
+                    
+                    // Convert variant to clean array
+                    $cleanVariant = [];
+                    if (is_object($variant)) {
+                        // Handle BSON objects
+                        if (method_exists($variant, 'toArray')) {
+                            $cleanVariant = $variant->toArray();
+                        } else {
+                            $cleanVariant = (array)$variant;
+                        }
+                    } else {
+                        $cleanVariant = $variant;
+                    }
+                    
+                    // Ensure we have a proper array
+                    if (is_array($cleanVariant)) {
+                        $colorVariants[] = $cleanVariant;
+                    }
                 }
             }
-            $colorVariants = array_values($colorVariants);
+            
+            // No need for array_values() since we're building a clean array
             $productData['color_variants'] = $colorVariants;
+            error_log('Final color variants count (branch 2): ' . count($colorVariants));
         }
 
         if (isset($_POST['sale']) && !empty($_POST['salePrice'])) {
@@ -344,8 +380,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = $productModel->validateProductData($productData);
         if (empty($errors)) {
             if ($productModel->update($productId, $productData)) {
-                // Redirect to manage products with the updated product highlighted
-                header('Location: manage-products.php?highlight=' . $productId . '&action=updated');
+                // Redirect back to view products with success message
+                header('Location: view-products.php?action=updated&product_id=' . $productId);
                 exit;
             } else {
                 $error = 'Failed to update product.';
@@ -1801,6 +1837,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             
+            <div class="form-group" id="shoe-type-group" style="display: none;">
+                <label for="shoe_type">Shoe Type</label>
+                <select id="shoe_type" name="shoe_type">
+                    <option value="">Select Shoe Type</option>
+                    <option value="boots" <?php echo ($product['shoe_type'] ?? '') === 'boots' ? 'selected' : ''; ?>>Boots</option>
+                    <option value="sandals" <?php echo ($product['shoe_type'] ?? '') === 'sandals' ? 'selected' : ''; ?>>Sandals</option>
+                    <option value="heels" <?php echo ($product['shoe_type'] ?? '') === 'heels' ? 'selected' : ''; ?>>Heels</option>
+                    <option value="flats" <?php echo ($product['shoe_type'] ?? '') === 'flats' ? 'selected' : ''; ?>>Flats</option>
+                    <option value="sneakers" <?php echo ($product['shoe_type'] ?? '') === 'sneakers' ? 'selected' : ''; ?>>Sneakers</option>
+                    <option value="sport-shoes" <?php echo ($product['shoe_type'] ?? '') === 'sport-shoes' ? 'selected' : ''; ?>>Sport Shoes</option>
+                    <option value="slippers" <?php echo ($product['shoe_type'] ?? '') === 'slippers' ? 'selected' : ''; ?>>Slippers</option>
+                    <option value="formal-shoes" <?php echo ($product['shoe_type'] ?? '') === 'formal-shoes' ? 'selected' : ''; ?>>Formal Shoes</option>
+                    <option value="casual-shoes" <?php echo ($product['shoe_type'] ?? '') === 'casual-shoes' ? 'selected' : ''; ?>>Casual Shoes</option>
+                </select>
+            </div>
+            
             <div class="form-group" id="brand-group" style="display: none;">
                 <label for="brand">Brand *</label>
                 <select id="brand" name="brand">
@@ -1987,18 +2039,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             
             <div class="form-group">
-                                                <label>Color *</label>
-                                            <div class="color-input-group">
-                                                <input type="color" name="color_variants[<?php echo $index; ?>][color]" class="variant-color-input" required value="<?php echo htmlspecialchars($variant['color']); ?>" onchange="updateColorCircle(this, <?php echo $index; ?>)">
-                                                <div class="admin-color-circle" id="admin-color-circle-<?php echo $index; ?>" style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" data-variant-index="<?php echo $index; ?>" onclick="showVariantImages(<?php echo $index; ?>)"></div>
-            </div>
+                <label>Color *</label>
+                <div class="color-input-group">
+                    <input type="color" name="color_variants[<?php echo $index; ?>][color]" class="variant-color-input" required value="<?php echo htmlspecialchars($variant['color']); ?>" onchange="updateColorCircle(this, <?php echo $index; ?>)">
+                    <div class="admin-color-circle" id="admin-color-circle-<?php echo $index; ?>" style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" data-variant-index="<?php echo $index; ?>" onclick="showVariantImages(<?php echo $index; ?>)"></div>
                 </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Variant Size Category</label>
+                <select name="color_variants[<?php echo $index; ?>][size_category]" onchange="loadVariantSizeOptions(<?php echo $index; ?>)">
+                    <option value="">Select Size Category</option>
+                    <option value="clothing" <?php echo ($variant['size_category'] ?? '') === 'clothing' ? 'selected' : ''; ?>>Clothing</option>
+                    <option value="shoes" <?php echo ($variant['size_category'] ?? '') === 'shoes' ? 'selected' : ''; ?>>Shoes</option>
+                    <option value="none" <?php echo ($variant['size_category'] ?? '') === 'none' ? 'selected' : ''; ?>>No Sizes</option>
+                </select>
+            </div>
+            
+            <div class="form-group variant-size-selection" id="variant-size-selection-<?php echo $index; ?>" style="display: <?php echo !empty($variant['size_category']) && $variant['size_category'] !== 'none' ? 'block' : 'none'; ?>;">
+                <label>Variant Available Sizes</label>
+                <div class="size-dropdown-container">
+                    <div class="size-dropdown-header" onclick="toggleVariantSizeDropdown(<?php echo $index; ?>)">
+                        <span id="variant-selected-sizes-text-<?php echo $index; ?>">Select sizes...</span>
+                        <i class="fas fa-chevron-down" id="variant-size-dropdown-icon-<?php echo $index; ?>"></i>
+                    </div>
+                    <div class="size-dropdown-content" id="variant-size-dropdown-content-<?php echo $index; ?>">
+                        <!-- Size options will be loaded here -->
+                    </div>
+                </div>
+                <input type="hidden" name="color_variants[<?php echo $index; ?>][selected_sizes]" value="<?php echo htmlspecialchars($variant['selected_sizes'] ?? ''); ?>">
+            </div>
 
-                                            <div class="variant-image-inputs">
+            <div class="variant-image-inputs">
                                                 <div class="image-input-group">
                                                     <label>Front Media</label>
                                                     <input type="file" name="color_variants[<?php echo $index; ?>][front_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-front-<?php echo $index; ?>')">
-                                                <input type="hidden" name="color_variants[<?php echo $index; ?>][existing_front_image]" value="<?php echo htmlspecialchars($variant['front_image'] ?? ''); ?>">
+                                                    <input type="hidden" name="color_variants[<?php echo $index; ?>][existing_front_image]" value="<?php echo htmlspecialchars($variant['front_image'] ?? ''); ?>">
                                                     <div id="variant-front-<?php echo $index; ?>" class="variant-image-preview">
                                                         <?php 
                                                         // Check for images array first (new structure)
@@ -2035,7 +2111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="image-input-group">
                                                     <label>Back Media</label>
                                                     <input type="file" name="color_variants[<?php echo $index; ?>][back_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-back-<?php echo $index; ?>')">
-                                                <input type="hidden" name="color_variants[<?php echo $index; ?>][existing_back_image]" value="<?php echo htmlspecialchars($variant['back_image'] ?? ''); ?>">
+                                                    <input type="hidden" name="color_variants[<?php echo $index; ?>][existing_back_image]" value="<?php echo htmlspecialchars($variant['back_image'] ?? ''); ?>">
                                                     <div id="variant-back-<?php echo $index; ?>" class="variant-image-preview">
                                                         <?php if (!empty($variant['back_image'])): ?>
                                                             <?php if (pathinfo($variant['back_image'], PATHINFO_EXTENSION) === 'mp4' || pathinfo($variant['back_image'], PATHINFO_EXTENSION) === 'webm' || pathinfo($variant['back_image'], PATHINFO_EXTENSION) === 'mov'): ?>
@@ -2057,8 +2133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php endif; ?>
                             </div>
                             
-                            <button type="button" class="add-variant-btn" onclick="addColorVariant()">
+                            <button type="button" class="add-variant-btn" onclick="addColorVariant();">
                                 <i class="fas fa-plus"></i> Add Color Variant
+                            </button>
+                            <button type="button" class="test-btn" onclick="console.log('Test button clicked, addColorVariant type:', typeof addColorVariant);" style="background: #ff6b6b; margin-left: 10px;">
+                                Test JS
                             </button>
                         
                         <!-- Hidden field to track deleted variants -->
@@ -2122,6 +2201,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        // Test if script tag is working
+        console.log('Script tag loaded');
+        
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('open');
@@ -2175,28 +2257,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const brandGroup = document.getElementById('brand-group');
             const genderGroup = document.getElementById('gender-group');
             const perfumeSizeGroup = document.getElementById('perfume-size-group');
+            const shoeTypeGroup = document.getElementById('shoe-type-group');
             const subcategoryGroup = document.getElementById('subcategory-group');
             const sizeCategoryGroup = document.getElementById('size-category-group');
             
-            const shouldShow = category.toLowerCase() === 'perfumes';
+            const isPerfume = category.toLowerCase() === 'perfumes';
+            const isShoes = category.toLowerCase() === 'shoes';
             
             // Show/hide individual perfume fields
-            if (brandGroup) brandGroup.style.display = shouldShow ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = shouldShow ? 'block' : 'none';
-            if (perfumeSizeGroup) perfumeSizeGroup.style.display = shouldShow ? 'block' : 'none';
+            if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = isPerfume ? 'block' : 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
+            
+            // Show/hide shoe type field
+            if (shoeTypeGroup) shoeTypeGroup.style.display = isShoes ? 'block' : 'none';
             
             // Hide subcategory and size category for perfumes
-            if (subcategoryGroup) subcategoryGroup.style.display = shouldShow ? 'none' : 'block';
-            if (sizeCategoryGroup) sizeCategoryGroup.style.display = shouldShow ? 'none' : 'block';
+            if (subcategoryGroup) subcategoryGroup.style.display = isPerfume ? 'none' : 'block';
+            if (sizeCategoryGroup) sizeCategoryGroup.style.display = isPerfume ? 'none' : 'block';
             
             // Make perfume fields required when category is Perfumes
             const brandField = document.getElementById('brand');
             const genderField = document.getElementById('gender');
             const sizeField = document.getElementById('perfume_size');
             
-            if (brandField) brandField.required = category.toLowerCase() === 'perfumes';
-            if (genderField) genderField.required = category.toLowerCase() === 'perfumes';
-            if (sizeField) sizeField.required = category.toLowerCase() === 'perfumes';
+            if (brandField) brandField.required = isPerfume;
+            if (genderField) genderField.required = isPerfume;
+            if (sizeField) sizeField.required = isPerfume;
         }
 
         function toggleSalePrice() {
@@ -2205,19 +2292,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
 
-                        let colorVariantIndex = <?php echo getCount($product['color_variants'] ?? []); ?>;
+        // Global variables for variant management
+        let colorVariantIndex = <?php 
+            $count = getCount($product['color_variants'] ?? []);
+            echo (int)$count;
+        ?>;
         let deletedVariants = []; // Track deleted variants
+        
+        // Simple test function to verify JavaScript is working
+        console.log('JavaScript loaded, colorVariantIndex:', colorVariantIndex);
+        console.log('PHP getCount result:', <?php echo json_encode($count); ?>);
+        
+        // Test if basic JavaScript is working
+        try {
+            console.log('Basic JavaScript test passed');
+            
+            // Test function definition
+            function testFunction() {
+                return 'test';
+            }
+            console.log('Function definition test:', testFunction());
+            
+        } catch (e) {
+            console.error('Basic JavaScript test failed:', e);
+        }
 
         function addColorVariant() {
+            console.log('Adding new color variant, current index:', colorVariantIndex);
             const container = document.getElementById('color-variants-container');
+            if (!container) {
+                console.error('Color variants container not found!');
+                return;
+            }
             const variantHtml = `
                 <div class="variant-item">
                     <div class="variant-header">
                         <h4>Color Variant #${colorVariantIndex + 1}</h4>
-                        <button type="button" class="delete-variant-btn" onclick="removeColorVariant(this)">
+                        <button type="button" class="delete-variant-btn" onclick="removeColorVariant(this);">
                             <i class="fas fa-trash"></i>
                             <span>Delete Variant</span>
-                    </button>
+                        </button>
                     </div>
                     
                     <div class="form-group">
@@ -2257,18 +2371,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="hidden" name="color_variants[${colorVariantIndex}][selected_sizes]" value="">
                     </div>
 
-                                        <div class="variant-image-inputs">
+                                                            <div class="variant-image-inputs">
                         <div class="image-input-group">
                             <label>Front Media</label>
                             <input type="file" name="color_variants[${colorVariantIndex}][front_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-front-${colorVariantIndex}')">
+                            <input type="hidden" name="color_variants[${colorVariantIndex}][existing_front_image]" value="">
                             <div id="variant-front-${colorVariantIndex}" class="variant-image-preview">
                                 <div class="no-image">No media selected</div>
+                            </div>
                         </div>
-                    </div>
 
                         <div class="image-input-group">
                             <label>Back Media</label>
                             <input type="file" name="color_variants[${colorVariantIndex}][back_image]" accept="image/*,video/*,.mp4,.webm,.mov,.avi,.mkv" onchange="previewVariantMedia(this, 'variant-back-${colorVariantIndex}')">
+                            <input type="hidden" name="color_variants[${colorVariantIndex}][existing_back_image]" value="">
                             <div id="variant-back-${colorVariantIndex}" class="variant-image-preview">
                                 <div class="no-image">No media selected</div>
                             </div>
@@ -2279,10 +2395,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             container.insertAdjacentHTML('beforeend', variantHtml);
             colorVariantIndex++;
+            console.log('addColorVariant function completed, new index:', colorVariantIndex);
         }
 
         function removeColorVariant(button) {
+            console.log('Removing color variant...');
             const variantItem = button.closest('.variant-item');
+            if (!variantItem) {
+                console.error('Variant item not found!');
+                return;
+            }
             const variantName = variantItem.querySelector('input[name*="[name]"]')?.value || 'this variant';
             
             // Show elegant modal for confirmation
@@ -2337,6 +2459,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 ]
             });
+            console.log('removeColorVariant function completed');
         }
 
         function getOriginalVariantIndex(variantItem) {
@@ -2920,7 +3043,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (selectedSizes.size === 0) {
                 selectedSizesText.textContent = 'Select sizes...';
                 selectedSizesInput.value = '';
-                } else {
+            } else {
                 const sizesArray = Array.from(selectedSizes).sort();
                 selectedSizesText.textContent = `${sizesArray.length} size(s) selected`;
                 selectedSizesInput.value = JSON.stringify(sizesArray);
@@ -3280,17 +3403,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Initialize admin color circles
             initializeAdminColorCircles();
             
-            // Add form submission handler to track deleted variants
-            document.querySelector('form').addEventListener('submit', function(e) {
-                updateDeletedVariantsField();
-            });
+                    // Add form submission handler to track deleted variants
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Form submitting, deleted variants:', deletedVariants);
+            updateDeletedVariantsField();
+            
+            // Show confirmation
+            if (deletedVariants.length > 0) {
+                console.log('Will delete variants with indices:', deletedVariants);
+            }
+        });
         });
 
         function updateDeletedVariantsField() {
             const deletedVariantsField = document.getElementById('deleted-variants');
             if (deletedVariantsField) {
                 deletedVariantsField.value = JSON.stringify(deletedVariants);
-    
+                console.log('Updated deleted variants field:', deletedVariantsField.value);
+            } else {
+                console.error('Deleted variants field not found!');
             }
         }
 
@@ -3583,6 +3714,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             updateMultiVariantSelectedSizesDisplay(productIndex, variantIndex);
         }
+        
+        // Initialize fields based on current product category
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentCategory = '<?php echo $product['category'] ?? ''; ?>';
+            if (currentCategory) {
+                togglePerfumeFields(currentCategory);
+            }
+        });
+        
+        // Ensure functions are globally accessible
+        window.addColorVariant = addColorVariant;
+        window.removeColorVariant = removeColorVariant;
+        window.updateColorCircle = updateColorCircle;
+        window.showVariantImages = showVariantImages;
+        window.loadVariantSizeOptions = loadVariantSizeOptions;
+        window.toggleVariantSizeDropdown = toggleVariantSizeDropdown;
+        window.previewVariantMedia = previewVariantMedia;
     </script>
     </div>
 

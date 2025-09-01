@@ -29,15 +29,19 @@ try {
     }
 
     // Validate required fields
-    if (empty($input['username']) || empty($input['password'])) {
+    if (empty(trim($input['username'])) || empty(trim($input['password']))) {
         throw new Exception("Username/Email and password are required");
     }
+
+    // Sanitize input
+    $username = trim($input['username']);
+    $password = trim($input['password']);
 
     // Create User model instance
     $userModel = new User();
 
     // Attempt login
-    $user = $userModel->login($input['username'], $input['password']);
+    $user = $userModel->login($username, $password);
 
     // Update last login time
     $userModel->updateLastLogin($user['_id']);
@@ -48,12 +52,47 @@ try {
     $_SESSION['username'] = $user['username'];
     $_SESSION['email'] = $user['email'];
     $_SESSION['user_role'] = $user['role'];
+    $_SESSION['login_time'] = time();
 
+    // Transfer session cart to user account if it exists
+    $sessionCartId = 'session_' . session_id();
+    try {
+        // Only attempt cart transfer if Cart model exists and can be loaded
+        if (file_exists(__DIR__ . '/../models/Cart.php')) {
+            require_once __DIR__ . '/../models/Cart.php';
+            
+            // Check if Cart class exists and can be instantiated
+            if (class_exists('Cart')) {
+                $cartModel = new Cart();
+                
+                // Use the new public transfer method
+                if ($cartModel->transferCart($sessionCartId, $user['_id'])) {
+                    error_log('Cart transferred successfully from ' . $sessionCartId . ' to ' . $user['_id']);
+                }
+            }
+        }
+    } catch (Exception $e) {
+        // Cart transfer failed, but login should still succeed
+        error_log('Cart transfer failed: ' . $e->getMessage());
+    } catch (Error $e) {
+        // Cart transfer failed, but login should still succeed
+        error_log('Cart transfer failed: ' . $e->getMessage());
+    }
+
+    // Check if there's a redirect parameter in the request
+    $redirectUrl = 'men.php'; // Default redirect
+    
+    // Check POST data for redirect parameter
+    if (isset($input['redirect']) && $input['redirect'] === 'cart') {
+        $redirectUrl = '../cart-unified.php?mode=view';
+    }
+    
     // Return success response
     echo json_encode([
         'success' => true,
         'message' => 'Login successful! Welcome back, ' . $user['username'] . '!',
-        'user' => $user
+        'user' => $user,
+        'redirect' => $redirectUrl
     ]);
 
 } catch (Exception $e) {

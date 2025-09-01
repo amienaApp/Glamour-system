@@ -147,20 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 15px 35px rgba(41, 182, 246, 0.4);
         }
         
-        .register-link {
-            text-align: center;
-            color: #666;
-        }
-        
-        .register-link a {
-            color: #29B6F6;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .register-link a:hover {
-            text-decoration: underline;
-        }
+
         
         .message {
             padding: 15px 20px;
@@ -245,9 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </form>
         
-        <div class="register-link">
-            Don't have an account? <a href="register.php">Register here</a>
-        </div>
+
     </div>
 </body>
 </html>
