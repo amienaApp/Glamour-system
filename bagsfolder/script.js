@@ -42,6 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeBtn) closeBtn.addEventListener('click', closeQuickView);
     if (overlay) overlay.addEventListener('click', closeQuickView);
     
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
     function openQuickView(productId) {
         console.log('Opening quick view for:', productId);
         
@@ -176,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (isActive) {
                         colorBtn.classList.add('active');
+                        selectedQuickViewColor = color; // Set initial selected color
                     }
                     
                     // Add click handler for quick view color circles
@@ -189,6 +194,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Add active class to clicked option
                         this.classList.add('active');
                         this.style.border = '2px solid #000';
+                        
+                        // Store selected color
+                        selectedQuickViewColor = color;
                         
                         // Update media for this color
                         const mediaForColor = productCard.querySelectorAll(`.image-slider img[data-color="${color}"], .image-slider video[data-color="${color}"]`);
@@ -296,6 +304,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     font-weight: 500;
                 `;
                 
+                // Set default selected size (middle size)
+                if (size === 'M') {
+                    sizeBtn.style.border = '2px solid #333';
+                    sizeBtn.style.backgroundColor = '#333';
+                    sizeBtn.style.color = 'white';
+                    selectedQuickViewSize = size;
+                }
+                
                 // Add click handler
                 sizeBtn.addEventListener('click', function() {
                     // Remove active class from all size options
@@ -309,6 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.style.border = '2px solid #333';
                     this.style.backgroundColor = '#333';
                     this.style.color = 'white';
+                    
+                    // Store selected size
+                    selectedQuickViewSize = size;
                 });
                 
                 sizeSelection.appendChild(sizeBtn);
@@ -496,7 +515,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const productName = document.getElementById('quick-view-title')?.textContent || 'Product';
             
             if (productId) {
-                addToCart(productId, productName);
+                // Check if variants are selected
+                if (!selectedQuickViewColor) {
+                    showNotification('Please select a color first', 'error');
+                    return;
+                }
+                if (!selectedQuickViewSize) {
+                    showNotification('Please select a size first', 'error');
+                    return;
+                }
+                
+                addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
             }
         }
     });
@@ -536,6 +565,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show success notification
                 showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            if (button && originalText) {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    }
+
+    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
+        console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+        
+        // Show loading state
+        const button = document.querySelector('#add-to-bag-quick');
+        let originalText = '';
+        if (button) {
+            originalText = button.textContent;
+            button.textContent = 'Adding...';
+            button.disabled = true;
+        }
+        
+        // Show immediate feedback notification
+        showNotification(`Adding ${productName} (${selectedColor}, ${selectedSize}) to cart...`, 'info');
+        
+        // Make API call to add to cart with selected variants
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&return_url=${encodeURIComponent(window.location.href)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Cart API response:', data);
+            
+            if (data.success) {
+                // Update cart count in header
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount(data.cart_count);
+                }
+                
+                // Show success notification
+                showNotification(`✓ ${productName} (${selectedColor}, ${selectedSize}) added to cart!`, 'success');
+                
+                // Close quick view after successful addition
+                setTimeout(() => {
+                    closeQuickView();
+                }, 1500);
             } else {
                 // Show error notification
                 showNotification(`✗ Error: ${data.message}`, 'error');
