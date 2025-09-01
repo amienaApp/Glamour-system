@@ -103,27 +103,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $colorVariants = $product['color_variants'];
                 $updatedVariants = false;
                 
-                foreach ($colorVariants as $index => $variant) {
-                    $variantUpdates = [];
-                    
-                    if (!empty($variant['front_image']) && strpos($variant['front_image'], 'img/') === 0) {
-                        $filename = basename($variant['front_image']);
-                        $newPath = 'uploads/products/' . $filename;
-                        $variantUpdates['front_image'] = $newPath;
-                        $updatedVariants = true;
-                    }
-                    
-                    if (!empty($variant['back_image']) && strpos($variant['back_image'], 'img/') === 0) {
-                        $filename = basename($variant['back_image']);
-                        $newPath = 'uploads/products/' . $filename;
-                        $variantUpdates['back_image'] = $newPath;
-                        $updatedVariants = true;
-                    }
-                    
-                    if (!empty($variantUpdates)) {
-                        $colorVariants[$index] = array_merge($variant, $variantUpdates);
-                    }
-                }
+                                 foreach ($colorVariants as $index => $variant) {
+                     $variantUpdates = [];
+                     
+                     // Convert BSON document to array if needed
+                     $variantArray = is_object($variant) ? (array)$variant : $variant;
+                     
+                     if (!empty($variantArray['front_image']) && strpos($variantArray['front_image'], 'img/') === 0) {
+                         $filename = basename($variantArray['front_image']);
+                         $newPath = 'uploads/products/' . $filename;
+                         $variantUpdates['front_image'] = $newPath;
+                         $updatedVariants = true;
+                     }
+                     
+                     if (!empty($variantArray['back_image']) && strpos($variantArray['back_image'], 'img/') === 0) {
+                         $filename = basename($variantArray['back_image']);
+                         $newPath = 'uploads/products/' . $filename;
+                         $variantUpdates['back_image'] = $newPath;
+                         $updatedVariants = true;
+                     }
+                     
+                     if (!empty($variantUpdates)) {
+                         $colorVariants[$index] = array_merge($variantArray, $variantUpdates);
+                     }
+                 }
                 
                 if ($updatedVariants) {
                     $updates['color_variants'] = $colorVariants;
@@ -374,16 +377,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     if (!empty($product['back_image']) && strpos($product['back_image'], 'img/') === 0) {
                                         $oldPaths[] = 'Back: ' . $product['back_image'];
                                     }
-                                    if (!empty($product['color_variants'])) {
-                                        foreach ($product['color_variants'] as $variant) {
-                                            if (!empty($variant['front_image']) && strpos($variant['front_image'], 'img/') === 0) {
-                                                $oldPaths[] = 'Variant Front: ' . $variant['front_image'];
-                                            }
-                                            if (!empty($variant['back_image']) && strpos($variant['back_image'], 'img/') === 0) {
-                                                $oldPaths[] = 'Variant Back: ' . $variant['back_image'];
-                                            }
-                                        }
-                                    }
+                                                                         if (!empty($product['color_variants'])) {
+                                         foreach ($product['color_variants'] as $variant) {
+                                             // Convert BSON document to array if needed
+                                             $variantArray = is_object($variant) ? (array)$variant : $variant;
+                                             
+                                             if (!empty($variantArray['front_image']) && strpos($variantArray['front_image'], 'img/') === 0) {
+                                                 $oldPaths[] = 'Variant Front: ' . $variantArray['front_image'];
+                                             }
+                                             if (!empty($variantArray['back_image']) && strpos($variantArray['back_image'], 'img/') === 0) {
+                                                 $oldPaths[] = 'Variant Back: ' . $variantArray['back_image'];
+                                             }
+                                         }
+                                     }
                                     echo implode(', ', $oldPaths);
                                     ?>
                                 </small>

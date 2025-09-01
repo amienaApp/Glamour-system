@@ -1,5 +1,9 @@
 <?php
 $page_title = 'Galamor palace';
+
+// Handle subcategory parameter
+$subcategory = $_GET['subcategory'] ?? '';
+$page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 'Bags - ' . $page_title;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,19 +15,23 @@ $page_title = 'Galamor palace';
     <meta http-equiv="Expires" content="0">
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles/header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
-                    <?php include 'includes/header.php'; ?>
+                    <?php include '../heading/header.php'; ?>
 
                 
 
                 <div class="page-layout">
                     <?php include 'includes/sidebar.php'; ?>
-                    <?php include 'includes/main-content.php'; ?>
+                    <?php 
+                    // Pass subcategory to main content
+                    $GLOBALS['current_subcategory'] = $subcategory;
+                    include 'includes/main-content.php'; 
+                    ?>
                 </div>
 
 </body>

@@ -58,6 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $productData['gender'] = $productPost['gender'] ?? '';
                 $productData['size'] = $productPost['size'] ?? '';
             }
+            
+            // Handle bags category with gender
+            if (strtolower($productData['category'] ?? '') === 'bags') {
+                $productData['gender'] = $productPost['gender'] ?? '';
+            }
 
             // Handle main product images for this product
             if (isset($_FILES['products']['name'][$productIndex]['front_image']) && 
@@ -95,6 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantData['brand'] = $variant['brand'] ?? '';
                             $variantData['gender'] = $variant['gender'] ?? '';
                             $variantData['size'] = $variant['size'] ?? '';
+                        }
+                        
+                        // Handle bags-specific fields for variants
+                        if (strtolower($productData['category']) === 'bags') {
+                            $variantData['gender'] = $variant['gender'] ?? '';
                         }
 
                         // Handle variant images
@@ -182,6 +192,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $productData['gender'] = $_POST['gender'] ?? '';
             $productData['size'] = $_POST['size'] ?? '';
         }
+        
+        // Handle bags category with gender
+        if (strtolower($productData['category'] ?? '') === 'bags') {
+            $productData['gender'] = $_POST['gender'] ?? '';
+        }
 
         // Handle main product images
         if (isset($_FILES['front_image']) && $_FILES['front_image']['error'] === UPLOAD_ERR_OK) {
@@ -217,6 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $variantData['brand'] = $variant['brand'] ?? '';
                         $variantData['gender'] = $variant['gender'] ?? '';
                         $variantData['size'] = $variant['size'] ?? '';
+                    }
+                    
+                    // Handle bags-specific fields for variants
+                    if (strtolower($productData['category']) === 'bags') {
+                        $variantData['gender'] = $variant['gender'] ?? '';
                     }
 
                     // Handle variant images
@@ -1293,9 +1313,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="gender">Gender *</label>
                 <select id="gender" name="gender">
                     <option value="">Select Gender</option>
-                    <option value="men">Men</option>
-                    <option value="women">Women</option>
-                    <option value="unisex">Unisex</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
                 </select>
             </div>
             
@@ -1500,10 +1519,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             const isPerfume = category.toLowerCase() === 'perfumes';
             const isShoes = category.toLowerCase() === 'shoes';
+            const isBags = category.toLowerCase() === 'bags';
             
             // Show/hide individual perfume fields
             if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = (isPerfume || isBags) ? 'block' : 'none';
             if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
             
             // Show/hide shoe type field
@@ -1519,7 +1539,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const sizeField = document.getElementById('perfume_size');
             
             if (brandField) brandField.required = isPerfume;
-            if (genderField) genderField.required = isPerfume;
+            if (genderField) genderField.required = (isPerfume || isBags);
             if (sizeField) sizeField.required = isPerfume;
         }
 
@@ -1537,6 +1557,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const container = document.getElementById('color-variants-container');
             const currentCategory = document.getElementById('category').value;
             const isPerfume = currentCategory.toLowerCase() === 'perfumes';
+            const isBags = currentCategory.toLowerCase() === 'bags';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -1605,6 +1626,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
                     ` : `
+                    ${isBags ? `
+                    <!-- Bags-specific gender field for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="color_variants[${colorVariantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
                     <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Variant Size Category</label>
@@ -2884,10 +2917,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             const isPerfume = category.toLowerCase() === 'perfumes';
             const isShoes = category.toLowerCase() === 'shoes';
+            const isBags = category.toLowerCase() === 'bags';
             
             // Show/hide individual perfume fields
             if (brandGroup) brandGroup.style.display = isPerfume ? 'block' : 'none';
-            if (genderGroup) genderGroup.style.display = isPerfume ? 'block' : 'none';
+            if (genderGroup) genderGroup.style.display = (isPerfume || isBags) ? 'block' : 'none';
             if (perfumeSizeGroup) perfumeSizeGroup.style.display = isPerfume ? 'block' : 'none';
             
             // Show/hide shoe type field
@@ -2903,7 +2937,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const sizeField = document.getElementById(`perfume_size-${productIndex}`);
             
             if (brandField) brandField.required = isPerfume;
-            if (genderField) genderField.required = isPerfume;
+            if (genderField) genderField.required = (isPerfume || isBags);
             if (sizeField) sizeField.required = isPerfume;
         }
 
@@ -3424,6 +3458,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const variantIndex = globalColorVariantIndexes[productIndex] || 0;
             const currentCategory = document.querySelector(`select[name="products[${productIndex}][category]"]`).value;
             const isPerfume = currentCategory.toLowerCase() === 'perfumes';
+            const isBags = currentCategory.toLowerCase() === 'bags';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -3492,6 +3527,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
                     ` : `
+                    ${isBags ? `
+                    <!-- Bags-specific gender field for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][gender]">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
                     <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Size Category</label>

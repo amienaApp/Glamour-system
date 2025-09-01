@@ -98,6 +98,10 @@ class Product {
         return $this->getAll(['featured' => true]);
     }
 
+    public function getByCategoryAndFeatured($category, $featured = true) {
+        return $this->getAll(['category' => $category, 'featured' => $featured]);
+    }
+
     public function getOnSale() {
         return $this->getAll(['sale' => true]);
     }

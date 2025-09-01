@@ -16,11 +16,12 @@ function getCategoryUrl($categoryName) {
         "Men's Clothing" => '../menfolder/men.php',
         "Kids' Clothing" => '#kids',
         "Accessories" => '../accessories/accessories.php',
-        "Home & Living" => '#home-decor',
+        "Home & Living" => '../homedecor/homedecor.php',
         "Beauty & Cosmetics" => '../perfumes/index.php',
         "Sports & Fitness" => '#sports',
         "Perfumes" => '../perfumes/index.php',
-        "Shoes" => '../shoess/shoes.php'
+        "Shoes" => '../shoess/shoes.php',
+        "Bags" => '../bagsfolder/bags.php'
     ];
     
     return $categoryMap[$categoryName] ?? '#';
@@ -57,7 +58,7 @@ function getCategoryUrl($categoryName) {
             ],
         "Accessories" => [
             "Shoes" => '../shoess/shoes.php',
-            "Bags" => '#bags',
+            "Bags" => '../bagsfolder/bags.php',
             "Jewelry" => '#jewelry',
             "Hats" => '#hats',
             "Scarves" => '#scarves',
@@ -77,6 +78,22 @@ function getCategoryUrl($categoryName) {
             "Makeup" => '#makeup',
             "Hair Care" => '#hair-care',
             "Tools" => '#tools'
+        ],
+        "Home & Living" => [
+            "Bedding" => '../homedecor/homedecor.php?subcategory=bedding',
+            "Dining Room" => '../homedecor/homedecor.php?subcategory=dining-room',
+            "Living Room" => '../homedecor/homedecor.php?subcategory=living-room',
+            "Kitchen" => '../homedecor/homedecor.php?subcategory=kitchen',
+            "Bathroom" => '../homedecor/homedecor.php?subcategory=bathroom',
+            "Outdoor" => '../homedecor/homedecor.php?subcategory=outdoor'
+        ],
+        "Bags" => [
+            "Handbags" => '../bagsfolder/bags.php?subcategory=handbags',
+            "Backpacks" => '../bagsfolder/bags.php?subcategory=backpacks',
+            "Totes" => '../bagsfolder/bags.php?subcategory=totes',
+            "Clutches" => '../bagsfolder/bags.php?subcategory=clutches',
+            "Crossbody" => '../bagsfolder/bags.php?subcategory=crossbody',
+            "Travel Bags" => '../bagsfolder/bags.php?subcategory=travel'
         ]
     ];
     
