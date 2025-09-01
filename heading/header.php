@@ -12,7 +12,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
 // Function to get the correct URL for each category
 function getCategoryUrl($categoryName) {
     $categoryMap = [
-        "Women's Clothing" => '../womenF/index.php',
+        "Women's Clothing" => '../womenF/women.php',
         "Men's Clothing" => '../menfolder/men.php',
         "Kids' Clothing" => '#kids',
         "Accessories" => '../accessories/accessories.php',
@@ -31,18 +31,18 @@ function getCategoryUrl($categoryName) {
     function getSubcategoryUrl($categoryName, $subcategoryName) {
         $subcategoryMap = [
             "Women's Clothing" => [
-                "Dresses" => '../womenF/index.php#products-section',
-                "Tops" => '../womenF/index.php#tops-section',
-                "Bottoms" => '../womenF/index.php?subcategory=bottoms',
-                "Outerwear" => '../womenF/index.php?subcategory=outerwear',
-                "Activewear" => '../womenF/index.php?subcategory=activewear',
-                "Lingerie" => '../womenF/index.php?subcategory=lingerie',
-                "Swimwear" => '../womenF/index.php?subcategory=swimwear',
-                "Wedding Guest" => '../womenF/index.php?subcategory=wedding-guest',
-                "Wedding-dress" => '../womenF/index.php?subcategory=wedding-dress',
-                "Abaya" => '../womenF/index.php?subcategory=abaya',
-                "Summer-dresses" => '../womenF/index.php?subcategory=summer-dresses',
-                "Homecoming" => '../womenF/index.php?subcategory=homecoming'
+                "Dresses" => '../womenF/women.php#products-section',
+                "Tops" => '../womenF/women.php#tops-section',
+                "Bottoms" => '../womenF/women.php?subcategory=bottoms',
+                "Outerwear" => '../womenF/women.php?subcategory=outerwear',
+                "Activewear" => '../womenF/women.php?subcategory=activewear',
+                "Lingerie" => '../womenF/women.php?subcategory=lingerie',
+                "Swimwear" => '../womenF/women.php?subcategory=swimwear',
+                "Wedding Guest" => '../womenF/women.php?subcategory=wedding-guest',
+                "Wedding-dress" => '../womenF/women.php?subcategory=wedding-dress',
+                "Abaya" => '../womenF/women.php?subcategory=abaya',
+                "Summer-dresses" => '../womenF/women.php?subcategory=summer-dresses',
+                "Homecoming" => '../womenF/women.php?subcategory=homecoming'
             ],
             "Men's Clothing" => [
                 "Shirts" => '../menfolder/men.php#shirts-section',
@@ -213,7 +213,7 @@ $regionOptions = [
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Fallback static menu if no categories found -->
-                <li><a href="../womenF/index.php" class="nav-link">Women's Clothing</a></li>
+                <li><a href="../womenF/women.php" class="nav-link">Women's Clothing</a></li>
                 <li><a href="../menfolder/men.php" class="nav-link">Men's Clothing</a></li>
                 <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
                 <li><a href="../shoess/shoes.php" class="nav-link">Shoes</a></li>

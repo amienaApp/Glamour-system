@@ -28,13 +28,17 @@ class User {
             }
         }
 
-        // Check if email already exists (only email validation)
+        // Check if email already exists
         $existingEmail = $this->collection->findOne(['email' => $userData['email']]);
         if ($existingEmail) {
             throw new Exception("Email already registered");
         }
 
-        // Username can be the same as others (no validation needed)
+        // Check if username already exists
+        $existingUsername = $this->collection->findOne(['username' => $userData['username']]);
+        if ($existingUsername) {
+            throw new Exception("Username already taken");
+        }
 
         // Hash password
         $userData['password'] = password_hash($userData['password'], PASSWORD_DEFAULT);

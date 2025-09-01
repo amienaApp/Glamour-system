@@ -29,31 +29,31 @@ if ($subcategory) {
 
                 <!-- Image Bar Section -->
                 <div class="image-bar">
-                    <a href="index.php" class="image-item">
+                    <a href="women.php" class="image-item">
                         <img src="../img/women/dresses/12.webp" alt="Women Fashion 12">
                         <h3>Shop All</h3>
                     </a>
-                    <a href="index.php?subcategory=dresses" class="image-item">
+                    <a href="women.php?subcategory=dresses" class="image-item">
                         <img src="../img/women/13.webp" alt="Women Fashion 13">
                         <h3>Dresses</h3>
                     </a>
-                    <a href="index.php?subcategory=wedding-guest" class="image-item">
+                    <a href="women.php?subcategory=wedding-guest" class="image-item">
                         <img src="../img/women/14.avif" alt="Women Fashion 14">
                         <h3>Wedding Guest</h3>
                     </a>
-                    <a href="index.php?subcategory=wedding-dress" class="image-item">
+                    <a href="women.php?subcategory=wedding-dress" class="image-item">
                         <img src="../img/women/dresses/17.webp" alt="Women Fashion 17">
                         <h3>Wedding-dress</h3>
                     </a>
-                    <a href="index.php?subcategory=abaya" class="image-item">
+                    <a href="women.php?subcategory=abaya" class="image-item">
                         <img src="../img/women/NEW/11.webp" alt="Women Fashion 12">
                         <h3>Abaya</h3>
                     </a>
-                    <a href="index.php?subcategory=summer-dresses" class="image-item">
+                    <a href="women.php?subcategory=summer-dresses" class="image-item">
                         <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
                         <h3>Summer-dresses</h3>
                     </a>
-                    <a href="index.php?subcategory=homecoming" class="image-item">
+                    <a href="women.php?subcategory=homecoming" class="image-item">
                         <img src="../img/women/14.avif" alt="Women Fashion 14">
                         <h3>Homecoming</h3>
                     </a>
@@ -65,4 +65,4 @@ if ($subcategory) {
                 </div>
 
 </body>
-</html> 
+</html>

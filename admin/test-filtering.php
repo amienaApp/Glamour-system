@@ -95,13 +95,31 @@ if (!empty($testCategory)) {
     echo "</ul>";
 }
 
+// Test 5: Test accessories gender functionality
+echo "<h2>5. Test Accessories Gender Functionality</h2>";
+$accessoriesProducts = $productModel->getByCategory('Accessories');
+echo "<p>Total accessories products: " . count($accessoriesProducts) . "</p>";
+
+if (!empty($accessoriesProducts)) {
+    echo "<h3>Accessories Products with Gender Info:</h3>";
+    echo "<ul>";
+    foreach (array_slice($accessoriesProducts, 0, 10) as $product) {
+        echo "<li><strong>" . htmlspecialchars($product['name']) . "</strong>";
+        echo " - Gender: " . htmlspecialchars($product['gender'] ?? 'NULL');
+        echo " - Subcategory: " . htmlspecialchars($product['subcategory'] ?? 'NULL');
+        echo "</li>";
+    }
+    echo "</ul>";
+}
+
 // Test form
-echo "<h2>5. Test Filtering</h2>";
+echo "<h2>6. Test Filtering</h2>";
 echo "<form method='GET'>";
 echo "<label>Test Category: <input type='text' name='test_category' value='" . htmlspecialchars($testCategory) . "'></label><br><br>";
 echo "<label>Test Subcategory: <input type='text' name='test_subcategory' value='" . htmlspecialchars($testSubcategory) . "'></label><br><br>";
 echo "<button type='submit'>Test Filters</button>";
 echo "</form>";
 
+echo "<p><a href='add-product.php'>→ Test Add Product (Accessories Gender)</a></p>";
 echo "<p><a href='view-products.php'>← Back to View Products</a></p>";
 ?>

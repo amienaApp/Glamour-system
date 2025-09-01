@@ -94,3 +94,4 @@ try {
     echo json_encode(['error' => 'Internal server error: ' . $e->getMessage()]);
 }
 ?>
+

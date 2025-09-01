@@ -119,7 +119,7 @@ if (empty($featuredProducts)) {
                  <div class="card-content">
                     <h3>Women's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                      <a href="womenF/index.php"><button class="btn">Shop Now</button></a>
+                      <a href="womenF/women.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -192,6 +192,17 @@ if (empty($featuredProducts)) {
                 </div>
 
 
+
+                                                               <div class="card">
+                 <img src="img/home-decor/1.jpg" cover / center no-repeat>
+                 <div class="card-content">
+                    <h3>Home Decor</h3>
+                     <P>Beautiful home styling & decoration</P>   
+                      <a href="homedecor/homedecor.php"><button class="btn">Shop Now</button></a>
+                 </div>
+                </div>
+
+
            </div>
 
        </section>
@@ -201,7 +212,7 @@ if (empty($featuredProducts)) {
      <!-- Left: Large Feature Image with Text Overlay -->
      <div class="laci-left">
            <div class="category4">
-             <a href="womenF/index.php?category=dresses">
+             <a href="womenF/women.php?category=dresses">
                <video src="./img/sawiro/dressvideo.mp4" autoplay loop muted controls> </video>
                <div class="overlay4">Wedding Dresses</div>
              </a>
@@ -213,20 +224,20 @@ if (empty($featuredProducts)) {
        <div class="gallery">
          <div class="container4">
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/9.jpg" alt="Photo 1">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/8.jpg" alt="Photo 2">
                 </a>
              </div>
              
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/10.jpg" alt="Photo 3">
                 </a>
              </div>
@@ -238,13 +249,13 @@ if (empty($featuredProducts)) {
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/7.jpg" alt="Photo 5">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?category=dresses">
                    <img src="./img/sawiro/21.webp" alt="Photo 6">
                 </a>
              </div>
@@ -256,13 +267,13 @@ if (empty($featuredProducts)) {
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?category=dresses">
                   <img src="./img/sawiro/12.jpg" alt="Photo 8">
                 </a>
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?category=dresses">
                   <img src="./img/sawiro/13.jpg" alt="Photo 9">
                </a>
              </div>
@@ -301,21 +312,21 @@ if (empty($featuredProducts)) {
        </div>
       
        <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+         <a href="womenF/women.php?category=dresses">
            <img src="./img/sawiro/22.webp" alt="Formal Dresses">
            <div class="overlay5">Formal Dresses</div>
          </a>
        </div>
 
          <div class="category5">
-       <a href="womenF/index.php?category=dresses">
+       <a href="womenF/women.php?category=dresses">
          <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
          <div class="overlay5">Bride Dresses</div>
        </a>
        </div>
        
        <div class="category5">
-         <a href="womenF/index.php?category=beauty">
+         <a href="womenF/women.php?category=beauty">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">makeup</div>
          </a>
@@ -329,7 +340,7 @@ if (empty($featuredProducts)) {
        </div>
 
        <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+         <a href="womenF/women.php?category=dresses">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">Formal Dresses</div>
          </a>

@@ -53,8 +53,28 @@ try {
     exit();
 }
 
-// Get user ID from session or use consistent default
-$defaultUserId = $_SESSION['user_id'] ?? $_SESSION['current_cart_user_id'] ?? 'main_user_1756062003';
+// Get user ID from session - allow cart operations without auth, but require auth for checkout
+$defaultUserId = $_SESSION['user_id'] ?? null;
+
+// For unauthenticated users, use session-based cart
+if (!$defaultUserId) {
+    $defaultUserId = 'session_' . session_id();
+}
+
+// Check if user is authenticated for checkout operations only
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+$checkoutActions = ['place_order', 'checkout'];
+
+if (in_array($action, $checkoutActions) && !isset($_SESSION['user_id'])) {
+    ob_end_clean();
+    echo json_encode([
+        'success' => false,
+        'message' => 'Authentication required for checkout. Please sign in to proceed.',
+        'requires_auth' => true,
+        'redirect_to' => 'register'
+    ]);
+    exit();
+}
 
 try {
     $cartModel = new Cart();

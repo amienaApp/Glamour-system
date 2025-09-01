@@ -338,7 +338,7 @@ $paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] ==
 </head>
 <body>
     <div class="container">
-        <a href="womenF/index.php" class="back-btn">
+                        <a href="womenF/women.php" class="back-btn">
             <i class="fas fa-arrow-left"></i>
             Back to Home
         </a>
@@ -361,7 +361,7 @@ $paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] ==
                     <i class="fas fa-shopping-bag"></i>
                     <h3>No Orders Yet</h3>
                     <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
-                    <a href="womenF/index.php" class="shop-btn">
+                    <a href="womenF/women.php" class="shop-btn">
                         <i class="fas fa-shopping-cart"></i>
                         Start Shopping
                     </a>

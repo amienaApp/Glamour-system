@@ -906,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send login request
-                fetch('login.php', {
+                fetch('../menfolder/login-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -988,7 +988,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send registration request
-                fetch('register.php', {
+                fetch('../menfolder/register-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -999,7 +999,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.success) {
                         // Show success notification
-                        showSuccessNotification();
+                        showNotification('✓ Account created successfully! You can now sign in.', 'success');
                         
                         // Reset form
                         registrationForm.reset();
@@ -1122,18 +1122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Show success notification
-        function showSuccessNotification() {
-            const notification = document.getElementById('success-notification');
-            if (notification) {
-                notification.classList.add('show');
-                
-                // Hide notification after 3 seconds
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
-        }
+
 
         // Switch to login form
         function switchToLoginForm() {
@@ -1148,7 +1137,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Logout function
         function logout() {
-            fetch('logout.php', {
+            fetch('../menfolder/logout-handler.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

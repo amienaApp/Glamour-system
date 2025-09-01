@@ -335,7 +335,7 @@ $orders = $orderModel->getUserOrders($userId);
 </head>
 <body>
     <div class="container">
-        <a href="index.php" class="back-btn">
+        <a href="men.php" class="back-btn">
             <i class="fas fa-arrow-left"></i>
             Back to Home
         </a>
@@ -351,7 +351,7 @@ $orders = $orderModel->getUserOrders($userId);
                     <i class="fas fa-shopping-bag"></i>
                     <h3>No Orders Yet</h3>
                     <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
-                    <a href="index.php" class="shop-btn">
+                    <a href="men.php" class="shop-btn">
                         <i class="fas fa-shopping-cart"></i>
                         Start Shopping
                     </a>

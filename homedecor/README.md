@@ -151,3 +151,4 @@ For technical support or questions about the home decor system, please contact t
 ---
 
 **Note**: This system is designed to work with the main Glamour Palace e-commerce platform. Ensure all dependencies and database connections are properly configured before use.
+
