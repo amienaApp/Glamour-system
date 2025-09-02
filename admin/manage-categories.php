@@ -72,6 +72,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        case 'delete_subcategory':
+            $categoryName = trim($_POST['category_name'] ?? '');
+            $subcategoryName = trim($_POST['subcategory_name'] ?? '');
+            
+            // Debug logging
+            error_log("Delete subcategory request - Category: '$categoryName', Subcategory: '$subcategoryName'");
+            error_log("POST data: " . json_encode($_POST));
+            
+            if (empty($categoryName) || empty($subcategoryName)) {
+                $message = 'Category name and subcategory name are required.';
+                $messageType = 'error';
+                error_log("Delete subcategory failed - Missing required fields");
+            } else {
+                $success = $categoryModel->removeSubcategory($categoryName, $subcategoryName);
+                if ($success) {
+                    $message = 'Subcategory deleted successfully!';
+                    $messageType = 'success';
+                    error_log("Subcategory '$subcategoryName' deleted successfully from category '$categoryName'");
+                } else {
+                    $message = 'Failed to delete subcategory.';
+                    $messageType = 'error';
+                    error_log("Failed to delete subcategory '$subcategoryName' from category '$categoryName'");
+                }
+            }
+            break;
+
         case 'edit_category':
             $categoryId = $_POST['category_id'] ?? '';
             $categoryName = trim($_POST['edit_category_name'] ?? '');
@@ -1634,6 +1660,8 @@ $categories = $categoryModel->getAll();
             const select = document.getElementById('edit_subcategory_select');
             const selectedIndex = select.value;
             
+            console.log('removeSubcategory called with selectedIndex:', selectedIndex);
+            
             if (selectedIndex === '') {
                 showMessage('Please select a subcategory to remove!', 'error');
                 return;
@@ -1641,6 +1669,9 @@ $categories = $categoryModel->getAll();
             
             const subcategoryName = select.options[select.selectedIndex].textContent;
             const subcategoryIndex = selectedIndex;
+            
+            console.log('Subcategory to remove:', subcategoryName, 'at index:', subcategoryIndex);
+            console.log('Current subcategories array:', currentSubcategories);
             
             // Show confirmation modal
             showRemoveSubcategoryModal(subcategoryName, subcategoryIndex);
@@ -1655,37 +1686,62 @@ $categories = $categoryModel->getAll();
         function confirmRemoveSubcategory() {
             const modal = document.getElementById('removeSubcategoryModal');
             const subcategoryIndex = parseInt(modal.getAttribute('data-index'));
-            const select = document.getElementById('edit_subcategory_select');
+            const categoryName = document.getElementById('edit_category_name').value;
             
-
-            
-            // Remove from array immediately
-            currentSubcategories.splice(subcategoryIndex, 1);
-            
-
-            
-            // Update dropdown immediately
-            select.innerHTML = '<option value="">Select subcategory to edit</option>';
-            
-            if (currentSubcategories && currentSubcategories.length > 0) {
-                currentSubcategories.forEach((subcategory, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = subcategory;
-                    select.appendChild(option);
-                });
+            // Get the subcategory name from the currentSubcategories array
+            if (!currentSubcategories || !currentSubcategories[subcategoryIndex]) {
+                showMessage('Subcategory not found!', 'error');
+                closeRemoveSubcategoryModal();
+                return;
             }
             
-            // Close modal immediately
-            closeRemoveSubcategoryModal();
+            const subcategoryName = currentSubcategories[subcategoryIndex];
             
-            // Show success message immediately
-            showMessage('Subcategory removed successfully!', 'success');
+            console.log('Deleting subcategory:', subcategoryName, 'from category:', categoryName, 'at index:', subcategoryIndex);
             
-            // Ensure buttons remain clickable
-            setTimeout(ensureButtonClickability, 100);
+            // Send deletion request to server
+            const formData = new FormData();
+            formData.append('action', 'delete_subcategory');
+            formData.append('category_name', categoryName);
+            formData.append('subcategory_name', subcategoryName);
             
-
+            fetch('manage-categories.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Server response:', data);
+                
+                // Check if the response indicates success
+                if (data.includes('Subcategory deleted successfully') || data.includes('success')) {
+                    // Remove from local array
+                    if (currentSubcategories && currentSubcategories.length > subcategoryIndex) {
+                        currentSubcategories.splice(subcategoryIndex, 1);
+                        console.log('Updated currentSubcategories:', currentSubcategories);
+                    }
+                    
+                    // Update dropdown with fresh data
+                    updateSubcategoryDropdown();
+                    
+                    // Close modal
+                    closeRemoveSubcategoryModal();
+                    
+                    // Show success message
+                    showMessage('Subcategory deleted successfully!', 'success');
+                    
+                    // Ensure buttons remain clickable
+                    setTimeout(ensureButtonClickability, 100);
+                } else {
+                    // Show error message if deletion failed
+                    showMessage('Failed to delete subcategory. Please try again.', 'error');
+                    console.error('Deletion failed. Server response:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting subcategory:', error);
+                showMessage('Failed to delete subcategory. Please try again.', 'error');
+            });
         }
 
         function saveSubcategory() {
@@ -1798,6 +1854,26 @@ $categories = $categoryModel->getAll();
 
         function closeDeleteModal() {
             document.getElementById('deleteCategoryModal').style.display = 'none';
+        }
+
+        function updateSubcategoryDropdown() {
+            const select = document.getElementById('edit_subcategory_select');
+            if (!select) return;
+            
+            // Clear existing options
+            select.innerHTML = '<option value="">Select subcategory to edit</option>';
+            
+            // Add current subcategories
+            if (currentSubcategories && currentSubcategories.length > 0) {
+                currentSubcategories.forEach((subcategory, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = subcategory;
+                    select.appendChild(option);
+                });
+            }
+            
+            console.log('Subcategory dropdown updated with', currentSubcategories ? currentSubcategories.length : 0, 'items');
         }
 
         function closeRemoveSubcategoryModal() {

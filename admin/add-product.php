@@ -3012,7 +3012,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="category-${productIndex}">Category *</label>
-                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required onchange="loadMultiSubcategories(${productIndex})">
+                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required>
                                     ${categoryOptions}
                                 </select>
                             </div>
@@ -3358,34 +3358,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        function loadMultiSubcategories(productIndex) {
-            const categorySelect = document.getElementById(`category-${productIndex}`);
-            const subcategorySelect = document.getElementById(`subcategory-${productIndex}`);
-            const category = categorySelect.value;
-
-            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
-            
-            if (!category) return;
-                        
-            fetch(`get-subcategories.php?category=${encodeURIComponent(category)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const subcategories = data.subcategories || data;
-                    if (subcategories && subcategories.length > 0) {
-                        subcategories.forEach(sub => {
-                            const option = document.createElement('option');
-                            const subName = typeof sub === 'string' ? sub : sub.name;
-                            option.value = subName;
-                            option.textContent = subName;
-                            subcategorySelect.appendChild(option);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error loading subcategories:', error));
-            
-            // Show/hide perfume-specific fields for multi-product form
-            toggleMultiPerfumeFields(productIndex, category);
-        }
+        // REMOVED DUPLICATE FUNCTION - Using the better one below
         
         function toggleMultiPerfumeFields(productIndex, category) {
             const brandGroup = document.getElementById(`brand-group-${productIndex}`);
@@ -4090,13 +4063,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .then(data => {
                 console.log('Subcategory response data:', data);
                 if (data.success && data.subcategories) {
-                    data.subcategories.forEach(subcategory => {
+                    // Clear existing options first to prevent duplicates
+                    subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                    
+                    // Use Set to ensure unique subcategories
+                    const uniqueSubcategories = [...new Set(data.subcategories)];
+                    
+                    uniqueSubcategories.forEach(subcategory => {
                         const option = document.createElement('option');
                         option.value = subcategory;
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
                     });
-                    console.log(`Loaded ${data.subcategories.length} subcategories for ${category}`);
+                    console.log(`Loaded ${uniqueSubcategories.length} unique subcategories for ${category}`);
                 } else {
                     console.log('No subcategories found for category:', category, 'Response:', data);
                 }
@@ -4104,6 +4083,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .catch(error => {
                 console.error('Error loading subcategories:', error);
             });
+            
+            // Show/hide perfume-specific fields for multi-product form
+            toggleMultiPerfumeFields(productIndex, category);
         }
 
         // Handle Home & Living subcategory changes for multi-product forms
