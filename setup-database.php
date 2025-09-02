@@ -11,7 +11,7 @@ echo "<h2>Glamour System - Database Setup</h2>";
 
 try {
     // Include required files
-    require_once 'config/mongodb.php';
+    require_once 'config1/mongodb.php';
     require_once 'models/Product.php';
     require_once 'models/Category.php';
     require_once 'models/User.php';

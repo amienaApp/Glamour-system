@@ -1,6 +1,6 @@
 
 <?php
-require_once __DIR__ . '/../../config/mongodb.php';
+require_once __DIR__ . '/../../config1/mongodb.php';
 require_once __DIR__ . '/../../models/Product.php';
 
 $productModel = new Product();

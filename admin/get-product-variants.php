@@ -32,7 +32,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 
 // Check if files exist before requiring them
-$configPath = '../config/mongodb.php';
+$configPath = '../config1/mongodb.php';
 $modelPath = '../models/Product.php';
 
 if (!file_exists($configPath)) {

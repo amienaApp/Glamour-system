@@ -11,7 +11,7 @@ if (isset($_SESSION['user_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Include required files
-        require_once '../config/mongodb.php';
+        require_once '../config1/mongodb.php';
         require_once '../models/User.php';
 
         // Get POST data

@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
 
@@ -31,9 +31,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if this is a multi-product submission
     if (isset($_POST['products']) && is_array($_POST['products'])) {
+        // Debug: Log the $_FILES structure for multi-product forms
+        error_log("Multi-product submission detected. Files structure: " . json_encode($_FILES));
+        
+        // Helper function to restructure $_FILES for multi-product forms
+        function restructureMultiProductFiles($files) {
+            $restructured = [];
+            error_log("Restructuring files. Files structure: " . json_encode($files));
+            
+            if (!isset($files['name']['products']) || !is_array($files['name']['products'])) {
+                error_log("No products files found in $_FILES");
+                return $restructured;
+            }
+            
+            foreach ($files['name']['products'] as $productIndex => $productFiles) {
+                if (isset($productFiles['color_variants']) && is_array($productFiles['color_variants'])) {
+                    foreach ($productFiles['color_variants'] as $variantIndex => $variantFiles) {
+                        // Handle front image
+                        if (isset($variantFiles['front_image']) && !empty($variantFiles['front_image'])) {
+                            $error = $files['error']['products'][$productIndex]['color_variants'][$variantIndex]['front_image'] ?? UPLOAD_ERR_NO_FILE;
+                            if ($error === UPLOAD_ERR_OK) {
+                                $restructured[$productIndex][$variantIndex]['front_image'] = [
+                                    'name' => $variantFiles['front_image'],
+                                    'tmp_name' => $files['tmp_name']['products'][$productIndex]['color_variants'][$variantIndex]['front_image'],
+                                    'error' => $error,
+                                    'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['front_image']
+                                ];
+                                error_log("Added front image for product $productIndex, variant $variantIndex: " . $variantFiles['front_image']);
+                            } else {
+                                error_log("Front image error for product $productIndex, variant $variantIndex: $error");
+                            }
+                        }
+                        
+                        // Handle back image
+                        if (isset($variantFiles['back_image']) && !empty($variantFiles['back_image'])) {
+                            $error = $files['error']['products'][$productIndex]['color_variants'][$variantIndex]['back_image'] ?? UPLOAD_ERR_NO_FILE;
+                            if ($error === UPLOAD_ERR_OK) {
+                                $restructured[$productIndex][$variantIndex]['back_image'] = [
+                                    'name' => $variantFiles['back_image'],
+                                    'tmp_name' => $files['tmp_name']['products'][$productIndex]['color_variants'][$variantIndex]['back_image'],
+                                    'error' => $error,
+                                    'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['back_image']
+                                ];
+                                error_log("Added back image for product $productIndex, variant $variantIndex: " . $variantFiles['back_image']);
+                            } else {
+                                error_log("Back image error for product $productIndex, variant $variantIndex: $error");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            error_log("Restructured files result: " . json_encode($restructured));
+            return $restructured;
+        }
+        
+        $restructuredFiles = restructureMultiProductFiles($_FILES);
+        error_log("Restructured files: " . json_encode($restructuredFiles));
+        
         // Multiple products submission
         foreach ($_POST['products'] as $productIndex => $productPost) {
             if (empty($productPost['name'])) continue; // Skip empty products
+            
+            error_log("Processing product $productIndex: " . json_encode($productPost));
             
             $productData = [
                 'name' => $productPost['name'] ?? '',
@@ -110,15 +170,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle color variants for this product
             if (isset($productPost['color_variants']) && is_array($productPost['color_variants'])) {
+                error_log("Processing color variants for product $productIndex. Variants count: " . count($productPost['color_variants']));
                 $colorVariants = [];
+                
                 foreach ($productPost['color_variants'] as $variantIndex => $variant) {
                     if (!empty($variant['name']) && !empty($variant['color'])) {
+                        error_log("Processing variant $variantIndex for product $productIndex: " . json_encode($variant));
+                        
                         $variantData = [
                             'name' => $variant['name'],
                             'color' => $variant['color'],
                             'size_category' => $variant['size_category'] ?? '',
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
+                        
+                        error_log("Initial variantData for variant $variantIndex: " . json_encode($variantData));
 
                         // Handle perfume-specific fields for variants
                         if (strtolower($productData['category']) === 'perfumes') {
@@ -137,29 +203,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantData['gender'] = $variant['accessories_gender'] ?? '';
                         }
 
-                        // Handle variant images
-                        if (isset($_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['front_image']) && 
-                            $_FILES['products']['error'][$productIndex]['color_variants']['error'][$variantIndex]['front_image'] === UPLOAD_ERR_OK) {
-                            $variantFrontImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_front_' . $_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['front_image'];
+                                                // Handle variant images using restructured files
+                        $frontImageProcessed = false;
+                        if (isset($restructuredFiles[$productIndex][$variantIndex]['front_image'])) {
+                            $frontFile = $restructuredFiles[$productIndex][$variantIndex]['front_image'];
+                            $variantFrontImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_front_' . $frontFile['name'];
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
-                            if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants']['tmp_name'][$variantIndex]['front_image'], $variantFrontImagePath)) {
+                            if (move_uploaded_file($frontFile['tmp_name'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
+                                error_log("Variant front image uploaded successfully: " . $variantData['front_image']);
+                                $frontImageProcessed = true;
+                            } else {
+                                error_log("Failed to move variant front image for product $productIndex, variant $variantIndex");
+                            }
+                        } else {
+                            error_log("Variant front image not found in restructured files for product $productIndex, variant $variantIndex");
+                        }
+                        
+                        // Fallback: Try direct $_FILES access if restructured files failed
+                        if (!$frontImageProcessed && isset($_FILES['products']['name'][$productIndex]['color_variants'][$variantIndex]['front_image']) && 
+                            $_FILES['products']['error'][$productIndex]['color_variants'][$variantIndex]['front_image'] === UPLOAD_ERR_OK) {
+                            $variantFrontImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_front_' . $_FILES['products']['name'][$productIndex]['color_variants'][$variantIndex]['front_image'];
+                            $variantFrontImagePath = $uploadDir . $variantFrontImageName;
+                            if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['front_image'], $variantFrontImagePath)) {
+                                $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
+                                error_log("Variant front image uploaded successfully via fallback: " . $variantData['front_image']);
+                            } else {
+                                error_log("Failed to move variant front image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
 
-                        if (isset($_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['back_image']) && 
-                            $_FILES['products']['error'][$productIndex]['color_variants']['error'][$variantIndex]['back_image'] === UPLOAD_ERR_OK) {
-                            $variantBackImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_back_' . $_FILES['products']['name'][$productIndex]['color_variants']['name'][$variantIndex]['back_image'];
+                                                $backImageProcessed = false;
+                        if (isset($restructuredFiles[$productIndex][$variantIndex]['back_image'])) {
+                            $backFile = $restructuredFiles[$productIndex][$variantIndex]['back_image'];
+                            $variantBackImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_back_' . $backFile['name'];
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
-                            if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants']['tmp_name'][$variantIndex]['back_image'], $variantBackImagePath)) {
+                            if (move_uploaded_file($backFile['tmp_name'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
+                                error_log("Variant back image uploaded successfully: " . $variantData['back_image']);
+                                $backImageProcessed = true;
+                            } else {
+                                error_log("Failed to move variant back image for product $productIndex, variant $variantIndex");
+                            }
+                        } else {
+                            error_log("Variant back image not found in restructured files for product $productIndex, variant $variantIndex");
+                        }
+                        
+                        // Fallback: Try direct $_FILES access if restructured files failed
+                        if (!$backImageProcessed && isset($_FILES['products']['name'][$productIndex]['color_variants'][$variantIndex]['back_image']) && 
+                            $_FILES['products']['error'][$productIndex]['color_variants'][$variantIndex]['back_image'] === UPLOAD_ERR_OK) {
+                            $variantBackImageName = time() . '_product_' . $productIndex . '_variant_' . $variantIndex . '_back_' . $_FILES['products']['name'][$productIndex]['color_variants'][$variantIndex]['back_image'];
+                            $variantBackImagePath = $uploadDir . $variantBackImageName;
+                            if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['back_image'], $variantBackImagePath)) {
+                                $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
+                                error_log("Variant back image uploaded successfully via fallback: " . $variantData['back_image']);
+                            } else {
+                                error_log("Failed to move variant back image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
-
+                        
+                        error_log("Final variantData for variant $variantIndex after image processing: " . json_encode($variantData));
                         $colorVariants[] = $variantData;
                     }
                 }
+                
+                // Always set color variants, even if empty
                 $productData['color_variants'] = $colorVariants;
+                error_log("Final productData for product $productIndex with color variants: " . json_encode($productData));
+                error_log("Color variants count for product $productIndex: " . count($colorVariants));
+            } else {
+                // No color variants found, set empty array
+                $productData['color_variants'] = [];
+                error_log("No color variants found for product $productIndex, setting empty array");
             }
 
             if (isset($productPost['sale']) && !empty($productPost['salePrice'])) {
@@ -167,8 +282,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Validate and create product
+            error_log("About to create product $productIndex. Final productData: " . json_encode($productData));
+            
+            // Final check: Ensure color_variants is properly set
+            if (!isset($productData['color_variants'])) {
+                $productData['color_variants'] = [];
+                error_log("Color variants was not set, initializing as empty array");
+            }
+            
+            // Validate color variants structure
+            if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
+                foreach ($productData['color_variants'] as $vIndex => $variant) {
+                    if (!isset($variant['name']) || !isset($variant['color'])) {
+                        error_log("Warning: Variant $vIndex missing required fields: " . json_encode($variant));
+                    }
+                }
+            }
+            
             $validationErrors = $productModel->validateProductData($productData);
             if (empty($validationErrors)) {
+                error_log("Product $productIndex validation passed, creating product...");
                 $newProductId = $productModel->create($productData);
                 if ($newProductId) {
                     $successCount++;
@@ -1331,7 +1464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="product-count">Number of Products:</label>
                 <input type="number" id="product-count" min="1" max="20" value="1" onchange="handleProductCountChange()" style="width: 80px; text-align: center;">
             </div>
-            <button type="button" class="generate-forms-btn" onclick="generateProductForms()">
+            <button type="button" class="generate-forms-btn" id="generate-forms-btn">
                 <i class="fas fa-magic"></i> Generate Forms
             </button>
         </div>
@@ -1659,23 +1792,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
             
             if (!category) return;
-                        
+            
+            // Load subcategories from database
+            console.log('Single form: Fetching subcategories for category:', category);
             fetch(`get-subcategories.php?category=${encodeURIComponent(category)}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Single form: Response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
-                    const subcategories = data.subcategories || data;
-                    if (subcategories && subcategories.length > 0) {
-                        subcategories.forEach(sub => {
+                    console.log('Single form: Subcategory response data:', data);
+                    if (data.success && data.subcategories) {
+                        data.subcategories.forEach(subcategory => {
                             const option = document.createElement('option');
-                            // Handle both string and object formats
-                            const subName = typeof sub === 'string' ? sub : sub.name;
-                            option.value = subName;
-                            option.textContent = subName;
+                            option.value = subcategory;
+                            option.textContent = subcategory;
                             subcategorySelect.appendChild(option);
                         });
+                        console.log(`Single form: Loaded ${data.subcategories.length} subcategories for ${category}`);
+                    } else {
+                        console.log('Single form: No subcategories found for category:', category, 'Response:', data);
                     }
                 })
-                .catch(error => console.error('Error loading subcategories:', error));
+                .catch(error => {
+                    console.error('Single form: Error loading subcategories:', error);
+                });
             
             // Show/hide perfume-specific fields
             togglePerfumeFields(category);
@@ -1732,6 +1873,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const salePriceGroup = document.getElementById('salePriceGroup');
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
+
+
         
         // Function to handle subcategory changes for Home & Living
         function handleHomeLivingSubcategory() {
@@ -2753,13 +2896,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function generateProductForms() {
-            const count = parseInt(document.getElementById('product-count').value);
-            if (count === 1) {
-                showSingleProductForm();
-            } else {
-                showMultiProductForm(count);
+            console.log('generateProductForms function called');
+            try {
+                const count = parseInt(document.getElementById('product-count').value);
+                console.log('Product count:', count);
+                
+                if (count === 1) {
+                    console.log('Showing single product form');
+                    showSingleProductForm();
+                } else {
+                    console.log('Showing multi product form with count:', count);
+                    showMultiProductForm(count);
+                }
+            } catch (error) {
+                console.error('Error in generateProductForms:', error);
+                alert('Error generating forms: ' + error.message);
             }
         }
+
+        // Ensure function is available globally
+        window.generateProductForms = generateProductForms;
 
         function showSingleProductForm() {
             document.getElementById('single-product-form').classList.add('form-active');
@@ -2767,30 +2923,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showMultiProductForm(count) {
-            document.getElementById('single-product-form').classList.remove('form-active');
-            document.getElementById('multi-product-form').classList.add('form-active');
-            
-            const container = document.getElementById('multi-product-forms-container');
-            container.innerHTML = '';
-            
-            for (let i = 0; i < count; i++) {
-                const productForm = generateProductFormHTML(i);
-                container.innerHTML += productForm;
-            }
-            
-            // Initialize global color variant indexes
-            globalColorVariantIndexes = {};
-            for (let i = 0; i < count; i++) {
-                globalColorVariantIndexes[i] = 0;
+            console.log('showMultiProductForm called with count:', count);
+            try {
+                document.getElementById('single-product-form').classList.remove('form-active');
+                document.getElementById('multi-product-form').classList.add('form-active');
+                
+                const container = document.getElementById('multi-product-forms-container');
+                if (!container) {
+                    console.error('multi-product-forms-container not found');
+                    return;
+                }
+                container.innerHTML = '';
+                
+                console.log('Generating forms...');
+                for (let i = 0; i < count; i++) {
+                    console.log('Generating form for index:', i);
+                    const productForm = generateProductFormHTML(i);
+                    console.log('Form HTML generated:', productForm.substring(0, 100) + '...');
+                    container.innerHTML += productForm;
+                }
+                
+                // Initialize global color variant indexes
+                globalColorVariantIndexes = {};
+                for (let i = 0; i < count; i++) {
+                    globalColorVariantIndexes[i] = 0;
+                }
+                
+                // Initialize multi-product form functionality
+                setTimeout(() => {
+                    initializeMultiProductForms();
+                }, 100);
+                
+                console.log('Multi-product form generation completed');
+            } catch (error) {
+                console.error('Error in showMultiProductForm:', error);
+                alert('Error showing multi-product form: ' + error.message);
             }
         }
 
         function generateProductFormHTML(productIndex) {
-            const categories = <?php echo json_encode(array_column($categories, 'name')); ?>;
-            let categoryOptions = '<option value="">Select Category</option>';
-            categories.forEach(category => {
-                categoryOptions += `<option value="${category}">${category}</option>`;
-            });
+            try {
+                // Try to get categories from PHP, with fallback
+                let categories;
+                try {
+                    categories = <?php echo json_encode(array_column($categories, 'name')); ?>;
+                } catch (e) {
+                    console.warn('PHP categories failed, using fallback');
+                    categories = ['Perfumes', 'Bags', 'Shoes', 'Accessories', 'Home & Living'];
+                }
+                
+                console.log('Categories loaded:', categories);
+                
+                if (!categories || !Array.isArray(categories)) {
+                    console.error('Categories not loaded properly:', categories);
+                    categories = ['Perfumes', 'Bags', 'Shoes', 'Accessories', 'Home & Living'];
+                }
+                
+                let categoryOptions = '<option value="">Select Category</option>';
+                categories.forEach(category => {
+                    categoryOptions += `<option value="${category}">${category}</option>`;
+                });
 
             return `
                 <div class="product-form-container" id="product-form-${productIndex}">
@@ -3063,6 +3255,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             `;
+            } catch (error) {
+                console.error('Error generating product form HTML:', error);
+                return `<div class="error">Error generating form: ${error.message}</div>`;
+            }
         }
 
         function removeProductForm(productIndex) {
@@ -3681,6 +3877,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Multi-product size selection functions
         let multiSelectedSizes = {};
+        let productForms = [];
+        let multiVariantSelectedSizes = {};
+
+        // Initialize multi-product form functionality when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize any existing forms
+            initializeMultiProductForms();
+            
+            // Add event listener for generate forms button
+            const generateBtn = document.getElementById('generate-forms-btn');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', function() {
+                    if (typeof generateProductForms === 'function') {
+                        generateProductForms();
+                    } else {
+                        console.error('generateProductForms function not found');
+                        alert('Error: Form generation function not loaded. Please refresh the page.');
+                    }
+                });
+            }
+        });
 
         function toggleMultiSize(productIndex, size) {
             if (!multiSelectedSizes[productIndex]) {
@@ -3771,12 +3988,484 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             salePriceGroup.style.display = saleCheckbox.checked ? 'block' : 'none';
         }
 
+        // Initialize multi-product forms when they are generated
+        function initializeMultiProductForms() {
+            // Set up event listeners for all multi-product forms
+            const forms = document.querySelectorAll('.product-form-container');
+            forms.forEach((form, index) => {
+                // Initialize size dropdowns
+                const sizeCategorySelect = form.querySelector('select[name*="[size_category]"]');
+                if (sizeCategorySelect) {
+                    sizeCategorySelect.addEventListener('change', function() {
+                        loadMultiSizeOptions(index);
+                    });
+                }
+                
+                // Initialize sale price toggles
+                const saleCheckbox = form.querySelector('input[name*="[sale]"]');
+                if (saleCheckbox) {
+                    saleCheckbox.addEventListener('change', function() {
+                        toggleMultiSalePrice(index);
+                    });
+                }
+                
+                // Initialize category change handlers
+                const categorySelect = form.querySelector('select[name*="[category]"]');
+                if (categorySelect) {
+                    categorySelect.addEventListener('change', function() {
+                        loadMultiSubcategories(index);
+                    });
+                }
+            });
+        }
+
+        // Load subcategories for multi-product forms
+        function loadMultiSubcategories(productIndex) {
+            console.log('loadMultiSubcategories called for product:', productIndex);
+            
+            const categorySelect = document.querySelector(`select[name="products[${productIndex}][category]"]`);
+            const subcategorySelect = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`);
+            
+            if (!categorySelect || !subcategorySelect) {
+                console.error('Category or subcategory select not found for product:', productIndex);
+                return;
+            }
+            
+            const category = categorySelect.value;
+            console.log('Selected category:', category);
+            
+            // Reset subcategory
+            subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+            
+            if (!category) {
+                return;
+            }
+            
+            // Show/hide specific field groups based on category
+            const homeLivingFields = document.getElementById(`home-living-fields-${productIndex}`);
+            const shoeTypeGroup = document.getElementById(`shoe-type-group-${productIndex}`);
+            const brandGroup = document.getElementById(`brand-group-${productIndex}`);
+            const genderGroup = document.getElementById(`gender-group-${productIndex}`);
+            const perfumeSizeGroup = document.getElementById(`perfume-size-group-${productIndex}`);
+            const accessoriesGenderGroup = document.getElementById(`accessories-gender-group-${productIndex}`);
+            
+            // Hide all groups first
+            if (homeLivingFields) homeLivingFields.style.display = 'none';
+            if (shoeTypeGroup) shoeTypeGroup.style.display = 'none';
+            if (brandGroup) brandGroup.style.display = 'none';
+            if (genderGroup) genderGroup.style.display = 'none';
+            if (perfumeSizeGroup) perfumeSizeGroup.style.display = 'none';
+            if (accessoriesGenderGroup) accessoriesGenderGroup.style.display = 'none';
+            
+            // Show relevant groups based on category
+            if (category.toLowerCase() === 'home & living') {
+                if (homeLivingFields) homeLivingFields.style.display = 'block';
+            } else if (category.toLowerCase() === 'shoes') {
+                if (shoeTypeGroup) shoeTypeGroup.style.display = 'block';
+            } else if (category.toLowerCase() === 'perfumes') {
+                if (brandGroup) brandGroup.style.display = 'block';
+                if (genderGroup) genderGroup.style.display = 'block';
+                if (perfumeSizeGroup) perfumeSizeGroup.style.display = 'block';
+                // Perfumes don't have subcategories, so we're done
+                return;
+            } else if (category.toLowerCase() === 'bags') {
+                if (genderGroup) genderGroup.style.display = 'block';
+            } else if (category.toLowerCase() === 'accessories') {
+                if (accessoriesGenderGroup) accessoriesGenderGroup.style.display = 'block';
+            }
+            
+            // Load subcategories from database for all categories except perfumes
+            console.log('Fetching subcategories for category:', category);
+            fetch('get-subcategories.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `category=${encodeURIComponent(category)}`
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Subcategory response data:', data);
+                if (data.success && data.subcategories) {
+                    data.subcategories.forEach(subcategory => {
+                        const option = document.createElement('option');
+                        option.value = subcategory;
+                        option.textContent = subcategory;
+                        subcategorySelect.appendChild(option);
+                    });
+                    console.log(`Loaded ${data.subcategories.length} subcategories for ${category}`);
+                } else {
+                    console.log('No subcategories found for category:', category, 'Response:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading subcategories:', error);
+            });
+        }
+
+        // Handle Home & Living subcategory changes for multi-product forms
+        function handleMultiHomeLivingSubcategory(productIndex) {
+            const subcategorySelect = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`);
+            const subcategory = subcategorySelect.value;
+            
+            // Hide all specific field groups first
+            const beddingFields = document.getElementById(`bedding-fields-${productIndex}`);
+            const diningFields = document.getElementById(`dining-fields-${productIndex}`);
+            const livingFields = document.getElementById(`living-fields-${productIndex}`);
+            
+            if (beddingFields) beddingFields.style.display = 'none';
+            if (diningFields) diningFields.style.display = 'none';
+            if (livingFields) livingFields.style.display = 'none';
+            
+            // Show relevant fields based on subcategory
+            if (subcategory.toLowerCase() === 'bedding') {
+                if (beddingFields) beddingFields.style.display = 'block';
+            } else if (subcategory.toLowerCase() === 'dining') {
+                if (diningFields) diningFields.style.display = 'block';
+            } else if (subcategory.toLowerCase() === 'living room') {
+                if (livingFields) livingFields.style.display = 'block';
+            }
+        }
+
+
+
+        // Load size options for multi-product forms
+        function loadMultiSizeOptions(productIndex) {
+            const sizeCategory = document.querySelector(`select[name="products[${productIndex}][size_category]"]`).value;
+            const sizeSelectionGroup = document.getElementById(`size_selection_group-${productIndex}`);
+            const sizeDropdownContent = document.getElementById(`size-dropdown-content-${productIndex}`);
+            
+            if (sizeCategory === 'none' || sizeCategory === '') {
+                sizeSelectionGroup.style.display = 'none';
+                return;
+            }
+            
+            sizeSelectionGroup.style.display = 'block';
+            
+            if (sizeCategory === 'clothing') {
+                sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex);
+            } else if (sizeCategory === 'shoes') {
+                sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex);
+            }
+            
+            // Add event listeners to category headers
+            setTimeout(() => {
+                sizeDropdownContent.querySelectorAll('.size-category-header').forEach(header => {
+                    header.addEventListener('click', function() {
+                        this.classList.toggle('expanded');
+                        const options = this.nextElementSibling;
+                        options.classList.toggle('show');
+                    });
+                });
+            }, 100);
+        }
+
+        // Load size options for multi-product variant forms
+        function loadMultiVariantSizeOptions(productIndex, variantIndex) {
+            const sizeCategory = document.querySelector(`select[name="products[${productIndex}][color_variants][${variantIndex}][size_category]"]`).value;
+            const sizeSelectionGroup = document.getElementById(`variant-size-selection-group-${productIndex}-${variantIndex}`);
+            const sizeDropdownContent = document.getElementById(`variant-size-dropdown-content-${productIndex}-${variantIndex}`);
+            
+            if (sizeCategory === 'none' || sizeCategory === '') {
+                sizeSelectionGroup.style.display = 'none';
+                return;
+            }
+            
+            sizeSelectionGroup.style.display = 'block';
+            
+            if (sizeCategory === 'clothing') {
+                sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex, variantIndex);
+            } else if (sizeCategory === 'shoes') {
+                sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex, variantIndex);
+            }
+            
+            // Add event listeners to category headers
+            setTimeout(() => {
+                sizeDropdownContent.querySelectorAll('.size-category-header').forEach(header => {
+                    header.addEventListener('click', function() {
+                        this.classList.toggle('expanded');
+                        const options = this.nextElementSibling;
+                        options.classList.toggle('show');
+                    });
+                });
+            }, 100);
+        }
+
+        // Toggle size dropdown for multi-product forms
+        function toggleMultiSizeDropdown(productIndex) {
+            const dropdownContent = document.getElementById(`size-dropdown-content-${productIndex}`);
+            const dropdownHeader = dropdownContent.previousElementSibling;
+            const dropdownIcon = document.getElementById(`size-dropdown-icon-${productIndex}`);
+            
+            dropdownContent.classList.toggle('show');
+            dropdownHeader.classList.toggle('active');
+            
+            if (dropdownContent.classList.contains('show')) {
+                dropdownIcon.style.transform = 'rotate(180deg)';
+            } else {
+                dropdownIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Toggle size dropdown for multi-product variant forms
+        function toggleMultiVariantSizeDropdown(productIndex, variantIndex) {
+            const dropdownContent = document.getElementById(`variant-size-dropdown-content-${productIndex}-${variantIndex}`);
+            const dropdownHeader = dropdownContent.previousElementSibling;
+            const dropdownIcon = document.getElementById(`variant-size-dropdown-icon-${productIndex}-${variantIndex}`);
+            
+            dropdownContent.classList.toggle('show');
+            dropdownHeader.classList.toggle('active');
+            
+            if (dropdownContent.classList.contains('show')) {
+                dropdownIcon.style.transform = 'rotate(180deg)';
+            } else {
+                dropdownIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Generate clothing sizes for multi-product forms
+        function generateMultiClothingSizes(productIndex) {
+            return `
+                <div class="size-category-header" data-product="${productIndex}">
+                    <span>Women's Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="XS" onchange="toggleMultiSizeSelection('${productIndex}', 'XS')"> XS</label>
+                    <label><input type="checkbox" value="S" onchange="toggleMultiSizeSelection('${productIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiSizeSelection('${productIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiSizeSelection('${productIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiSizeSelection('${productIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXL')"> XXL</label>
+                </div>
+                
+                <div class="size-category-header" data-product="${productIndex}">
+                    <span>Men's Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="S" onchange="toggleMultiSizeSelection('${productIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiSizeSelection('${productIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiSizeSelection('${productIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiSizeSelection('${productIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXL')"> XXL</label>
+                    <label><input type="checkbox" value="XXXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXXL')"> XXXL</label>
+                </div>
+            `;
+        }
+
+        // Generate shoe sizes for multi-product forms
+        function generateMultiShoeSizes(productIndex) {
+            return `
+                <div class="size-category-header" data-product="${productIndex}">
+                    <span>Women's Shoe Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="5" onchange="toggleMultiSizeSelection('${productIndex}', '5')"> 5</label>
+                    <label><input type="checkbox" value="5.5" onchange="toggleMultiSizeSelection('${productIndex}', '5.5')"> 5.5</label>
+                    <label><input type="checkbox" value="6" onchange="toggleMultiSizeSelection('${productIndex}', '6')"> 6</label>
+                    <label><input type="checkbox" value="6.5" onchange="toggleMultiSizeSelection('${productIndex}', '6.5')"> 6.5</label>
+                    <label><input type="checkbox" value="7" onchange="toggleMultiSizeSelection('${productIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSizeSelection('${productIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiSizeSelection('${productIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSizeSelection('${productIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiSizeSelection('${productIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSizeSelection('${productIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiSizeSelection('${productIndex}', '10')"> 10</label>
+                </div>
+                
+                <div class="size-category-header" data-product="${productIndex}">
+                    <span>Men's Shoe Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="7" onchange="toggleMultiSizeSelection('${productIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSizeSelection('${productIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiSizeSelection('${productIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSizeSelection('${productIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiSizeSelection('${productIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSizeSelection('${productIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiSizeSelection('${productIndex}', '8')"> 10</label>
+                    <label><input type="checkbox" value="10.5" onchange="toggleMultiSizeSelection('${productIndex}', '10.5')"> 10.5</label>
+                    <label><input type="checkbox" value="11" onchange="toggleMultiSizeSelection('${productIndex}', '11')"> 11</label>
+                    <label><input type="checkbox" value="11.5" onchange="toggleMultiSizeSelection('${productIndex}', '11.5')"> 11.5</label>
+                    <label><input type="checkbox" value="12" onchange="toggleMultiSizeSelection('${productIndex}', '12')"> 12</label>
+                </div>
+            `;
+        }
+
+        // Toggle size selection for multi-product forms
+        function toggleMultiSizeSelection(productIndex, size) {
+            const key = `${productIndex}`;
+            if (!multiSelectedSizes[key]) {
+                multiSelectedSizes[key] = new Set();
+            }
+            
+            if (multiSelectedSizes[key].has(size)) {
+                multiSelectedSizes[key].delete(size);
+            } else {
+                multiSelectedSizes[key].add(size);
+            }
+            
+            updateMultiSelectedSizesDisplay(productIndex);
+        }
+
+        // Update selected sizes display for multi-product forms
+        function updateMultiSelectedSizesDisplay(productIndex) {
+            const key = `${productIndex}`;
+            const selectedSizesText = document.getElementById(`selected-sizes-text-${productIndex}`);
+            const selectedSizesInput = document.getElementById(`selected_sizes-${productIndex}`);
+            
+            if (!multiSelectedSizes[key] || multiSelectedSizes[key].size === 0) {
+                selectedSizesText.textContent = 'Select sizes...';
+                selectedSizesInput.value = '';
+            } else {
+                const sizesArray = Array.from(multiSelectedSizes[key]).sort();
+                selectedSizesText.textContent = `${sizesArray.length} size(s) selected`;
+                selectedSizesInput.value = JSON.stringify(sizesArray);
+            }
+        }
+
+        // Update selected sizes display for multi-product variant forms
+        function updateMultiVariantSelectedSizesDisplay(productIndex, variantIndex) {
+            const key = `${productIndex}-${variantIndex}`;
+            const selectedSizesText = document.getElementById(`variant-selected-sizes-text-${productIndex}-${variantIndex}`);
+            const selectedSizesInput = document.getElementById(`variant-selected_sizes-${productIndex}-${variantIndex}`);
+            
+            if (!multiVariantSelectedSizes[key] || multiVariantSelectedSizes[key].size === 0) {
+                selectedSizesText.textContent = 'Select sizes...';
+                selectedSizesInput.value = '';
+            } else {
+                const sizesArray = Array.from(multiVariantSelectedSizes[key]).sort();
+                selectedSizesText.textContent = `${sizesArray.length} size(s) selected`;
+                selectedSizesInput.value = JSON.stringify(sizesArray);
+            }
+        }
+
+        // Generate clothing sizes for multi-product variant forms
+        function generateMultiClothingSizes(productIndex, variantIndex) {
+            return `
+                <div class="size-category-header" data-product="${productIndex}" data-variant="${variantIndex}">
+                    <span>Women's Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="XS" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XS')"> XS</label>
+                    <label><input type="checkbox" value="S" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XXL')"> XXL</label>
+                </div>
+                
+                <div class="size-category-header" data-product="${productIndex}" data-variant="${variantIndex}">
+                    <span>Men's Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="S" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XXL')"> XXL</label>
+                    <label><input type="checkbox" value="XXXL" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', 'XXXL')"> XXXL</label>
+                </div>
+            `;
+        }
+
+        // Generate shoe sizes for multi-product variant forms
+        function generateMultiShoeSizes(productIndex, variantIndex) {
+            return `
+                <div class="size-category-header" data-product="${productIndex}" data-variant="${variantIndex}">
+                    <span>Women's Shoe Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '5')"> 5</label>
+                    <label><input type="checkbox" value="5.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '5.5')"> 5.5</label>
+                    <label><input type="checkbox" value="6" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '6')"> 6</label>
+                    <label><input type="checkbox" value="6.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '6.5')"> 6.5</label>
+                    <label><input type="checkbox" value="7" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '10')"> 10</label>
+                </div>
+                
+                <div class="size-category-header" data-product="${productIndex}" data-variant="${variantIndex}">
+                    <span>Men's Shoe Sizes</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="size-options">
+                    <label><input type="checkbox" value="7" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '10')"> 10</label>
+                    <label><input type="checkbox" value="10.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '10.5')"> 10.5</label>
+                    <label><input type="checkbox" value="11" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '11')"> 11</label>
+                    <label><input type="checkbox" value="11.5" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '11.5')"> 11.5</label>
+                    <label><input type="checkbox" value="12" onchange="toggleMultiVariantSizeSelection('${productIndex}', '${variantIndex}', '12')"> 12</label>
+                </div>
+            `;
+        }
+
+        // Toggle size selection for multi-product variant forms
+        function toggleMultiVariantSizeSelection(productIndex, variantIndex, size) {
+            const key = `${productIndex}-${variantIndex}`;
+            if (!multiVariantSelectedSizes[key]) {
+                multiVariantSelectedSizes[key] = new Set();
+            }
+            
+            if (multiVariantSelectedSizes[key].has(size)) {
+                multiVariantSelectedSizes[key].delete(size);
+            } else {
+                multiVariantSelectedSizes[key].add(size);
+            }
+            
+            updateMultiVariantSelectedSizesDisplay(productIndex, variantIndex);
+        }
+
+
+
+        // Remove color variant from multi-product forms
+        function removeMultiColorVariant(button, productIndex) {
+            const variantItem = button.closest('.variant-item');
+            variantItem.remove();
+        }
+
+
+
+
+
+        // Handle product count change
+        function handleProductCountChange() {
+            const count = parseInt(document.getElementById('product-count').value);
+            if (count < 1 || count > 20) {
+                alert('Please enter a valid number of products (1-20)');
+                document.getElementById('product-count').value = 1;
+                return;
+            }
+        }
+
+        // Ensure function is available globally
+        window.handleProductCountChange = handleProductCountChange;
+
         function addMultiColorVariant(productIndex) {
             const container = document.getElementById(`color-variants-container-${productIndex}`);
             const variantIndex = globalColorVariantIndexes[productIndex] || 0;
             const currentCategory = document.querySelector(`select[name="products[${productIndex}][category]"]`).value;
             const isPerfume = currentCategory.toLowerCase() === 'perfumes';
             const isBags = currentCategory.toLowerCase() === 'bags';
+            const isAccessories = currentCategory.toLowerCase() === 'accessories';
             
             const variantHtml = `
                 <div class="variant-item">
@@ -3857,6 +4546,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     ` : ''}
                     
+                    ${isAccessories ? `
+                    <!-- Accessories-specific gender dropdown for variants -->
+                    <div class="form-group">
+                        <label>Variant Gender *</label>
+                        <select name="products[${productIndex}][color_variants][${variantIndex}][accessories_gender]">
+                            <option value="">Select Gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    ` : ''}
+                    
                     <!-- Regular size category for non-perfumes -->
                     <div class="form-group">
                         <label>Size Category</label>
@@ -3868,7 +4570,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
                     
-                    <div class="form-group" id="variant-size_selection_group-${productIndex}-${variantIndex}" style="display: none;">
+                    <div class="form-group" id="variant-size-selection-group-${productIndex}-${variantIndex}" style="display: none;">
                         <label>Available Sizes for This Variant</label>
                         <div class="size-dropdown-container">
                             <div class="size-dropdown-header" onclick="toggleMultiVariantSizeDropdown(${productIndex}, ${variantIndex})">
@@ -3911,12 +4613,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             button.closest('.variant-item').remove();
         }
 
-        // Multi-product variant size selection functions
-        let multiVariantSelectedSizes = {};
+
 
         function loadMultiVariantSizeOptions(productIndex, variantIndex) {
             const sizeCategory = document.querySelector(`select[name="products[${productIndex}][color_variants][${variantIndex}][size_category]"]`).value;
-            const sizeSelectionGroup = document.getElementById(`variant-size_selection_group-${productIndex}-${variantIndex}`);
+            const sizeSelectionGroup = document.getElementById(`variant-size-selection-group-${productIndex}-${variantIndex}`);
             const sizeDropdownContent = document.getElementById(`variant-size-dropdown-content-${productIndex}-${variantIndex}`);
             
             if (sizeCategory === 'none' || sizeCategory === '') {

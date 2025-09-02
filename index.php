@@ -2,7 +2,7 @@
 session_start();
 
 // Include database connection and models
-require_once 'config/mongodb.php';
+require_once 'config1/mongodb.php';
 require_once 'models/Product.php';
 
 // Initialize product model
