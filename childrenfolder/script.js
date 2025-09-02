@@ -512,6 +512,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
     function openQuickView(productId) {
         console.log('openQuickView called with productId:', productId);
         const product = productData[productId];
@@ -568,10 +572,18 @@ document.addEventListener('DOMContentLoaded', function() {
             colorCircle.setAttribute('data-color', color.value);
             colorCircle.title = color.name;
             
+            // Set initial selected color
+            if (index === 0) {
+                selectedQuickViewColor = color.value;
+            }
+            
             colorCircle.addEventListener('click', () => {
                 // Update active color
                 colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
                 colorCircle.classList.add('active');
+                
+                // Store selected color
+                selectedQuickViewColor = color.value;
                 
                 // Filter images by color
                 const selectedColor = color.value;
@@ -606,15 +618,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const sizeSelection = document.getElementById('quick-view-size-selection');
         sizeSelection.innerHTML = '';
         
-        product.sizes.forEach(size => {
+        product.sizes.forEach((size, index) => {
             const sizeBtn = document.createElement('button');
             sizeBtn.className = 'quick-view-size-btn';
             sizeBtn.textContent = size;
+            
+            // Set default selected size (middle size)
+            if (index === Math.floor(product.sizes.length / 2)) {
+                sizeBtn.classList.add('active');
+                selectedQuickViewSize = size;
+            }
             
             // For perfumes, we don't have soldOutSizes, so just add click event
             sizeBtn.addEventListener('click', () => {
                 sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
                 sizeBtn.classList.add('active');
+                
+                // Store selected size
+                selectedQuickViewSize = size;
             });
             
             sizeSelection.appendChild(sizeBtn);
@@ -658,24 +679,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const addToBagQuick = document.getElementById('add-to-bag-quick');
     if (addToBagQuick) {
         addToBagQuick.addEventListener('click', function() {
-            const selectedSize = document.querySelector('.quick-view-size-btn.active');
-            if (!selectedSize) {
-                alert('Please select a size');
+            // Check if variants are selected
+            if (!selectedQuickViewColor) {
+                alert('Please select a color first');
+                return;
+            }
+            if (!selectedQuickViewSize) {
+                alert('Please select a size first');
                 return;
             }
             
             const productName = document.getElementById('quick-view-title').textContent;
-            const selectedColor = document.querySelector('.quick-view-color-circle.active');
-            const colorName = selectedColor ? selectedColor.title : '';
+            const productId = addToBagQuick.getAttribute('data-product-id') || 
+                             document.querySelector('.quick-view[data-product-id]')?.getAttribute('data-product-id');
             
-            console.log(`Added to cart: ${productName} - Size: ${selectedSize.textContent}, Color: ${colorName}`);
-            alert(`Added to cart: ${productName}`);
-            
-            // Update cart count (you can implement this)
-            const cartCount = document.querySelector('.cart-count');
-            if (cartCount) {
-                const currentCount = parseInt(cartCount.textContent) || 0;
-                cartCount.textContent = currentCount + 1;
+            if (productId) {
+                addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
+            } else {
+                alert('Product ID not found');
             }
         });
     }

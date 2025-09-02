@@ -758,8 +758,11 @@ if (empty($featuredProducts)) {
      <!-- Quick View Functionality -->
      <script>
          document.addEventListener('DOMContentLoaded', function() {
-
-
+             
+             // Global variables to track selected variants in quick view
+             let selectedQuickViewColor = '';
+             let selectedQuickViewSize = '';
+             
              // Quick View Sidebar Functionality
              const quickViewSidebar = document.getElementById('quick-view-sidebar');
              const quickViewOverlay = document.getElementById('quick-view-overlay');
@@ -903,17 +906,21 @@ if (empty($featuredProducts)) {
                  
                  // Set main image
                  const mainImage = document.getElementById('quick-view-main-image');
-                 mainImage.src = product.images[0].src;
+                 // Find the first image of the default color
+                 const defaultColorImage = product.images.find(img => img.color === selectedQuickViewColor) || product.images[0];
+                 mainImage.src = defaultColorImage.src;
                  mainImage.alt = product.name;
 
                  // Populate thumbnails
                  const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
                  thumbnailsContainer.innerHTML = '';
                  
-                 product.images.forEach((image, index) => {
+                 // Only show thumbnails for the default color
+                 const defaultColorImages = product.images.filter(img => img.color === selectedQuickViewColor);
+                 defaultColorImages.forEach((image, index) => {
                      const thumbnail = document.createElement('div');
-                     thumbnail.className = thumbnail-item ${index === 0 ? 'active' : ''};
-                     thumbnail.innerHTML = <img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">;
+                     thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                     thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${index}">`;
                      
                      thumbnail.addEventListener('click', () => {
                          // Update main image
@@ -933,7 +940,7 @@ if (empty($featuredProducts)) {
                  
                  product.colors.forEach((color, index) => {
                      const colorCircle = document.createElement('div');
-                     colorCircle.className = quick-view-color-circle ${index === 0 ? 'active' : ''};
+                     colorCircle.className = `quick-view-color-circle ${color.value === selectedQuickViewColor ? 'active' : ''}`;
                      colorCircle.style.backgroundColor = color.hex;
                      colorCircle.setAttribute('data-color', color.value);
                      colorCircle.title = color.name;
@@ -942,6 +949,9 @@ if (empty($featuredProducts)) {
                          // Update active color
                          colorSelection.querySelectorAll('.quick-view-color-circle').forEach(c => c.classList.remove('active'));
                          colorCircle.classList.add('active');
+                         
+                         // Track selected color
+                         selectedQuickViewColor = color.value;
                          
                          // Filter images by color
                          const selectedColor = color.value;
@@ -955,8 +965,8 @@ if (empty($featuredProducts)) {
                              thumbnailsContainer.innerHTML = '';
                              colorImages.forEach((image, imgIndex) => {
                                  const thumbnail = document.createElement('div');
-                                 thumbnail.className = thumbnail-item ${imgIndex === 0 ? 'active' : ''};
-                                 thumbnail.innerHTML = <img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${imgIndex}">;
+                                 thumbnail.className = `thumbnail-item ${imgIndex === 0 ? 'active' : ''}`;
+                                 thumbnail.innerHTML = `<img src="${image.src}" alt="${product.name} - ${image.color}" data-index="${imgIndex}">`;
                                  
                                  thumbnail.addEventListener('click', () => {
                                      mainImage.src = image.src;
@@ -966,6 +976,11 @@ if (empty($featuredProducts)) {
                                  
                                  thumbnailsContainer.appendChild(thumbnail);
                              });
+                             
+                             // Set the first image of the selected color as active
+                             if (colorImages.length > 0) {
+                                 mainImage.src = colorImages[0].src;
+                             }
                          }
                      });
                      
@@ -976,10 +991,19 @@ if (empty($featuredProducts)) {
                  const sizeSelection = document.getElementById('quick-view-size-selection');
                  sizeSelection.innerHTML = '';
                  
-                 product.sizes.forEach(size => {
+                 // Set default selections
+                 selectedQuickViewColor = product.colors[0].value;
+                 selectedQuickViewSize = product.sizes[Math.floor(product.sizes.length / 2)]; // Middle size as default
+                 
+                 product.sizes.forEach((size, sizeIndex) => {
                      const sizeBtn = document.createElement('button');
                      sizeBtn.className = 'quick-view-size-btn';
                      sizeBtn.textContent = size;
+                     
+                     // Set default size as active
+                     if (size === selectedQuickViewSize) {
+                         sizeBtn.classList.add('active');
+                     }
                      
                      if (product.soldOutSizes.includes(size)) {
                          sizeBtn.classList.add('sold-out');
@@ -987,6 +1011,9 @@ if (empty($featuredProducts)) {
                          sizeBtn.addEventListener('click', () => {
                              sizeSelection.querySelectorAll('.quick-view-size-btn').forEach(s => s.classList.remove('active'));
                              sizeBtn.classList.add('active');
+                             
+                             // Track selected size
+                             selectedQuickViewSize = size;
                          });
                      }
                      
@@ -1009,25 +1036,17 @@ if (empty($featuredProducts)) {
              const addToBagQuick = document.getElementById('add-to-bag-quick');
              if (addToBagQuick) {
                  addToBagQuick.addEventListener('click', function() {
-                     const selectedSize = document.querySelector('.quick-view-size-btn.active');
-                     if (!selectedSize) {
-                         alert('Please select a size');
+                     // Check if both color and size are selected
+                     if (!selectedQuickViewColor || !selectedQuickViewSize) {
+                         alert('Please select both a color and size');
                          return;
                      }
                      
                      const productName = document.getElementById('quick-view-title').textContent;
-                     const selectedColor = document.querySelector('.quick-view-color-circle.active');
-                     const colorName = selectedColor ? selectedColor.title : '';
+                     const productId = this.getAttribute('data-product-id') || '1'; // Default to 1 if not set
                      
-
-                     alert(Added to cart: ${productName});
-                     
-                     // Update cart count (you can implement this)
-                     const cartCount = document.querySelector('.cart-count');
-                     if (cartCount) {
-                         const currentCount = parseInt(cartCount.textContent) || 0;
-                         cartCount.textContent = currentCount + 1;
-                     }
+                     // Call the function to add to cart with selected variants
+                     addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
                  });
              }
 
@@ -1037,7 +1056,7 @@ if (empty($featuredProducts)) {
                  addToWishlistQuick.addEventListener('click', function() {
                      const productName = document.getElementById('quick-view-title').textContent;
 
-                     alert(Added to wishlist: ${productName});
+                     alert(`Added to wishlist: ${productName}`);
                  });
              }
 
@@ -1082,6 +1101,65 @@ if (empty($featuredProducts)) {
     
                  });
              });
+             
+             // Function to add product to cart from quick view with selected variants
+             function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
+                 console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+                 
+                 // Show loading state
+                 const button = document.querySelector('#add-to-bag-quick');
+                 let originalText = '';
+                 if (button) {
+                     originalText = button.textContent;
+                     button.textContent = 'Adding...';
+                     button.disabled = true;
+                 }
+                 
+                 // Show immediate feedback notification
+                 alert(`Adding ${productName} (${selectedColor}, ${selectedSize}) to cart...`);
+                 
+                 // Make API call to add to cart with selected variants
+                 fetch('cart-api.php', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/x-www-form-urlencoded',
+                     },
+                     body: `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&return_url=${encodeURIComponent(window.location.href)}`
+                 })
+                 .then(response => response.json())
+                 .then(data => {
+                     console.log('Cart API response:', data);
+                     
+                     if (data.success) {
+                         // Update cart count in header
+                         if (data.cart_count !== undefined) {
+                             updateCartCount(data.cart_count);
+                         }
+                         
+                         // Show success notification
+                         alert(`✓ ${productName} (${selectedColor}, ${selectedSize}) added to cart!`);
+                         
+                         // Close quick view after successful addition
+                         setTimeout(() => {
+                             closeQuickViewSidebar();
+                         }, 1500);
+                     } else {
+                         // Show error notification
+                         alert(`✗ Error: ${data.message}`);
+                     }
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                     alert('✗ Error adding product to cart');
+                 })
+                 .finally(() => {
+                     // Reset button state
+                     if (button && originalText) {
+                         button.textContent = originalText;
+                         button.disabled = false;
+                     }
+                 });
+             }
          });
      </script>
      
