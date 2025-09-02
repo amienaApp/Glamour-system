@@ -8,7 +8,7 @@ echo "<h2>Glamour System - Connection Test</h2>";
 try {
     // Test MongoDB connection
     echo "<h3>1. Testing MongoDB Connection...</h3>";
-    require_once 'config/mongodb.php';
+    require_once 'config1/mongodb.php';
     $db = MongoDB::getInstance();
     
     if ($db->isConnected()) {

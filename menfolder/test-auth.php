@@ -4,7 +4,7 @@
  * This script tests the registration and login functionality
  */
 
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/../models/User.php';
 
 echo "<h1>🔐 Authentication System Test</h1>";

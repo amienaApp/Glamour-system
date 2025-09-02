@@ -30,7 +30,7 @@ try {
     }
 
     echo "\n4. Checking if MongoDB config exists...\n";
-    if (file_exists(__DIR__ . '/config/mongodb.php')) {
+    if (file_exists(__DIR__ . '/config1/mongodb.php')) {
         echo "   ✅ MongoDB config exists\n";
     } else {
         echo "   ❌ MongoDB config not found\n";
@@ -38,7 +38,7 @@ try {
     }
 
     echo "\n5. Including MongoDB config...\n";
-    require_once __DIR__ . '/config/mongodb.php';
+    require_once __DIR__ . '/config1/mongodb.php';
     echo "   ✅ MongoDB config included successfully\n";
 
     echo "\n6. Checking if MongoDB class exists...\n";

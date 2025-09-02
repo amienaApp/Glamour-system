@@ -64,7 +64,7 @@ echo "</div>";
 // Test database connection
 echo "<h2>🗄️ Database Connection Test</h2>";
 try {
-    require_once __DIR__ . '/../config/mongodb.php';
+    require_once __DIR__ . '/../config1/mongodb.php';
     $db = MongoDB::getInstance();
     
     if ($db->isConnected()) {

@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 echo "<h2>Debug: Database Products</h2>";
 
 try {
-    require_once 'config/mongodb.php';
+    require_once 'config1/mongodb.php';
     require_once 'models/Product.php';
     
     $db = MongoDB::getInstance();

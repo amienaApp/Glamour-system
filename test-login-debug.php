@@ -140,7 +140,7 @@ session_start();
                 <strong>Current Directory:</strong> <?php echo __DIR__; ?><br>
                 <strong>Cart Model Path:</strong> <?php echo __DIR__ . '/models/Cart.php'; ?><br>
                 <strong>Cart Model Exists:</strong> <?php echo file_exists(__DIR__ . '/models/Cart.php') ? 'Yes' : 'No'; ?><br>
-                <strong>MongoDB Config Exists:</strong> <?php echo file_exists(__DIR__ . '/config/mongodb.php') ? 'Yes' : 'No'; ?><br>
+                <strong>MongoDB Config Exists:</strong> <?php echo file_exists(__DIR__ . '/config1/mongodb.php') ? 'Yes' : 'No'; ?><br>
             </div>
         </div>
     </div>

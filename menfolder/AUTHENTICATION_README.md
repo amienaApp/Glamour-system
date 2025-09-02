@@ -208,7 +208,7 @@ menfolder/
 - `session` extension
 
 ### Required Files
-- `config/mongodb.php` - Database configuration
+- `config1/mongodb.php` - Database configuration
 - `models/User.php` - User model class
 - `vendor/autoload.php` - Composer autoloader
 

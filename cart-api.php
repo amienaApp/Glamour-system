@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Include required files with error handling
 try {
-    require_once 'config/mongodb.php';
+    require_once 'config1/mongodb.php';
     require_once 'models/Cart.php';
     require_once 'models/Order.php';
     require_once 'models/Product.php';

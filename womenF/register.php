@@ -15,7 +15,7 @@ ini_set('display_errors', 0);
     
     try {
         // Include required files
-        require_once '../config/mongodb.php';
+        require_once '../config1/mongodb.php';
         require_once '../models/User.php';
 
         // Get POST data

@@ -1,37 +1,57 @@
 <?php
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../config/mongodb.php';
-require_once __DIR__ . '/../models/Category.php';
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
 
-$categoryModel = new Category();
-
-if (isset($_GET['category'])) {
-    $categoryName = $_GET['category'];
-    
-    // Get all categories
-    $categories = $categoryModel->getAll();
-    
-    // Find the selected category and return its subcategories
-    foreach ($categories as $category) {
-        if ($category['name'] === $categoryName) {
-            echo json_encode([
-                'success' => true,
-                'subcategories' => $category['subcategories'] ?? []
-            ]);
-            exit;
-        }
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $categoryName = $_POST['category'] ?? '';
+    } else {
+        $categoryName = $_GET['category'] ?? '';
     }
     
-    // If category not found, return empty array
+    if (empty($categoryName)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Category name is required'
+        ]);
+        exit;
+    }
+    
+    $categoryModel = new Category();
+    
+    // Debug: Get the full category data
+    $fullCategory = $categoryModel->getByName($categoryName);
+    
+    if (!$fullCategory) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Category not found: ' . $categoryName
+        ]);
+        exit;
+    }
+    
+    $subcategories = $categoryModel->getSubcategories($categoryName);
+    
+    // Debug: Log the response
+    error_log("Category: $categoryName, Subcategories: " . json_encode($subcategories));
+    
     echo json_encode([
         'success' => true,
-        'subcategories' => []
+        'subcategories' => $subcategories,
+        'debug' => [
+            'category_name' => $categoryName,
+            'full_category' => $fullCategory,
+            'subcategories_count' => count($subcategories)
+        ]
     ]);
-} else {
+    
+} catch (Exception $e) {
+    error_log("Error in get-subcategories.php: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'error' => 'Category parameter is required'
+        'message' => 'Error loading subcategories: ' . $e->getMessage()
     ]);
 }
 ?>

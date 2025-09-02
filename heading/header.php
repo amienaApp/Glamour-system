@@ -2,7 +2,7 @@
 session_start();
 // Ensure vendor autoload is included first
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/../models/Category.php';
 
 $categoryModel = new Category();

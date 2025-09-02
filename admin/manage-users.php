@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/User.php';
 
 $userModel = new User();

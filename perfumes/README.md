@@ -158,7 +158,7 @@ initialize-perfumes.php  # Data initialization script
 
 **No products showing:**
 1. Run `php initialize-perfumes.php` to add sample data
-2. Check database connection in `config/database.php`
+2. Check database connection in `config1/database.php`
 3. Verify file permissions for data directory
 
 **Filters not working:**
@@ -172,7 +172,7 @@ initialize-perfumes.php  # Data initialization script
 3. Check file permissions
 
 ### Debug Mode
-Enable debug mode by adding to `config/database.php`:
+Enable debug mode by adding to `config1/database.php`:
 ```php
 define('DEBUG', true);
 ```
