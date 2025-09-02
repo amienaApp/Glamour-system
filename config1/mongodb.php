@@ -18,11 +18,13 @@ class MongoDB {
             }
             
 
+
             // MongoDB connection string - update with your actual MongoDB connection
             $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
 
             // MongoDB connection string - connecting to friend's computer
             $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
+
             $databaseName = 'glamour_system';
             
             // Create MongoDB client
