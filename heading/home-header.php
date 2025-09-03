@@ -216,11 +216,9 @@ $regionOptions = [
             <div class="heart-icon" title="Wishlist">
                 <i class="fas fa-heart"></i>
             </div>
-            <div class="shopping-cart" title="Cart" style="position: relative;">
-                <a href="../cart.php" style="text-decoration: none; color: inherit;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+            <div class="shopping-cart cart-icon" title="Cart" style="position: relative;" onclick="cartManager.openCartSidebar()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count cart-icon-count">0</span>
             </div>
         </div>
 
@@ -922,7 +920,24 @@ $regionOptions = [
             });
         }
 
-
+        // Initialize cart manager if it exists
+        if (typeof cartManager !== 'undefined') {
+            // Update cart count from localStorage
+            const cartCount = cartManager.getCartCount();
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = cartCount;
+                cartCountElement.style.display = cartCount > 0 ? 'block' : 'none';
+            }
+        }
 
     });
-</script> 
+</script>
+
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" id="cart-sidebar">
+    <!-- Cart content will be populated by JavaScript -->
+</div>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" id="cart-overlay" onclick="cartManager.closeCartSidebar()"></div> 

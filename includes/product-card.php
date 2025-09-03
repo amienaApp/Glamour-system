@@ -67,6 +67,20 @@ function renderProductCard($product) {
                     <i class="fa fa-shopping-cart"></i> Add to Cart
                 </button>
             </div>
+            
+            <!-- Product Reviews Mini -->
+            <div class="product-reviews-mini" id="reviews-mini-<?php echo $id; ?>">
+                <div class="rating-stars">★★★★☆</div>
+                <span class="review-count">(0 reviews)</span>
+            </div>
+            
+            <!-- Related Products Mini -->
+            <div class="related-products-mini" id="related-mini-<?php echo $id; ?>">
+                <h4>You might also like:</h4>
+                <div class="mini-related-grid" id="mini-related-<?php echo $id; ?>">
+                    <!-- Related products will be populated here -->
+                </div>
+            </div>
         </div>
     </div>
     
@@ -124,6 +138,12 @@ function renderProductCard($product) {
                             <i class="fa fa-heart"></i> Wishlist
                         </button>
                     </div>
+                    
+                    <!-- Reviews Section in Quick View -->
+                    <div id="reviews-container-<?php echo $id; ?>" class="reviews-section-quick"></div>
+                    
+                    <!-- Related Products Section in Quick View -->
+                    <div id="related-products-container-<?php echo $id; ?>" class="related-products-section-quick"></div>
                 </div>
             </div>
         </div>
@@ -1482,6 +1502,69 @@ function renderProductCard($product) {
                 btn.innerHTML = originalText;
             });
         }
+
+        // Load reviews and related products for product cards
+        function loadProductFeatures(productId, category = 'General', subcategory = 'General') {
+            // Load reviews
+            const reviewsContainer = document.getElementById(`reviews-container-${productId}`);
+            if (reviewsContainer && typeof reviewsManager !== 'undefined') {
+                reviewsManager.renderReviews(productId, reviewsContainer);
+            }
+            
+            // Load related products
+            const relatedContainer = document.getElementById(`related-products-container-${productId}`);
+            if (relatedContainer && typeof relatedProductsManager !== 'undefined') {
+                relatedProductsManager.renderRelatedProducts(productId, relatedContainer, category, subcategory);
+            }
+            
+            // Update mini reviews display
+            const reviewsMini = document.getElementById(`reviews-mini-${productId}`);
+            if (reviewsMini && typeof reviewsManager !== 'undefined') {
+                // Load a few reviews to show rating
+                reviewsManager.loadReviews(productId).then(reviews => {
+                    if (reviews.length > 0) {
+                        const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+                        const stars = '★'.repeat(Math.floor(avgRating)) + '☆'.repeat(5 - Math.floor(avgRating));
+                        reviewsMini.querySelector('.rating-stars').textContent = stars;
+                        reviewsMini.querySelector('.review-count').textContent = `(${reviews.length} reviews)`;
+                    }
+                });
+            }
+            
+            // Update mini related products
+            const relatedMini = document.getElementById(`mini-related-${productId}`);
+            if (relatedMini && typeof relatedProductsManager !== 'undefined') {
+                relatedProductsManager.loadRelatedProducts(productId, category, subcategory).then(products => {
+                    if (products.length > 0) {
+                        const miniProducts = products.slice(0, 3); // Show only 3 mini products
+                        relatedMini.innerHTML = miniProducts.map(product => `
+                            <div class="mini-product-card" onclick="openQuickView('${product._id}')">
+                                <img src="${product.front_image || 'https://picsum.photos/100/60?random=30'}" 
+                                     alt="${product.name}"
+                                     onerror="this.src='https://picsum.photos/100/60?random=${Math.floor(Math.random() * 100)}'">
+                                <h5>${product.name}</h5>
+                                <span class="price">$${product.price.toFixed(2)}</span>
+                            </div>
+                        `).join('');
+                    }
+                });
+            }
+        }
+
+        // Auto-load features when product cards are displayed
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find all product cards and load their features
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const productId = card.getAttribute('data-product-id');
+                if (productId) {
+                    // Load features after a short delay to ensure DOM is ready
+                    setTimeout(() => {
+                        loadProductFeatures(productId);
+                    }, 100);
+                }
+            });
+        });
     </script>
     
     <?php

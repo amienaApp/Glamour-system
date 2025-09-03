@@ -1,62 +1,52 @@
 <?php
-/**
- * API endpoint to get product details for quick view
- */
+// Suppress warnings and errors to ensure clean JSON output
+error_reporting(0);
+ini_set('display_errors', 0);
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 require_once 'config1/mongodb.php';
 require_once 'models/Product.php';
+require_once 'includes/product-functions.php';
 
 try {
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-        throw new Exception('Method not allowed');
-    }
-
-    $productId = $_GET['id'] ?? null;
-    
-    if (!$productId) {
-        throw new Exception('Product ID is required');
-    }
-
     $productModel = new Product();
-    $product = $productModel->getById($productId);
-
-    if (!$product) {
-        throw new Exception('Product not found');
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $productId = $_GET['product_id'] ?? null;
+        
+        if (!$productId) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Product ID is required']);
+            exit;
+        }
+        
+        $product = $productModel->getById($productId);
+        
+        if (!$product) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Product not found']);
+            exit;
+        }
+        
+        // Format product data for quick view
+        $quickViewData = formatProductForQuickView($product);
+        
+        echo json_encode([
+            'success' => true,
+            'product' => $quickViewData
+        ]);
+        
+    } else {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     }
-
-    // Format the response
-    $response = [
-        'success' => true,
-        'product' => [
-            'id' => $product['_id'],
-            'name' => $product['name'],
-            'price' => $product['price'],
-            'salePrice' => $product['salePrice'] ?? null,
-            'sale' => $product['sale'] ?? false,
-            'description' => $product['description'] ?? '',
-            'images' => $product['images'] ?? [],
-            'colors' => $product['colors'] ?? ['#000000'],
-            'sizes' => $product['sizes'] ?? ['S', 'M', 'L'],
-            'category' => $product['category'] ?? '',
-            'subcategory' => $product['subcategory'] ?? '',
-            'stock' => $product['stock'] ?? 0,
-            'featured' => $product['featured'] ?? false
-        ]
-    ];
-
-    echo json_encode($response);
-
+    
 } catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
 }
 ?>
-

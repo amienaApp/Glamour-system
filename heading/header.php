@@ -279,10 +279,8 @@ $regionOptions = [
                 <i class="fas fa-heart"></i>
             </div>
             <div class="shopping-cart" title="Cart" style="position: relative;">
-                <a href="../cart-unified.php" style="text-decoration: none; color: inherit;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
             </div>
         </div>
 
@@ -292,6 +290,93 @@ $regionOptions = [
         </div>
     </div>
 </nav>
+
+<script>
+// Initialize cart functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const cartIcon = document.querySelector('.shopping-cart');
+    if (cartIcon) {
+        console.log('Cart icon initialized successfully');
+        
+        // Add click event listener for cart functionality
+        cartIcon.addEventListener('click', function(e) {
+            // Show loading state
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            this.style.cursor = 'wait';
+            
+            // Redirect to cart-unified.php when cart icon is clicked
+            setTimeout(() => {
+                window.location.href = '../cart-unified.php';
+            }, 100);
+        });
+        
+        // Add a small tooltip to show cart is clickable
+        cartIcon.title = 'Click to view cart';
+        
+        // Add hover effects for better UX
+        cartIcon.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+        });
+        
+        cartIcon.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+        
+        // Update cart count from cart system
+        updateCartCount();
+        
+        // Refresh cart count when page becomes visible (user returns from cart)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                updateCartCount();
+            }
+        });
+        
+        // Also refresh cart count when page loads
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page was loaded from back-forward cache
+                updateCartCount();
+            }
+        });
+        
+        // Refresh cart count every 30 seconds to keep it updated
+        setInterval(updateCartCount, 30000);
+    }
+    
+    // Function to update cart count
+    function updateCartCount() {
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            // Fetch current cart count from cart API
+            fetch('../cart-api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=get_cart_count'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.count > 0) {
+                    cartCountElement.textContent = data.count;
+                    cartCountElement.style.display = 'flex';
+                } else {
+                    cartCountElement.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.log('Cart count update failed:', error);
+                cartCountElement.style.display = 'none';
+            });
+        }
+    }
+    
+    // Make updateCartCount available globally for other scripts
+    window.updateCartCount = updateCartCount;
+});
+</script>
 
 <!-- Region Selection Modal -->
 <div class="modal" id="region-modal">
@@ -1067,5 +1152,8 @@ $regionOptions = [
         }
 
 
+
     });
-</script> 
+</script>
+
+ 
