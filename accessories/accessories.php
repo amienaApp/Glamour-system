@@ -19,6 +19,7 @@ $page_title = 'Galamor palace';
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="search.js?v=<?php echo time(); ?>" defer></script>
+    <script src="../simple-quickview-script.js"></script>
 </head>
 <body>
     <?php include '../heading/header.php'; ?>

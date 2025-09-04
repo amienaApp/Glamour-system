@@ -18,7 +18,31 @@ function renderProductCard($product) {
     $cardId = 'product-' . $id;
     ?>
     
-    <div class="product-card" data-product-id="<?php echo $id; ?>">
+    <div class="product-card" 
+         data-product-id="<?php echo $id; ?>"
+         data-product-name="<?php echo htmlspecialchars($name); ?>"
+         data-product-price="<?php echo $product['price']; ?>"
+         data-product-sale-price="<?php echo $salePrice ?? ''; ?>"
+         data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
+         data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+         data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+         data-product-featured="<?php echo $isFeatured ? 'true' : 'false'; ?>"
+         data-product-on-sale="<?php echo $isOnSale ? 'true' : 'false'; ?>"
+         data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+         data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
+         data-product-review-count="<?php echo $product['reviewCount'] ?? 0; ?>"
+         data-product-front-image="<?php echo htmlspecialchars($frontImage); ?>"
+         data-product-back-image="<?php echo htmlspecialchars($backImage); ?>"
+         data-product-color="<?php echo htmlspecialchars($color); ?>"
+         data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
+         data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+         data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? [])); ?>"
+         data-product-variants="<?php echo htmlspecialchars(json_encode($product['variants'] ?? [])); ?>"
+         data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
+         data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
+         data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
+         data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
+         data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
         <?php if ($isFeatured): ?>
             <div class="featured-badge">Featured</div>
         <?php endif; ?>

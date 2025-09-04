@@ -49,126 +49,368 @@ document.addEventListener('DOMContentLoaded', function() {
     function openQuickView(productId) {
         console.log('Opening quick view for:', productId);
         
-        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-        if (!productCard) return;
+        // Show loading state
+        showQuickViewLoading();
         
-        const name = productCard.querySelector('.product-name')?.textContent || 'Product';
-        const price = productCard.querySelector('.product-price')?.textContent || '$0';
+        // Show quick view sidebar
+        const sidebar = document.getElementById('quick-view-sidebar');
+        const overlay = document.getElementById('quick-view-overlay');
         
-        // Update quick view content
+        if (sidebar && overlay) {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Load product data directly from the card (no loading state needed)
+        loadProductDataFromCard(productCard);
+    }
+    
+    function showQuickViewLoading() {
         const titleEl = document.getElementById('quick-view-title');
         const priceEl = document.getElementById('quick-view-price');
-        const addToBagBtn = document.getElementById('add-to-bag-quick');
+        const descriptionEl = document.getElementById('quick-view-description');
+        const mainImage = document.getElementById('quick-view-main-image');
+        const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+        const colorSelection = document.getElementById('quick-view-color-selection');
+        const sizeSelection = document.getElementById('quick-view-size-selection');
+        const availabilityEl = document.getElementById('quick-view-availability');
         
-        if (titleEl) titleEl.textContent = name;
-        if (priceEl) priceEl.textContent = price;
-        if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
+        if (titleEl) titleEl.textContent = 'Loading...';
+        if (priceEl) priceEl.textContent = '';
+        if (descriptionEl) descriptionEl.textContent = 'Loading product details...';
+        if (mainImage) mainImage.style.display = 'none';
+        if (thumbnailsContainer) thumbnailsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Loading images...</div>';
+        if (colorSelection) colorSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Loading colors...</div>';
+        if (sizeSelection) sizeSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Loading sizes...</div>';
+        if (availabilityEl) availabilityEl.innerHTML = '';
+    }
+    
+    function loadProductDataFromCard(productCard) {
+        console.log('Loading product data from card:', productCard);
         
-        // Handle images
+        try {
+            // Extract data from the card's data attributes
+            const productData = {
+                id: productCard.dataset.productId,
+                name: productCard.dataset.productName,
+                price: parseFloat(productCard.dataset.productPrice),
+                salePrice: productCard.dataset.productSalePrice ? parseFloat(productCard.dataset.productSalePrice) : null,
+                description: productCard.dataset.productDescription,
+                category: productCard.dataset.productCategory,
+                subcategory: productCard.dataset.productSubcategory,
+                featured: productCard.dataset.productFeatured === 'true',
+                onSale: productCard.dataset.productOnSale === 'true',
+                stock: parseInt(productCard.dataset.productStock),
+                rating: parseFloat(productCard.dataset.productRating),
+                reviewCount: parseInt(productCard.dataset.productReviewCount),
+                frontImage: productCard.dataset.productFrontImage,
+                backImage: productCard.dataset.productBackImage,
+                color: productCard.dataset.productColor,
+                images: JSON.parse(productCard.dataset.productImages || '[]'),
+                colorVariants: JSON.parse(productCard.dataset.productColorVariants || '[]'),
+                sizes: JSON.parse(productCard.dataset.productSizes || '[]'),
+                variants: JSON.parse(productCard.dataset.productVariants || '[]'),
+                productVariants: JSON.parse(productCard.dataset.productProductVariants || '[]'),
+                options: JSON.parse(productCard.dataset.productOptions || '[]'),
+                productOptions: JSON.parse(productCard.dataset.productProductOptions || '[]'),
+                imageFront: productCard.dataset.productImageFront,
+                imageBack: productCard.dataset.productImageBack
+            };
+            
+            console.log('Product data extracted from card:', productData);
+            
+            // Format the data for quickview (similar to the API response)
+            const formattedProduct = formatProductForQuickView(productData);
+            
+            // Populate the quickview
+            populateQuickViewWithData(formattedProduct);
+            
+        } catch (error) {
+            console.error('Error loading product data from card:', error);
+            showQuickViewError('Error reading product data from card');
+        }
+    }
+    
+    function formatProductForQuickView(productData) {
+        console.log('Formatting product data for quickview:', productData);
+        
+        const formatted = {
+            id: productData.id,
+            name: productData.name,
+            price: productData.price,
+            salePrice: productData.salePrice,
+            description: productData.description,
+            category: productData.category,
+            subcategory: productData.subcategory,
+            featured: productData.featured,
+            onSale: productData.onSale,
+            stock: productData.stock,
+            rating: productData.rating,
+            reviewCount: productData.reviewCount,
+            images: [],
+            colors: [],
+            sizes: [],
+            variants: []
+        };
+        
+        // Process images
+        if (productData.frontImage) {
+            formatted.images.push({
+                src: productData.frontImage,
+                type: 'image',
+                alt: productData.name + ' - Front'
+            });
+        }
+        
+        if (productData.backImage) {
+            formatted.images.push({
+                src: productData.backImage,
+                type: 'image',
+                alt: productData.name + ' - Back'
+            });
+        }
+        
+        // Add additional images from the images array
+        if (productData.images && Array.isArray(productData.images)) {
+            productData.images.forEach(img => {
+                if (img && typeof img === 'string') {
+                    formatted.images.push({
+                        src: img,
+                        type: 'image',
+                        alt: productData.name
+                    });
+                }
+            });
+        }
+        
+        // Process colors
+        if (productData.colorVariants && productData.colorVariants.length > 0) {
+            // Use color variants from the database
+            productData.colorVariants.forEach(variant => {
+                const colorData = {
+                    name: variant.color || 'Default',
+                    value: variant.color || 'default',
+                    hex: variant.hex || '#000000',
+                    images: [],
+                    sizes: [],
+                    stock: variant.stock || 0
+                };
+                
+                // Add variant images
+                if (variant.front_image) {
+                    colorData.images.push({
+                        src: variant.front_image,
+                        type: 'image',
+                        alt: productData.name + ' - ' + colorData.name
+                    });
+                }
+                
+                if (variant.images && Array.isArray(variant.images)) {
+                    variant.images.forEach(img => {
+                        colorData.images.push({
+                            src: img,
+                            type: 'image',
+                            alt: productData.name + ' - ' + colorData.name
+                        });
+                    });
+                }
+                
+                // Add variant sizes
+                if (variant.sizes && Array.isArray(variant.sizes)) {
+                    variant.sizes.forEach(size => {
+                        colorData.sizes.push({
+                            name: size.size || 'One Size',
+                            available: size.available !== false,
+                            stock: size.stock || 0
+                        });
+                    });
+                }
+                
+                formatted.colors.push(colorData);
+            });
+                    } else {
+            // Use basic color from the card
+            formatted.colors.push({
+                name: 'Available',
+                value: 'available',
+                hex: productData.color || '#000000',
+                images: formatted.images,
+                sizes: [],
+                stock: productData.stock
+            });
+        }
+        
+        // Process sizes
+        if (productData.sizes && productData.sizes.length > 0) {
+            formatted.sizes = productData.sizes.map(size => ({
+                name: size.size || size.name || 'One Size',
+                available: size.available !== false,
+                stock: size.stock || 0
+            }));
+        } else {
+            // Default sizes if none specified
+            const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+            formatted.sizes = defaultSizes.map(size => ({
+                name: size,
+                available: true,
+                stock: productData.stock
+            }));
+        }
+        
+        // Set default color and size
+        if (formatted.colors.length > 0) {
+            formatted.defaultColor = formatted.colors[0].value;
+        }
+        if (formatted.sizes.length > 0) {
+            formatted.defaultSize = formatted.sizes[0].name;
+        }
+        
+        console.log('Formatted product for quickview:', formatted);
+        return formatted;
+    }
+    
+    function showQuickViewError(message) {
+        const titleEl = document.getElementById('quick-view-title');
+        const descriptionEl = document.getElementById('quick-view-description');
+        
+        if (titleEl) titleEl.textContent = 'Error';
+        if (descriptionEl) descriptionEl.textContent = message;
+    }
+    
+    function populateQuickViewWithData(product) {
+        console.log('Populating quickview with product:', product);
+        console.log('Product images array:', product.images);
+        console.log('Product colors array:', product.colors);
+        
+        // Set basic product info
+        const titleEl = document.getElementById('quick-view-title');
+        const priceEl = document.getElementById('quick-view-price');
+        const descriptionEl = document.getElementById('quick-view-description');
+        const availabilityEl = document.getElementById('quick-view-availability');
+        
+        if (titleEl) titleEl.textContent = product.name;
+        if (priceEl) priceEl.innerHTML = formatPrice(product.price, product.salePrice);
+        if (descriptionEl) descriptionEl.textContent = product.description || 'Product description not available';
+        
+        // Set availability
+        if (availabilityEl) {
+            if (product.stock <= 0) {
+                availabilityEl.innerHTML = '<span style="color: #e53e3e;">SOLD OUT</span>';
+            } else if (product.stock <= 5) {
+                availabilityEl.innerHTML = `<span style="color: #d69e2e;">Only ${product.stock} left</span>`;
+                        } else {
+                availabilityEl.innerHTML = '<span style="color: #38a169;">In Stock</span>';
+            }
+        }
+        
+        // Set product images
+        setQuickViewImages(product);
+        
+        // Set colors
+        setQuickViewColors(product);
+        
+        // Set sizes
+        setQuickViewSizes(product);
+        
+        // Set action buttons
+        setQuickViewActionButtons(product);
+    }
+    
+    function formatPrice(price, salePrice) {
+        if (salePrice && salePrice < price) {
+            return `<span style="text-decoration: line-through; color: #999;">$${price}</span> <span style="color: #e74c3c; font-weight: bold;">$${salePrice}</span>`;
+        }
+        return `$${price}`;
+    }
+    
+    function setQuickViewImages(product) {
         const mainImage = document.getElementById('quick-view-main-image');
         const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
         
-        if (mainImage && thumbnailsContainer) {
-            // Get all media from the product card (both images and videos)
-            const mediaElements = productCard.querySelectorAll('.image-slider img, .image-slider video');
-            
-            if (mediaElements.length > 0) {
-                const firstMedia = mediaElements[0];
-                const isVideo = firstMedia.tagName.toLowerCase() === 'video';
-                
-                // Set main media
-                if (isVideo) {
-                    mainImage.style.display = 'none';
-                    const mainVideo = document.getElementById('quick-view-main-video');
-                    if (mainVideo) {
-                        mainVideo.src = firstMedia.src;
-                        mainVideo.style.display = 'block';
-                        mainVideo.muted = true;
-                        mainVideo.loop = true;
-                        mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
-                    }
-                } else {
-                    mainImage.src = firstMedia.src;
-                    mainImage.alt = firstMedia.alt || name;
-                    mainImage.style.display = 'block';
-                    const mainVideo = document.getElementById('quick-view-main-video');
-                    if (mainVideo) mainVideo.style.display = 'none';
+        if (!mainImage || !thumbnailsContainer) return;
+        
+        console.log('Setting quickview images for product:', product);
+        
+        // Get all images from the product
+        let allImages = [];
+        
+        // Add main product images (from the main images array)
+        if (product.images && product.images.length > 0) {
+            console.log('Found main images:', product.images);
+            allImages = allImages.concat(product.images);
+        }
+        
+        // Add color variant images
+        if (product.colors && product.colors.length > 0) {
+            product.colors.forEach(color => {
+                if (color.images && color.images.length > 0) {
+                    console.log('Found color images for', color.name, ':', color.images);
+                    allImages = allImages.concat(color.images);
                 }
+            });
+        }
+        
+        console.log('Total images found:', allImages);
+        
+        // Remove duplicates based on src
+        allImages = allImages.filter((image, index, self) => 
+            index === self.findIndex(img => img.src === image.src)
+        );
+        
+        if (allImages.length > 0) {
+            console.log('Setting main image to:', allImages[0]);
+            
+            // Set main image
+            mainImage.src = allImages[0].src;
+            mainImage.alt = allImages[0].alt || image.alt || product.name;
+            mainImage.style.display = 'block';
+            
+            // Set thumbnails
+            thumbnailsContainer.innerHTML = '';
+            allImages.forEach((image, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                thumbnail.innerHTML = `<img src="${image.src}" alt="${image.alt}" data-index="${index}">`;
                 
-                // Clear and populate thumbnails
-                thumbnailsContainer.innerHTML = '';
-                
-                mediaElements.forEach((media, index) => {
-                    const thumbnail = document.createElement('div');
-                    thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
-                    const isThumbnailVideo = media.tagName.toLowerCase() === 'video';
+                thumbnail.addEventListener('click', () => {
+                    // Update main image
+                    mainImage.src = image.src;
+                    mainImage.alt = image.alt;
                     
-                    if (isThumbnailVideo) {
-                        const thumbnailVideo = document.createElement('video');
-                        thumbnailVideo.src = media.src;
-                        thumbnailVideo.muted = true;
-                        thumbnailVideo.setAttribute('data-index', index);
-                        thumbnail.appendChild(thumbnailVideo);
-                    } else {
-                        const thumbnailImg = document.createElement('img');
-                        thumbnailImg.src = media.src;
-                        thumbnailImg.alt = media.alt;
-                        thumbnailImg.setAttribute('data-index', index);
-                        thumbnail.appendChild(thumbnailImg);
-                    }
-                    
-                    thumbnail.addEventListener('click', () => {
-                        if (isThumbnailVideo) {
-                            // Show video
-                            mainImage.style.display = 'none';
-                            const mainVideo = document.getElementById('quick-view-main-video');
-                            if (mainVideo) {
-                                mainVideo.src = media.src;
-                                mainVideo.style.display = 'block';
-                                mainVideo.muted = true;
-                                mainVideo.loop = true;
-                                mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
-                            }
-                        } else {
-                            // Show image
-                            mainImage.src = media.src;
-                            mainImage.alt = media.alt;
-                            mainImage.style.display = 'block';
-                            const mainVideo = document.getElementById('quick-view-main-video');
-                            if (mainVideo) mainVideo.style.display = 'none';
-                        }
-                        
+                    // Update active thumbnail
                         thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
                         thumbnail.classList.add('active');
                     });
                     
                     thumbnailsContainer.appendChild(thumbnail);
                 });
-            }
+        } else {
+            console.log('No images found, showing placeholder');
+            // Show placeholder if no images
+            mainImage.src = '../img/placeholder.jpg';
+            mainImage.alt = 'No image available';
+            mainImage.style.display = 'block';
+            
+            thumbnailsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">No images available</div>';
         }
-        
-        // Handle color circles in quick view
+    }
+    
+    function setQuickViewColors(product) {
         const colorSelection = document.getElementById('quick-view-color-selection');
-        if (colorSelection) {
+        if (!colorSelection) return;
+        
+        if (product.colors && product.colors.length > 0) {
             colorSelection.innerHTML = '';
-            
-            // Get all color circles from the product card
-            const colorCircles = productCard.querySelectorAll('.color-circle');
-            
-            colorCircles.forEach(circle => {
-                const color = circle.getAttribute('data-color');
-                const title = circle.getAttribute('title');
-                const isActive = circle.classList.contains('active');
-                
-                if (color) {
-                    const colorBtn = document.createElement('div');
-                    colorBtn.className = 'quick-view-color-circle';
-                    colorBtn.style.cssText = `
+            product.colors.forEach((color, index) => {
+                const colorCircle = document.createElement('div');
+                colorCircle.className = `quick-view-color-circle ${index === 0 ? 'active' : ''}`;
+                colorCircle.style.cssText = `
                         width: 36px;
                         height: 36px;
                         border-radius: 50%;
-                        background-color: ${color};
-                        border: 2px solid ${isActive ? '#000' : '#ddd'};
+                    background-color: ${color.hex || '#ccc'};
+                    border: 2px solid ${index === 0 ? '#000' : '#ddd'};
                         cursor: pointer;
                         margin: 0 5px;
                         display: inline-block;
@@ -176,15 +418,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         position: relative;
                         z-index: 10;
                     `;
-                    colorBtn.title = title || color;
-                    
-                    if (isActive) {
-                        colorBtn.classList.add('active');
-                        selectedQuickViewColor = color; // Set initial selected color
-                    }
-                    
-                    // Add click handler for quick view color circles
-                    colorBtn.addEventListener('click', function() {
+                colorCircle.title = color.name;
+                colorCircle.setAttribute('data-color', color.value);
+                
+                colorCircle.addEventListener('click', function() {
                         // Remove active class from all color options
                         colorSelection.querySelectorAll('.quick-view-color-circle').forEach(opt => {
                             opt.classList.remove('active');
@@ -195,103 +432,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.add('active');
                         this.style.border = '2px solid #000';
                         
-                        // Store selected color
-                        selectedQuickViewColor = color;
-                        
-                        // Update media for this color
-                        const mediaForColor = productCard.querySelectorAll(`.image-slider img[data-color="${color}"], .image-slider video[data-color="${color}"]`);
-                        
-                        if (mediaForColor.length > 0 && mainImage && thumbnailsContainer) {
-                            const firstMedia = mediaForColor[0];
-                            const isVideo = firstMedia.tagName.toLowerCase() === 'video';
-                            
-                            // Update main media
-                            if (isVideo) {
-                                mainImage.style.display = 'none';
-                                const mainVideo = document.getElementById('quick-view-main-video');
-                                if (mainVideo) {
-                                    mainVideo.src = firstMedia.src;
-                                    mainVideo.style.display = 'block';
-                                    mainVideo.muted = true;
-                                    mainVideo.loop = true;
-                                    mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
-                                }
-                            } else {
-                                mainImage.src = firstMedia.src;
-                                mainImage.alt = firstMedia.alt || name;
-                                mainImage.style.display = 'block';
-                                const mainVideo = document.getElementById('quick-view-main-video');
-                                if (mainVideo) mainVideo.style.display = 'none';
-                            }
-                            
-                            // Update thumbnails
-                            thumbnailsContainer.innerHTML = '';
-                            mediaForColor.forEach((media, index) => {
-                                const thumbnail = document.createElement('div');
-                                thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
-                                const isThumbnailVideo = media.tagName.toLowerCase() === 'video';
-                                
-                                if (isThumbnailVideo) {
-                                    const thumbnailVideo = document.createElement('video');
-                                    thumbnailVideo.src = media.src;
-                                    thumbnailVideo.muted = true;
-                                    thumbnailVideo.setAttribute('data-index', index);
-                                    thumbnail.appendChild(thumbnailVideo);
-                                } else {
-                                    const thumbnailImg = document.createElement('img');
-                                    thumbnailImg.src = media.src;
-                                    thumbnailImg.alt = media.alt;
-                                    thumbnailImg.setAttribute('data-index', index);
-                                    thumbnail.appendChild(thumbnailImg);
-                                }
-                                
-                                thumbnail.addEventListener('click', () => {
-                                    if (isThumbnailVideo) {
-                                        // Show video
-                                        mainImage.style.display = 'none';
-                                        const mainVideo = document.getElementById('quick-view-main-video');
-                                        if (mainVideo) {
-                                            mainVideo.src = media.src;
-                                            mainVideo.style.display = 'block';
-                                            mainVideo.muted = true;
-                                            mainVideo.loop = true;
-                                            mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
-                                        }
-                                    } else {
-                                        // Show image
-                                        mainImage.src = media.src;
-                                        mainImage.alt = media.alt;
-                                        mainImage.style.display = 'block';
-                                        const mainVideo = document.getElementById('quick-view-main-video');
-                                        if (mainVideo) mainVideo.style.display = 'none';
-                                    }
-                                    
-                                    thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
-                                    thumbnail.classList.add('active');
-                                });
-                                
-                                thumbnailsContainer.appendChild(thumbnail);
-                            });
-                        }
-                    });
-                    
-                    colorSelection.appendChild(colorBtn);
-                }
+                    // Update images for this color
+                    updateQuickViewImagesForColor(color);
+                });
+                
+                colorSelection.appendChild(colorCircle);
             });
+        } else {
+            colorSelection.innerHTML = '<span style="color: #666;">No colors available</span>';
         }
-        
-        // Handle size selection in quick view
+    }
+    
+    function setQuickViewSizes(product) {
         const sizeSelection = document.getElementById('quick-view-size-selection');
-        if (sizeSelection) {
+        if (!sizeSelection) return;
+        
+        if (product.sizes && product.sizes.length > 0) {
             sizeSelection.innerHTML = '';
-            
-            // Default sizes
-            const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-            
-            sizes.forEach(size => {
+            product.sizes.forEach((size, index) => {
                 const sizeBtn = document.createElement('div');
                 sizeBtn.className = 'size-option';
-                sizeBtn.textContent = size;
+                sizeBtn.textContent = size.name;
                 sizeBtn.style.cssText = `
                     padding: 8px 12px;
                     border: 2px solid #ddd;
@@ -304,16 +465,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     font-weight: 500;
                 `;
                 
-                // Set default selected size (middle size)
-                if (size === 'M') {
+                if (!size.available || size.stock <= 0) {
+                    sizeBtn.style.opacity = '0.5';
+                    sizeBtn.style.cursor = 'not-allowed';
+                    sizeBtn.disabled = true;
+                }
+                
+                // Set default selected size (first available)
+                if (index === 0 && size.available && size.stock > 0) {
                     sizeBtn.style.border = '2px solid #333';
                     sizeBtn.style.backgroundColor = '#333';
                     sizeBtn.style.color = 'white';
-                    selectedQuickViewSize = size;
+                    selectedQuickViewSize = size.name;
                 }
                 
                 // Add click handler
                 sizeBtn.addEventListener('click', function() {
+                    if (this.disabled) return;
+                    
                     // Remove active class from all size options
                     sizeSelection.querySelectorAll('.size-option').forEach(opt => {
                         opt.style.border = '2px solid #ddd';
@@ -327,29 +496,91 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.style.color = 'white';
                     
                     // Store selected size
-                    selectedQuickViewSize = size;
+                    selectedQuickViewSize = size.name;
                 });
                 
                 sizeSelection.appendChild(sizeBtn);
             });
+        } else {
+            sizeSelection.innerHTML = '<span style="color: #666;">No sizes available</span>';
+        }
+    }
+    
+    function updateQuickViewImagesForColor(color) {
+        const mainImage = document.getElementById('quick-view-main-image');
+        const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+        
+        if (!mainImage || !thumbnailsContainer || !color.images) return;
+        
+        if (color.images.length > 0) {
+            // Update main image
+            mainImage.src = color.images[0].src;
+            mainImage.alt = color.images[0].alt;
+            
+            // Update thumbnails
+            thumbnailsContainer.innerHTML = '';
+            color.images.forEach((image, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
+                thumbnail.innerHTML = `<img src="${image.src}" alt="${image.alt}" data-index="${index}">`;
+                
+                thumbnail.addEventListener('click', () => {
+                    mainImage.src = image.src;
+                    mainImage.alt = image.alt;
+                    
+                    thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                });
+                
+                thumbnailsContainer.appendChild(thumbnail);
+            });
+        }
+    }
+    
+    function setQuickViewActionButtons(product) {
+        // Add to bag button
+        const addToBagBtn = document.getElementById('add-to-bag-quick');
+        if (addToBagBtn) {
+            addToBagBtn.onclick = () => {
+                const selectedColor = document.querySelector('.quick-view-color-circle.active');
+                const selectedSize = document.querySelector('.size-option[style*="background-color: rgb(51, 51, 51)"]');
+                
+                const color = selectedColor ? selectedColor.getAttribute('data-color') : 'default';
+                const size = selectedSize ? selectedSize.textContent : 'default';
+                
+                console.log('Add to bag clicked:', {
+                    productId: product.id,
+                    productName: product.name,
+                    color: color,
+                    size: size
+                });
+                
+                // Here you can add your cart logic
+                alert(`Added to bag: ${product.name}\nColor: ${color}\nSize: ${size}\nPrice: $${product.price}`);
+            };
         }
         
-        // Show quick view
-        console.log('Showing quick view...');
-        if (sidebar) {
-            sidebar.classList.add('active');
-            console.log('Sidebar active class added');
-        } else {
-            console.error('Sidebar not found');
+        // Add to wishlist button
+        const addToWishlistBtn = document.getElementById('add-to-wishlist-quick');
+        if (addToBagBtn) {
+            addToWishlistBtn.onclick = () => {
+                const selectedColor = document.querySelector('.quick-view-color-circle.active');
+                const selectedSize = document.querySelector('.size-option[style*="background-color: rgb(51, 51, 51)"]');
+                
+                const color = selectedColor ? selectedColor.getAttribute('data-color') : 'default';
+                const size = selectedSize ? selectedSize.textContent : 'default';
+                
+                console.log('Add to wishlist clicked:', {
+                    productId: product.id,
+                    productName: product.name,
+                    color: color,
+                    size: size
+                });
+                
+                // Here you can add your wishlist logic
+                alert(`Added to wishlist: ${product.name}\nColor: ${color}\nSize: ${size}\nPrice: $${product.price}`);
+            };
         }
-        if (overlay) {
-            overlay.classList.add('active');
-            console.log('Overlay active class added');
-        } else {
-            console.error('Overlay not found');
-        }
-        document.body.style.overflow = 'hidden';
-        console.log('Quick view should be visible now');
     }
     
     function closeQuickView() {

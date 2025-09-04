@@ -23,6 +23,14 @@ $dresses = $productModel->getBySubcategory('Dresses');
 // Get all tops from the database
 $tops = $productModel->getBySubcategory('Tops');
 
+// Debug: Show what's in the database
+if (!empty($products)) {
+    echo "<!-- DEBUG: First product from database -->\n";
+    echo "<!-- Product: " . htmlspecialchars(json_encode($products[0])) . " -->\n";
+    echo "<!-- Color field: " . htmlspecialchars($products[0]['color'] ?? 'NULL') . " -->\n";
+    echo "<!-- Color variants: " . htmlspecialchars(json_encode($products[0]['color_variants'] ?? [])) . " -->\n";
+}
+
 
 
 ?>
@@ -57,7 +65,37 @@ $tops = $productModel->getBySubcategory('Tops');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <div class="product-card" 
+                     data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price']; ?>"
+                     data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
+                     data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+                     data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
+                     data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
+                     data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
+                     data-product-back-image="<?php echo htmlspecialchars($product['back_image'] ?? $product['image_back'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                     data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
+                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     
+                     <!-- DEBUG: Raw color data -->
+                     <!-- Color: <?php echo htmlspecialchars($product['color'] ?? 'NULL'); ?> -->
+                     <!-- Color Variants: <?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?> -->
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['variants'] ?? [])); ?>"
+                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
+                     data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
+                     data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
+                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -207,7 +245,33 @@ $tops = $productModel->getBySubcategory('Tops');
         <?php if (!empty($dresses)): ?>
             
             <?php foreach ($dresses as $index => $dress): ?>
-                <div class="product-card" data-product-id="<?php echo $dress['_id']; ?>">
+                <div class="product-card" 
+                     data-product-id="<?php echo $dress['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($dress['name']); ?>"
+                     data-product-price="<?php echo $dress['price']; ?>"
+                     data-product-sale-price="<?php echo $dress['sale_price'] ?? ''; ?>"
+                     data-product-description="<?php echo htmlspecialchars($dress['description'] ?? ''); ?>"
+                     data-product-category="<?php echo htmlspecialchars($dress['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($dress['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($dress['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-on-sale="<?php echo ($dress['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-stock="<?php echo $dress['stock'] ?? 0; ?>"
+                     data-product-rating="<?php echo $dress['rating'] ?? 0; ?>"
+                     data-product-review-count="<?php echo $dress['review_count'] ?? 0; ?>"
+                     data-product-front-image="<?php echo htmlspecialchars($dress['front_image'] ?? $dress['image_front'] ?? ''); ?>"
+                     data-product-back-image="<?php echo htmlspecialchars($dress['back_image'] ?? $dress['image_back'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($dress['color'] ?? ''); ?>"
+                     data-product-images="<?php echo htmlspecialchars(json_encode($dress['images'] ?? [])); ?>"
+                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($dress['color_variants'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($dress['sizes'] ?? $dress['selected_sizes'] ?? [])); ?>"
+                     data-product-size-category="<?php echo htmlspecialchars($dress['size_category'] ?? ''); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($dress['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($dress['variants'] ?? [])); ?>"
+                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($dress['product_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($dress['options'] ?? [])); ?>"
+                     data-product-product-options="<?php echo htmlspecialchars(json_encode($dress['product_options'] ?? [])); ?>"
+                     data-product-image-front="<?php echo htmlspecialchars($dress['image_front'] ?? ''); ?>"
+                     data-product-image-back="<?php echo htmlspecialchars($dress['image_back'] ?? ''); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -383,7 +447,33 @@ $tops = $productModel->getBySubcategory('Tops');
         <?php if (!empty($tops)): ?>
             
             <?php foreach ($tops as $index => $top): ?>
-                <div class="product-card" data-product-id="<?php echo $top['_id']; ?>">
+                <div class="product-card" 
+                     data-product-id="<?php echo $top['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($top['name']); ?>"
+                     data-product-price="<?php echo $top['price']; ?>"
+                     data-product-sale-price="<?php echo $top['sale_price'] ?? ''; ?>"
+                     data-product-description="<?php echo htmlspecialchars($top['description'] ?? ''); ?>"
+                     data-product-category="<?php echo htmlspecialchars($top['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($top['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($top['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-on-sale="<?php echo ($top['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-stock="<?php echo $top['stock'] ?? 0; ?>"
+                     data-product-rating="<?php echo $top['rating'] ?? 0; ?>"
+                     data-product-review-count="<?php echo $top['review_count'] ?? 0; ?>"
+                     data-product-front-image="<?php echo htmlspecialchars($top['front_image'] ?? $top['image_front'] ?? ''); ?>"
+                     data-product-back-image="<?php echo htmlspecialchars($top['back_image'] ?? $top['image_back'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($top['color'] ?? ''); ?>"
+                     data-product-images="<?php echo htmlspecialchars(json_encode($top['images'] ?? [])); ?>"
+                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($top['color_variants'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($top['sizes'] ?? $top['selected_sizes'] ?? [])); ?>"
+                     data-product-size-category="<?php echo htmlspecialchars($top['size_category'] ?? ''); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($top['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($top['variants'] ?? [])); ?>"
+                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($top['product_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($top['options'] ?? [])); ?>"
+                     data-product-product-options="<?php echo htmlspecialchars(json_encode($top['product_options'] ?? [])); ?>"
+                     data-product-image-front="<?php echo htmlspecialchars($top['image_front'] ?? ''); ?>"
+                     data-product-image-back="<?php echo htmlspecialchars($top['image_back'] ?? ''); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -564,8 +654,8 @@ $tops = $productModel->getBySubcategory('Tops');
             <h2 id="quick-view-title"></h2>
             <div class="quick-view-price" id="quick-view-price"></div>
             <div class="quick-view-reviews">
-                <span class="stars">★★★★★</span>
-                <span class="review-count">(0 Reviews)</span>
+                <span class="stars" id="quick-view-stars"></span>
+                <span class="review-count" id="quick-view-review-count"></span>
             </div>
             
             <!-- Color Selection -->
@@ -603,7 +693,7 @@ $tops = $productModel->getBySubcategory('Tops');
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p id="quick-view-description">A beautiful product perfect for any occasion. Features a flattering fit and comfortable fabric.</p>
+                <p id="quick-view-description"></p>
             </div>
         </div>
     </div>

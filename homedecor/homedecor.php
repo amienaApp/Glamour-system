@@ -28,6 +28,7 @@ if ($subcategory) {
         <script src="script.js?v=<?php echo time(); ?>" defer></script>
         <script src="js/filtering.js?v=<?php echo time(); ?>" defer></script>
         <script src="js/quick-view.js?v=<?php echo time(); ?>" defer></script>
+        <script src="../simple-quickview-script.js"></script>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Card Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product-card { 
+            border: 1px solid #ddd; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .data-attribute { 
+            background: #e9e9e9; 
+            padding: 5px; 
+            margin: 5px 0; 
+            border-radius: 3px; 
+            font-family: monospace;
+        }
+        .quickview-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            border-left: 1px solid #ddd;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .quickview-sidebar.active {
+            right: 0;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .overlay.active {
+            display: block;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .product-info {
+            margin-top: 20px;
+        }
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .image-gallery img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .color-options {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .color-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+        .color-circle.active {
+            border-color: #333;
+        }
+        .size-options {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .size-option {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .size-option.available {
+            background: #e8f5e8;
+        }
+        .size-option.unavailable {
+            background: #f5e5e5;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Product Card Data Extraction</h1>
+    
+    <!-- Sample Product Card with Data Attributes -->
+    <div class="product-card" 
+         data-product-id="test-123"
+         data-product-name="Test Product"
+         data-product-price="99.99"
+         data-product-sale-price="79.99"
+         data-product-description="This is a test product description"
+         data-product-category="Test Category"
+         data-product-subcategory="Test Subcategory"
+         data-product-featured="true"
+         data-product-on-sale="true"
+         data-product-stock="50"
+         data-product-rating="4.5"
+         data-product-review-count="25"
+         data-product-front-image="https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Front"
+         data-product-back-image="https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Back"
+         data-product-color="#ff6b6b"
+         data-product-images='["https://via.placeholder.com/300x400/45b7d1/ffffff?text=Image1", "https://via.placeholder.com/300x400/96ceb4/ffffff?text=Image2"]'
+         data-product-color-variants='[{"color":"Red","value":"red","hex":"#ff6b6b","front_image":"https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Red+Front","images":["https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Red+1","https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Red+2"],"sizes":[{"size":"S","available":true,"stock":10},{"size":"M","available":true,"stock":15},{"size":"L","available":false,"stock":0}],"stock":25},{"color":"Blue","value":"blue","hex":"#4ecdc4","front_image":"https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Blue+Front","images":["https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Blue+1","https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Blue+2"],"sizes":[{"size":"S","available":true,"stock":8},{"size":"M","available":true,"stock":12},{"size":"L","available":true,"stock":5}],"stock":25}]'
+         data-product-sizes='[{"size":"S","available":true,"stock":18},{"size":"M","available":true,"stock":27},{"size":"L","available":true,"stock":5}]'
+         data-product-variants='[{"color":"Green","value":"green","hex":"#45b7d1","image":"https://via.placeholder.com/300x400/45b7d1/ffffff?text=Green","sizes":[{"size":"S","available":true,"stock":5}]}]'
+         data-product-product-variants='[]'
+         data-product-options='[]'
+         data-product-product-options='[]'
+         data-product-image-front="https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Legacy+Front"
+         data-product-image-back="https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Legacy+Back">
+        
+        <h3>Test Product</h3>
+        <p>Price: $99.99 (Sale: $79.99)</p>
+        <p>Stock: 50</p>
+        <p>Rating: 4.5 (25 reviews)</p>
+        
+        <button onclick="openQuickView('test-123')" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            Open Quick View
+        </button>
+        
+        <div class="data-attributes">
+            <h4>Data Attributes:</h4>
+            <div class="data-attribute">ID: test-123</div>
+            <div class="data-attribute">Name: Test Product</div>
+            <div class="data-attribute">Price: $99.99</div>
+            <div class="data-attribute">Sale Price: $79.99</div>
+            <div class="data-attribute">Description: This is a test product description</div>
+            <div class="data-attribute">Category: Test Category</div>
+            <div class="data-attribute">Subcategory: Test Subcategory</div>
+            <div class="data-attribute">Featured: true</div>
+            <div class="data-attribute">On Sale: true</div>
+            <div class="data-attribute">Stock: 50</div>
+            <div class="data-attribute">Rating: 4.5</div>
+            <div class="data-attribute">Review Count: 25</div>
+            <div class="data-attribute">Front Image: https://via.placeholder.com/300x400/ff6b6b/ffffff?text=Front</div>
+            <div class="data-attribute">Back Image: https://via.placeholder.com/300x400/4ecdc4/ffffff?text=Back</div>
+            <div class="data-attribute">Color: #ff6b6b</div>
+        </div>
+    </div>
+    
+    <!-- Quick View Sidebar -->
+    <div id="quick-view-sidebar" class="quickview-sidebar">
+        <button class="close-btn" onclick="closeQuickView()">×</button>
+        <h2 id="quick-view-title">Product Details</h2>
+        
+        <div class="product-info">
+            <div id="quick-view-price" class="price"></div>
+            <div id="quick-view-sale-price" class="sale-price"></div>
+            <div id="quick-view-description"></div>
+            
+            <h4>Images:</h4>
+            <div id="quick-view-images" class="image-gallery"></div>
+            
+            <h4>Colors:</h4>
+            <div id="quick-view-colors" class="color-options"></div>
+            
+            <h4>Sizes:</h4>
+            <div id="quick-view-sizes" class="size-options"></div>
+            
+            <h4>Raw Data:</h4>
+            <pre id="quick-view-raw-data"></pre>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div id="quick-view-overlay" class="overlay"></div>
+    
+    <script>
+        // Quick View Functions
+        function openQuickView(productId) {
+            console.log('Opening quick view for:', productId);
+            
+            // Find the product card that was clicked
+            const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+            if (!productCard) {
+                console.error('Product card not found for ID:', productId);
+                return;
+            }
+            
+            // Show quick view sidebar
+            const sidebar = document.getElementById('quick-view-sidebar');
+            const overlay = document.getElementById('quick-view-overlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            }
+            
+            // Load product data directly from the card
+            loadProductDataFromCard(productCard);
+        }
+        
+        function closeQuickView() {
+            const sidebar = document.getElementById('quick-view-sidebar');
+            const overlay = document.getElementById('quick-view-overlay');
+            
+            if (sidebar && overlay) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+        
+        function loadProductDataFromCard(productCard) {
+            console.log('Loading product data from card:', productCard);
+            
+            try {
+                // Extract data from the card's data attributes
+                const productData = {
+                    id: productCard.dataset.productId,
+                    name: productCard.dataset.productName,
+                    price: parseFloat(productCard.dataset.productPrice),
+                    salePrice: productCard.dataset.productSalePrice ? parseFloat(productCard.dataset.productSalePrice) : null,
+                    description: productCard.dataset.productDescription,
+                    category: productCard.dataset.productCategory,
+                    subcategory: productCard.dataset.productSubcategory,
+                    featured: productCard.dataset.productFeatured === 'true',
+                    onSale: productCard.dataset.productOnSale === 'true',
+                    stock: parseInt(productCard.dataset.productStock),
+                    rating: parseFloat(productCard.dataset.productRating),
+                    reviewCount: parseInt(productCard.dataset.productReviewCount),
+                    frontImage: productCard.dataset.productFrontImage,
+                    backImage: productCard.dataset.productBackImage,
+                    color: productCard.dataset.productColor,
+                    images: JSON.parse(productCard.dataset.productImages || '[]'),
+                    colorVariants: JSON.parse(productCard.dataset.productColorVariants || '[]'),
+                    sizes: JSON.parse(productCard.dataset.productSizes || '[]'),
+                    variants: JSON.parse(productCard.dataset.productVariants || '[]'),
+                    productVariants: JSON.parse(productCard.dataset.productProductVariants || '[]'),
+                    options: JSON.parse(productCard.dataset.productOptions || '[]'),
+                    productOptions: JSON.parse(productCard.dataset.productProductOptions || '[]'),
+                    imageFront: productCard.dataset.productImageFront,
+                    imageBack: productCard.dataset.productImageBack
+                };
+                
+                console.log('Product data extracted from card:', productData);
+                
+                // Format the data for quickview
+                const formattedProduct = formatProductForQuickView(productData);
+                
+                // Populate the quickview
+                populateQuickViewWithData(formattedProduct);
+                
+            } catch (error) {
+                console.error('Error loading product data from card:', error);
+                document.getElementById('quick-view-title').textContent = 'Error';
+                document.getElementById('quick-view-description').textContent = 'Error reading product data from card: ' + error.message;
+            }
+        }
+        
+        function formatProductForQuickView(productData) {
+            console.log('Formatting product data for quickview:', productData);
+            
+            const formatted = {
+                id: productData.id,
+                name: productData.name,
+                price: productData.price,
+                salePrice: productData.salePrice,
+                description: productData.description,
+                category: productData.category,
+                subcategory: productData.subcategory,
+                featured: productData.featured,
+                onSale: productData.onSale,
+                stock: productData.stock,
+                rating: productData.rating,
+                reviewCount: productData.reviewCount,
+                images: [],
+                colors: [],
+                sizes: [],
+                variants: []
+            };
+            
+            // Process images - start with main product images
+            if (productData.frontImage) {
+                formatted.images.push({
+                    src: productData.frontImage,
+                    type: 'image',
+                    alt: productData.name + ' - Front'
+                });
+            }
+            
+            if (productData.backImage) {
+                formatted.images.push({
+                    src: productData.backImage,
+                    type: 'image',
+                    alt: productData.name + ' - Back'
+                });
+            }
+            
+            // Check for legacy image fields
+            if (productData.imageFront && !formatted.images.some(img => img.src === productData.imageFront)) {
+                formatted.images.push({
+                    src: productData.imageFront,
+                    type: 'image',
+                    alt: productData.name + ' - Front'
+                });
+            }
+            
+            if (productData.imageBack && !formatted.images.some(img => img.src === productData.imageBack)) {
+                formatted.images.push({
+                    src: productData.imageBack,
+                    type: 'image',
+                    alt: productData.name + ' - Back'
+                });
+            }
+            
+            // Add additional images from the images array
+            if (productData.images && Array.isArray(productData.images)) {
+                productData.images.forEach(img => {
+                    if (img && typeof img === 'string' && !formatted.images.some(existing => existing.src === img)) {
+                        formatted.images.push({
+                            src: img,
+                            type: 'image',
+                            alt: productData.name
+                        });
+                    }
+                });
+            }
+            
+            // Process color variants - check multiple sources
+            let hasVariants = false;
+            
+            // First, try color_variants
+            if (productData.colorVariants && productData.colorVariants.length > 0) {
+                hasVariants = true;
+                productData.colorVariants.forEach(variant => {
+                    const colorData = {
+                        name: variant.color || variant.name || 'Default',
+                        value: variant.color || variant.value || 'default',
+                        hex: variant.hex || variant.color_hex || '#000000',
+                        images: [],
+                        sizes: [],
+                        stock: variant.stock || 0
+                    };
+                    
+                    // Add variant images
+                    if (variant.front_image) {
+                        colorData.images.push({
+                            src: variant.front_image,
+                            type: 'image',
+                            alt: productData.name + ' - ' + colorData.name
+                        });
+                    }
+                    
+                    if (variant.images && Array.isArray(variant.images)) {
+                        variant.images.forEach(img => {
+                            colorData.images.push({
+                                src: img,
+                                type: 'image',
+                                alt: productData.name + ' - ' + colorData.name
+                            });
+                        });
+                    }
+                    
+                    // Add variant sizes
+                    if (variant.sizes && Array.isArray(variant.sizes)) {
+                        variant.sizes.forEach(size => {
+                            colorData.sizes.push({
+                                name: size.size || size.name || 'One Size',
+                                available: size.available !== false,
+                                stock: size.stock || 0
+                            });
+                        });
+                    }
+                    
+                    formatted.colors.push(colorData);
+                });
+            }
+            
+            // If no color variants, check other variant fields
+            if (!hasVariants) {
+                const variantFields = [
+                    { field: 'variants', data: productData.variants },
+                    { field: 'productVariants', data: productData.productVariants },
+                    { field: 'options', data: productData.options },
+                    { field: 'productOptions', data: productData.productOptions }
+                ];
+                
+                for (const variantField of variantFields) {
+                    if (variantField.data && Array.isArray(variantField.data) && variantField.data.length > 0) {
+                        console.log(`Found variants in ${variantField.field}:`, variantField.data);
+                        hasVariants = true;
+                        
+                        variantField.data.forEach(variant => {
+                            const colorData = {
+                                name: variant.color || variant.name || 'Variant',
+                                value: variant.color || variant.value || 'variant',
+                                hex: variant.hex || variant.color_hex || '#000000',
+                                images: [],
+                                sizes: [],
+                                stock: variant.stock || 0
+                            };
+                            
+                            // Add variant images
+                            if (variant.image) {
+                                colorData.images.push({
+                                    src: variant.image,
+                                    type: 'image',
+                                    alt: productData.name + ' - ' + colorData.name
+                                });
+                            }
+                            
+                            if (variant.images && Array.isArray(variant.images)) {
+                                variant.images.forEach(img => {
+                                    colorData.images.push({
+                                        src: img,
+                                        type: 'image',
+                                        alt: productData.name + ' - ' + colorData.name
+                                    });
+                                });
+                            }
+                            
+                            // Add variant sizes
+                            if (variant.sizes && Array.isArray(variant.sizes)) {
+                                variant.sizes.forEach(size => {
+                                    colorData.sizes.push({
+                                        name: size.size || size.name || 'One Size',
+                                        available: size.available !== false,
+                                        stock: size.stock || 0
+                                    });
+                                });
+                            }
+                            
+                            formatted.colors.push(colorData);
+                        });
+                        break; // Found variants, stop looking
+                    }
+                }
+            }
+            
+            // If still no variants, create a basic color entry
+            if (!hasVariants) {
+                formatted.colors.push({
+                    name: 'Available',
+                    value: 'available',
+                    hex: productData.color || '#000000',
+                    images: formatted.images,
+                    sizes: [],
+                    stock: productData.stock
+                });
+            }
+            
+            // Process sizes - combine from all sources
+            const allSizes = new Map();
+            
+            // Add sizes from color variants
+            formatted.colors.forEach(color => {
+                color.sizes.forEach(size => {
+                    if (!allSizes.has(size.name)) {
+                        allSizes.set(size.name, {
+                            name: size.name,
+                            available: size.available,
+                            stock: size.stock
+                        });
+                    }
+                });
+            });
+            
+            // Add sizes from main product data
+            if (productData.sizes && Array.isArray(productData.sizes)) {
+                productData.sizes.forEach(size => {
+                    const sizeName = size.size || size.name || 'One Size';
+                    if (!allSizes.has(sizeName)) {
+                        allSizes.set(sizeName, {
+                            name: sizeName,
+                            available: size.available !== false,
+                            stock: size.stock || 0
+                        });
+                    }
+                });
+            }
+            
+            // If no sizes found, use defaults
+            if (allSizes.size === 0) {
+                const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                defaultSizes.forEach(size => {
+                    allSizes.set(size, {
+                        name: size,
+                        available: true,
+                        stock: productData.stock
+                    });
+                });
+            }
+            
+            formatted.sizes = Array.from(allSizes.values());
+            
+            // Set default color and size
+            if (formatted.colors.length > 0) {
+                formatted.defaultColor = formatted.colors[0].value;
+            }
+            if (formatted.sizes.length > 0) {
+                formatted.defaultSize = formatted.sizes[0].name;
+            }
+            
+            console.log('Formatted product for quickview:', formatted);
+            return formatted;
+        }
+        
+        function populateQuickViewWithData(product) {
+            console.log('Populating quickview with product:', product);
+            
+            // Update title and basic info
+            document.getElementById('quick-view-title').textContent = product.name;
+            document.getElementById('quick-view-price').textContent = `$${product.price}`;
+            
+            if (product.salePrice) {
+                document.getElementById('quick-view-sale-price').textContent = `Sale: $${product.salePrice}`;
+                document.getElementById('quick-view-sale-price').style.display = 'block';
+            } else {
+                document.getElementById('quick-view-sale-price').style.display = 'none';
+            }
+            
+            document.getElementById('quick-view-description').textContent = product.description;
+            
+            // Update images
+            const imagesContainer = document.getElementById('quick-view-images');
+            imagesContainer.innerHTML = '';
+            product.images.forEach(img => {
+                const imgEl = document.createElement('img');
+                imgEl.src = img.src;
+                imgEl.alt = img.alt;
+                imgEl.title = img.alt;
+                imagesContainer.appendChild(imgEl);
+            });
+            
+            // Update colors
+            const colorsContainer = document.getElementById('quick-view-colors');
+            colorsContainer.innerHTML = '';
+            product.colors.forEach(color => {
+                const colorEl = document.createElement('div');
+                colorEl.className = 'color-circle';
+                colorEl.style.backgroundColor = color.hex;
+                colorEl.title = color.name;
+                colorEl.onclick = () => selectColor(color.value);
+                colorsContainer.appendChild(colorEl);
+            });
+            
+            // Update sizes
+            const sizesContainer = document.getElementById('quick-view-sizes');
+            sizesContainer.innerHTML = '';
+            product.sizes.forEach(size => {
+                const sizeEl = document.createElement('div');
+                sizeEl.className = `size-option ${size.available ? 'available' : 'unavailable'}`;
+                sizeEl.textContent = size.name;
+                sizeEl.title = `${size.name} - Stock: ${size.stock}`;
+                if (size.available) {
+                    sizeEl.onclick = () => selectSize(size.name);
+                }
+                sizesContainer.appendChild(sizeEl);
+            });
+            
+            // Show raw data for debugging
+            document.getElementById('quick-view-raw-data').textContent = JSON.stringify(product, null, 2);
+        }
+        
+        function selectColor(colorValue) {
+            console.log('Selected color:', colorValue);
+            // Update color selection UI
+            document.querySelectorAll('.color-circle').forEach(circle => {
+                circle.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function selectSize(sizeName) {
+            console.log('Selected size:', sizeName);
+            // Update size selection UI
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Close quickview when clicking overlay
+        document.getElementById('quick-view-overlay').addEventListener('click', closeQuickView);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Quickview Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-button { 
+            background: #007bff; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px;
+        }
+        .quickview-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .quickview-sidebar.active {
+            right: 0;
+        }
+        .quickview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .quickview-overlay.active {
+            display: block;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+        }
+        .product-data {
+            margin-top: 20px;
+        }
+        .error {
+            color: #ff4444;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        /* QuickviewManager compatible styles */
+        #quick-view-sidebar.active {
+            right: 0;
+        }
+        #quick-view-overlay.active {
+            display: block;
+        }
+        
+        /* Product display styles */
+        .product-images {
+            margin: 20px 0;
+        }
+        
+        .thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .thumbnail-item {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .thumbnail-item.active {
+            border-color: #007bff;
+        }
+        
+        .thumbnail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .color-selection, .size-selection {
+            margin: 20px 0;
+        }
+        
+        .quick-view-color-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: inline-block;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        
+        .quick-view-color-circle.active {
+            border-color: #007bff;
+        }
+        
+        .quick-view-size-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            margin: 0 5px 5px 0;
+            border-radius: 3px;
+        }
+        
+        .quick-view-size-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .quick-view-size-btn.sold-out {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple Quickview Test</h1>
+    <p>This page tests the quickview system with a known working product ID.</p>
+    
+    <button class="test-button" onclick="testQuickview()">
+        🚀 Test Quickview (Product ID: 68b5eadb91a66fb16a0d9254)
+    </button>
+    
+    <button class="test-button" onclick="testAPI()">
+        🔍 Test API Directly
+    </button>
+    
+    <div id="api-result" style="margin: 20px; padding: 20px; border: 1px solid #ddd; display: none;"></div>
+    
+    <!-- Quickview Sidebar -->
+    <div class="quickview-overlay" id="quick-view-overlay"></div>
+    <div class="quickview-sidebar" id="quick-view-sidebar">
+        <button class="close-btn" onclick="closeQuickview()">✕</button>
+        <h2>Quickview Test</h2>
+        
+        <!-- Product Title and Price -->
+        <h3 id="quick-view-title">Product Title</h3>
+        <p id="quick-view-price">$0</p>
+        <p id="quick-view-description">Product description will appear here...</p>
+        
+        <!-- Product Images -->
+        <div class="product-images">
+            <img id="quick-view-main-image" src="" alt="" style="width: 100%; max-width: 300px; display: none;">
+            <div id="quick-view-thumbnails" class="thumbnails"></div>
+        </div>
+        
+        <!-- Color Selection -->
+        <div class="color-selection">
+            <h4>Colors:</h4>
+            <div id="quick-view-color-selection"></div>
+        </div>
+        
+        <!-- Size Selection -->
+        <div class="size-selection">
+            <h4>Sizes:</h4>
+            <div id="quick-view-size-selection"></div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="add-to-cart-btn" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; flex: 1;">
+                Add to Cart
+            </button>
+            <button class="add-to-wishlist-btn" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; flex: 1;">
+                Add to Wishlist
+            </button>
+        </div>
+    </div>
+
+    <script src="simple-quickview-script.js"></script>
+    <script>
+        function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading">Testing API...</div>';
+            
+            const apiUrl = 'get-product-details.php?product_id=68b5eadb91a66fb16a0d9254';
+            console.log('Testing API URL:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('API Response status:', response.status);
+                    console.log('API Response headers:', response.headers);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Response data:', data);
+                    
+                    // Check if we have a product object
+                    const product = data.product || data;
+                    
+                    resultDiv.innerHTML = `
+                        <h3>✅ API Test Successful!</h3>
+                        <p><strong>Product:</strong> ${product.name || 'Unknown'}</p>
+                        <p><strong>Price:</strong> ${product.price || 'Unknown'}</p>
+                        <p><strong>Colors:</strong> ${product.colors ? product.colors.length : 0} available</p>
+                        <p><strong>Sizes:</strong> ${product.sizes ? product.sizes.length : 0} available</p>
+                        <pre style="background: #f5f5f5; padding: 10px; overflow: auto; max-height: 300px;">${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                })
+                .catch(error => {
+                    console.error('API Test failed:', error);
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ API Test Failed</h3>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                            <p>Check the console for more details.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function testQuickview() {
+            console.log('🧪 Testing Quickview...');
+            
+            // Use the simple quickview script
+            if (window.simpleQuickview) {
+                console.log('Using SimpleQuickview...');
+                window.simpleQuickview.openQuickview('68b5eadb91a66fb16a0d9254');
+            } else {
+                console.log('SimpleQuickview not available, using local function...');
+                openQuickview();
+                loadProductData();
+            }
+        }
+        
+        function openQuickview() {
+            document.getElementById('quick-view-sidebar').classList.add('active');
+            document.getElementById('quick-view-overlay').classList.add('active');
+        }
+        
+        function closeQuickview() {
+            document.getElementById('quick-view-sidebar').classList.remove('active');
+            document.getElementById('quick-view-overlay').classList.remove('active');
+        }
+        
+        function loadProductData() {
+            const contentDiv = document.getElementById('quick-view-content');
+            contentDiv.innerHTML = '<div class="loading">Loading product details...</div>';
+            
+            const apiUrl = 'get-product-details.php?product_id=68b5eadb91a66fb16a0d9254';
+            console.log('Loading product from:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('Quickview API Response:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Quickview Product Data:', data);
+                    
+                    // Check if we have a product object
+                    const product = data.product || data;
+                    displayProductData(product);
+                })
+                .catch(error => {
+                    console.error('Quickview Error:', error);
+                    contentDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Failed to Load Product</h3>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                            <p>Check the console for more details.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function displayProductData(product) {
+            const contentDiv = document.getElementById('quick-view-content');
+            
+            let colorsHtml = '';
+            if (product.colors && product.colors.length > 0) {
+                colorsHtml = `
+                    <h4>Available Colors:</h4>
+                    <div style="display: flex; gap: 10px; margin: 10px 0;">
+                        ${product.colors.map(color => `
+                            <div style="width: 30px; height: 30px; border-radius: 50%; background: ${color.hex || '#ccc'}; border: 2px solid #ddd;" title="${color.name}"></div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            let sizesHtml = '';
+            if (product.sizes && product.sizes.length > 0) {
+                sizesHtml = `
+                    <h4>Available Sizes:</h4>
+                    <div style="display: flex; gap: 10px; margin: 10px 0;">
+                        ${product.sizes.map(size => `
+                            <button style="padding: 8px 15px; border: 1px solid #ddd; background: white; cursor: pointer;">${size}</button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            contentDiv.innerHTML = `
+                <h3>${product.name || 'Product Name'}</h3>
+                <p><strong>Price:</strong> ${product.price || 'Unknown'}</p>
+                ${product.salePrice ? `<p><strong>Sale Price:</strong> ${product.salePrice}</p>` : ''}
+                ${product.description ? `<p><strong>Description:</strong> ${product.description}</p>` : ''}
+                ${colorsHtml}
+                ${sizesHtml}
+                <div style="margin-top: 20px;">
+                    <button style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Close quickview when clicking overlay
+        document.getElementById('quick-view-overlay').addEventListener('click', closeQuickview);
+        
+        console.log('🧪 Simple Quickview Test Page Loaded');
+    </script>
+</body>
+</html>

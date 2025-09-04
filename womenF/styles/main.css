@@ -827,3 +827,275 @@
         min-width: 40px;
     }
 } 
+
+/* Quickview Sidebar Styles */
+.quickview-sidebar {
+    position: fixed;
+    right: -500px;
+    top: 0;
+    width: 500px;
+    height: 100vh;
+    background: white;
+    border-left: 1px solid #ddd;
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+}
+
+.quickview-sidebar.active {
+    right: 0;
+}
+
+.quickview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+}
+
+.quickview-overlay.active {
+    display: block;
+}
+
+.quickview-content {
+    padding: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: #cc0000;
+}
+
+.product-images {
+    margin-bottom: 20px;
+}
+
+.main-image {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.main-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.image-thumbnails {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.image-thumbnails img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.image-thumbnails img:hover,
+.image-thumbnails img.active {
+    border-color: #007bff;
+}
+
+.product-info h2 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.price-section {
+    margin-bottom: 15px;
+}
+
+.price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.sale-price {
+    font-size: 18px;
+    color: #ff4444;
+    margin-left: 10px;
+    text-decoration: line-through;
+}
+
+.rating-section {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stars {
+    color: #ffc107;
+    font-size: 18px;
+}
+
+.review-count {
+    color: #666;
+    font-size: 14px;
+}
+
+#quick-view-description {
+    margin-bottom: 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.color-section,
+.size-section {
+    margin-bottom: 20px;
+}
+
+.color-section h4,
+.size-section h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.color-options,
+.size-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.color-option:hover,
+.color-option.selected {
+    border-color: #007bff;
+}
+
+.size-option {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.size-option:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.size-option.selected {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+.size-option.unavailable {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.quantity-section {
+    margin-bottom: 20px;
+}
+
+.quantity-section label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+}
+
+#quick-view-quantity {
+    width: 80px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.add-to-cart-btn,
+.wishlist-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.add-to-cart-btn {
+    background: #007bff;
+    color: white;
+}
+
+.add-to-cart-btn:hover {
+    background: #0056b3;
+}
+
+.wishlist-btn {
+    background: #ff4444;
+    color: white;
+}
+
+.wishlist-btn:hover {
+    background: #cc0000;
+}
+
+.wishlist-btn i {
+    margin-right: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quickview-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+} 

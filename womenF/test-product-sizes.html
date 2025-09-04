@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Sizes Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .size-data {
+            font-family: monospace;
+            font-size: 12px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .available-sizes {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .no-sizes {
+            color: #dc3545;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Size Data Test</h1>
+    <p>This test shows what size data is available for each product and how the size selection will work.</p>
+    
+    <div class="test-container">
+        <h3>Test Products with Different Size Data</h3>
+        
+        <!-- Product 1: Has sizes in productSizes -->
+        <div class="product-card" 
+             data-product-id="product1"
+             data-product-name="Dress with Sizes"
+             data-product-sizes='["XS", "S", "M", "L", "XL"]'
+             data-product-selected-sizes='[]'
+             data-product-variants='[]'
+             data-product-product-variants='[]'>
+            <div class="product-name">Product 1: Dress with Sizes</div>
+            <div class="size-data">productSizes: ["XS", "S", "M", "L", "XL"]</div>
+            <div class="size-data">productSelectedSizes: []</div>
+            <div class="size-data">productVariants: []</div>
+            <div class="size-data">productProductVariants: []</div>
+            <div class="available-sizes">Available Sizes: <span id="sizes1"></span></div>
+        </div>
+        
+        <!-- Product 2: Has sizes in selectedSizes -->
+        <div class="product-card" 
+             data-product-id="product2"
+             data-product-name="Top with Selected Sizes"
+             data-product-sizes='[]'
+             data-product-selected-sizes='["S", "M", "L"]'
+             data-product-variants='[]'
+             data-product-product-variants='[]'>
+            <div class="product-name">Product 2: Top with Selected Sizes</div>
+            <div class="size-data">productSizes: []</div>
+            <div class="size-data">productSelectedSizes: ["S", "M", "L"]</div>
+            <div class="size-data">productVariants: []</div>
+            <div class="size-data">productProductVariants: []</div>
+            <div class="available-sizes">Available Sizes: <span id="sizes2"></span></div>
+        </div>
+        
+        <!-- Product 3: Has sizes in variants -->
+        <div class="product-card" 
+             data-product-id="product3"
+             data-product-name="Shirt with Variants"
+             data-product-sizes='[]'
+             data-product-selected-sizes='[]'
+             data-product-variants='[{"size": "M", "color": "red"}, {"size": "L", "color": "blue"}, {"size": "XL", "color": "green"}]'
+             data-product-product-variants='[]'>
+            <div class="product-name">Product 3: Shirt with Variants</div>
+            <div class="size-data">productSizes: []</div>
+            <div class="size-data">productSelectedSizes: []</div>
+            <div class="size-data">productVariants: [{"size": "M", "color": "red"}, {"size": "L", "color": "blue"}, {"size": "XL", "color": "green"}]</div>
+            <div class="size-data">productProductVariants: []</div>
+            <div class="available-sizes">Available Sizes: <span id="sizes3"></span></div>
+        </div>
+        
+        <!-- Product 4: No size data -->
+        <div class="product-card" 
+             data-product-id="product4"
+             data-product-name="Accessory with No Sizes"
+             data-product-sizes='[]'
+             data-product-selected-sizes='[]'
+             data-product-variants='[]'
+             data-product-product-variants='[]'>
+            <div class="product-name">Product 4: Accessory with No Sizes</div>
+            <div class="size-data">productSizes: []</div>
+            <div class="size-data">productSelectedSizes: []</div>
+            <div class="size-data">productVariants: []</div>
+            <div class="size-data">productProductVariants: []</div>
+            <div class="available-sizes">Available Sizes: <span id="sizes4"></span></div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>Size Selection Logic Test</h3>
+        <button onclick="testAllProducts()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Test All Products</button>
+        <div id="test-results" style="margin-top: 15px;"></div>
+    </div>
+
+    <script>
+        function extractSizesFromProduct(productCard) {
+            let sizes = [];
+            
+            // Try to get sizes from product data
+            const productSizes = productCard.dataset.productSizes;
+            const productSelectedSizes = productCard.dataset.productSelectedSizes;
+            const productVariants = productCard.dataset.productVariants;
+            const productProductVariants = productCard.dataset.productProductVariants;
+            
+            // Check multiple possible size data sources
+            if (productSizes && productSizes !== '[]') {
+                try {
+                    const parsedSizes = JSON.parse(productSizes);
+                    if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
+                        sizes = parsedSizes;
+                    }
+                } catch (e) {
+                    console.log('Could not parse productSizes:', e);
+                }
+            }
+            
+            // If no sizes from productSizes, try selectedSizes
+            if (sizes.length === 0 && productSelectedSizes && productSelectedSizes !== '[]') {
+                try {
+                    const parsedSelectedSizes = JSON.parse(productSelectedSizes);
+                    if (Array.isArray(parsedSelectedSizes) && parsedSelectedSizes.length > 0) {
+                        sizes = parsedSelectedSizes;
+                    }
+                } catch (e) {
+                    console.log('Could not parse productSelectedSizes:', e);
+                }
+            }
+            
+            // If still no sizes, try to extract from variants
+            if (sizes.length === 0 && (productVariants || productProductVariants)) {
+                try {
+                    const variantsData = productVariants || productProductVariants;
+                    const parsedVariants = JSON.parse(variantsData);
+                    if (Array.isArray(parsedVariants)) {
+                        const variantSizes = [];
+                        parsedVariants.forEach(variant => {
+                            if (variant.size && !variantSizes.includes(variant.size)) {
+                                variantSizes.push(variant.size);
+                            }
+                        });
+                        if (variantSizes.length > 0) {
+                            sizes = variantSizes;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Could not parse variants for sizes:', e);
+                }
+            }
+            
+            // If still no sizes, use a minimal default set
+            if (sizes.length === 0) {
+                sizes = ['S', 'M', 'L']; // Minimal default
+            }
+            
+            return sizes;
+        }
+        
+        function testAllProducts() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<h4>Test Results:</h4>';
+            
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                const productName = card.dataset.productName;
+                const sizes = extractSizesFromProduct(card);
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.style.cssText = 'margin: 10px 0; padding: 10px; border-radius: 4px; background: #f8f9fa;';
+                
+                if (sizes.length > 0) {
+                    resultDiv.innerHTML = `
+                        <strong>${productName}:</strong> 
+                        <span style="color: #28a745;">✓ Found ${sizes.length} sizes: ${sizes.join(', ')}</span>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong>${productName}:</strong> 
+                        <span style="color: #dc3545;">✗ No sizes found</span>
+                    `;
+                }
+                
+                results.appendChild(resultDiv);
+            });
+        }
+        
+        // Auto-populate available sizes on page load
+        window.addEventListener('load', function() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                const sizes = extractSizesFromProduct(card);
+                const sizesSpan = document.getElementById(`sizes${index + 1}`);
+                if (sizesSpan) {
+                    if (sizes.length > 0) {
+                        sizesSpan.textContent = sizes.join(', ');
+                        sizesSpan.style.color = '#28a745';
+                    } else {
+                        sizesSpan.textContent = 'No sizes available';
+                        sizesSpan.style.color = '#dc3545';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
