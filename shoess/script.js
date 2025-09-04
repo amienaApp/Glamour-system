@@ -1404,7 +1404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 productGrid = document.getElementById('filtered-products-grid');
             } else {
                 // Try different grid IDs for main page
-                productGrid = document.getElementById('dresses-grid') || 
+                productGrid = document.getElementById('all-shoes-grid') || 
                              document.getElementById('filtered-products-grid') ||
                              document.querySelector('.product-grid');
             }
@@ -1629,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function showFilterLoading() {
             // Add loading overlay to product grid
             const productGrid = document.getElementById('filtered-products-grid') || 
-                               document.getElementById('dresses-grid') ||
+                               document.getElementById('all-shoes-grid') ||
                                document.querySelector('.product-grid');
             if (productGrid) {
                 const loadingOverlay = document.createElement('div');
@@ -1695,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Size Filter Enhancement Functions
     function selectAllSizes() {
         console.log('Selecting all sizes...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        const sizeCheckboxes = document.querySelectorAll('input[data-filter="size"]');
         sizeCheckboxes.forEach(checkbox => {
             if (!checkbox.checked) {
                 checkbox.checked = true;
@@ -1706,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function clearSizeFilters() {
         console.log('Clearing size filters...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        const sizeCheckboxes = document.querySelectorAll('input[data-filter="size"]');
         sizeCheckboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 checkbox.checked = false;
@@ -1716,7 +1716,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateSizeCount() {
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        const sizeCheckboxes = document.querySelectorAll('input[data-filter="size"]:checked');
         const sizeCountElement = document.getElementById('size-count');
         if (sizeCountElement) {
             const count = sizeCheckboxes.length;
@@ -1731,7 +1731,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listener for size count updates
     document.addEventListener('change', function(e) {
-        if (e.target.closest('#size-filter')) {
+        if (e.target.hasAttribute('data-filter') && e.target.getAttribute('data-filter') === 'size') {
             updateSizeCount();
         }
     });

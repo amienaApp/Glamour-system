@@ -11,6 +11,34 @@
     flex-shrink: 0;
 }
 
+/* Clear All Filters Button */
+.clear-all-filters-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.clear-all-filters-btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.clear-all-filters-btn i {
+    font-size: 12px;
+}
+
 /* Side class - aligns items to the left like the logo */
 .side {
     display: flex;

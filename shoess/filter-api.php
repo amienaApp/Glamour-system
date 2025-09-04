@@ -109,9 +109,36 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
+                // Category filter (subcategories) - handle both categories and gender
                 if (!empty($input['categories']) && is_array($input['categories'])) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
+                    $categoryFilters = [];
+                    foreach ($input['categories'] as $category) {
+                        // Map gender values to proper subcategory names
+                        switch (strtolower($category)) {
+                            case 'women':
+                                $categoryFilters[] = "Women's Shoes";
+                                break;
+                            case 'men':
+                                $categoryFilters[] = "Men's Shoes";
+                                break;
+                            case 'children':
+                                $categoryFilters[] = "Children's Shoes";
+                                break;
+                            case 'boys':
+                                $categoryFilters[] = "Boys' Shoes";
+                                break;
+                            case 'girls':
+                                $categoryFilters[] = "Girls' Shoes";
+                                break;
+                            case 'infant':
+                                $categoryFilters[] = "Infant Shoes";
+                                break;
+                            default:
+                                $categoryFilters[] = ucfirst($category);
+                                break;
+                        }
+                    }
+                    $andConditions[] = ['subcategory' => ['$in' => $categoryFilters]];
                 }
                 
                 // Dress length filter
@@ -135,6 +162,10 @@ try {
                 
                 // Get products with filters
                 $products = $productModel->getAll($filters, ['createdAt' => -1]);
+                
+                // Debug: Log the filters being applied
+                error_log("Shoes Filter API - Applied filters: " . json_encode($filters));
+                error_log("Shoes Filter API - Found " . count($products) . " products");
                 
                 // Process products for frontend
                 $processedProducts = [];

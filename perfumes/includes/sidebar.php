@@ -81,15 +81,34 @@ foreach ($allPerfumes as $perfume) {
                 </div>
                 <div class="filter-options">
                     <div class="size-grid">
-                        <?php foreach ($sizes as $size): ?>
-                            <label class="filter-option">
-                                <input type="checkbox" name="size[]" value="<?php echo htmlspecialchars($size); ?>" 
-                                       <?php echo $currentSize === $size ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('<?php echo htmlspecialchars($size); ?>', this.checked)">
-                                <span class="checkmark"></span>
-                                <?php echo htmlspecialchars($size); ?>
-                            </label>
-                        <?php endforeach; ?>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="30ml" 
+                                   <?php echo $currentSize === '30ml' ? 'checked' : ''; ?>
+                                   onchange="updateSizeFilter('30ml', this.checked)">
+                            <span class="checkmark"></span>
+                            30ml
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="50ml" 
+                                   <?php echo $currentSize === '50ml' ? 'checked' : ''; ?>
+                                   onchange="updateSizeFilter('50ml', this.checked)">
+                            <span class="checkmark"></span>
+                            50ml
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="100ml" 
+                                   <?php echo $currentSize === '100ml' ? 'checked' : ''; ?>
+                                   onchange="updateSizeFilter('100ml', this.checked)">
+                            <span class="checkmark"></span>
+                            100ml
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="200ml" 
+                                   <?php echo $currentSize === '200ml' ? 'checked' : ''; ?>
+                                   onchange="updateSizeFilter('200ml', this.checked)">
+                            <span class="checkmark"></span>
+                            200ml
+                        </label>
                     </div>
                 </div>
             </div>
@@ -254,6 +273,25 @@ function clearAllFilters() {
     
     // Redirect to base URL
     window.location.href = window.location.pathname;
+}
+
+// Function to select all sizes
+function selectAllSizes() {
+    const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
+    sizeCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        updateSizeFilter(checkbox.value, true);
+    });
+}
+
+// Function to clear size filters
+function clearSizeFilters() {
+    const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
+    sizeCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    currentFilters.size = '';
+    applyFilters();
 }
 
 // Initialize filters on page load

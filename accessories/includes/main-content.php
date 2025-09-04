@@ -7,14 +7,83 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
-// Get products based on subcategory or all accessories
+// Get query parameters for filtering
+$gender = $_GET['gender'] ?? null;
+$category = $_GET['category'] ?? null;
+$color = $_GET['color'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
+$sort = $_GET['sort'] ?? 'oldest';
+$limit = intval($_GET['limit'] ?? 60);
+$skip = intval($_GET['skip'] ?? 0);
+
+// Build filters
+$filters = [];
+$filters['category'] = 'Accessories'; // Always filter for accessories
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
+if ($gender) $filters['gender'] = $gender;
+if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($color) {
+    // Define color groups - map color names to hex codes (existing + future products)
+    $colorGroups = [
+        'black' => ['#000000', '#0a0a0a', '#111218', '#1a1a1a', '#333333', '#2c2c2c', '#2f2a2c', '#0d0f0d', '#1b1b1e', '#222222', '#202020', '#1e1e1e', '#0b0706', '#0f0f10', '#2b2a2d'],
+        'beige' => ['#dac0b4', '#f5f5dc', '#f0e68c', '#d2b48c', '#deb887', '#f4a460', '#b38f65', '#e6e8c0', '#d3d4d9', '#c2c2c6'],
+        'blue' => ['#0a1e3b', '#0066cc', '#0000ff', '#4169e1', '#1e90ff', '#00bfff', '#87ceeb', '#4682b4', '#5f9ea0', '#597783', '#29566b', '#2f4558', '#5c7a7a', '#667eea'],
+        'brown' => ['#966345', '#8c5738', '#a52a2a', '#d2691e', '#cd853f', '#bc8f8f', '#d2b48c', '#deb887', '#f4a460', '#382d29', '#62352b', '#bf8768'],
+        'gold' => ['#f9d07f', '#ffd700', '#ffb347', '#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#c89b4c'],
+        'green' => ['#04613f', '#228b22', '#32cd32', '#00ff00', '#008000', '#00ff7f', '#7fff00', '#adff2f', '#9acd32'],
+        'grey' => ['#676b6e', '#6f725f', '#394647', '#808080', '#a9a9a9', '#c0c0c0', '#d3d3d3', '#dcdcdc', '#f5f5f5', '#696969', '#778899', '#e6e7eb', '#dddddb'],
+        'orange' => ['#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#ffd700', '#ffb347'],
+        'pink' => ['#ffc0cb', '#ff69b4', '#ff1493', '#dc143c', '#ffb6c1', '#ffa0b4', '#ff91a4'],
+        'purple' => ['#63678f', '#800080', '#4b0082', '#6a5acd', '#8a2be2', '#9932cc', '#ba55d3', '#da70d6'],
+        'red' => ['#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff6347', '#ff4500', '#ff1493', '#c71585'],
+        'silver' => ['#c0c0c0', '#d3d3d3', '#a9a9a9', '#dcdcdc', '#f5f5f5', '#e6e6fa', '#f0f8ff'],
+        'white' => ['#ffffff', '#fff', '#f5f5f5', '#fafafa', '#f8f8ff', '#f0f8ff', '#e6e6fa', '#fff8dc']
+    ];
+    
+    // Get the hex codes for the selected color group
+    $hexCodes = $colorGroups[$color] ?? [$color];
+    
+    // Use $in operator to match any of the hex codes in the group
+    $filters['color'] = ['$in' => $hexCodes];
+}
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
+}
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'oldest':
+        $sortOptions = ['_id' => 1]; // Ascending order by ID - oldest first
+        break;
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['views' => -1];
+        break;
+    default:
+        $sortOptions = ['_id' => 1];
+        break;
+}
+
+// Get filtered products
+$products = $productModel->getAll($filters, $sortOptions, $limit, $skip);
+
+// Set page title
+$pageTitle = "Accessories";
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
     $pageTitle = ucfirst($subcategory);
-} else {
-    // Get all accessory products
-    $products = $productModel->getByCategory("Accessories");
-    $pageTitle = "Accessories";
 }
 
 // Get all watches from the database
@@ -422,4 +491,72 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
 </div>
 
 <!-- Quick View Overlay -->
-<div class="quick-view-overlay" id="quick-view-overlay"></div> 
+<div class="quick-view-overlay" id="quick-view-overlay"></div>
+
+<script>
+// Color filtering logic - show only the color variant that matches the selected filter
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedColor = urlParams.get('color');
+    
+    if (selectedColor) {
+        // Define color groups
+        const colorGroups = {
+            'black': ['#000000', '#0a0a0a', '#111218', '#1a1a1a', '#333333', '#2c2c2c', '#2f2a2c', '#0d0f0d', '#1b1b1e', '#222222', '#202020', '#1e1e1e', '#0b0706', '#0f0f10', '#2b2a2d'],
+            'beige': ['#dac0b4', '#f5f5dc', '#f0e68c', '#d2b48c', '#deb887', '#f4a460', '#b38f65', '#e6e8c0', '#d3d4d9', '#c2c2c6'],
+            'blue': ['#0a1e3b', '#0066cc', '#0000ff', '#4169e1', '#1e90ff', '#00bfff', '#87ceeb', '#4682b4', '#5f9ea0', '#597783', '#29566b', '#2f4558', '#5c7a7a', '#667eea'],
+            'brown': ['#966345', '#8c5738', '#a52a2a', '#d2691e', '#cd853f', '#bc8f8f', '#d2b48c', '#deb887', '#f4a460', '#382d29', '#62352b', '#bf8768'],
+            'gold': ['#f9d07f', '#ffd700', '#ffb347', '#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#c89b4c'],
+            'green': ['#04613f', '#228b22', '#32cd32', '#00ff00', '#008000', '#00ff7f', '#7fff00', '#adff2f', '#9acd32'],
+            'grey': ['#676b6e', '#6f725f', '#394647', '#808080', '#a9a9a9', '#c0c0c0', '#d3d3d3', '#dcdcdc', '#f5f5f5', '#696969', '#778899', '#e6e7eb', '#dddddb'],
+            'orange': ['#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#ffd700', '#ffb347'],
+            'pink': ['#ffc0cb', '#ff69b4', '#ff1493', '#dc143c', '#ffb6c1', '#ffa0b4', '#ff91a4'],
+            'purple': ['#63678f', '#800080', '#4b0082', '#6a5acd', '#8a2be2', '#9932cc', '#ba55d3', '#da70d6'],
+            'red': ['#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff6347', '#ff4500', '#ff1493', '#c71585'],
+            'silver': ['#c0c0c0', '#d3d3d3', '#a9a9a9', '#dcdcdc', '#f5f5f5', '#e6e6fa', '#f0f8ff'],
+            'white': ['#ffffff', '#fff', '#f5f5f5', '#fafafa', '#f8f8ff', '#f0f8ff', '#e6e6fa', '#fff8dc']
+        };
+        
+        const allowedColors = colorGroups[selectedColor] || [selectedColor];
+        
+        // Process each product card
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(function(card) {
+            // Find all color variant elements (images, color swatches, etc.)
+            const colorElements = card.querySelectorAll('[data-color]');
+            let hasMatchingColor = false;
+            
+            // First, hide all color variants
+            colorElements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+            
+            // Then show only the matching color variants
+            colorElements.forEach(function(element) {
+                const elementColor = element.getAttribute('data-color');
+                if (elementColor && allowedColors.includes(elementColor)) {
+                    element.style.display = 'block';
+                    hasMatchingColor = true;
+                }
+            });
+            
+            // If no color variants match, show the main product image
+            if (!hasMatchingColor) {
+                const mainImage = card.querySelector('.product-image img:not([data-color])');
+                if (mainImage) {
+                    mainImage.style.display = 'block';
+                }
+            }
+        });
+        
+        // Also filter color swatches in product details
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        colorSwatches.forEach(function(swatch) {
+            const swatchColor = swatch.getAttribute('data-color');
+            if (swatchColor && !allowedColors.includes(swatchColor)) {
+                swatch.style.display = 'none';
+            }
+        });
+    }
+});
+</script> 
