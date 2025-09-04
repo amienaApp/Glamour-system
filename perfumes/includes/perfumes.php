@@ -23,11 +23,11 @@ if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
 if ($brand) $filters['brand'] = $brand;
 if ($size) $filters['size'] = $size;
-if ($minPrice !== null && $maxPrice !== null) {
-    $filters['price'] = [
-        '$gte' => floatval($minPrice),
-        '$lte' => floatval($maxPrice)
-    ];
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
 }
 
 // Build sort options
