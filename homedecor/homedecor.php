@@ -38,28 +38,28 @@ if ($subcategory) {
                         <h3>Shop All</h3>
                     </a>
                     <a href="homedecor.php?subcategory=bedding" class="image-item">
-                        <img src="../img/home-decor/bedroom/1.jpg" alt="Bedding">
+                        <img src="../img/home-decor/bedroom/7.jpg" alt="Bedding">
                         <h3>Bedding</h3>
                     </a>
                     <a href="homedecor.php?subcategory=dinningroom" class="image-item">
-                        <img src="../img/home-decor/bath/1.jpg" alt="Bath">
-                        <h3>dinning room</h3>
+                        <img src="../img/home-decor/diningarea/4.jpg" alt="Dining Room">
+                        <h3>Dining Room</h3>
                     </a>
                     <a href="homedecor.php?subcategory=kitchen" class="image-item">
-                        <img src="../img/home-decor/kitchen/1.jpg" alt="Kitchen">
+                        <img src="../img/home-decor/kitchen/8.jpg" alt="Kitchen">
                         <h3>Kitchen</h3>
                     </a>
                     <a href="homedecor.php?subcategory=lightinnig" class="image-item">
-                        <img src="../img/home-decor/decor/1.jpg" alt="Decor">
-                        <h3>lightinnig</h3>
+                        <img src="../img/home-decor/light/3.webp" alt="Lighting">
+                        <h3>Lighting</h3>
                     </a>
                     <a href="homedecor.php?subcategory=artwork" class="image-item">
-                        <img src="../img/home-decor/furniture/1.jpg" alt="Furniture">
-                        <h3>artwork</h3>
+                        <img src="../img/home-decor/artwork/21.jpg" alt="Artwork">
+                        <h3>Artwork</h3>
                     </a>
-                        <a href="homedecor.php?subcategory=livingroom" class="image-item">
-                        <img src="../img/home-decor/furniture/1.jpg" alt="Furniture">
-                        <h3>living room</h3>
+                    <a href="homedecor.php?subcategory=livingroom" class="image-item">
+                        <img src="../img/home-decor/livingroom/8.jpg" alt="Living Room">
+                        <h3>Living Room</h3>
                     </a>
                 </div>
 
