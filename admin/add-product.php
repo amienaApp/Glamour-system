@@ -8258,12 +8258,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="XS" onchange="toggleMultiSizeSelection('${productIndex}', 'XS')"> XS</label>
-                    <label><input type="checkbox" value="S" onchange="toggleMultiSizeSelection('${productIndex}', 'S')"> S</label>
-                    <label><input type="checkbox" value="M" onchange="toggleMultiSizeSelection('${productIndex}', 'M')"> M</label>
-                    <label><input type="checkbox" value="L" onchange="toggleMultiSizeSelection('${productIndex}', 'L')"> L</label>
-                    <label><input type="checkbox" value="XL" onchange="toggleMultiSizeSelection('${productIndex}', 'XL')"> XL</label>
-                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXL')"> XXL</label>
+                    <label><input type="checkbox" value="XS" onchange="toggleMultiSize('${productIndex}', 'XS')"> XS</label>
+                    <label><input type="checkbox" value="S" onchange="toggleMultiSize('${productIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiSize('${productIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiSize('${productIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiSize('${productIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSize('${productIndex}', 'XXL')"> XXL</label>
                 </div>
                 
                 <div class="size-category-header" data-product="${productIndex}" onclick="toggleSizeCategory(this, ${productIndex})">
@@ -8271,12 +8271,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="S" onchange="toggleMultiSizeSelection('${productIndex}', 'S')"> S</label>
-                    <label><input type="checkbox" value="M" onchange="toggleMultiSizeSelection('${productIndex}', 'M')"> M</label>
-                    <label><input type="checkbox" value="L" onchange="toggleMultiSizeSelection('${productIndex}', 'L')"> L</label>
-                    <label><input type="checkbox" value="XL" onchange="toggleMultiSizeSelection('${productIndex}', 'XL')"> XL</label>
-                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXL')"> XXL</label>
-                    <label><input type="checkbox" value="XXXL" onchange="toggleMultiSizeSelection('${productIndex}', 'XXXL')"> XXXL</label>
+                    <label><input type="checkbox" value="S" onchange="toggleMultiSize('${productIndex}', 'S')"> S</label>
+                    <label><input type="checkbox" value="M" onchange="toggleMultiSize('${productIndex}', 'M')"> M</label>
+                    <label><input type="checkbox" value="L" onchange="toggleMultiSize('${productIndex}', 'L')"> L</label>
+                    <label><input type="checkbox" value="XL" onchange="toggleMultiSize('${productIndex}', 'XL')"> XL</label>
+                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSize('${productIndex}', 'XXL')"> XXL</label>
+                    <label><input type="checkbox" value="XXXL" onchange="toggleMultiSize('${productIndex}', 'XXXL')"> XXXL</label>
                 </div>
             `;
         }
@@ -8320,11 +8320,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Mini" onchange="toggleMultiSizeSelection('${productIndex}', 'Mini')"> Mini (15ml)</label>
-                        <label><input type="checkbox" value="Small" onchange="toggleMultiSizeSelection('${productIndex}', 'Small')"> Small (30ml)</label>
-                        <label><input type="checkbox" value="Medium" onchange="toggleMultiSizeSelection('${productIndex}', 'Medium')"> Medium (50ml)</label>
-                        <label><input type="checkbox" value="Large_skincare" onchange="toggleMultiSizeSelection('${productIndex}', 'Large_skincare')"> Large (100ml)</label>
-                        <label><input type="checkbox" value="Family" onchange="toggleMultiSizeSelection('${productIndex}', 'Family')"> Family Size (200ml+)</label>
+                        <label><input type="checkbox" value="Mini" onchange="toggleMultiSize('${productIndex}', 'Mini')"> Mini (15ml)</label>
+                        <label><input type="checkbox" value="Small" onchange="toggleMultiSize('${productIndex}', 'Small')"> Small (30ml)</label>
+                        <label><input type="checkbox" value="Medium" onchange="toggleMultiSize('${productIndex}', 'Medium')"> Medium (50ml)</label>
+                        <label><input type="checkbox" value="Large_skincare" onchange="toggleMultiSize('${productIndex}', 'Large_skincare')"> Large (100ml)</label>
+                        <label><input type="checkbox" value="Family" onchange="toggleMultiSize('${productIndex}', 'Family')"> Family Size (200ml+)</label>
                     </div>
                 </div>
                 
@@ -8334,11 +8334,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Serum_15ml" onchange="toggleMultiSizeSelection('${productIndex}', 'Serum_15ml')"> Serum (15ml)</label>
-                        <label><input type="checkbox" value="Toner_100ml" onchange="toggleMultiSizeSelection('${productIndex}', 'Toner_100ml')"> Toner (100ml)</label>
-                        <label><input type="checkbox" value="Essence_30ml" onchange="toggleMultiSizeSelection('${productIndex}', 'Essence_30ml')"> Essence (30ml)</label>
-                        <label><input type="checkbox" value="Spot_Treatment_10ml" onchange="toggleMultiSizeSelection('${productIndex}', 'Spot_Treatment_10ml')"> Spot Treatment (10ml)</label>
-                        <label><input type="checkbox" value="Call_Who_Set" onchange="toggleMultiSizeSelection('${productIndex}', 'Call_Who_Set')"> Call Who Set</label>
+                        <label><input type="checkbox" value="Serum_15ml" onchange="toggleMultiSize('${productIndex}', 'Serum_15ml')"> Serum (15ml)</label>
+                        <label><input type="checkbox" value="Toner_100ml" onchange="toggleMultiSize('${productIndex}', 'Toner_100ml')"> Toner (100ml)</label>
+                        <label><input type="checkbox" value="Essence_30ml" onchange="toggleMultiSize('${productIndex}', 'Essence_30ml')"> Essence (30ml)</label>
+                        <label><input type="checkbox" value="Spot_Treatment_10ml" onchange="toggleMultiSize('${productIndex}', 'Spot_Treatment_10ml')"> Spot Treatment (10ml)</label>
+                        <label><input type="checkbox" value="Call_Who_Set" onchange="toggleMultiSize('${productIndex}', 'Call_Who_Set')"> Call Who Set</label>
                     </div>
                 </div>
                 
@@ -8348,10 +8348,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Trial" onchange="toggleMultiSizeSelection('${productIndex}', 'Trial')"> Trial Size (50ml)</label>
-                        <label><input type="checkbox" value="Standard" onchange="toggleMultiSizeSelection('${productIndex}', 'Standard')"> Standard (250ml)</label>
-                        <label><input type="checkbox" value="Professional" onchange="toggleMultiSizeSelection('${productIndex}', 'Professional')"> Professional (500ml)</label>
-                        <label><input type="checkbox" value="Salon" onchange="toggleMultiSizeSelection('${productIndex}', 'Salon')"> Salon Size (1L+)</label>
+                        <label><input type="checkbox" value="Trial" onchange="toggleMultiSize('${productIndex}', 'Trial')"> Trial Size (50ml)</label>
+                        <label><input type="checkbox" value="Standard" onchange="toggleMultiSize('${productIndex}', 'Standard')"> Standard (250ml)</label>
+                        <label><input type="checkbox" value="Professional" onchange="toggleMultiSize('${productIndex}', 'Professional')"> Professional (500ml)</label>
+                        <label><input type="checkbox" value="Salon" onchange="toggleMultiSize('${productIndex}', 'Salon')"> Salon Size (1L+)</label>
                     </div>
                 </div>
                 
@@ -8361,12 +8361,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Hair_Dryer" onchange="toggleMultiSizeSelection('${productIndex}', 'Hair_Dryer')"> Hair Dryer</label>
-                        <label><input type="checkbox" value="Straightener" onchange="toggleMultiSizeSelection('${productIndex}', 'Straightener')"> Straightener</label>
-                        <label><input type="checkbox" value="Curling_Iron" onchange="toggleMultiSizeSelection('${productIndex}', 'Curling_Iron')"> Curling Iron</label>
-                        <label><input type="checkbox" value="Hair_Brush" onchange="toggleMultiSizeSelection('${productIndex}', 'Hair_Brush')"> Hair Brush</label>
-                        <label><input type="checkbox" value="Comb" onchange="toggleMultiSizeSelection('${productIndex}', 'Comb')"> Comb</label>
-                        <label><input type="checkbox" value="Hair_Clips" onchange="toggleMultiSizeSelection('${productIndex}', 'Hair_Clips')"> Hair Clips</label>
+                        <label><input type="checkbox" value="Hair_Dryer" onchange="toggleMultiSize('${productIndex}', 'Hair_Dryer')"> Hair Dryer</label>
+                        <label><input type="checkbox" value="Straightener" onchange="toggleMultiSize('${productIndex}', 'Straightener')"> Straightener</label>
+                        <label><input type="checkbox" value="Curling_Iron" onchange="toggleMultiSize('${productIndex}', 'Curling_Iron')"> Curling Iron</label>
+                        <label><input type="checkbox" value="Hair_Brush" onchange="toggleMultiSize('${productIndex}', 'Hair_Brush')"> Hair Brush</label>
+                        <label><input type="checkbox" value="Comb" onchange="toggleMultiSize('${productIndex}', 'Comb')"> Comb</label>
+                        <label><input type="checkbox" value="Hair_Clips" onchange="toggleMultiSize('${productIndex}', 'Hair_Clips')"> Hair Clips</label>
                     </div>
                 </div>
                 
@@ -8376,10 +8376,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Travel_Kit" onchange="toggleMultiSizeSelection('${productIndex}', 'Travel_Kit')"> Travel Kit (30ml)</label>
-                        <label><input type="checkbox" value="Personal" onchange="toggleMultiSizeSelection('${productIndex}', 'Personal')"> Personal (100ml)</label>
-                        <label><input type="checkbox" value="Family_bath" onchange="toggleMultiSizeSelection('${productIndex}', 'Family_bath')"> Family (250ml)</label>
-                        <label><input type="checkbox" value="Economy" onchange="toggleMultiSizeSelection('${productIndex}', 'Economy')"> Economy (500ml+)</label>
+                        <label><input type="checkbox" value="Travel_Kit" onchange="toggleMultiSize('${productIndex}', 'Travel_Kit')"> Travel Kit (30ml)</label>
+                        <label><input type="checkbox" value="Personal" onchange="toggleMultiSize('${productIndex}', 'Personal')"> Personal (100ml)</label>
+                        <label><input type="checkbox" value="Family_bath" onchange="toggleMultiSize('${productIndex}', 'Family_bath')"> Family (250ml)</label>
+                        <label><input type="checkbox" value="Economy" onchange="toggleMultiSize('${productIndex}', 'Economy')"> Economy (500ml+)</label>
                     </div>
                 </div>
             `;
@@ -8393,17 +8393,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="5" onchange="toggleMultiSizeSelection('${productIndex}', '5')"> 5</label>
-                    <label><input type="checkbox" value="5.5" onchange="toggleMultiSizeSelection('${productIndex}', '5.5')"> 5.5</label>
-                    <label><input type="checkbox" value="6" onchange="toggleMultiSizeSelection('${productIndex}', '6')"> 6</label>
-                    <label><input type="checkbox" value="6.5" onchange="toggleMultiSizeSelection('${productIndex}', '6.5')"> 6.5</label>
-                    <label><input type="checkbox" value="7" onchange="toggleMultiSizeSelection('${productIndex}', '7')"> 7</label>
-                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSizeSelection('${productIndex}', '7.5')"> 7.5</label>
-                    <label><input type="checkbox" value="8" onchange="toggleMultiSizeSelection('${productIndex}', '8')"> 8</label>
-                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSizeSelection('${productIndex}', '8.5')"> 8.5</label>
-                    <label><input type="checkbox" value="9" onchange="toggleMultiSizeSelection('${productIndex}', '9')"> 9</label>
-                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSizeSelection('${productIndex}', '9.5')"> 9.5</label>
-                    <label><input type="checkbox" value="10" onchange="toggleMultiSizeSelection('${productIndex}', '10')"> 10</label>
+                    <label><input type="checkbox" value="5" onchange="toggleMultiSize('${productIndex}', '5')"> 5</label>
+                    <label><input type="checkbox" value="5.5" onchange="toggleMultiSize('${productIndex}', '5.5')"> 5.5</label>
+                    <label><input type="checkbox" value="6" onchange="toggleMultiSize('${productIndex}', '6')"> 6</label>
+                    <label><input type="checkbox" value="6.5" onchange="toggleMultiSize('${productIndex}', '6.5')"> 6.5</label>
+                    <label><input type="checkbox" value="7" onchange="toggleMultiSize('${productIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSize('${productIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiSize('${productIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSize('${productIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiSize('${productIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSize('${productIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiSize('${productIndex}', '10')"> 10</label>
                 </div>
                 
                 <div class="size-category-header" data-product="${productIndex}" onclick="toggleSizeCategory(this, ${productIndex})">
@@ -8411,23 +8411,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="7" onchange="toggleMultiSizeSelection('${productIndex}', '7')"> 7</label>
-                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSizeSelection('${productIndex}', '7.5')"> 7.5</label>
-                    <label><input type="checkbox" value="8" onchange="toggleMultiSizeSelection('${productIndex}', '8')"> 8</label>
-                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSizeSelection('${productIndex}', '8.5')"> 8.5</label>
-                    <label><input type="checkbox" value="9" onchange="toggleMultiSizeSelection('${productIndex}', '9')"> 9</label>
-                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSizeSelection('${productIndex}', '9.5')"> 9.5</label>
-                    <label><input type="checkbox" value="10" onchange="toggleMultiSizeSelection('${productIndex}', '10')"> 10</label>
-                    <label><input type="checkbox" value="10.5" onchange="toggleMultiSizeSelection('${productIndex}', '10.5')"> 10.5</label>
-                    <label><input type="checkbox" value="11" onchange="toggleMultiSizeSelection('${productIndex}', '11')"> 11</label>
-                    <label><input type="checkbox" value="11.5" onchange="toggleMultiSizeSelection('${productIndex}', '11.5')"> 11.5</label>
-                    <label><input type="checkbox" value="12" onchange="toggleMultiSizeSelection('${productIndex}', '12')"> 12</label>
+                    <label><input type="checkbox" value="7" onchange="toggleMultiSize('${productIndex}', '7')"> 7</label>
+                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSize('${productIndex}', '7.5')"> 7.5</label>
+                    <label><input type="checkbox" value="8" onchange="toggleMultiSize('${productIndex}', '8')"> 8</label>
+                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSize('${productIndex}', '8.5')"> 8.5</label>
+                    <label><input type="checkbox" value="9" onchange="toggleMultiSize('${productIndex}', '9')"> 9</label>
+                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSize('${productIndex}', '9.5')"> 9.5</label>
+                    <label><input type="checkbox" value="10" onchange="toggleMultiSize('${productIndex}', '10')"> 10</label>
+                    <label><input type="checkbox" value="10.5" onchange="toggleMultiSize('${productIndex}', '10.5')"> 10.5</label>
+                    <label><input type="checkbox" value="11" onchange="toggleMultiSize('${productIndex}', '11')"> 11</label>
+                    <label><input type="checkbox" value="11.5" onchange="toggleMultiSize('${productIndex}', '11.5')"> 11.5</label>
+                    <label><input type="checkbox" value="12" onchange="toggleMultiSize('${productIndex}', '12')"> 12</label>
                 </div>
             `;
         }
                     
         // Toggle size selection for multi-product forms
-        window.toggleMultiSizeSelection = function(productIndex, size) {
+        window.toggleMultiSize = function(productIndex, size) {
             const key = `${productIndex}`;
             if (!multiSelectedSizes[key]) {
                 multiSelectedSizes[key] = new Set();
