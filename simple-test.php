@@ -1,37 +1,29 @@
 <?php
-echo "<h1>Simple Product Model Test</h1>";
+// Simple test to check database connection and categories
+require_once 'config1/mongodb.php';
+
+echo "<h2>Simple Database Test</h2>\n";
 
 try {
-    require_once 'config1/mongodb.php';
-    echo "✅ MongoDB connection successful<br>";
+    $db = MongoDB::getInstance();
+    $collection = $db->getCollection('categories');
     
-    require_once 'models/Product.php';
-    echo "✅ Product model loaded<br>";
+    // Count total categories
+    $count = $collection->countDocuments();
+    echo "<p>Total categories in database: $count</p>\n";
     
-    $productModel = new Product();
-    echo "✅ Product model instantiated<br>";
+    // Get all categories
+    $categories = $collection->find()->toArray();
     
-    // Test the method signature
-    $reflection = new ReflectionMethod('Product', 'getAll');
-    $params = $reflection->getParameters();
-    echo "✅ getAll method has " . count($params) . " parameters:<br>";
-    foreach ($params as $param) {
-        echo "  - " . $param->getName() . " (default: " . ($param->isDefaultValueAvailable() ? var_export($param->getDefaultValue(), true) : 'none') . ")<br>";
-    }
-    
-    // Test with correct parameters
-    echo "<br>Testing getAll([], [], 1)...<br>";
-    $products = $productModel->getAll([], [], 1);
-    echo "✅ getAll([], [], 1) successful - found " . count($products) . " products<br>";
-    
-    if (!empty($products)) {
-        $firstProduct = $products[0];
-        echo "✅ First product: " . ($firstProduct['name'] ?? 'Unknown') . " (ID: " . $firstProduct['_id'] . ")<br>";
+    echo "<h3>All Categories:</h3>\n";
+    foreach ($categories as $category) {
+        echo "<p><strong>" . $category['name'] . "</strong></p>\n";
+        if (isset($category['subcategories'])) {
+            echo "<p>Subcategories: " . count($category['subcategories']) . "</p>\n";
+        }
     }
     
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "<br>";
-    echo "Stack trace: <pre>" . $e->getTraceAsString() . "</pre>";
+    echo "<p>Error: " . $e->getMessage() . "</p>\n";
 }
 ?>
-

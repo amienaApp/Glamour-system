@@ -154,7 +154,13 @@ if (!empty($andConditions)) {
 }
 
 // Get filtered products
-$products = $productModel->getAll($filters, ['createdAt' => -1]);
+if (empty($filters) || (count($filters) === 1 && isset($filters['category']))) {
+    // No specific filters, get all shoes
+    $products = $productModel->getByCategory("Shoes");
+} else {
+    // Apply specific filters
+    $products = $productModel->getAll($filters, ['createdAt' => -1]);
+}
 
 // Get all men's shoes from the database
 $mensShoes = $productModel->getBySubcategory("Men's shoes");

@@ -11,29 +11,26 @@ class MongoDB {
     private $collections = [];
 
     private function __construct() {
-        try {
-            // Ensure vendor autoload is included
-            if (!class_exists('MongoDB\Client')) {
-                require_once __DIR__ . '/../vendor/autoload.php';
-            }
-            
-
-
-            // MongoDB connection string - update with your actual MongoDB connection
-            $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
-
-            // MongoDB connection string - connecting to friend's computer
-            $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
-
-            $databaseName = 'glamour_system';
-            
-            // Create MongoDB client
-            $this->client = new \MongoDB\Client($connectionString);
-            $this->database = $this->client->selectDatabase($databaseName);
-            
-        } catch (Exception $e) {
-            throw new Exception("MongoDB connection failed: " . $e->getMessage());
+        // Ensure vendor autoload is included
+        if (!class_exists('MongoDB\Client')) {
+            require_once __DIR__ . '/../vendor/autoload.php';
         }
+        
+        // MongoDB connection string
+        $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
+        $databaseName = 'glamour_system';
+        
+        // Simple, working connection options
+        $options = [
+            'serverSelectionTimeoutMS' => 10000,
+            'connectTimeoutMS' => 10000
+        ];
+        
+        $this->client = new \MongoDB\Client($connectionString, $options);
+        $this->database = $this->client->selectDatabase($databaseName);
+        
+        // Test connection
+        $this->client->selectDatabase('admin')->command(['ping' => 1]);
     }
 
     public static function getInstance() {

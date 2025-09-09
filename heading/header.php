@@ -17,7 +17,7 @@ function getCategoryUrl($categoryName) {
         "Kids' Clothing" => '#kids',
         "Accessories" => '../accessories/accessories.php',
         "Home & Living" => '../homedecor/homedecor.php',
-        "Beauty & Cosmetics" => '../perfumes/index.php',
+        "Beauty & Cosmetics" => '../beautyfolder/beauty.php',
         "Sports & Fitness" => '#sports',
         "Perfumes" => '../perfumes/index.php',
         "Shoes" => '../shoess/shoes.php',
@@ -74,10 +74,11 @@ function getCategoryUrl($categoryName) {
         ],
         "Beauty & Cosmetics" => [
             "Fragrances" => '../perfumes/index.php',
-            "Skincare" => '#skincare',
-            "Makeup" => '#makeup',
-            "Hair Care" => '#hair-care',
-            "Tools" => '#tools'
+            "Skincare" => '../beautyfolder/beauty.php?subcategory=Skincare',
+            "Makeup" => '../beautyfolder/beauty.php?subcategory=Makeup',
+            "Hair Care" => '../beautyfolder/beauty.php?subcategory=Hair',
+            "Bath & Body" => '../beautyfolder/beauty.php?subcategory=Bath & Body',
+            "Tools" => '../beautyfolder/beauty.php?subcategory=tools'
         ],
         "Home & Living" => [
             "Bedding" => '../homedecor/homedecor.php?subcategory=bedding',
@@ -155,13 +156,13 @@ $regionOptions = [
                                 <div class="modal-content">
                                     <div class="subcategories-grid">
                                         <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                            <a href="<?php echo getSubcategoryUrl($category['name'], $subcategory); ?>" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory); ?>">
+                                            <a href="<?php echo getSubcategoryUrl($category['name'], $subcategory['name'] ?? $subcategory); ?>" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory['name'] ?? $subcategory); ?>">
                                                 <div class="subcategory-icon">
                                                     <i class="fas fa-chevron-right"></i>
                                                 </div>
                                                 <div class="subcategory-info">
-                                                    <h4><?php echo htmlspecialchars($subcategory); ?></h4>
-                                                    <span>Shop <?php echo htmlspecialchars($subcategory); ?></span>
+                                                    <h4><?php echo htmlspecialchars($subcategory['name'] ?? $subcategory); ?></h4>
+                                                    <span>Shop <?php echo htmlspecialchars($subcategory['name'] ?? $subcategory); ?></span>
                                                 </div>
                                             </a>
                                         <?php endforeach; ?>
@@ -215,9 +216,12 @@ $regionOptions = [
                 <!-- Fallback static menu if no categories found -->
                 <li><a href="../womenF/women.php" class="nav-link">Women's Clothing</a></li>
                 <li><a href="../menfolder/men.php" class="nav-link">Men's Clothing</a></li>
-                <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
+                <li><a href="../beautyfolder/beauty.php" class="nav-link">Beauty & Cosmetics</a></li>
                 <li><a href="../shoess/shoes.php" class="nav-link">Shoes</a></li>
+                <li><a href="../bagsfolder/bags.php" class="nav-link">Bags</a></li>
                 <li><a href="../accessories/accessories.php" class="nav-link">Accessories</a></li>
+                <li><a href="../homedecor/homedecor.php" class="nav-link">Home & Living</a></li>
+                <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
             <?php endif; ?>
         </ul>
     </div>

@@ -50,7 +50,26 @@ class Category {
     // Subcategory Operations
     public function getSubcategories($categoryName) {
         $category = $this->getByName($categoryName);
-        return $category['subcategories'] ?? [];
+        if (!$category || !isset($category['subcategories'])) {
+            return [];
+        }
+        
+        // Handle both old format (array of strings) and new format (array of objects/BSONDocument)
+        $subcategories = [];
+        foreach ($category['subcategories'] as $sub) {
+            if (is_array($sub) && isset($sub['name'])) {
+                // New format: array with name and sub_subcategories
+                $subcategories[] = $sub['name'];
+            } elseif (is_object($sub) && isset($sub['name'])) {
+                // New format: BSONDocument with name and sub_subcategories
+                $subcategories[] = $sub['name'];
+            } else {
+                // Old format: just a string
+                $subcategories[] = $sub;
+            }
+        }
+        
+        return $subcategories;
     }
 
     public function addSubcategory($categoryName, $subcategoryName) {
@@ -65,6 +84,64 @@ class Category {
         $result = $this->collection->updateOne(
             ['name' => $categoryName],
             ['$pull' => ['subcategories' => $subcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    // Sub-subcategory Operations (for Beauty & Cosmetics)
+    public function getSubSubcategories($categoryName, $subcategoryName) {
+        $category = $this->getByName($categoryName);
+        if (!$category || !isset($category['subcategories'])) {
+            return [];
+        }
+        
+        // Find the subcategory and return its sub-subcategories
+        foreach ($category['subcategories'] as $sub) {
+            // Handle both arrays and BSONDocument objects
+            $subName = null;
+            $subSubcategories = null;
+            
+            if (is_array($sub)) {
+                $subName = $sub['name'] ?? null;
+                $subSubcategories = $sub['sub_subcategories'] ?? null;
+            } elseif (is_object($sub)) {
+                $subName = $sub['name'] ?? null;
+                $subSubcategories = $sub['sub_subcategories'] ?? null;
+            }
+            
+            if ($subName === $subcategoryName && $subSubcategories) {
+                // Convert BSONDocument to array if needed
+                if (is_object($subSubcategories)) {
+                    // For BSONDocument/BSONArray, convert to regular array
+                    $subSubcategories = iterator_to_array($subSubcategories);
+                }
+                
+                // Return the flattened array of sub-subcategories
+                return $subSubcategories;
+            }
+        }
+        
+        return [];
+    }
+
+    public function addSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$push' => ['subcategories.$.sub_subcategories' => $subSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    public function removeSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$pull' => ['subcategories.$.sub_subcategories' => $subSubcategoryName]]
         );
         return $result->getModifiedCount() > 0;
     }
@@ -149,7 +226,44 @@ class Category {
             ],
             [
                 'name' => "Beauty & Cosmetics",
-                'subcategories' => ['Skincare', 'Makeup', 'Hair Care', 'Fragrances', 'Tools'],
+                'subcategories' => [
+                    [
+                        'name' => 'Makeup',
+                        'sub_subcategories' => [
+                            'Face' => ['Foundation', 'Concealer', 'Powder', 'Blush', 'Highlighter', 'Bronzer & Contour', 'Face Primer', 'Setting Spray'],
+                            'Eye' => ['Mascara', 'Eyeliner', 'Eyeshadow', 'Eyebrow Pencils/Gels', 'False Lashes', 'Eye Primer'],
+                            'Lip' => ['Lipstick', 'Lip Gloss', 'Lip Liner', 'Lip Stain', 'Lip Balm'],
+                            'Nails' => ['Nail Polish', 'Nail Care & Treatments', 'Nail Tools'],
+                            'Tools' => ['Brushes (Face, Eye, Lip)', 'Makeup Removers']
+                        ]
+                    ],
+                    [
+                        'name' => 'Skincare',
+                        'sub_subcategories' => [
+                            'Moisturizers' => ['Face Moisturizer', 'Body Lotion', 'Eye Cream', 'Night Cream'],
+                            'Cleansers' => ['Face Wash', 'Cleansing Oil', 'Micellar Water', 'Exfoliating Scrub'],
+                            'Masks' => ['Face Masks', 'Sheet Masks', 'Clay Masks', 'Peel-off Masks'],
+                            'Call Who' => ['Serums', 'Toners', 'Essences', 'Spot Treatments'],
+                            'cream' => ['Day Cream', 'Night Cream', 'Eye Cream', 'Hand Cream']
+                        ]
+                    ],
+                    [
+                        'name' => 'Hair',
+                        'sub_subcategories' => [
+                            'Shampoo' => ['Daily Shampoo', 'Clarifying Shampoo', 'Color-Safe Shampoo', 'Anti-Dandruff'],
+                            'Conditioner' => ['Daily Conditioner', 'Deep Conditioner', 'Leave-in Conditioner', 'Hair Mask'],
+                            'Tools' => ['Hair Dryer', 'Straightener', 'Curling Iron', 'Hair Brush']
+                        ]
+                    ],
+                    [
+                        'name' => 'Bath & Body',
+                        'sub_subcategories' => [
+                            'Shower gel' => ['Body Wash', 'Shower Gel', 'Shower Oil', 'Body Scrub'],
+                            'Scrubs' => ['Body Scrub', 'Face Scrub', 'Foot Scrub', 'Hand Scrub'],
+                            'soap' => ['Bar Soap', 'Liquid Soap', 'Antibacterial Soap', 'Natural Soap']
+                        ]
+                    ]
+                ],
                 'description' => 'Beauty products for everyone',
                 'icon' => 'fa-magic'
             ],

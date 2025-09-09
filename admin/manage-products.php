@@ -7,8 +7,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config1/mongodb.php';
-require_once '../models/Product.php';
+// Try MongoDB first, fallback if it fails
+try {
+    require_once '../config1/mongodb.php';
+    require_once '../models/Product.php';
+    $productModel = new Product();
+    $useFallback = false;
+} catch (Exception $e) {
+    require_once '../config1/admin-fallback.php';
+    $db = AdminFallback::getInstance();
+    $useFallback = true;
+}
 
 // Helper function to convert BSONArray to regular array
 function toArray($value) {

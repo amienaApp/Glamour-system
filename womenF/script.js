@@ -58,53 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Product card found:', productCard);
         
-        // Get product data from data attributes (this will have the updated information)
-        const name = productCard.getAttribute('data-product-name') || productCard.querySelector('.product-name')?.textContent || 'Product';
-        const price = productCard.getAttribute('data-product-price') || productCard.querySelector('.product-price')?.textContent || '$0';
-        const salePrice = productCard.getAttribute('data-product-sale-price') || '';
-        const description = productCard.getAttribute('data-product-description') || '';
-        const category = productCard.getAttribute('data-product-category') || '';
-        const subcategory = productCard.getAttribute('data-product-subcategory') || '';
-        const featured = productCard.getAttribute('data-product-featured') === 'true';
-        const onSale = productCard.getAttribute('data-product-on-sale') === 'true';
-        const stock = parseInt(productCard.getAttribute('data-product-stock')) || 0;
-        const rating = parseFloat(productCard.getAttribute('data-product-rating')) || 0;
-        const reviewCount = parseInt(productCard.getAttribute('data-product-review-count')) || 0;
-        const frontImage = productCard.getAttribute('data-product-front-image') || '';
-        const backImage = productCard.getAttribute('data-product-back-image') || '';
-        const color = productCard.getAttribute('data-product-color') || '';
-        let colorVariants = [];
-        try {
-            const colorVariantsData = productCard.getAttribute('data-product-color-variants');
-            if (colorVariantsData && colorVariantsData !== '[]' && colorVariantsData !== 'null') {
-                colorVariants = JSON.parse(colorVariantsData);
-                if (!Array.isArray(colorVariants)) {
-                    colorVariants = [];
-                }
-            }
-        } catch (e) {
-            console.log('Error parsing color variants data:', e);
-            colorVariants = [];
-        }
-        let sizes = [];
-        try {
-            const sizesData = productCard.getAttribute('data-product-sizes');
-            if (sizesData && sizesData !== '[]' && sizesData !== 'null') {
-                sizes = JSON.parse(sizesData);
-                if (!Array.isArray(sizes)) {
-                    sizes = [];
-                }
-            }
-        } catch (e) {
-            console.log('Error parsing sizes data:', e);
-            sizes = [];
-        }
-        const sizeCategory = productCard.getAttribute('data-product-size-category') || '';
-        
-        console.log('Product data loaded:', {
-            name, price, salePrice, description, category, subcategory, 
-            featured, onSale, stock, rating, reviewCount, colorVariants, sizes
-        });
+        const name = productCard.querySelector('.product-name')?.textContent || 'Product';
+        const price = productCard.querySelector('.product-price')?.textContent || '$0';
         
         // Update quick view content
         const titleEl = document.getElementById('quick-view-title');
@@ -112,75 +67,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const addToBagBtn = document.getElementById('add-to-bag-quick');
         
         if (titleEl) titleEl.textContent = name;
-        
-        // Update price display (show sale price if on sale)
-        if (priceEl) {
-            if (onSale && salePrice) {
-                priceEl.innerHTML = `<span class="sale-price">$${parseFloat(salePrice).toFixed(2)}</span> <span class="original-price">$${parseFloat(price).toFixed(2)}</span>`;
-            } else {
-                priceEl.textContent = `$${parseFloat(price).toFixed(2)}`;
-            }
-        }
-        
+        if (priceEl) priceEl.textContent = price;
         if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
         
-        // Update description if available
-        const descriptionEl = document.getElementById('quick-view-description');
-        if (descriptionEl && description) {
-            descriptionEl.textContent = description;
-            descriptionEl.style.display = 'block';
-        }
-        
-        // Update reviews/rating
-        const starsEl = document.getElementById('quick-view-stars');
-        const reviewCountEl = document.getElementById('quick-view-review-count');
-        
-        if (starsEl && rating > 0) {
-            const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
-            starsEl.textContent = stars;
-        }
-        
-        if (reviewCountEl && reviewCount > 0) {
-            reviewCountEl.textContent = `(${reviewCount} reviews)`;
-        }
-        
-        // Handle images - use updated image data from data attributes
+        // Handle images
         const mainImage = document.getElementById('quick-view-main-image');
         const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
         
         if (mainImage && thumbnailsContainer) {
-            // Use updated images from data attributes first, fallback to DOM elements
-            let mediaElements = [];
-            
-            // Check if we have updated image data from data attributes
-            if (frontImage || backImage) {
-                // Create media elements from data attributes
-                if (frontImage) {
-                    const img = document.createElement('img');
-                    // Fix image path - remove any incorrect path prefixes
-                    let imageSrc = frontImage;
-                    if (imageSrc.startsWith('uploads/')) {
-                        imageSrc = '../' + imageSrc; // Go up one level from womenF to root
-                    }
-                    img.src = imageSrc;
-                    img.alt = name;
-                    mediaElements.push(img);
-                }
-                if (backImage) {
-                    const img = document.createElement('img');
-                    // Fix image path - remove any incorrect path prefixes
-                    let imageSrc = backImage;
-                    if (imageSrc.startsWith('uploads/')) {
-                        imageSrc = '../' + imageSrc; // Go up one level from womenF to root
-                    }
-                    img.src = imageSrc;
-                    img.alt = name;
-                    mediaElements.push(img);
-                }
-            } else {
-                // Fallback to existing DOM elements
-                mediaElements = productCard.querySelectorAll('.image-slider img, .image-slider video');
-            }
+            // Get all media from the product card (both images and videos)
+            const mediaElements = productCard.querySelectorAll('.image-slider img, .image-slider video');
             
             if (mediaElements.length > 0) {
                 const firstMedia = mediaElements[0];
@@ -262,25 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (colorSelection) {
             colorSelection.innerHTML = '';
             
-            // Use updated color variants from data attributes first, fallback to DOM elements
-            let colorCircles = [];
-            
-            if (colorVariants && colorVariants.length > 0) {
-                // Create color circles from updated data attributes
-                colorVariants.forEach(variant => {
-                    if (variant.color) {
-                        const circle = document.createElement('div');
-                        circle.className = 'color-circle';
-                        circle.setAttribute('data-color', variant.color);
-                        circle.setAttribute('title', variant.name || variant.color);
-                        circle.style.backgroundColor = variant.color;
-                        colorCircles.push(circle);
-                    }
-                });
-            } else {
-                // Fallback to existing DOM elements
-                colorCircles = productCard.querySelectorAll('.color-circle');
-            }
+            // Get all color circles from the product card
+            const colorCircles = productCard.querySelectorAll('.color-circle');
             
             colorCircles.forEach(circle => {
                 const color = circle.getAttribute('data-color');
@@ -432,16 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Get actual available sizes from product data
-                let availableSizes = [];
+                let sizes = [];
                 
-                // Use the sizes we already extracted from data attributes
-                if (sizes && sizes.length > 0) {
-                    availableSizes = sizes.filter(size => size && size.trim() !== '');
-                    console.log('Using sizes from data attributes:', availableSizes);
-                } else {
-                    // Fallback to reading from dataset
-                    const productSizes = productCard.dataset.productSizes;
-                    const productSelectedSizes = productCard.dataset.productSelectedSizes;
+                // Try to get sizes from product data - check all possible sources
+                const productSizes = productCard.dataset.productSizes;
+                const productSelectedSizes = productCard.dataset.productSelectedSizes;
                 const productVariants = productCard.dataset.productVariants;
                 const productProductVariants = productCard.dataset.productProductVariants;
                 const productOptions = productCard.dataset.productOptions;
@@ -464,8 +338,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('Cleaned productSizes:', cleanSizes);
                         const parsedSizes = JSON.parse(cleanSizes);
                         if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
-                            availableSizes = parsedSizes.filter(size => size && size.trim() !== '');
-                            console.log('Found sizes in productSizes:', availableSizes);
+                            sizes = parsedSizes.filter(size => size && size.trim() !== '');
+                            console.log('Found sizes in productSizes:', sizes);
                         }
                     }
                 } catch (e) {
@@ -475,15 +349,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // If no sizes from productSizes, try selectedSizes
-            if (availableSizes.length === 0 && productSelectedSizes && productSelectedSizes !== '[]' && productSelectedSizes !== 'null') {
+            if (sizes.length === 0 && productSelectedSizes && productSelectedSizes !== '[]' && productSelectedSizes !== 'null') {
                 try {
                     const cleanSelectedSizes = cleanJsonString(productSelectedSizes);
                     if (cleanSelectedSizes) {
                         console.log('Cleaned productSelectedSizes:', cleanSelectedSizes);
                         const parsedSelectedSizes = JSON.parse(cleanSelectedSizes);
                         if (Array.isArray(parsedSelectedSizes) && parsedSelectedSizes.length > 0) {
-                            availableSizes = parsedSelectedSizes.filter(size => size && size.trim() !== '');
-                            console.log('Found sizes in productSelectedSizes:', availableSizes);
+                            sizes = parsedSelectedSizes.filter(size => size && size.trim() !== '');
+                            console.log('Found sizes in productSelectedSizes:', sizes);
                         }
                     }
                 } catch (e) {
@@ -493,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // If still no sizes, try to extract from variants
-            if (availableSizes.length === 0 && (productVariants || productProductVariants)) {
+            if (sizes.length === 0 && (productVariants || productProductVariants)) {
                 try {
                     const variantsData = productVariants || productProductVariants;
                     if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
@@ -506,8 +380,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             });
                             if (variantSizes.length > 0) {
-                                availableSizes = variantSizes;
-                                console.log('Found sizes in variants:', availableSizes);
+                                sizes = variantSizes;
+                                console.log('Found sizes in variants:', sizes);
                             }
                         }
                     }
@@ -517,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // If still no sizes, try to extract from options
-            if (availableSizes.length === 0 && (productOptions || productProductOptions)) {
+            if (sizes.length === 0 && (productOptions || productProductOptions)) {
                 try {
                     const optionsData = productOptions || productProductOptions;
                     if (optionsData && optionsData !== '[]' && optionsData !== 'null') {
@@ -530,8 +404,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             });
                             if (optionSizes.length > 0) {
-                                availableSizes = optionSizes;
-                                console.log('Found sizes in options:', availableSizes);
+                                sizes = optionSizes;
+                                console.log('Found sizes in options:', sizes);
                             }
                         }
                     }
@@ -539,19 +413,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Could not parse options for sizes:', e);
                 }
             }
-            } // Close the else block
             
             // If still no sizes, this product truly has no sizes available
-            if (availableSizes.length === 0) {
+            if (sizes.length === 0) {
                 console.log('No sizes found for this product - it may be a one-size item or have no size data');
             }
             
-            console.log('Available sizes for product:', availableSizes);
-            console.log('Available sizes type:', typeof availableSizes);
-            console.log('Available sizes is array:', Array.isArray(availableSizes));
+            console.log('Available sizes for product:', sizes);
             console.log('Product size data sources:', {
-                sizesFromDataAttributes: sizes,
-                availableSizes: availableSizes
+                productSizes: productSizes,
+                productSelectedSizes: productSelectedSizes,
+                productVariants: productVariants,
+                productProductVariants: productProductVariants
             });
             
             // Function to convert size codes to full names
@@ -623,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // If no sizes available, show appropriate message
-            if (availableSizes.length === 0) {
+            if (sizes.length === 0) {
                 sizeSelection.innerHTML = `
                     <div style="text-align: center; padding: 20px; color: #666; font-style: italic; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
                         <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
@@ -732,8 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gap: 4px;
             `;
             
-            if (Array.isArray(availableSizes)) {
-                availableSizes.forEach(size => {
+            sizes.forEach(size => {
                 const sizeBtn = document.createElement('div');
                 sizeBtn.className = 'size-option';
                 
@@ -758,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 
                 // Set default selected size (first available size)
-                if (availableSizes.indexOf(size) === 0) {
+                if (sizes.indexOf(size) === 0) {
                     sizeBtn.classList.add('selected');
                     sizeBtn.style.border = '2px solid #333';
                     sizeBtn.style.backgroundColor = '#333';
@@ -799,18 +671,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 sizeOptionsContainer.appendChild(sizeBtn);
             });
-            } else {
-                console.log('availableSizes is not an array:', availableSizes);
-            }
             
             sizeSelection.appendChild(sizeOptionsContainer);
             
             // Initialize size count
-            try {
-                updateSizeCount();
-            } catch (e) {
-                console.log('Error in updateSizeCount:', e);
-            }
+            updateSizeCount();
             
             } catch (error) {
                 console.error('Error in size selection:', error);
