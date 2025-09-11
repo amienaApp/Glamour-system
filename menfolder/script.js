@@ -1648,7 +1648,8 @@ document.addEventListener('DOMContentLoaded', function() {
             colors: [],
             price_ranges: [],
             categories: [],
-            lengths: []
+            lengths: [],
+            availabilities: []
         };
         
         // Add event listeners to all filter checkboxes
@@ -1658,21 +1659,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
-                // Update filter state
+                // Update filter state - handle different filter types
+                let filterArrayKey = filterType + 's';
+                
+                // Handle special cases for filter type mapping
+                if (filterType === 'price_range') {
+                    filterArrayKey = 'price_ranges';
+                } else if (filterType === 'category') {
+                    filterArrayKey = 'categories';
+                } else if (filterType === 'availability') {
+                    filterArrayKey = 'availabilities';
+                }
+                
                 if (isChecked) {
-                    if (!filterState[filterType + 's'].includes(filterValue)) {
-                        filterState[filterType + 's'].push(filterValue);
+                    if (!filterState[filterArrayKey].includes(filterValue)) {
+                        filterState[filterArrayKey].push(filterValue);
                     }
                 } else {
-                    const index = filterState[filterType + 's'].indexOf(filterValue);
+                    const index = filterState[filterArrayKey].indexOf(filterValue);
                     if (index > -1) {
-                        filterState[filterType + 's'].splice(index, 1);
+                        filterState[filterArrayKey].splice(index, 1);
                     }
                 }
                 
-                // console.log('Current filter state:', filterState);
+                console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1701,10 +1713,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
                 categories: filterState.categories,
-                lengths: filterState.lengths
+                category: filterState.categories, // Also send as 'category' for compatibility
+                lengths: filterState.lengths,
+                availabilities: filterState.availabilities
             };
             
-            // console.log('Sending filter data:', filterData);
+            console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -1716,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                // console.log('Filter response:', data);
+                console.log('Filter response:', data);
                 
                 if (data.success) {
                     updateProductGrid(data.data.products);
@@ -1726,12 +1740,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Filter error:', data.message);
                     hideFilterLoading();
                     showFilterError(data.message);
+                    
+                    // Show error message in product grid
+                    const productGrid = document.getElementById('filtered-products-grid') || 
+                                       document.getElementById('all-mens-clothing-grid') ||
+                                       document.querySelector('.product-grid');
+                    if (productGrid) {
+                        productGrid.innerHTML = `
+                            <div class="filter-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8d7da; border-radius: 8px; margin: 20px 0;">
+                                <div style="font-size: 48px; color: #721c24; margin-bottom: 16px;">⚠️</div>
+                                <h3 style="color: #721c24; margin-bottom: 8px;">Filter Error</h3>
+                                <p style="color: #721c24; margin-bottom: 20px;">${data.message}</p>
+                                <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                            </div>
+                        `;
+                    }
                 }
             })
             .catch(error => {
                 console.error('Filter request error:', error);
                 hideFilterLoading();
                 showFilterError('Network error occurred');
+                
+                // Show network error message in product grid
+                const productGrid = document.getElementById('filtered-products-grid') || 
+                                   document.getElementById('all-mens-clothing-grid') ||
+                                   document.querySelector('.product-grid');
+                if (productGrid) {
+                    productGrid.innerHTML = `
+                        <div class="network-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff3cd; border-radius: 8px; margin: 20px 0;">
+                            <div style="font-size: 48px; color: #856404; margin-bottom: 16px;">🌐</div>
+                            <h3 style="color: #856404; margin-bottom: 8px;">Connection Error</h3>
+                            <p style="color: #856404; margin-bottom: 20px;">Unable to load products. Please check your connection and try again.</p>
+                            <button onclick="applyFilters()" class="retry-btn" style="background: #ffc107; color: #212529; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500; margin-right: 10px;">Retry</button>
+                            <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                        </div>
+                    `;
+                }
             });
         }
         
@@ -1749,18 +1794,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: [],
                 price_ranges: [],
                 categories: [],
-                lengths: []
+                lengths: [],
+                availabilities: []
             };
             
             // Apply filters (will show all products)
             applyFilters();
         }
         
-        // Make clearAllFilters globally accessible
+        // Make functions globally accessible
         window.clearAllFilters = clearAllFilters;
+        window.applyFilters = applyFilters;
         
         function updateProductGrid(products) {
-            // console.log(`Updating product grid with ${products.length} products`);
+            console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -1768,7 +1815,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 productGrid = document.getElementById('filtered-products-grid');
             } else {
                 // Try different grid IDs for main page
-                productGrid = document.getElementById('dresses-grid') || 
+                productGrid = document.getElementById('all-mens-clothing-grid') || 
                              document.getElementById('filtered-products-grid') ||
                              document.querySelector('.product-grid');
             }
@@ -1783,15 +1830,88 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (products.length === 0) {
                 productGrid.innerHTML = `
-                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                        <p>No products found matching your filters.</p>
-                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                        <div style="font-size: 48px; color: #6c757d; margin-bottom: 16px;">🔍</div>
+                        <h3 style="color: #495057; margin-bottom: 8px;">No products found</h3>
+                        <p style="color: #6c757d; margin-bottom: 20px;">No products match your current filter selection.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
                     </div>
                 `;
                 return;
             }
             
-            // Products will be loaded from the main page, no need to create ugly product cards
+            // Create product cards for filtered results
+            products.forEach(product => {
+                const productCard = createProductCard(product);
+                productGrid.appendChild(productCard);
+            });
+            
+            // Initialize product cards after adding them
+            const newProductCards = productGrid.querySelectorAll('.product-card');
+            newProductCards.forEach(card => {
+                initializeProductCard(card);
+            });
+        }
+        
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', product.id);
+            card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
+            card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
+            card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-options', JSON.stringify(product.options || []));
+            
+            // Get front and back images
+            const frontImage = product.front_image || '';
+            const backImage = product.back_image || frontImage;
+            const productColor = product.color || '#000000';
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <div class="image-slider">
+                        ${frontImage ? `
+                            <img src="../${frontImage}" 
+                                 alt="${product.name} - Front" 
+                                 class="active" 
+                                 data-color="${productColor}">
+                        ` : ''}
+                        ${backImage && backImage !== frontImage ? `
+                            <img src="../${backImage}" 
+                                 alt="${product.name} - Back" 
+                                 data-color="${productColor}">
+                        ` : ''}
+                    </div>
+                    <button class="heart-button" data-product-id="${product.id}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
+                        ${product.available !== false ? `
+                            <button class="add-to-bag">Add To Bag</button>
+                        ` : `
+                            <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                        `}
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="color-options">
+                        <span class="color-circle active" 
+                              style="background-color: ${productColor};" 
+                              title="${productColor}" 
+                              data-color="${productColor}"></span>
+                    </div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${product.price.toFixed(0)}</div>
+                    ${product.available === false ? `
+                        <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                    ` : product.stock <= 5 && product.stock > 0 ? `
+                        <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
         }
         
         

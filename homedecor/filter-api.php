@@ -47,8 +47,8 @@ try {
                 // Get subcategory from URL or input
                 $subcategory = $input['subcategory'] ?? '';
                 
-                // Base filter - only men's clothing
-                $filters['category'] = "Men's Clothing";
+                // Base filter - only home decor products
+                $filters['category'] = "Home Decor";
                 
                 // Apply subcategory filter if provided (but only if no category filters are selected)
                 if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
@@ -87,20 +87,17 @@ try {
                             case 'on-sale':
                                 $priceFilters[] = ['sale' => true];
                                 break;
-                            case '0-25':
-                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
+                            case '0-300':
+                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 300]];
                                 break;
-                            case '25-50':
-                                $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
+                            case '300-600':
+                                $priceFilters[] = ['price' => ['$gte' => 300, '$lte' => 600]];
                                 break;
-                            case '50-75':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
+                            case '600-900':
+                                $priceFilters[] = ['price' => ['$gte' => 600, '$lte' => 900]];
                                 break;
-                            case '75-100':
-                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
-                                break;
-                            case '100+':
-                                $priceFilters[] = ['price' => ['$gte' => 100]];
+                            case '900+':
+                                $priceFilters[] = ['price' => ['$gte' => 900]];
                                 break;
                         }
                     }
@@ -109,9 +106,44 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
+                // Category filter (subcategories) - handle both 'categories' and 'category' input
+                $categoryFilters = [];
                 if (!empty($input['categories']) && is_array($input['categories'])) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
+                    $categoryFilters = array_merge($categoryFilters, $input['categories']);
+                }
+                if (!empty($input['category']) && is_array($input['category'])) {
+                    $categoryFilters = array_merge($categoryFilters, $input['category']);
+                }
+                if (!empty($categoryFilters)) {
+                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $categoryFilters)]];
+                }
+                
+                // Material filter
+                if (!empty($input['materials']) && is_array($input['materials'])) {
+                    $andConditions[] = ['material' => ['$in' => $input['materials']]];
+                }
+                
+                // Availability filter
+                if (!empty($input['availabilities']) && is_array($input['availabilities'])) {
+                    $availabilityFilters = [];
+                    foreach ($input['availabilities'] as $availability) {
+                        switch ($availability) {
+                            case 'in-stock':
+                                $availabilityFilters[] = ['available' => true];
+                                break;
+                            case 'on-sale':
+                                $availabilityFilters[] = ['sale' => true];
+                                break;
+                            case 'new-arrival':
+                                // Assuming new arrivals are products created in the last 30 days
+                                $thirtyDaysAgo = new DateTime('-30 days');
+                                $availabilityFilters[] = ['createdAt' => ['$gte' => new MongoDB\BSON\UTCDateTime($thirtyDaysAgo->getTimestamp() * 1000)]];
+                                break;
+                        }
+                    }
+                    if (!empty($availabilityFilters)) {
+                        $andConditions[] = ['$or' => $availabilityFilters];
+                    }
                 }
                 
                 // Dress length filter

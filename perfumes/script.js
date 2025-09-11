@@ -1679,13 +1679,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Clear filters button
-        const clearFiltersBtn = document.getElementById('clear-filters');
-        if (clearFiltersBtn) {
-            clearFiltersBtn.addEventListener('click', function() {
-                clearAllFilters();
-            });
-        }
+        // Clear filters button - handled in sidebar.php
+        // The clear filters functionality is now handled in the sidebar.php file
         
         function applyFilters() {
             // console.log('Applying filters...');
@@ -1738,8 +1733,8 @@ document.addEventListener('DOMContentLoaded', function() {
         function clearAllFilters() {
             // console.log('Clearing all filters...');
             
-            // Uncheck all filter checkboxes
-            document.querySelectorAll('input[data-filter]').forEach(checkbox => {
+            // Uncheck all filter checkboxes in sidebar
+            document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
             
@@ -1752,8 +1747,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengths: []
             };
             
-            // Apply filters (will show all products)
-            applyFilters();
+            // Clear URL parameters and reload to show all products
+            const baseUrl = window.location.pathname;
+            window.history.pushState({}, '', baseUrl);
+            window.location.reload();
         }
         
         // Make clearAllFilters globally accessible

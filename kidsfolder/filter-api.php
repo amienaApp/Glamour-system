@@ -105,19 +105,50 @@ try {
                     }
                 }
                 
-                // Makeup type filter
-                if (!empty($input['makeup_types']) && is_array($input['makeup_types'])) {
-                    $makeupTypeFilters = [];
-                    foreach ($input['makeup_types'] as $type) {
-                        $makeupTypeFilters[] = new MongoDB\BSON\Regex($type, 'i');
+                // Gender filter
+                if (!empty($input['genders']) && is_array($input['genders'])) {
+                    $andConditions[] = ['gender' => ['$in' => $input['genders']]];
+                }
+                
+                // Age group filter
+                if (!empty($input['age_groups']) && is_array($input['age_groups'])) {
+                    $ageGroupFilters = [];
+                    foreach ($input['age_groups'] as $ageGroup) {
+                        switch ($ageGroup) {
+                            case '2-4':
+                                $ageGroupFilters[] = ['age_range' => '2-4'];
+                                $ageGroupFilters[] = ['age_range' => '2-4 years'];
+                                break;
+                            case '4-6':
+                                $ageGroupFilters[] = ['age_range' => '4-6'];
+                                $ageGroupFilters[] = ['age_range' => '4-6 years'];
+                                break;
+                            case '6-8':
+                                $ageGroupFilters[] = ['age_range' => '6-8'];
+                                $ageGroupFilters[] = ['age_range' => '6-8 years'];
+                                break;
+                            case '8-10':
+                                $ageGroupFilters[] = ['age_range' => '8-10'];
+                                $ageGroupFilters[] = ['age_range' => '8-10 years'];
+                                break;
+                            case '10-12':
+                                $ageGroupFilters[] = ['age_range' => '10-12'];
+                                $ageGroupFilters[] = ['age_range' => '10-12 years'];
+                                break;
+                            case '12-14':
+                                $ageGroupFilters[] = ['age_range' => '12-14'];
+                                $ageGroupFilters[] = ['age_range' => '12-14 years'];
+                                break;
+                        }
                     }
-                    $andConditions[] = [
-                        '$or' => [
-                            ['sub_subcategory' => ['$in' => $makeupTypeFilters]],
-                            ['description' => ['$in' => $makeupTypeFilters]],
-                            ['name' => ['$in' => $makeupTypeFilters]]
-                        ]
-                    ];
+                    if (!empty($ageGroupFilters)) {
+                        $andConditions[] = ['$or' => $ageGroupFilters];
+                    }
+                }
+                
+                // Brand filter
+                if (!empty($input['brands']) && is_array($input['brands'])) {
+                    $andConditions[] = ['brand' => ['$in' => $input['brands']]];
                 }
                 
                 // Color filter
@@ -138,20 +169,20 @@ try {
                             case 'on-sale':
                                 $priceFilters[] = ['sale' => true];
                                 break;
-                            case '0-15':
-                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 15]];
+                            case '0-10':
+                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 10]];
                                 break;
-                            case '15-30':
-                                $priceFilters[] = ['price' => ['$gte' => 15, '$lte' => 30]];
+                            case '10-20':
+                                $priceFilters[] = ['price' => ['$gte' => 10, '$lte' => 20]];
                                 break;
-                            case '30-50':
-                                $priceFilters[] = ['price' => ['$gte' => 30, '$lte' => 50]];
+                            case '20-30':
+                                $priceFilters[] = ['price' => ['$gte' => 20, '$lte' => 30]];
                                 break;
-                            case '50-75':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
+                            case '30-40':
+                                $priceFilters[] = ['price' => ['$gte' => 30, '$lte' => 40]];
                                 break;
-                            case '75+':
-                                $priceFilters[] = ['price' => ['$gte' => 75]];
+                            case '40+':
+                                $priceFilters[] = ['price' => ['$gte' => 40]];
                                 break;
                         }
                     }

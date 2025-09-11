@@ -32,17 +32,9 @@ foreach ($allBags as $bag) {
     <div class="sidebar-header">
         <h3>Refine By</h3>
         <span class="style-count"><?php echo count($allBags); ?> Styles</span>
+        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
     <div class="side">
-        <!-- Clear All Filters Button -->
-        <div class="filter-section">
-            <div class="filter-group">
-                <button type="button" class="clear-all-filters-btn" onclick="clearAllFilters()">
-                    <i class="fas fa-times"></i>
-                    Clear All Filters
-                </button>
-            </div>
-        </div>
         
         <div class="filter-section">
             <!-- Gender Filter -->

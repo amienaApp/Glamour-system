@@ -1685,7 +1685,11 @@ document.addEventListener('DOMContentLoaded', function() {
             colors: [],
             price_ranges: [],
             categories: [],
-            lengths: []
+            lengths: [],
+            kids_categories: [],
+            genders: [],
+            age_groups: [],
+            brands: []
         };
         
         // Add event listeners to all filter checkboxes
@@ -1695,21 +1699,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                
+                // Handle different filter types
+                let filterArrayKey = filterType + 's';
+                
+                // Handle special cases for filter type mapping
+                if (filterType === 'price_range') {
+                    filterArrayKey = 'price_ranges';
+                } else if (filterType === 'category') {
+                    filterArrayKey = 'categories';
+                } else if (filterType === 'kids_category') {
+                    filterArrayKey = 'kids_categories';
+                } else if (filterType === 'gender') {
+                    filterArrayKey = 'genders';
+                } else if (filterType === 'age_group') {
+                    filterArrayKey = 'age_groups';
+                } else if (filterType === 'brand') {
+                    filterArrayKey = 'brands';
+                }
                 
                 // Update filter state
                 if (isChecked) {
-                    if (!filterState[filterType + 's'].includes(filterValue)) {
-                        filterState[filterType + 's'].push(filterValue);
+                    if (!filterState[filterArrayKey].includes(filterValue)) {
+                        filterState[filterArrayKey].push(filterValue);
                     }
                 } else {
-                    const index = filterState[filterType + 's'].indexOf(filterValue);
+                    const index = filterState[filterArrayKey].indexOf(filterValue);
                     if (index > -1) {
-                        filterState[filterType + 's'].splice(index, 1);
+                        filterState[filterArrayKey].splice(index, 1);
                     }
                 }
                 
-                // console.log('Current filter state:', filterState);
+                console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1738,10 +1760,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
                 categories: filterState.categories,
-                lengths: filterState.lengths
+                category: filterState.categories, // Also send as 'category' for compatibility
+                lengths: filterState.lengths,
+                kids_categories: filterState.kids_categories,
+                genders: filterState.genders,
+                age_groups: filterState.age_groups,
+                brands: filterState.brands
             };
             
-            // console.log('Sending filter data:', filterData);
+            console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -1753,7 +1780,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                // console.log('Filter response:', data);
+                console.log('Filter response:', data);
                 
             if (data.success) {
                 updateProductGrid(data.data.products);
@@ -1786,7 +1813,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: [],
                 price_ranges: [],
                 categories: [],
-                lengths: []
+                lengths: [],
+                kids_categories: [],
+                genders: [],
+                age_groups: [],
+                brands: []
             };
             
         // Apply filters (will show all products)

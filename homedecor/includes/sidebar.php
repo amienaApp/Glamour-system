@@ -14,37 +14,32 @@
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="radio" name="category" value="" data-filter="category">
-                    <span class="checkmark"></span>
-                    All Categories
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="category" value="Bedding" data-filter="category">
+                    <input type="checkbox" name="category[]" value="Bedding" data-filter="category">
                     <span class="checkmark"></span>
                     Bedding
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="category" value="living room" data-filter="category">
+                    <input type="checkbox" name="category[]" value="living room" data-filter="category">
                     <span class="checkmark"></span>
                     Living Room
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="category" value="Kitchen" data-filter="category">
+                    <input type="checkbox" name="category[]" value="Kitchen" data-filter="category">
                     <span class="checkmark"></span>
                     Kitchen
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="category" value="artwork" data-filter="category">
+                    <input type="checkbox" name="category[]" value="artwork" data-filter="category">
                     <span class="checkmark"></span>
                     Artwork
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="category" value="dinning room" data-filter="category">
+                    <input type="checkbox" name="category[]" value="dinning room" data-filter="category">
                     <span class="checkmark"></span>
                     Dining Room
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="category" value="lighting" data-filter="category">
+                    <input type="checkbox" name="category[]" value="lighting" data-filter="category">
                     <span class="checkmark"></span>
                     Lighting
                 </label>
@@ -60,27 +55,22 @@
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="radio" name="price" value="" data-filter="price">
-                    <span class="checkmark"></span>
-                    All Prices
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="price" value="0-300" data-filter="price">
+                    <input type="checkbox" name="price[]" value="0-300" data-filter="price_range">
                     <span class="checkmark"></span>
                     $0 - $300
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="price" value="300-600" data-filter="price">
+                    <input type="checkbox" name="price[]" value="300-600" data-filter="price_range">
                     <span class="checkmark"></span>
                     $300 - $600
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="price" value="600-900" data-filter="price">
+                    <input type="checkbox" name="price[]" value="600-900" data-filter="price_range">
                     <span class="checkmark"></span>
                     $600 - $900
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="price" value="900+" data-filter="price">
+                    <input type="checkbox" name="price[]" value="900+" data-filter="price_range">
                     <span class="checkmark"></span>
                     $900+
                 </label>
@@ -92,73 +82,68 @@
     <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Color</h4>
+                <h4>Colors</h4>
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="radio" name="color" value="" data-filter="color">
-                    <span class="checkmark"></span>
-                    All Colors
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="color" value="Black" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Black" data-filter="color">
                     <span class="checkmark"></span>
                     Black
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="White" data-filter="color">
+                    <input type="checkbox" name="color[]" value="White" data-filter="color">
                     <span class="checkmark"></span>
                     White
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Brown" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Brown" data-filter="color">
                     <span class="checkmark"></span>
                     Brown
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Gray" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Tan" data-filter="color">
+                    <span class="checkmark"></span>
+                    Tan
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="color[]" value="Navy" data-filter="color">
+                    <span class="checkmark"></span>
+                    Navy
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="color[]" value="Gray" data-filter="color">
                     <span class="checkmark"></span>
                     Gray
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Beige" data-filter="color">
-                    <span class="checkmark"></span>
-                    Beige
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="color" value="Blue" data-filter="color">
-                    <span class="checkmark"></span>
-                    Blue
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="color" value="Green" data-filter="color">
-                    <span class="checkmark"></span>
-                    Green
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="color" value="Red" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Red" data-filter="color">
                     <span class="checkmark"></span>
                     Red
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Pink" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Blue" data-filter="color">
+                    <span class="checkmark"></span>
+                    Blue
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="color[]" value="Green" data-filter="color">
+                    <span class="checkmark"></span>
+                    Green
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="color[]" value="Pink" data-filter="color">
                     <span class="checkmark"></span>
                     Pink
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Purple" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Purple" data-filter="color">
                     <span class="checkmark"></span>
                     Purple
                 </label>
                 <label class="filter-option">
-                    <input type="radio" name="color" value="Yellow" data-filter="color">
+                    <input type="checkbox" name="color[]" value="Gold" data-filter="color">
                     <span class="checkmark"></span>
-                    Yellow
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="color" value="Orange" data-filter="color">
-                    <span class="checkmark"></span>
-                    Orange
+                    Gold
                 </label>
             </div>
         </div>

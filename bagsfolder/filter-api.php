@@ -87,20 +87,17 @@ try {
                             case 'on-sale':
                                 $priceFilters[] = ['sale' => true];
                                 break;
-                            case '0-25':
-                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
+                            case '0-100':
+                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 100]];
                                 break;
-                            case '25-50':
-                                $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
+                            case '100-200':
+                                $priceFilters[] = ['price' => ['$gte' => 100, '$lte' => 200]];
                                 break;
-                            case '50-75':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
+                            case '200-400':
+                                $priceFilters[] = ['price' => ['$gte' => 200, '$lte' => 400]];
                                 break;
-                            case '75-100':
-                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
-                                break;
-                            case '100+':
-                                $priceFilters[] = ['price' => ['$gte' => 100]];
+                            case '400+':
+                                $priceFilters[] = ['price' => ['$gte' => 400]];
                                 break;
                         }
                     }

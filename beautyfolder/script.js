@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHeaderModals();
     initializeFilters();
     initializeQuickView();
+    loadColorFilters();
     
     // Global variables to track selected variants in quick view
     let selectedQuickViewColor = '';
@@ -1682,8 +1683,9 @@ document.addEventListener('DOMContentLoaded', function() {
             sizes: [],
             colors: [],
             price_ranges: [],
-            categories: [],
-            lengths: []
+            beauty_categories: [],
+            makeup_types: [],
+            sub_subcategories: []
         };
         
         // Add event listeners to all filter checkboxes
@@ -1697,17 +1699,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update filter state
                 if (isChecked) {
-                    if (!filterState[filterType + 's'].includes(filterValue)) {
-                        filterState[filterType + 's'].push(filterValue);
+                    if (!filterState[filterType].includes(filterValue)) {
+                        filterState[filterType].push(filterValue);
                     }
                 } else {
-                    const index = filterState[filterType + 's'].indexOf(filterValue);
+                    const index = filterState[filterType].indexOf(filterValue);
                     if (index > -1) {
-                        filterState[filterType + 's'].splice(index, 1);
+                        filterState[filterType].splice(index, 1);
                     }
                 }
                 
                 // console.log('Current filter state:', filterState);
+                
+                // Update active filter count
+                updateActiveFilterCount();
                 
                 // Apply filters
                 applyFilters();
@@ -1735,8 +1740,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 sizes: filterState.sizes,
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
-                categories: filterState.categories,
-                lengths: filterState.lengths
+                beauty_categories: filterState.beauty_categories,
+                makeup_types: filterState.makeup_types,
+                sub_subcategories: filterState.sub_subcategories
             };
             
             // console.log('Sending filter data:', filterData);
@@ -1783,9 +1789,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 sizes: [],
                 colors: [],
                 price_ranges: [],
-                categories: [],
-                lengths: []
+                beauty_categories: [],
+                makeup_types: [],
+                sub_subcategories: []
             };
+            
+            // Update active filter count
+            updateActiveFilterCount();
+            
+            // Show success notification
+            showNotification('All filters cleared', 'success');
             
             // Apply filters (will show all products)
             applyFilters();
@@ -1803,7 +1816,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 productGrid = document.getElementById('filtered-products-grid');
             } else {
                 // Try different grid IDs for main page
-                productGrid = document.getElementById('dresses-grid') || 
+                productGrid = document.getElementById('all-products-grid') || 
                              document.getElementById('filtered-products-grid') ||
                              document.querySelector('.product-grid');
             }
@@ -1819,14 +1832,91 @@ document.addEventListener('DOMContentLoaded', function() {
             if (products.length === 0) {
                 productGrid.innerHTML = `
                     <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                        <p>No products found matching your filters.</p>
-                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
+                        <h3>No products found</h3>
+                        <p>No products match your current filter selection.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn" style="
+                            background: #ff6b9d;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            margin-top: 10px;
+                        ">Clear All Filters</button>
                     </div>
                 `;
                 return;
             }
             
-            // Products will be loaded from the main page, no need to create ugly product cards
+            // Create product cards for filtered results
+            products.forEach(product => {
+                const productCard = createProductCard(product);
+                productGrid.appendChild(productCard);
+            });
+        }
+        
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', product.id);
+            
+            // Get the first available image
+            const frontImage = product.front_image || product.image_front || '';
+            const backImage = product.back_image || product.image_back || frontImage;
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <div class="image-slider">
+                        ${frontImage ? `
+                            <img src="../${frontImage}" 
+                                 alt="${product.name} - Front" 
+                                 class="active" 
+                                 data-color="${product.color || ''}">
+                        ` : ''}
+                        ${backImage && backImage !== frontImage ? `
+                            <img src="../${backImage}" 
+                                 alt="${product.name} - Back" 
+                                 data-color="${product.color || ''}">
+                        ` : ''}
+                    </div>
+                    <button class="heart-button" data-product-id="${product.id}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
+                        ${product.available !== false ? `
+                            <button class="add-to-bag">Add To Bag</button>
+                        ` : `
+                            <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                        `}
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="color-options">
+                        ${product.color ? `
+                            <span class="color-circle active" 
+                                  style="background-color: ${product.color};" 
+                                  title="${product.color}" 
+                                  data-color="${product.color}"></span>
+                        ` : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => `
+                            <span class="color-circle" 
+                                  style="background-color: ${variant.color};" 
+                                  title="${variant.name}" 
+                                  data-color="${variant.color}"></span>
+                        `).join('') : ''}
+                    </div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${product.price.toFixed(0)}</div>
+                    ${product.available === false ? `
+                        <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                    ` : product.stock <= 5 && product.stock > 0 ? `
+                        <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
         }
         
         
@@ -1834,7 +1924,21 @@ document.addEventListener('DOMContentLoaded', function() {
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
             if (styleCountElement) {
-                styleCountElement.textContent = `${count} Styles`;
+                styleCountElement.textContent = `${count} Beauty Products`;
+            }
+        }
+        
+        function updateActiveFilterCount() {
+            const totalFilters = Object.values(filterState).reduce((sum, arr) => sum + arr.length, 0);
+            const clearBtn = document.getElementById('clear-filters');
+            if (clearBtn) {
+                if (totalFilters > 0) {
+                    clearBtn.textContent = `Clear ${totalFilters} Filter${totalFilters > 1 ? 's' : ''}`;
+                    clearBtn.style.display = 'block';
+                } else {
+                    clearBtn.textContent = 'Clear All Filters';
+                    clearBtn.style.display = 'none';
+                }
             }
         }
         
@@ -1983,6 +2087,109 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-weight: 400;
             }
             
+            /* Color Filter Styles */
+            .color-option {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 0;
+                cursor: pointer;
+            }
+            
+            .color-option .color-circle {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid #ddd;
+                display: inline-block;
+                flex-shrink: 0;
+            }
+            
+            .color-option .color-name {
+                font-size: 14px;
+                color: #333;
+            }
+            
+            .color-option input[type="checkbox"]:checked + .checkmark + .color-circle {
+                border-color: #333;
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+            }
+            
+            .loading-colors {
+                text-align: center;
+                padding: 20px;
+                color: #666;
+                font-style: italic;
+            }
+            
+            /* Clear Filters Button */
+            .clear-filters-btn {
+                background: #ff6b9d;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .clear-filters-btn:hover {
+                background: #e55a8a;
+                transform: translateY(-1px);
+            }
+            
+            .clear-filters-btn:active {
+                transform: translateY(0);
+            }
+            
+            /* Filter Group Styling */
+            .filter-group {
+                margin-bottom: 20px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 15px;
+            }
+            
+            .filter-group:last-child {
+                border-bottom: none;
+            }
+            
+            .filter-header h4 {
+                margin: 0 0 10px 0;
+                font-size: 14px;
+                font-weight: 600;
+                color: #333;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            .filter-options {
+                max-height: 200px;
+                overflow-y: auto;
+                padding-right: 5px;
+            }
+            
+            .filter-options::-webkit-scrollbar {
+                width: 4px;
+            }
+            
+            .filter-options::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 2px;
+            }
+            
+            .filter-options::-webkit-scrollbar-thumb {
+                background: #ccc;
+                border-radius: 2px;
+            }
+            
+            .filter-options::-webkit-scrollbar-thumb:hover {
+                background: #999;
+            }
+            
             /* Responsive adjustments */
             @media (max-width: 768px) {
                 .size-option {
@@ -1995,12 +2202,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     padding: 5px 10px;
                     font-size: 10px;
                 }
+                
+                .color-option .color-circle {
+                    width: 18px;
+                    height: 18px;
+                }
+                
+                .color-option .color-name {
+                    font-size: 13px;
+                }
             }
             
             @media (max-width: 480px) {
                 .size-option {
                     min-width: 32px;
                     padding: 5px 8px;
+                    font-size: 12px;
+                }
+                
+                .color-option .color-circle {
+                    width: 16px;
+                    height: 16px;
+                }
+                
+                .color-option .color-name {
                     font-size: 12px;
                 }
             }
@@ -2168,6 +2393,129 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updateSizeCount();
     };
+    
+    // Load color filters dynamically
+    function loadColorFilters() {
+        const colorFilterContainer = document.getElementById('color-filter');
+        if (!colorFilterContainer) return;
+        
+        // Show loading state
+        colorFilterContainer.innerHTML = '<div class="loading-colors">Loading colors...</div>';
+        
+        // Fetch colors from API
+        fetch('get-colors-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'get_colors',
+                category: 'Beauty & Cosmetics'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.colors && data.colors.length > 0) {
+                // Clear loading state
+                colorFilterContainer.innerHTML = '';
+                
+                // Create color filter options
+                data.colors.forEach(color => {
+                    const colorOption = document.createElement('label');
+                    colorOption.className = 'filter-option color-option';
+                    colorOption.innerHTML = `
+                        <input type="checkbox" name="colors[]" value="${color}" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: ${color};" title="${color}"></span>
+                        <span class="color-name">${color}</span>
+                    `;
+                    colorFilterContainer.appendChild(colorOption);
+                });
+            } else {
+                // Show fallback colors if API fails
+                colorFilterContainer.innerHTML = `
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="red" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: red;" title="Red"></span>
+                        <span class="color-name">Red</span>
+                    </label>
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="pink" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: pink;" title="Pink"></span>
+                        <span class="color-name">Pink</span>
+                    </label>
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="nude" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: #f5deb3;" title="Nude"></span>
+                        <span class="color-name">Nude</span>
+                    </label>
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="brown" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: brown;" title="Brown"></span>
+                        <span class="color-name">Brown</span>
+                    </label>
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="black" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: black;" title="Black"></span>
+                        <span class="color-name">Black</span>
+                    </label>
+                    <label class="filter-option color-option">
+                        <input type="checkbox" name="colors[]" value="white" data-filter="colors">
+                        <span class="checkmark"></span>
+                        <span class="color-circle" style="background-color: white; border: 1px solid #ddd;" title="White"></span>
+                        <span class="color-name">White</span>
+                    </label>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading colors:', error);
+            // Show fallback colors on error
+            colorFilterContainer.innerHTML = `
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="red" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: red;" title="Red"></span>
+                    <span class="color-name">Red</span>
+                </label>
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="pink" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: pink;" title="Pink"></span>
+                    <span class="color-name">Pink</span>
+                </label>
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="nude" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: #f5deb3;" title="Nude"></span>
+                    <span class="color-name">Nude</span>
+                </label>
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="brown" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: brown;" title="Brown"></span>
+                    <span class="color-name">Brown</span>
+                </label>
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="black" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: black;" title="Black"></span>
+                    <span class="color-name">Black</span>
+                </label>
+                <label class="filter-option color-option">
+                    <input type="checkbox" name="colors[]" value="white" data-filter="colors">
+                    <span class="checkmark"></span>
+                    <span class="color-circle" style="background-color: white; border: 1px solid #ddd;" title="White"></span>
+                    <span class="color-name">White</span>
+                </label>
+            `;
+        });
+    }
     
     // Global function to convert size codes to full names
     window.getSizeName = function(sizeCode) {

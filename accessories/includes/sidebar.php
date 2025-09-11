@@ -324,6 +324,7 @@ function applyFilters() {
 
 // Function to clear all filters
 function clearAllFilters() {
+    // Reset current filters state
     currentFilters = {
         gender: '',
         category: '',
@@ -346,8 +347,14 @@ function clearAllFilters() {
         checkbox.checked = false;
     });
     
-    // Redirect to base URL
-    window.location.href = window.location.pathname;
+    // Clear all URL parameters and reload the page to show all accessories products
+    const baseUrl = window.location.pathname;
+    
+    // Use replaceState to clear URL parameters
+    window.history.replaceState({}, document.title, baseUrl);
+    
+    // Force reload to show all accessories products
+    window.location.reload();
 }
 
 // Initialize filters on page load
@@ -359,5 +366,42 @@ document.addEventListener('DOMContentLoaded', function() {
     currentFilters.color = urlParams.get('color') || '';
     currentFilters.minPrice = urlParams.get('min_price') || '';
     currentFilters.maxPrice = urlParams.get('max_price') || '';
+    
+    // Ensure checkboxes are properly synchronized with URL parameters
+    // Uncheck all checkboxes first
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // Then check the ones that match current URL parameters
+    if (currentFilters.gender) {
+        const genderCheckbox = document.querySelector(`input[name="gender[]"][value="${currentFilters.gender}"]`);
+        if (genderCheckbox) genderCheckbox.checked = true;
+    }
+    
+    if (currentFilters.category) {
+        const categoryCheckbox = document.querySelector(`input[name="category[]"][value="${currentFilters.category}"]`);
+        if (categoryCheckbox) categoryCheckbox.checked = true;
+    }
+    
+    if (currentFilters.color) {
+        const colorCheckbox = document.querySelector(`input[name="color[]"][value="${currentFilters.color}"]`);
+        if (colorCheckbox) colorCheckbox.checked = true;
+    }
+    
+    if (currentFilters.minPrice && currentFilters.maxPrice) {
+        const priceCheckbox = document.querySelector(`input[name="price[]"][value="${currentFilters.minPrice}-${currentFilters.maxPrice}"]`);
+        if (priceCheckbox) priceCheckbox.checked = true;
+    } else if (currentFilters.minPrice && !currentFilters.maxPrice) {
+        const priceCheckbox = document.querySelector(`input[name="price[]"][value="${currentFilters.minPrice}+"]`);
+        if (priceCheckbox) priceCheckbox.checked = true;
+    }
+    
+    // If no URL parameters exist, ensure all checkboxes are unchecked
+    if (window.location.search === '' || window.location.search === '?') {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
 });
 </script>
