@@ -59,6 +59,10 @@ $skincare = $productModel->getBySubcategory('Skincare');
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
                      data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
@@ -97,13 +101,14 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             if ($frontImage): 
                                 $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
                                     <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           controls>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
@@ -115,12 +120,13 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             <?php if ($backImage): 
                                 $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
                                     <video src="../<?php echo htmlspecialchars($backImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           controls>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -175,7 +181,7 @@ $skincare = $productModel->getBySubcategory('Skincare');
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -236,6 +242,10 @@ $skincare = $productModel->getBySubcategory('Skincare');
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
                      data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
@@ -274,13 +284,14 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             if ($frontImage): 
                                 $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
                                     <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           controls>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
@@ -292,12 +303,13 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             <?php if ($backImage): 
                                 $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
                                     <video src="../<?php echo htmlspecialchars($backImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           controls>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -352,7 +364,7 @@ $skincare = $productModel->getBySubcategory('Skincare');
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">

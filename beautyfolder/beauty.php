@@ -1,4 +1,5 @@
 <?php
+session_start();
 $page_title = 'Galamor palace';
 
 // Handle subcategory parameter
@@ -19,9 +20,12 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
+    <script src="../reviews-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../related-products.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
-    <script src="quickview-manager.js?v=<?php echo time(); ?>" defer></script>
-    <script src="cart-manager.js?v=<?php echo time(); ?>" defer></script>
+    <script src="quickview-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="cart-manager.js?v=<?php echo time(); ?>"></script>
 </head>
 <body>
                     <?php 
@@ -60,10 +64,6 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                         <img src="../img/beauty/bathbody/showergel/1.webp" alt="Bath & Body">
                         <h3>Bath & Body</h3>
                     </a>
-                    <a href="beauty.php?subcategory=perfumes" class="image-item">
-                        <img src="../img/perfumes/1.webp" alt="Perfumes">
-                        <h3>Perfumes</h3>
-                    </a>
                     <a href="beauty.php?subcategory=tools" class="image-item">
                         <img src="../img/beauty/makeup/face/brushes/1.webp" alt="Beauty Tools">
                         <h3>Beauty Tools</h3>
@@ -80,14 +80,23 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
-        <script src="../reviews-manager.js"></script>
-        <script src="../related-products.js"></script>
         
         <script>
             // Initialize enhanced features when page loads
             document.addEventListener('DOMContentLoaded', function() {
+                console.log('Beauty page DOM loaded');
+                
+                // Debug: Check if sidebar filters exist
+                const filterCheckboxes = document.querySelectorAll('input[data-filter]');
+                console.log('Found filter checkboxes in beauty page:', filterCheckboxes.length);
+                
+                // Debug: Check if clear filters button exists
+                const clearBtn = document.getElementById('clear-filters');
+                console.log('Clear filters button found:', !!clearBtn);
+                
                 // Load reviews and related products for all product cards
                 const productCards = document.querySelectorAll('.product-card');
+                console.log('Found product cards:', productCards.length);
                 productCards.forEach(card => {
                     const productId = card.getAttribute('data-product-id');
                     if (productId) {
@@ -133,6 +142,65 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                 }
             }
         </script>
+
+        <!-- Quick View Sidebar -->
+        <div id="quick-view-sidebar" class="quickview-sidebar">
+            <button class="close-btn" onclick="closeQuickView()">×</button>
+            <div class="quickview-content">
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="quick-view-main-image" src="" alt="">
+                        <video id="quick-view-main-video" style="display: none;" muted loop></video>
+                    </div>
+                    <div class="image-thumbnails" id="quick-view-thumbnails"></div>
+                </div>
+                
+                <div class="product-info">
+                    <h2 id="quick-view-title"></h2>
+                    <div class="price-section">
+                        <span id="quick-view-price" class="price"></span>
+                        <span id="quick-view-sale-price" class="sale-price" style="display: none;"></span>
+                    </div>
+                    
+                    <div class="rating-section">
+                        <div class="stars" id="quick-view-stars"></div>
+                        <span id="quick-view-review-count"></span>
+                    </div>
+                    
+                    <p id="quick-view-description"></p>
+                    
+                    <div class="color-section">
+                        <h4>Color:</h4>
+                        <div class="color-selection" id="quick-view-color-selection"></div>
+                    </div>
+                    
+                    <div class="size-section">
+                        <h4>Size:</h4>
+                        <div class="size-selection" id="quick-view-size-selection"></div>
+                    </div>
+                    
+                    <div class="quantity-section">
+                        <label for="quick-view-quantity">Quantity:</label>
+                        <input type="number" id="quick-view-quantity" value="1" min="1" max="99">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="add-to-bag-quick" class="add-to-cart-btn">Add to Cart</button>
+                        <button id="add-to-wishlist-quick" class="wishlist-btn">
+                            <i class="fas fa-heart"></i> Add to Wishlist
+                        </button>
+                    </div>
+                    
+                    <!-- Availability Status -->
+                    <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
+                        <!-- Availability will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overlay -->
+        <div id="quick-view-overlay" class="quickview-overlay"></div>
 
 </body>
 </html>

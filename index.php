@@ -23,10 +23,6 @@ session_start();
      
    
 
-<!-- Chat Button -->
-<div class="chat-button">
-    <i class="fas fa-comments"></i>
-</div> 
 
 
     <section class="banner-swiper-section">
@@ -156,20 +152,12 @@ session_start();
                  <div class="card-content">
                     <h3>Shoes</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="shoess/men.php"><button class="btn">Shop Now</button></a>
+                                              <a href="shoess/shoes.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
 
 
-                               <div class="card">
-                 <img src="img/sports/1.jpg" cover / center no-repeat>
-                 <div class="card-content">
-                    <h3>Sports Items</h3>
-                     <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php?category=sports"><button class="btn">Shop Now</button></a>
-                 </div>
-                </div>
 
 
 
@@ -421,7 +409,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/23.jpg" alt="Product 23 - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="1">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -444,7 +432,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/24.jpg" alt="Product 24 - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="2">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -467,7 +455,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/20.webp" alt="Product 20 - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="3">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -490,7 +478,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/barca.jpg" alt="Barca Product - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="4">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -514,7 +502,7 @@ session_start();
                     <img src="img/sawiro/glas2.jpg" alt="Designer Glasses - Front" class="active" data-color="maroon">
                     <img src="img/sawiro/glas1.jpg" alt="Designer Glasses - Front" data-color="black">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="5">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -538,7 +526,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/handbag2.jpg" alt="Handbag Product - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="6">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -561,7 +549,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/jwel2.jpg" alt="Jewelry Product - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="7">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -586,7 +574,7 @@ session_start();
                 <div class="image-slider">
                     <img src="img/sawiro/watch2.jpg" alt="Watch Product - Front" class="active" data-color="default">
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="8">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -819,6 +807,7 @@ session_start();
      
      <!-- Quick View Functionality -->
      <script src="scripts/quickview-manager.js"></script>
+     <script src="scripts/wishlist-manager.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {
              // Quick View buttons event listeners

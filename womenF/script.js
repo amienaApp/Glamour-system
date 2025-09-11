@@ -1,35 +1,36 @@
-// Simple Script
+// Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
+    console.log('WomenF script loaded successfully');
     
-    // Initialize category modal functionality
+    // Initialize all functionality
     initializeCategoryModals();
-    
-    // Initialize header modals functionality
     initializeHeaderModals();
-    
-    // Initialize filter functionality
     initializeFilters();
+    initializeQuickView();
     
-    // Quick View functionality
-    const sidebar = document.getElementById('quick-view-sidebar');
-    const overlay = document.getElementById('quick-view-overlay');
-    const closeBtn = document.getElementById('close-quick-view');
-    
-    console.log('Quick view elements found:', {
-        sidebar: !!sidebar,
-        overlay: !!overlay,
-        closeBtn: !!closeBtn
-    });
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
+    function initializeQuickView() {
+        const sidebar = document.getElementById('quick-view-sidebar');
+        const overlay = document.getElementById('quick-view-overlay');
+        const closeBtn = document.getElementById('close-quick-view');
+        
+        console.log('Quick view elements found:', {
+            sidebar: !!sidebar,
+            overlay: !!overlay,
+            closeBtn: !!closeBtn
+        }); 
     
     // Quick View button click handler
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('quick-view') || e.target.closest('.quick-view')) {
             e.preventDefault();
-            console.log('Quick view button clicked!');
+            // console.log('Quick view button clicked!');
             const button = e.target.classList.contains('quick-view') ? e.target : e.target.closest('.quick-view');
             const productId = button.getAttribute('data-product-id');
-            console.log('Product ID:', productId);
+            // console.log('Product ID:', productId);
             if (productId) {
                 openQuickView(productId);
             } else {
@@ -41,13 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close quick view
     if (closeBtn) closeBtn.addEventListener('click', closeQuickView);
     if (overlay) overlay.addEventListener('click', closeQuickView);
-    
-    // Global variables to track selected variants in quick view
-    let selectedQuickViewColor = '';
-    let selectedQuickViewSize = '';
 
     function openQuickView(productId) {
-        console.log('Opening quick view for:', productId);
+        // console.log('Opening quick view for:', productId);
         
         try {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
@@ -56,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            console.log('Product card found:', productCard);
+            // console.log('Product card found:', productCard);
         
         const name = productCard.querySelector('.product-name')?.textContent || 'Product';
         const price = productCard.querySelector('.product-price')?.textContent || '$0';
@@ -68,7 +65,61 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (titleEl) titleEl.textContent = name;
         if (priceEl) priceEl.textContent = price;
-        if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
+        // Handle both button types
+        const mainAddToBagBtn = document.getElementById('add-to-bag-quick');
+        const altAddToBagBtn = document.getElementById('add-to-bag-quick-alt');
+        
+        if (mainAddToBagBtn) {
+            mainAddToBagBtn.setAttribute('data-product-id', productId);
+            mainAddToBagBtn.disabled = true;
+            mainAddToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Please select a color';
+        }
+        
+        if (altAddToBagBtn) {
+            altAddToBagBtn.setAttribute('data-product-id', productId);
+            altAddToBagBtn.disabled = true;
+            altAddToBagBtn.textContent = 'Please select a color';
+        }
+        
+        // Handle color variants
+        const variantsData = productCard.getAttribute('data-product-variants');
+        let variants = [];
+        if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+            try {
+                variants = JSON.parse(variantsData);
+            } catch (e) {
+                console.log('Could not parse variants data:', e);
+            }
+        }
+        
+        // Populate color options in quickview
+        const colorSelectionEl = document.getElementById('quick-view-color-selection');
+        if (colorSelectionEl && variants.length > 0) {
+            colorSelectionEl.innerHTML = '';
+            variants.forEach((variant, index) => {
+                if (variant.color) {
+                    const colorOption = document.createElement('div');
+                    colorOption.className = 'color-option';
+                    colorOption.style.backgroundColor = variant.color;
+                    colorOption.setAttribute('data-color', variant.color);
+                    colorOption.setAttribute('data-variant-index', index);
+                    colorOption.title = variant.name || variant.color;
+                    
+                    // Add click handler for color selection
+                    colorOption.addEventListener('click', function() {
+                        selectQuickViewColor(variant, productCard);
+                    });
+                    
+                    colorSelectionEl.appendChild(colorOption);
+                }
+            });
+            
+            // Select first color by default
+            if (variants.length > 0 && variants[0].color) {
+                selectedQuickViewColor = variants[0].color;
+                selectQuickViewColor(variants[0], productCard);
+            }
+        }
         
         // Handle images
         const mainImage = document.getElementById('quick-view-main-image');
@@ -289,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handle size selection in quick view - Enhanced for Multiple Forms
         const sizeSelection = document.getElementById('quick-view-size-selection');
         if (sizeSelection) {
-            console.log('Size selection element found, processing sizes...');
+            // console.log('Size selection element found, processing sizes...');
             
             try {
             sizeSelection.innerHTML = '';
@@ -321,30 +372,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productOptions = productCard.dataset.productOptions;
                 const productProductOptions = productCard.dataset.productProductOptions;
             
-            console.log('Raw product size data:', {
+            /* console.log('Raw product size data:', {
                 productSizes: productSizes,
                 productSelectedSizes: productSelectedSizes,
                 productVariants: productVariants,
                 productProductVariants: productProductVariants,
                 productOptions: productOptions,
                 productProductOptions: productProductOptions
-            });
+            }); */
             
             // Check multiple possible size data sources in order of preference
             if (productSizes && productSizes !== '[]' && productSizes !== 'null') {
                 try {
                     const cleanSizes = cleanJsonString(productSizes);
                     if (cleanSizes) {
-                        console.log('Cleaned productSizes:', cleanSizes);
+                        // console.log('Cleaned productSizes:', cleanSizes);
                         const parsedSizes = JSON.parse(cleanSizes);
                         if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
                             sizes = parsedSizes.filter(size => size && size.trim() !== '');
-                            console.log('Found sizes in productSizes:', sizes);
+                            // console.log('Found sizes in productSizes:', sizes);
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse productSizes:', e);
-                    console.log('Raw productSizes:', productSizes);
+                    // console.log('Could not parse productSizes:', e);
+                    // console.log('Raw productSizes:', productSizes);
                 }
             }
             
@@ -353,16 +404,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     const cleanSelectedSizes = cleanJsonString(productSelectedSizes);
                     if (cleanSelectedSizes) {
-                        console.log('Cleaned productSelectedSizes:', cleanSelectedSizes);
+                        // console.log('Cleaned productSelectedSizes:', cleanSelectedSizes);
                         const parsedSelectedSizes = JSON.parse(cleanSelectedSizes);
                         if (Array.isArray(parsedSelectedSizes) && parsedSelectedSizes.length > 0) {
                             sizes = parsedSelectedSizes.filter(size => size && size.trim() !== '');
-                            console.log('Found sizes in productSelectedSizes:', sizes);
+                            // console.log('Found sizes in productSelectedSizes:', sizes);
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse productSelectedSizes:', e);
-                    console.log('Raw productSelectedSizes:', productSelectedSizes);
+                    // console.log('Could not parse productSelectedSizes:', e);
+                    // console.log('Raw productSelectedSizes:', productSelectedSizes);
                 }
             }
             
@@ -381,12 +432,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
                             if (variantSizes.length > 0) {
                                 sizes = variantSizes;
-                                console.log('Found sizes in variants:', sizes);
+                                // console.log('Found sizes in variants:', sizes);
                             }
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse variants for sizes:', e);
+                    // console.log('Could not parse variants for sizes:', e);
                 }
             }
             
@@ -405,27 +456,30 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
                             if (optionSizes.length > 0) {
                                 sizes = optionSizes;
-                                console.log('Found sizes in options:', sizes);
+                                // console.log('Found sizes in options:', sizes);
                             }
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse options for sizes:', e);
+                    // console.log('Could not parse options for sizes:', e);
                 }
             }
             
-            // If still no sizes, this product truly has no sizes available
+            // If still no sizes, use women's clothing sizes as fallback
             if (sizes.length === 0) {
-                console.log('No sizes found for this product - it may be a one-size item or have no size data');
+                console.log('No sizes found for this product - using women\'s clothing sizes');
+                // Use women's clothing sizes: XS, S, M, L, XL, XXL
+                sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                selectedQuickViewSize = 'M'; // Set default size
             }
             
-            console.log('Available sizes for product:', sizes);
-            console.log('Product size data sources:', {
+            // console.log('Available sizes for product:', sizes);
+            /* console.log('Product size data sources:', {
                 productSizes: productSizes,
                 productSelectedSizes: productSelectedSizes,
                 productVariants: productVariants,
                 productProductVariants: productProductVariants
-            });
+            }); */
             
             // Function to convert size codes to full names
             function getSizeName(sizeCode) {
@@ -495,15 +549,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return sizeMap[sizeCode] || sizeCode;
             }
             
-            // If no sizes available, show appropriate message
+            // If no sizes available, show appropriate message but still allow selection
             if (sizes.length === 0) {
-                sizeSelection.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #666; font-style: italic; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
-                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
-                        This product is one-size or has no size variations
-                    </div>
-                `;
-                return;
+                // This should not happen anymore since we added fallback above, but keep as safety
+                sizes = ['S', 'M', 'L', 'XL'];
+                selectedQuickViewSize = 'M';
             }
             
             // Create size selection header with count
@@ -685,21 +735,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Show quick view
-        console.log('Showing quick view...');
+        // console.log('Showing quick view...');
         if (sidebar) {
             sidebar.classList.add('active');
-            console.log('Sidebar active class added');
+            // console.log('Sidebar active class added');
         } else {
             console.error('Sidebar not found');
         }
         if (overlay) {
             overlay.classList.add('active');
-            console.log('Overlay active class added');
+            // console.log('Overlay active class added');
         } else {
             console.error('Overlay not found');
         }
         document.body.style.overflow = 'hidden';
-        console.log('Quick view should be visible now');
+        // console.log('Quick view should be visible now');
         
         } catch (error) {
             console.error('Error in openQuickView:', error);
@@ -711,15 +761,94 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function closeQuickView() {
-        console.log('Closing quick view...');
+        // console.log('Closing quick view...');
         if (sidebar) sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     
-    // Make functions globally accessible
-    window.closeQuickView = closeQuickView;
-    window.openQuickView = openQuickView;
+    function selectQuickViewColor(variant, productCard) {
+        selectedQuickViewColor = variant.color;
+        
+        // Update active color in quickview
+        const colorOptions = document.querySelectorAll('#quick-view-color-selection .color-option');
+        colorOptions.forEach(option => {
+            option.classList.remove('active');
+            if (option.getAttribute('data-color') === variant.color) {
+                option.classList.add('active');
+            }
+        });
+        
+        // Update quickview image to show variant image
+        const mainImage = document.getElementById('quick-view-main-image');
+        const mainVideo = document.getElementById('quick-view-main-video');
+        
+        if (variant.front_image) {
+            // Use variant image directly
+            if (mainImage) {
+                mainImage.src = variant.front_image;
+                mainImage.style.display = 'block';
+            }
+            if (mainVideo) {
+                mainVideo.style.display = 'none';
+            }
+        } else {
+            // Find variant image from product card
+            const imageSlider = productCard.querySelector('.image-slider');
+            if (imageSlider) {
+                const variantImage = imageSlider.querySelector(`img[data-color="${variant.color}"], video[data-color="${variant.color}"]`);
+                if (variantImage) {
+                    const isVideo = variantImage.tagName.toLowerCase() === 'video';
+                    if (isVideo) {
+                        if (mainVideo) {
+                            mainVideo.src = variantImage.src;
+                            mainVideo.style.display = 'block';
+                            mainVideo.muted = true;
+                            mainVideo.loop = true;
+                            mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                        }
+                        if (mainImage) {
+                            mainImage.style.display = 'none';
+                        }
+                    } else {
+                        if (mainImage) {
+                            mainImage.src = variantImage.src;
+                            mainImage.style.display = 'block';
+                        }
+                        if (mainVideo) {
+                            mainVideo.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Update price if variant has different price
+        const priceEl = document.getElementById('quick-view-price');
+        if (priceEl && variant.price) {
+            priceEl.textContent = `$${parseFloat(variant.price).toFixed(2)}`;
+        }
+        
+        // Update the Add to Bag button state - handle both button types
+        const addToBagBtn = document.getElementById('add-to-bag-quick');
+        const altAddToBagBtn = document.getElementById('add-to-bag-quick-alt');
+        
+        if (addToBagBtn) {
+            addToBagBtn.disabled = false;
+            addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Bag';
+        }
+        
+        if (altAddToBagBtn) {
+            altAddToBagBtn.disabled = false;
+            altAddToBagBtn.textContent = 'Add to Cart';
+        }
+    }
+    
+        // Make functions globally accessible
+        window.closeQuickView = closeQuickView;
+        window.openQuickView = openQuickView;
+        window.addToCartFromCard = addToCartFromCard;
+    }
     
     // Color circle functionality
     document.addEventListener('click', function(e) {
@@ -740,32 +869,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add active class to clicked circle
                 e.target.classList.add('active');
                 
+                // Find the variant data for the selected color
+                let selectedVariant = null;
+                const variantsData = productCard.getAttribute('data-product-variants');
+                if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                    try {
+                        const variants = JSON.parse(variantsData);
+                        if (Array.isArray(variants)) {
+                            selectedVariant = variants.find(variant => variant.color === selectedColor);
+                        }
+                    } catch (e) {
+                        console.log('Could not parse variants data:', e);
+                    }
+                }
+                
+                // Update product name if variant has a different name
+                const productNameElement = productCard.querySelector('.product-name');
+                if (productNameElement && selectedVariant && selectedVariant.name) {
+                    productNameElement.textContent = selectedVariant.name;
+                }
+                
+                // Update product price if variant has a different price
+                const productPriceElement = productCard.querySelector('.product-price');
+                if (productPriceElement && selectedVariant && selectedVariant.price) {
+                    productPriceElement.textContent = `$${selectedVariant.price.toFixed(0)}`;
+                }
+                
                 // Show media for this color
                 if (imageSlider) {
+                    // First, hide all media
+                    imageSlider.querySelectorAll('img, video').forEach(media => {
+                        media.classList.remove('active');
+                        media.style.opacity = '0';
+                        media.style.display = 'none';
+                    });
+                    
+                    // Find media for the selected color
                     const mediaForColor = imageSlider.querySelectorAll(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
                     
-                    if (mediaForColor.length > 0) {
-                        // Hide all media first
-                        imageSlider.querySelectorAll('img, video').forEach(media => {
-                            media.classList.remove('active');
-                            media.style.opacity = '0';
-                        });
-                        
-                        // Show first media for this color (front view)
-                        const firstMedia = mediaForColor[0];
-                        firstMedia.classList.add('active');
-                        firstMedia.style.opacity = '1';
-                        
-                        // Auto-play video if it's a video
-                        if (firstMedia.tagName.toLowerCase() === 'video') {
-                            firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
-                        }
-                        
-                        // Now you can click on the media to see back view
-                        // The click handler will cycle through all media for this color
-                        console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
-                        console.log('Click on the media to see back view');
+                if (mediaForColor.length > 0) {
+                    // Show first media for this color (front view)
+                    const firstMedia = mediaForColor[0];
+                    firstMedia.classList.add('active');
+                    firstMedia.style.opacity = '1';
+                    firstMedia.style.display = 'block';
+                    
+                    // Auto-play video if it's a video
+                    if (firstMedia.tagName.toLowerCase() === 'video') {
+                        firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
+                } else {
+                    // If no variant media found, show the main product media
+                    const mainMedia = imageSlider.querySelector('img[data-color], video[data-color]');
+                    if (mainMedia) {
+                        mainMedia.classList.add('active');
+                        mainMedia.style.opacity = '1';
+                        mainMedia.style.display = 'block';
+                    }
+                }
                 }
             }
         }
@@ -793,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nextIndex = (currentIndex + 1) % mediaForColor.length;
                     const nextMedia = mediaForColor[nextIndex];
                     
-                    console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
+                    // console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
                     
                     // Hide all media
                     allMedia.forEach(media => {
@@ -810,7 +971,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         nextMedia.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
                 } else {
-                    console.log('Only one media item for this color, no switching possible');
+                    // console.log('Only one media item for this color, no switching possible');
                 }
             }
         }
@@ -858,19 +1019,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (button.disabled) return;
             
-            const productCard = button.closest('.product-card');
-            const productId = productCard ? productCard.getAttribute('data-product-id') : null;
-            const productName = productCard ? productCard.querySelector('.product-name')?.textContent : 'Product';
-            
-            if (productId) {
-                addToCart(productId, productName);
+            if (button) {
+                addToCartFromCard(button);
             }
         }
         
         // Quick view add to bag functionality
-        if (e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
+        if (e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' || 
+            e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
             e.preventDefault();
-            const button = e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick');
+            const button = e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' ? 
+                          e.target : (e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick'));
             
             if (button.disabled) return;
             
@@ -884,8 +1043,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 if (!selectedQuickViewSize) {
-                    showNotification('Please select a size first', 'error');
-                    return;
+                    // For products without sizes, use fallback
+                    selectedQuickViewSize = 'M';
                 }
                 
                 addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
@@ -894,7 +1053,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function addToCart(productId, productName) {
-        console.log('Adding to cart:', productId, productName);
+        // console.log('Adding to cart:', productId, productName);
+        
+        // Get the product card to find selected color and size
+        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        let selectedColor = '';
+        let selectedSize = '';
+        let selectedVariant = null;
+        let selectedVariantImage = '';
+        const mainPrice = productCard ? parseFloat(productCard.getAttribute('data-price')) || 0 : 0;
+        
+        if (productCard) {
+        // Get selected color from active color circle
+        const activeColorCircle = productCard.querySelector('.color-circle.active');
+        if (activeColorCircle) {
+            selectedColor = activeColorCircle.getAttribute('data-color') || '';
+            
+            // Get the currently active/visible image from the image slider
+            const imageSlider = productCard.querySelector('.image-slider');
+            if (imageSlider) {
+                // Method 1: Try to find active image with matching color
+                let activeImage = imageSlider.querySelector('img.active, video.active');
+                
+                if (activeImage && activeImage.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = activeImage.src;
+                } else {
+                    // Method 2: Find any image with the selected color
+                    const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
+                    if (colorImage) {
+                        selectedVariantImage = colorImage.src;
+                    } else {
+                        // Method 3: Find any visible image (opacity > 0 or display != none)
+                        const allImages = imageSlider.querySelectorAll('img, video');
+                        for (let img of allImages) {
+                            const style = window.getComputedStyle(img);
+                            if (style.opacity !== '0' && style.display !== 'none') {
+                                selectedVariantImage = img.src;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Find the specific color variant data
+            const variantsData = productCard.getAttribute('data-product-variants');
+            if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                try {
+                    const variants = JSON.parse(variantsData);
+                    if (Array.isArray(variants) && variants.length > 0) {
+                        selectedVariant = variants.find(variant => variant.color === selectedColor);
+                    }
+                } catch (e) {
+                    console.log('Could not parse variants data:', e);
+                }
+            }
+        }
+            
+            // Get selected size if available (for products with size selection)
+            const activeSizeOption = productCard.querySelector('.size-option.selected');
+            if (activeSizeOption) {
+                selectedSize = activeSizeOption.getAttribute('data-size') || '';
+            }
+        }
+        
+        // Determine the price to use (variant price or main price)
+        let finalPrice = mainPrice;
+        if (selectedVariant && selectedVariant.price && selectedVariant.price > 0) {
+            finalPrice = selectedVariant.price;
+        }
         
         // Show loading state
         const button = document.querySelector(`[data-product-id="${productId}"] .add-to-bag`);
@@ -905,28 +1132,59 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
         }
         
-        // Show immediate feedback notification
-        showNotification(`Adding ${productName} to cart...`, 'info');
+        // No loading notification needed
         
-        // Make API call to add to cart
+        // Prepare cart data
+        let cartData = `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&price=${finalPrice}&return_url=${encodeURIComponent(window.location.href)}`;
+        
+        // Add variant-specific data if available
+        // Always send variant image if we have it, regardless of selectedVariant
+        if (selectedVariantImage) {
+            cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+        } else {
+            // Fallback: Try to find variant image directly from product card
+            const allImages = productCard.querySelectorAll('img[data-color]');
+            for (let img of allImages) {
+                if (img.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = img.src;
+                    cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+                    break;
+                }
+            }
+        }
+        
+        if (selectedVariant) {
+            if (selectedVariant.name) {
+                cartData += `&variant_name=${encodeURIComponent(selectedVariant.name)}`;
+            }
+            if (selectedVariant.stock !== undefined) {
+                cartData += `&variant_stock=${selectedVariant.stock}`;
+            }
+            if (!selectedVariantImage && selectedVariant.front_image) {
+                cartData += `&variant_image=${encodeURIComponent(selectedVariant.front_image)}`;
+                console.log('✅ Sending variant front_image to cart:', selectedVariant.front_image);
+            }
+        }
+        
+        // Make API call to add to cart with selected color and size
         fetch('../cart-api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
+            body: cartData
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
+            // console.log('Cart API response:', data);
             
             if (data.success) {
                 // Update cart count in header
-                if (typeof updateCartCount === 'function') {
-                    updateCartCount(data.cart_count);
+                if (typeof addToCartCount === 'function') {
+                    addToCartCount();
                 }
                 
-                // Show success notification
+                // Show brief success notification
                 showNotification(`✓ ${productName} added to cart!`, 'success');
             } else {
                 // Show error notification
@@ -946,11 +1204,228 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
-        console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+    function addToCartFromCard(button) {
+        // Get the product card from the button
+        const productCard = button.closest('.product-card');
+        if (!productCard) {
+            console.error('Product card not found');
+            return;
+        }
+        
+        // Get product information
+        const productId = productCard.getAttribute('data-product-id');
+        const productName = productCard.querySelector('.product-name')?.textContent || 'Product';
+        const mainPrice = parseFloat(productCard.getAttribute('data-price')) || 0;
+        
+        if (!productId) {
+            console.error('Product ID not found');
+            return;
+        }
+        
+        // Get selected color from active color circle
+        let selectedColor = '';
+        let selectedVariant = null;
+        let selectedVariantImage = '';
+        const activeColorCircle = productCard.querySelector('.color-circle.active');
+        if (activeColorCircle) {
+            selectedColor = activeColorCircle.getAttribute('data-color') || '';
+            
+            // Get the currently active/visible image from the image slider
+            const imageSlider = productCard.querySelector('.image-slider');
+            if (imageSlider) {
+                // Method 1: Try to find active image with matching color
+                let activeImage = imageSlider.querySelector('img.active, video.active');
+                
+                if (activeImage && activeImage.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = activeImage.src;
+                } else {
+                    // Method 2: Find any image with the selected color
+                    const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
+                    if (colorImage) {
+                        selectedVariantImage = colorImage.src;
+                    } else {
+                        // Method 3: Find any visible image (opacity > 0 or display != none)
+                        const allImages = imageSlider.querySelectorAll('img, video');
+                        for (let img of allImages) {
+                            const style = window.getComputedStyle(img);
+                            if (style.opacity !== '0' && style.display !== 'none') {
+                                selectedVariantImage = img.src;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Find the specific color variant data
+            const variantsData = productCard.getAttribute('data-product-variants');
+            if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                try {
+                    const variants = JSON.parse(variantsData);
+                    if (Array.isArray(variants) && variants.length > 0) {
+                        selectedVariant = variants.find(variant => variant.color === selectedColor);
+                    }
+                } catch (e) {
+                    console.log('Could not parse variants data:', e);
+                }
+            }
+        }
+        
+        // Get selected size if available
+        let selectedSize = '';
+        const activeSizeOption = productCard.querySelector('.size-option.selected');
+        if (activeSizeOption) {
+            selectedSize = activeSizeOption.getAttribute('data-size') || '';
+        }
+        
+        // Determine the price to use (variant price or main price)
+        let finalPrice = mainPrice;
+        if (selectedVariant && selectedVariant.price && selectedVariant.price > 0) {
+            finalPrice = selectedVariant.price;
+        }
         
         // Show loading state
-        const button = document.querySelector('#add-to-bag-quick');
+        let originalText = button.textContent;
+        button.textContent = 'Adding...';
+        button.disabled = true;
+        
+        // No loading notification needed
+        
+        // Prepare cart data
+        let cartData = `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&price=${finalPrice}&return_url=${encodeURIComponent(window.location.href)}`;
+        
+        // Add variant-specific data if available
+        // Always send variant image if we have it, regardless of selectedVariant
+        if (selectedVariantImage) {
+            cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+        } else {
+            // Fallback: Try to find variant image directly from product card
+            const allImages = productCard.querySelectorAll('img[data-color]');
+            for (let img of allImages) {
+                if (img.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = img.src;
+                    cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+                    break;
+                }
+            }
+        }
+        
+        if (selectedVariant) {
+            if (selectedVariant.name) {
+                cartData += `&variant_name=${encodeURIComponent(selectedVariant.name)}`;
+            }
+            if (selectedVariant.stock !== undefined) {
+                cartData += `&variant_stock=${selectedVariant.stock}`;
+            }
+            if (!selectedVariantImage && selectedVariant.front_image) {
+                cartData += `&variant_image=${encodeURIComponent(selectedVariant.front_image)}`;
+                console.log('✅ Sending variant front_image to cart:', selectedVariant.front_image);
+            }
+        }
+        
+        // Make API call to add to cart with selected color and size
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: cartData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update cart count in header
+                if (typeof addToCartCount === 'function') {
+                    addToCartCount();
+                }
+                
+                // Show brief success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            button.textContent = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
+        // console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+        
+        // Get the product card to find variant data
+        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        let selectedVariant = null;
+        let selectedVariantImage = '';
+        const mainPrice = productCard ? parseFloat(productCard.getAttribute('data-price')) || 0 : 0;
+        
+        if (productCard && selectedColor) {
+            // First, try to get the variant image from the quickview
+            const quickViewImage = document.getElementById('quick-view-main-image');
+            const quickViewVideo = document.getElementById('quick-view-main-video');
+            
+            if (quickViewImage && quickViewImage.style.display !== 'none') {
+                selectedVariantImage = quickViewImage.src;
+            } else if (quickViewVideo && quickViewVideo.style.display !== 'none') {
+                selectedVariantImage = quickViewVideo.src;
+            } else {
+                // Fallback: Get the currently active/visible image from the image slider
+                const imageSlider = productCard.querySelector('.image-slider');
+                if (imageSlider) {
+                    // Method 1: Try to find active image with matching color
+                    let activeImage = imageSlider.querySelector('img.active, video.active');
+                    
+                    if (activeImage && activeImage.getAttribute('data-color') === selectedColor) {
+                        selectedVariantImage = activeImage.src;
+                    } else {
+                        // Method 2: Find any image with the selected color
+                        const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
+                        if (colorImage) {
+                            selectedVariantImage = colorImage.src;
+                        } else {
+                            // Method 3: Find any visible image (opacity > 0 or display != none)
+                            const allImages = imageSlider.querySelectorAll('img, video');
+                            for (let img of allImages) {
+                                const style = window.getComputedStyle(img);
+                                if (style.opacity !== '0' && style.display !== 'none') {
+                                    selectedVariantImage = img.src;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Find the specific color variant data
+            const variantsData = productCard.getAttribute('data-product-variants');
+            if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                try {
+                    const variants = JSON.parse(variantsData);
+                    if (Array.isArray(variants) && variants.length > 0) {
+                        selectedVariant = variants.find(variant => variant.color === selectedColor);
+                    }
+                } catch (e) {
+                    console.log('Could not parse variants data:', e);
+                }
+            }
+        }
+        
+        // Determine the price to use (variant price or main price)
+        let finalPrice = mainPrice;
+        if (selectedVariant && selectedVariant.price && selectedVariant.price > 0) {
+            finalPrice = selectedVariant.price;
+        }
+        
+        // Show loading state
+        const button = document.getElementById('add-to-bag-quick') || document.getElementById('add-to-bag-quick-alt');
         let originalText = '';
         if (button) {
             originalText = button.textContent;
@@ -958,8 +1433,40 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
         }
         
-        // Show immediate feedback notification
-        showNotification(`Adding ${productName} (${selectedColor}, ${selectedSize}) to cart...`, 'info');
+        // Prepare price info for success message
+        const priceInfo = selectedVariant && selectedVariant.price ? ` - $${selectedVariant.price}` : '';
+        
+        // Prepare cart data
+        let cartData = `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&price=${finalPrice}&return_url=${encodeURIComponent(window.location.href)}`;
+        
+        // Add variant-specific data if available
+        // Always send variant image if we have it, regardless of selectedVariant
+        if (selectedVariantImage) {
+            cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+        } else {
+            // Fallback: Try to find variant image directly from product card
+            const allImages = productCard.querySelectorAll('img[data-color]');
+            for (let img of allImages) {
+                if (img.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = img.src;
+                    cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+                    break;
+                }
+            }
+        }
+        
+        if (selectedVariant) {
+            if (selectedVariant.name) {
+                cartData += `&variant_name=${encodeURIComponent(selectedVariant.name)}`;
+            }
+            if (selectedVariant.stock !== undefined) {
+                cartData += `&variant_stock=${selectedVariant.stock}`;
+            }
+            if (!selectedVariantImage && selectedVariant.front_image) {
+                cartData += `&variant_image=${encodeURIComponent(selectedVariant.front_image)}`;
+                console.log('✅ Sending variant front_image to cart:', selectedVariant.front_image);
+            }
+        }
         
         // Make API call to add to cart with selected variants
         fetch('../cart-api.php', {
@@ -967,20 +1474,20 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&return_url=${encodeURIComponent(window.location.href)}`
+            body: cartData
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
+            // console.log('Cart API response:', data);
             
             if (data.success) {
                 // Update cart count in header
-                if (typeof updateCartCount === 'function') {
-                    updateCartCount(data.cart_count);
+                if (typeof addToCartCount === 'function') {
+                    addToCartCount();
                 }
                 
-                // Show success notification
-                showNotification(`✓ ${productName} (${selectedColor}, ${selectedSize}) added to cart!`, 'success');
+                // Show brief success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
                 
                 // Close quick view after successful addition
                 setTimeout(() => {
@@ -1063,7 +1570,8 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.style.transform = 'translateX(0)';
         }, 100);
         
-        // Remove after 3 seconds
+        // Remove after 1 second for success messages, longer for others
+        const duration = type === 'success' ? 1000 : 3000; // 1 second for success, 3 seconds for others
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -1071,7 +1579,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, duration);
     }
     
     // Category Modal Functionality
@@ -1087,7 +1595,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subcategory = subcategoryItem.getAttribute('data-subcategory');
                 const href = subcategoryItem.getAttribute('href');
                 
-                console.log('Subcategory clicked:', category, subcategory);
+                // console.log('Subcategory clicked:', category, subcategory);
                 
                 // Navigate to the section if href is provided
                 if (href && href.startsWith('#')) {
@@ -1106,18 +1614,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             block: 'start'
                         });
                         
-                        console.log(`Navigating to section: ${href}`);
+                        // console.log(`Navigating to section: ${href}`);
                     }
                 } else if (href && !href.startsWith('#')) {
                     // Allow navigation to full URLs (don't prevent default)
-                    console.log(`Navigating to URL: ${href}`);
+                    // console.log(`Navigating to URL: ${href}`);
                     // Close modals before navigation
                     categoryModals.forEach(modal => {
                         modal.style.opacity = '0';
                         modal.style.visibility = 'hidden';
                     });
                 } else if (subcategory) {
-                    console.log(`Navigating to ${category} > ${subcategory}`);
+                    // console.log(`Navigating to ${category} > ${subcategory}`);
                     // Fallback for other subcategories that don't have sections yet
                 }
             }
@@ -1635,7 +2143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Filter Functionality
     function initializeFilters() {
-        console.log('Initializing filters...');
+        // console.log('Initializing filters...');
         
         // Get current subcategory from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -1657,7 +2165,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
                 // Update filter state
                 if (isChecked) {
@@ -1671,7 +2179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                console.log('Current filter state:', filterState);
+                // console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1687,7 +2195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function applyFilters() {
-            console.log('Applying filters...');
+            // console.log('Applying filters...');
             
             // Show loading state
             showFilterLoading();
@@ -1703,7 +2211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengths: filterState.lengths
             };
             
-            console.log('Sending filter data:', filterData);
+            // console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -1715,7 +2223,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Filter response:', data);
+                // console.log('Filter response:', data);
                 
                 if (data.success) {
                     updateProductGrid(data.data.products);
@@ -1735,7 +2243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function clearAllFilters() {
-            console.log('Clearing all filters...');
+            // console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
@@ -1759,7 +2267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.clearAllFilters = clearAllFilters;
         
         function updateProductGrid(products) {
-            console.log(`Updating product grid with ${products.length} products`);
+            // console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -1790,78 +2298,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Add products to grid
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                productGrid.appendChild(productCard);
-            });
-            
-            // Reinitialize product cards
-            const newProductCards = productGrid.querySelectorAll('.product-card');
-            newProductCards.forEach(card => {
-                initializeProductCard(card);
-            });
+            // Products will be loaded from the main page, no need to create ugly product cards
         }
         
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.setAttribute('data-product-id', product.id);
-            
-            // Get the best image for the product
-            const imagePath = getProductImage(product);
-            
-            card.innerHTML = `
-                <div class="product-image">
-                    <div class="image-slider">
-                        <img src="../${imagePath}" 
-                             alt="${product.name}" 
-                             class="active" 
-                             data-color="${product.color}">
-                    </div>
-                    <button class="heart-button">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <div class="product-actions">
-                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                        ${product.available ? 
-                            '<button class="add-to-bag">Add To Bag</button>' : 
-                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>'
-                        }
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="color-options">
-                        <span class="color-circle active" 
-                              style="background-color: ${product.color};" 
-                              title="${product.color}" 
-                              data-color="${product.color}"></span>
-                    </div>
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${product.price}</div>
-                    ${!product.available ? 
-                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' : 
-                        (product.stock <= 5 && product.stock > 0 ? 
-                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : 
-                            ''
-                        )
-                    }
-                </div>
-            `;
-            
-            return card;
-        }
         
-        function getProductImage(product) {
-            if (product.front_image) {
-                return product.front_image;
-            } else if (product.back_image) {
-                return product.back_image;
-            } else if (product.color_variants && product.color_variants.length > 0) {
-                return product.color_variants[0].front_image || product.color_variants[0].back_image || 'img/default-product.jpg';
-            }
-            return 'img/default-product.jpg';
-        }
         
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
@@ -2042,7 +2482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Enhanced Size Filter Functions - Works with Multiple Forms
     function selectAllSizes() {
-        console.log('Selecting all sizes...');
+        // console.log('Selecting all sizes...');
         
         // Handle sidebar filter sizes
         const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
@@ -2074,7 +2514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // If changes were made, trigger filter update
         if (hasChanges) {
-            console.log('Size selection changed, updating filters...');
+            // console.log('Size selection changed, updating filters...');
             if (typeof applyFilters === 'function') {
                 applyFilters();
             }
@@ -2082,7 +2522,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function clearSizeFilters() {
-        console.log('Clearing size filters...');
+        // console.log('Clearing size filters...');
         
         // Handle sidebar filter sizes
         const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
@@ -2114,7 +2554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // If changes were made, trigger filter update
         if (hasChanges) {
-            console.log('Size selection cleared, updating filters...');
+            // console.log('Size selection cleared, updating filters...');
             if (typeof applyFilters === 'function') {
                 applyFilters();
             }
@@ -2284,7 +2724,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enhanced fallback functions for multiple forms
     if (!window.selectAllSizes) {
         window.selectAllSizes = function() {
-            console.log('Fallback selectAllSizes called...');
+            // console.log('Fallback selectAllSizes called...');
             
             // Handle sidebar filter sizes
             const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
@@ -2309,7 +2749,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!window.clearSizeFilters) {
         window.clearSizeFilters = function() {
-            console.log('Fallback clearSizeFilters called...');
+            // console.log('Fallback clearSizeFilters called...');
             
             // Handle sidebar filter sizes
             const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');

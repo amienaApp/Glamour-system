@@ -92,8 +92,8 @@ class Category {
     public function getSubSubcategories($categoryName, $subcategoryName) {
         $category = $this->getByName($categoryName);
         if (!$category || !isset($category['subcategories'])) {
-            return [];
-        }
+        return [];
+    }
         
         // Find the subcategory and return its sub-subcategories
         foreach ($category['subcategories'] as $sub) {
@@ -110,14 +110,44 @@ class Category {
             }
             
             if ($subName === $subcategoryName && $subSubcategories) {
-                // Convert BSONDocument to array if needed
+                
+                // Convert BSONDocument/BSONArray to array if needed
                 if (is_object($subSubcategories)) {
                     // For BSONDocument/BSONArray, convert to regular array
                     $subSubcategories = iterator_to_array($subSubcategories);
                 }
                 
-                // Return the flattened array of sub-subcategories
-                return $subSubcategories;
+                // Handle nested structure (like Kids' Clothing) vs flat structure (like Beauty)
+                $flattenedSubSubcategories = [];
+                
+                if (is_array($subSubcategories)) {
+                    foreach ($subSubcategories as $key => $value) {
+                        // Convert BSONArray to regular array if needed
+                        if (is_object($value)) {
+                            $value = iterator_to_array($value);
+                        }
+                        
+                        if (is_array($value)) {
+                            // Nested structure: ['Category Name' => ['item1', 'item2', ...]]
+                            foreach ($value as $item) {
+                                // Convert BSONString to regular string if needed
+                                if (is_object($item)) {
+                                    $item = (string) $item;
+                                }
+                                $flattenedSubSubcategories[] = $item;
+                            }
+                        } else {
+                            // Flat structure: ['item1', 'item2', ...]
+                            // Convert BSONString to regular string if needed
+                            if (is_object($value)) {
+                                $value = (string) $value;
+                            }
+                            $flattenedSubSubcategories[] = $value;
+                        }
+                    }
+                }
+                
+                return $flattenedSubSubcategories;
             }
         }
         
@@ -208,9 +238,44 @@ class Category {
             ],
             [
                 'name' => "Kids' Clothing",
-                'subcategories' => ['Boys', 'Girls', 'Baby', 'Toddler'],
-                'description' => 'Adorable clothing for children',
-                'icon' => 'fa-child'
+                'subcategories' => [
+                    [
+                        'name' => 'Boys',
+                        'sub_subcategories' => [
+                            'T-Shirts', 'Polo Shirts', 'Button-Down Shirts', 'Tank Tops', 'Long Sleeve Tees',
+                            'Jeans', 'Cargo Pants', 'Dress Pants', 'Shorts', 'Sweatpants'
+                        ]
+                    ],
+                    [
+                        'name' => 'Girls',
+                        'sub_subcategories' => [
+                            'Dresses', 'Tops', 'Blouses', 'T-Shirts', 'Tank Tops',
+                            'Jeans', 'Leggings', 'Skirts', 'Shorts', 'Pants'
+                        ]
+                    ],
+                    [
+                        'name' => 'Toddlers',
+                        'sub_subcategories' => [
+                            'T-Shirts', 'Polo Shirts', 'Long Sleeve Tops', 'Tank Tops', 'Hoodies',
+                            'Pants', 'Shorts', 'Dresses', 'Pajamas', 'Sweaters'
+                        ]
+                    ],
+                    [
+                        'name' => 'Baby',
+                        'sub_subcategories' => [
+                            'Onesies', 'Bodysuits', 'Sleepwear', 'Tops', 'T-Shirts',
+                            'Pants', 'Dresses', 'Rompers', 'Jumpsuits', 'Sleep Gowns'
+                        ]
+                    ]
+                ],
+                'description' => 'Professional kids clothing for all occasions',
+                'icon' => 'fa-child',
+                'age_groups' => ['0-3 Months', '3-6 Months', '6-9 Months', '9-12 Months', '12-18 Months', '18-24 Months', '2-4 Years', '4-6 Years', '6-8 Years', '8-10 Years', '10-12 Years', '12-14 Years'],
+                'sizes' => ['Preemie', 'Newborn', '0-3M', '3-6M', '6-9M', '9-12M', '12-18M', '18-24M', '2T', '3T', '4T', '5', '6', '7', '8', '10', '12', '14'],
+                'genders' => ['Boys', 'Girls', 'Unisex'],
+                'brands' => ['Carter\'s', 'Gap Kids', 'Old Navy', 'H&M Kids', 'Zara Kids', 'Uniqlo Kids'],
+                'price_ranges' => ['$0-$10', '$10-$20', '$20-$30', '$30-$40', '$40+'],
+                'colors' => ['Blue', 'Red', 'Green', 'Yellow', 'Pink', 'Purple', 'Orange', 'Black', 'White', 'Gray']
             ],
             [
                 'name' => "Accessories",
@@ -268,12 +333,6 @@ class Category {
                 'icon' => 'fa-magic'
             ],
           
-            [
-                'name' => "Sports & Fitness",
-                'subcategories' => ['Athletic Wear', 'Sports Equipment', 'Fitness Accessories', 'Outdoor Gear'],
-                'description' => 'Everything for an active lifestyle',
-                'icon' => 'fa-futbol-o'
-            ]
         ];
 
         $addedCount = 0;

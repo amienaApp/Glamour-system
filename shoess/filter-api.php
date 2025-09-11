@@ -163,9 +163,6 @@ try {
                 // Get products with filters
                 $products = $productModel->getAll($filters, ['createdAt' => -1]);
                 
-                // Debug: Log the filters being applied
-                error_log("Shoes Filter API - Applied filters: " . json_encode($filters));
-                error_log("Shoes Filter API - Found " . count($products) . " products");
                 
                 // Process products for frontend
                 $processedProducts = [];

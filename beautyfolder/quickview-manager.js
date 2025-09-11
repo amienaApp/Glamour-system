@@ -5,7 +5,6 @@
 
 class QuickviewManager {
     constructor() {
-        console.log('Quickview Manager: Constructor called');
         this.currentProduct = null;
         this.selectedColor = null;
         this.selectedSize = null;
@@ -86,19 +85,15 @@ class QuickviewManager {
     }
 
     async openQuickview(productId) {
-        console.log('QuickviewManager: openQuickview called with productId:', productId);
         
         if (this.isLoading) {
-            console.log('QuickviewManager: Already loading, returning');
             return;
         }
         
         this.isLoading = true;
-        console.log('QuickviewManager: Showing loading state');
         this.showLoadingState();
 
         try {
-            console.log('QuickviewManager: Fetching product data from API...');
             // Fetch product data from API
             // Determine the correct API path based on current page location
             let apiUrl;
@@ -113,23 +108,14 @@ class QuickviewManager {
             } else {
                 apiUrl = `get-product-details.php?product_id=${productId}`;
             }
-            console.log('QuickviewManager: API URL:', apiUrl);
-            console.log('QuickviewManager: Current location:', window.location.pathname);
-            console.log('QuickviewManager: Full URL:', window.location.href);
             
-            console.log('QuickviewManager: Starting fetch request...');
             const response = await fetch(apiUrl);
-            console.log('QuickviewManager: API response received');
-            console.log('QuickviewManager: API response status:', response.status);
-            console.log('QuickviewManager: API response headers:', response.headers);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            console.log('QuickviewManager: Parsing JSON response...');
             const data = await response.json();
-            console.log('QuickviewManager: API response data:', data);
 
             if (data.success && data.product) {
                 this.currentProduct = data.product;
@@ -158,12 +144,10 @@ class QuickviewManager {
             this.showErrorState(errorMessage);
         } finally {
             this.isLoading = false;
-            console.log('QuickviewManager: Loading completed, isLoading set to false');
         }
     }
 
     populateQuickview(product) {
-        console.log('QuickviewManager: populateQuickview called with product:', product);
         
         // Set product title and price
         this.setElementText('quick-view-title', product.name);
@@ -380,16 +364,11 @@ class QuickviewManager {
     }
 
     showQuickview() {
-        console.log('QuickviewManager: showQuickview called');
-        console.log('QuickviewManager: sidebar element:', this.sidebar);
-        console.log('QuickviewManager: overlay element:', this.overlay);
         
         if (this.sidebar && this.overlay) {
-            console.log('QuickviewManager: Adding active classes');
             this.sidebar.classList.add('active');
             this.overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            console.log('QuickviewManager: Quickview should now be visible');
         } else {
             console.error('QuickviewManager: Missing sidebar or overlay elements');
         }
@@ -453,11 +432,8 @@ class QuickviewManager {
 
 // Initialize quickview manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Quickview Manager: DOM loaded, initializing...');
     try {
         window.quickviewManager = new QuickviewManager();
-        console.log('Quickview Manager: Successfully initialized');
-        console.log('Quickview Manager instance:', window.quickviewManager);
     } catch (error) {
         console.error('Quickview Manager: Failed to initialize:', error);
     }

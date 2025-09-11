@@ -8,15 +8,8 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 }
 
 // Try MongoDB first, fallback if it fails
-try {
-    require_once '../config1/mongodb.php';
-    $db = MongoDB::getInstance();
-    $useFallback = false;
-} catch (Exception $e) {
-    require_once '../config1/admin-fallback.php';
-    $db = AdminFallback::getInstance();
-    $useFallback = true;
-}
+require_once '../config1/mongodb.php';
+$db = MongoDB::getInstance();
 
 $error = '';
 $success = '';

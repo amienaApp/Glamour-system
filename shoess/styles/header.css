@@ -437,32 +437,6 @@ body {
     display: block;
 }
 
-/* Chat Button */
-.chat-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-}
-
-.chat-button:hover {
-    transform: scale(1.1);
-}
-
-.chat-button i {
-    font-size: 20px;
-}
 
 /* Image Bar Section */
 .image-bar {

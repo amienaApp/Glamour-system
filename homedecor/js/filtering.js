@@ -66,19 +66,19 @@ class HomeDecorFilter {
         
         if (filteredGrid) {
             this.allProducts = Array.from(filteredGrid.querySelectorAll('.product-card'));
-            console.log('Found products in filtered grid:', this.allProducts.length);
+            // console.log('Found products in filtered grid:', this.allProducts.length);
         } else if (allProductsGrid) {
             this.allProducts = Array.from(allProductsGrid.querySelectorAll('.product-card'));
-            console.log('Found products in all products grid:', this.allProducts.length);
+            // console.log('Found products in all products grid:', this.allProducts.length);
         } else {
-            console.log('No product grids found');
+            // console.log('No product grids found');
         }
         
         this.filteredProducts = [...this.allProducts];
         
         // Debug: Log product data
         if (this.allProducts.length > 0) {
-            console.log('Sample product data:', {
+            // console.log('Sample product data:', {
                 id: this.allProducts[0].dataset.productId,
                 category: this.allProducts[0].dataset.category,
                 price: this.allProducts[0].dataset.price,

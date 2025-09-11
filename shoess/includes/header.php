@@ -173,8 +173,3 @@
         </div>
     </div>
 </div>
-
-<!-- Chat Button -->
-<div class="chat-button">
-    <i class="fas fa-comments"></i>
-</div> 

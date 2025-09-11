@@ -113,7 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         }
         
         if (!empty($errors)) {
-            error_log('Bulk edit errors: ' . implode(', ', $errors));
         }
     }
 }

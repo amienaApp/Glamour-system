@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (!empty($errors)) {
-            error_log('Bulk delete errors: ' . implode(', ', $errors));
         }
     }
 }

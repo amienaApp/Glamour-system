@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Test</title>
+    <link rel="stylesheet" href="../enhanced-features.css">
+    <script src="../reviews-manager.js"></script>
+    <script src="../related-products.js"></script>
+</head>
+<body>
+    <h1>Quick Test Page</h1>
+    <p>Testing if all files load without errors...</p>
+    
+    <div class="filter-section">
+        <h3>Test Filter</h3>
+        <label>
+            <input type="checkbox" name="test[]" value="test1" data-filter="test">
+            Test Option 1
+        </label>
+        <label>
+            <input type="checkbox" name="test[]" value="test2" data-filter="test">
+            Test Option 2
+        </label>
+    </div>
+    
+    <script>
+        console.log('Page loaded successfully');
+        console.log('Reviews Manager:', typeof window.reviewsManager);
+        console.log('Related Products Manager:', typeof window.relatedProductsManager);
+        
+        // Test filter functionality
+        document.addEventListener('change', function(e) {
+            if (e.target.hasAttribute('data-filter')) {
+                console.log('Filter changed:', e.target.value, e.target.checked);
+            }
+        });
+        
+        // Test managers
+        if (window.reviewsManager) {
+            window.reviewsManager.loadReviews('test123').then(reviews => {
+                console.log('Reviews loaded:', reviews);
+            });
+        }
+        
+        if (window.relatedProductsManager) {
+            window.relatedProductsManager.loadRelatedProducts('test123', 'Beauty', 'Makeup').then(products => {
+                console.log('Related products loaded:', products);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+

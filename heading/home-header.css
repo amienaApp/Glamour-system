@@ -508,18 +508,19 @@ html {
 
 .cart-count {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #ff4757;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 600;
-    padding: 1px 4px;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
     border-radius: 50%;
-    min-width: 14px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(255, 71, 87, 0.3);
-    border: 1px solid #fff;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
 /* Somalia Flag - More Space */
@@ -1631,32 +1632,6 @@ html {
     display: block;
 }
 
-/* Chat Button */
-.chat-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-}
-
-.chat-button:hover {
-    transform: scale(1.1);
-}
-
-.chat-button i {
-    font-size: 20px;
-}
 
 /* Image Bar Section */
 .image-bar {

@@ -50,29 +50,51 @@ try {
                 // Base filter - only beauty products
                 $filters['category'] = "Beauty & Cosmetics";
                 
-                // Apply subcategory filter if provided (but only if no category filters are selected)
-                if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
+                // Apply subcategory filter if provided (but only if no beauty category filters are selected)
+                if (!empty($subcategory) && (empty($input['beauty_categories']) || !is_array($input['beauty_categories']))) {
                     $filters['subcategory'] = ucfirst($subcategory);
                 }
                 
-                // Add sub-subcategory filter if specified
-                $subSubcategory = $input['sub_subcategory'] ?? '';
-                if (!empty($subSubcategory)) {
-                    $filters['sub_subcategory'] = $subSubcategory;
+                // Beauty category filter
+                if (!empty($input['beauty_categories']) && is_array($input['beauty_categories'])) {
+                    $beautyCategoryFilters = [];
+                    foreach ($input['beauty_categories'] as $category) {
+                        switch ($category) {
+                            case 'makeup':
+                                $beautyCategoryFilters[] = ['subcategory' => 'Makeup'];
+                                break;
+                            case 'skincare':
+                                $beautyCategoryFilters[] = ['subcategory' => 'Skincare'];
+                                break;
+                            case 'hair':
+                                $beautyCategoryFilters[] = ['subcategory' => 'Hair'];
+                                break;
+                            case 'bath-body':
+                                $beautyCategoryFilters[] = ['subcategory' => 'Bath & Body'];
+                                break;
+                            case 'tools':
+                                $beautyCategoryFilters[] = ['subcategory' => 'Tools'];
+                                break;
+                        }
+                    }
+                    if (!empty($beautyCategoryFilters)) {
+                        $andConditions[] = ['$or' => $beautyCategoryFilters];
+                    }
                 }
                 
-                // Size filter
-                if (!empty($input['sizes']) && is_array($input['sizes'])) {
-                    $sizeFilters = [];
-                    foreach ($input['sizes'] as $size) {
-                        // Check if the size exists in the sizes array field
-                        $sizeFilters[] = ['sizes' => ['$elemMatch' => ['$eq' => $size]]];
-                        // Check selected_sizes field (JSON array)
-                        $sizeFilters[] = ['selected_sizes' => new MongoDB\BSON\Regex('"' . preg_quote($size, '/') . '"', 'i')];
-                        // Also check size_category field
-                        $sizeFilters[] = ['size_category' => $size];
+                // Makeup type filter
+                if (!empty($input['makeup_types']) && is_array($input['makeup_types'])) {
+                    $makeupTypeFilters = [];
+                    foreach ($input['makeup_types'] as $type) {
+                        $makeupTypeFilters[] = new MongoDB\BSON\Regex($type, 'i');
                     }
-                    $andConditions[] = ['$or' => $sizeFilters];
+                    $andConditions[] = [
+                        '$or' => [
+                            ['sub_subcategory' => ['$in' => $makeupTypeFilters]],
+                            ['description' => ['$in' => $makeupTypeFilters]],
+                            ['name' => ['$in' => $makeupTypeFilters]]
+                        ]
+                    ];
                 }
                 
                 // Color filter
@@ -93,20 +115,20 @@ try {
                             case 'on-sale':
                                 $priceFilters[] = ['sale' => true];
                                 break;
-                            case '0-25':
-                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
+                            case '0-15':
+                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 15]];
                                 break;
-                            case '25-50':
-                                $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
+                            case '15-30':
+                                $priceFilters[] = ['price' => ['$gte' => 15, '$lte' => 30]];
+                                break;
+                            case '30-50':
+                                $priceFilters[] = ['price' => ['$gte' => 30, '$lte' => 50]];
                                 break;
                             case '50-75':
                                 $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
                                 break;
-                            case '75-100':
-                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
-                                break;
-                            case '100+':
-                                $priceFilters[] = ['price' => ['$gte' => 100]];
+                            case '75+':
+                                $priceFilters[] = ['price' => ['$gte' => 75]];
                                 break;
                         }
                     }
@@ -115,23 +137,10 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
-                if (!empty($input['categories']) && is_array($input['categories'])) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
-                }
                 
-                // Dress length filter
-                if (!empty($input['lengths']) && is_array($input['lengths'])) {
-                    $lengthFilters = [];
-                    foreach ($input['lengths'] as $length) {
-                        $lengthFilters[] = new MongoDB\BSON\Regex($length, 'i');
-                    }
-                    $andConditions[] = [
-                        '$or' => [
-                            ['description' => ['$in' => $lengthFilters]],
-                            ['name' => ['$in' => $lengthFilters]]
-                        ]
-                    ];
+                // Sub-subcategory filter
+                if (!empty($input['sub_subcategories']) && is_array($input['sub_subcategories'])) {
+                    $andConditions[] = ['sub_subcategory' => ['$in' => $input['sub_subcategories']]];
                 }
                 
                 // Combine all conditions
@@ -145,129 +154,49 @@ try {
                 // Process products for frontend
                 $processedProducts = [];
                 foreach ($products as $product) {
-                    $processedProduct = [
+                    $processedProducts[] = [
                         'id' => (string)$product['_id'],
                         'name' => $product['name'] ?? '',
-                        'price' => $product['price'] ?? 0,
-                        'color' => $product['color'] ?? '',
+                        'price' => floatval($product['price'] ?? 0),
+                        'sale_price' => floatval($product['sale_price'] ?? 0),
+                        'sale' => $product['sale'] ?? false,
+                        'on_sale' => $product['on_sale'] ?? false,
+                        'featured' => $product['featured'] ?? false,
+                        'available' => $product['available'] ?? true,
+                        'stock' => intval($product['stock'] ?? 0),
                         'category' => $product['category'] ?? '',
                         'subcategory' => $product['subcategory'] ?? '',
-                        'description' => $product['description'] ?? '',
-                        'featured' => $product['featured'] ?? false,
-                        'sale' => $product['sale'] ?? false,
-                        'salePrice' => $product['salePrice'] ?? null,
-                        'available' => $product['available'] ?? true,
-                        'stock' => $product['stock'] ?? 0,
-                        'front_image' => $product['front_image'] ?? '',
-                        'back_image' => $product['back_image'] ?? '',
+                        'sub_subcategory' => $product['sub_subcategory'] ?? '',
+                        'color' => $product['color'] ?? '',
+                        'front_image' => $product['front_image'] ?? $product['image_front'] ?? '',
+                        'back_image' => $product['back_image'] ?? $product['image_back'] ?? '',
                         'color_variants' => $product['color_variants'] ?? [],
-                        'sizes' => $product['sizes'] ?? [],
-                        'selected_sizes' => $product['selected_sizes'] ?? ''
+                        'description' => $product['description'] ?? ''
                     ];
-                    
-                    $processedProducts[] = $processedProduct;
                 }
                 
                 $response = [
                     'success' => true,
-                    'message' => 'Products filtered successfully',
                     'data' => [
                         'products' => $processedProducts,
                         'total_count' => count($processedProducts),
-                        'filters_applied' => $filters
-                    ]
-                ];
-                break;
-                
-            case 'get_filter_options':
-                // Get all women's clothing products to extract filter options
-                $allProducts = $productModel->getByCategory("Women's Clothing");
-                
-                $filterOptions = [
-                    'sizes' => [],
-                    'colors' => [],
-                    'categories' => [],
-                    'price_ranges' => [
-                        'on-sale' => 0,
-                        '0-25' => 0,
-                        '25-50' => 0,
-                        '50-75' => 0,
-                        '75-100' => 0,
-                        '100+' => 0
-                    ]
-                ];
-                
-                foreach ($allProducts as $product) {
-                    // Extract sizes
-                    if (!empty($product['sizes']) && is_array($product['sizes'])) {
-                        foreach ($product['sizes'] as $size) {
-                            if (!in_array($size, $filterOptions['sizes'])) {
-                                $filterOptions['sizes'][] = $size;
-                            }
-                        }
-                    }
-                    
-                    // Extract colors
-                    if (!empty($product['color'])) {
-                        if (!in_array($product['color'], $filterOptions['colors'])) {
-                            $filterOptions['colors'][] = $product['color'];
-                        }
-                    }
-                    
-                    if (!empty($product['color_variants']) && is_array($product['color_variants'])) {
-                        foreach ($product['color_variants'] as $variant) {
-                            if (!empty($variant['color']) && !in_array($variant['color'], $filterOptions['colors'])) {
-                                $filterOptions['colors'][] = $variant['color'];
-                            }
-                        }
-                    }
-                    
-                    // Extract categories (subcategories)
-                    if (!empty($product['subcategory'])) {
-                        if (!in_array($product['subcategory'], $filterOptions['categories'])) {
-                            $filterOptions['categories'][] = $product['subcategory'];
-                        }
-                    }
-                    
-                    // Count price ranges
-                    $price = $product['price'] ?? 0;
-                    if ($product['sale'] ?? false) {
-                        $filterOptions['price_ranges']['on-sale']++;
-                    }
-                    if ($price >= 0 && $price <= 25) {
-                        $filterOptions['price_ranges']['0-25']++;
-                    } elseif ($price > 25 && $price <= 50) {
-                        $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 75) {
-                        $filterOptions['price_ranges']['50-75']++;
-                    } elseif ($price > 75 && $price <= 100) {
-                        $filterOptions['price_ranges']['75-100']++;
-                    } elseif ($price > 100) {
-                        $filterOptions['price_ranges']['100+']++;
-                    }
-                }
-                
-                $response = [
-                    'success' => true,
-                    'message' => 'Filter options retrieved successfully',
-                    'data' => $filterOptions
+                        'filters_applied' => $input
+                    ],
+                    'message' => count($processedProducts) . ' beauty products found'
                 ];
                 break;
                 
             default:
-                throw new Exception('Invalid action');
+                $response['message'] = 'Invalid action';
+                break;
         }
     } else {
-        throw new Exception('Invalid request method or missing action');
+        $response['message'] = 'Invalid request method or missing action';
     }
+    
 } catch (Exception $e) {
-    $response = [
-        'success' => false,
-        'message' => $e->getMessage()
-    ];
+    $response['message'] = 'Server error: ' . $e->getMessage();
 }
 
-// Send JSON response
 echo json_encode($response);
-exit();
 ?>

@@ -298,7 +298,7 @@ class QuickViewSidebar {
         this.selectedColor = color;
         
         // Here you could implement color-specific image switching
-        console.log('Selected color:', color);
+        // console.log('Selected color:', color);
     }
 
     setupSizeSelection(productData) {

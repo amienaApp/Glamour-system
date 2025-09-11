@@ -16,21 +16,26 @@ class MongoDB {
             require_once __DIR__ . '/../vendor/autoload.php';
         }
         
-        // MongoDB connection string
-        $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system';
+        // MongoDB connection string - simplified
+        $connectionString = 'mongodb+srv://fmoha187_db_user:amina1144@cluster0.dnw6lj0.mongodb.net/glamour_system?retryWrites=true&w=majority';
         $databaseName = 'glamour_system';
         
-        // Simple, working connection options
+        // Simple connection options
         $options = [
             'serverSelectionTimeoutMS' => 10000,
-            'connectTimeoutMS' => 10000
+            'connectTimeoutMS' => 10000,
+            'socketTimeoutMS' => 10000
         ];
         
-        $this->client = new \MongoDB\Client($connectionString, $options);
-        $this->database = $this->client->selectDatabase($databaseName);
-        
-        // Test connection
-        $this->client->selectDatabase('admin')->command(['ping' => 1]);
+        try {
+            $this->client = new \MongoDB\Client($connectionString, $options);
+            $this->database = $this->client->selectDatabase($databaseName);
+            
+            // Test connection
+            $this->client->selectDatabase('admin')->command(['ping' => 1]);
+        } catch (Exception $e) {
+            throw new Exception("MongoDB connection failed: " . $e->getMessage());
+        }
     }
 
     public static function getInstance() {

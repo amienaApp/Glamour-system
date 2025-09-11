@@ -49,6 +49,7 @@ body {
     line-height: 1;
 }
 
+
 .logo-main {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
@@ -318,6 +319,223 @@ body {
     transition: color 0.3s ease;
 }
 
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Wishlist Dropdown */
+.wishlist-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    margin-top: 10px;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.wishlist-dropdown.show {
+    display: block;
+    animation: wishlistSlideDown 0.3s ease;
+}
+
+@keyframes wishlistSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wishlist-dropdown-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wishlist-dropdown-header h3 i {
+    color: #e74c3c;
+}
+
+.view-all-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: #0056b3;
+}
+
+.wishlist-dropdown-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.wishlist-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.wishlist-dropdown-item:hover {
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.wishlist-dropdown-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wishlist-dropdown-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wishlist-dropdown-item-price {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e74c3c;
+    margin: 0 0 5px 0;
+}
+
+.wishlist-dropdown-item-category {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.wishlist-dropdown-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.wishlist-dropdown-item-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.wishlist-dropdown-item-actions .btn-add-cart {
+    color: #007bff;
+}
+
+.wishlist-dropdown-item-actions .btn-add-cart:hover {
+    background: #e3f2fd;
+}
+
+.wishlist-dropdown-item-actions .btn-remove {
+    color: #dc3545;
+}
+
+.wishlist-dropdown-item-actions .btn-remove:hover {
+    background: #f8d7da;
+}
+
+.wishlist-dropdown-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.wishlist-dropdown-empty i {
+    font-size: 2.5rem;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+.wishlist-dropdown-empty p {
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.wishlist-dropdown-empty small {
+    font-size: 0.85rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .wishlist-dropdown {
+        width: 300px;
+        right: -50px;
+    }
+    
+    .wishlist-dropdown-item {
+        padding: 12px 15px;
+    }
+    
+    .wishlist-dropdown-item img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
 .user-icon:hover i, .heart-icon:hover i {
     color: #333;
 }
@@ -489,18 +707,19 @@ body {
 
 .cart-count {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #ff4757;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 600;
-    padding: 1px 4px;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
     border-radius: 50%;
-    min-width: 14px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(255, 71, 87, 0.3);
-    border: 1px solid #fff;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
 /* Somalia Flag - More Space */
@@ -589,6 +808,7 @@ body {
         padding: 6px 12px;
     }
     
+    
     .logo-main {
         font-size: 16px;
     }
@@ -656,6 +876,7 @@ body {
     .logo-container {
         padding: 5px 10px;
     }
+    
     
     .logo-main {
         font-size: 14px;
@@ -1596,37 +1817,11 @@ body {
     display: block;
 }
 
-/* Chat Button */
-.chat-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-}
-
-.chat-button:hover {
-    transform: scale(1.1);
-}
-
-.chat-button i {
-    font-size: 20px;
-}
 
 /* Image Bar Section */
 .image-bar {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
     padding: 20px;
     margin-top: 15px;

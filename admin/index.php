@@ -8,72 +8,32 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 
 // Try MongoDB first, fallback if it fails
-try {
-    require_once '../config1/mongodb.php';
-    require_once '../models/Category.php';
-    require_once '../models/Product.php';
-    require_once '../models/User.php';
-    $categoryModel = new Category();
-    $productModel = new Product();
-    $userModel = new User();
-    $useFallback = false;
-} catch (Exception $e) {
-    require_once '../config1/admin-fallback.php';
-    $db = AdminFallback::getInstance();
-    $useFallback = true;
-}
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+require_once '../models/Product.php';
+require_once '../models/User.php';
+$categoryModel = new Category();
+$productModel = new Product();
+$userModel = new User();
 
-if ($useFallback) {
-    // Mock stats for fallback mode
-    $categoryStats = [
-        'total_categories' => 5,
-        'total_subcategories' => 25,
-        'average_subcategories_per_category' => 5.0
+$categoryStats = $categoryModel->getCategorySummary();
+$productStats = $productModel->getProductSummary();
+$userStats = $userModel->getUserStatistics();
+
+// Prepare data for charts
+$categoryData = $categoryModel->getAll();
+$productCategories = $productModel->getCategories();
+$categoryCounts = [];
+foreach ($productCategories as $cat) {
+    $count = $productModel->getCount(['category' => $cat]);
+    $categoryCounts[] = [
+        'name' => $cat,
+        'count' => $count
     ];
-    $productStats = [
-        'total_products' => 2,
-        'featured_products' => 1,
-        'on_sale_products' => 1,
-        'low_stock_products' => 0
-    ];
-    $userStats = [
-        'total_users' => 0,
-        'active_users' => 0,
-        'new_users_today' => 0
-    ];
-    
-    $categoryData = $db->getAllCategories();
-    $categoryCounts = [
-        ['name' => 'Beauty & Cosmetics', 'count' => 2],
-        ['name' => "Women's Clothing", 'count' => 0],
-        ['name' => "Men's Clothing", 'count' => 0],
-        ['name' => 'Accessories', 'count' => 0],
-        ['name' => 'Home & Living', 'count' => 0]
-    ];
-} else {
-    $categoryStats = $categoryModel->getCategorySummary();
-    $productStats = $productModel->getProductSummary();
-    $userStats = $userModel->getUserStatistics();
-    
-    // Prepare data for charts
-    $categoryData = $categoryModel->getAll();
-    $productCategories = $productModel->getCategories();
-    $categoryCounts = [];
-    foreach ($productCategories as $cat) {
-        $count = $productModel->getCount(['category' => $cat]);
-        $categoryCounts[] = [
-            'name' => $cat,
-            'count' => $count
-        ];
-    }
 }
 
 // Get recent products for the activity feed
-if ($useFallback) {
-    $recentProducts = array_slice($db->getAllProducts(), 0, 5);
-} else {
-    $recentProducts = $productModel->getAll([], ['_id' => -1], 5);
-}
+$recentProducts = $productModel->getAll([], ['_id' => -1], 5);
 
 // Prepare data for different chart types
 $productStatusData = [
@@ -2028,13 +1988,6 @@ $trendingData = [
                             <h1><i class="fas fa-gem"></i> Glamour Admin Dashboard</h1>
                 <p>Welcome back, <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?>! Here's what's happening with your store today</p>
             
-            <?php if ($useFallback): ?>
-                <div class="fallback-notice" style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #ffeaa7;">
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    <strong>Fallback Mode:</strong> System is running with mock data due to MongoDB connection issues. 
-                    <a href="test-fallback.php" style="color: #856404; text-decoration: underline;">View Details</a>
-                </div>
-            <?php endif; ?>
             
         </div>
         

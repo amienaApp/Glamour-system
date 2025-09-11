@@ -148,7 +148,7 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -298,7 +298,7 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">

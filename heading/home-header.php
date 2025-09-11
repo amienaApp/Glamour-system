@@ -112,7 +112,7 @@ $regionOptions = [
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="shoess/men.php" class="dropdown-link">
+                        <a href="shoess/shoes.php" class="dropdown-link">
                             <i class="fas fa-shoe-prints"></i>
                             <span>Shoes</span>
                         </a>
@@ -145,12 +145,6 @@ $regionOptions = [
                         <a href="perfumes/index.php" class="dropdown-link">
                             <i class="fas fa-palette"></i>
                             <span>Beauty & Cosmetics</span>
-                        </a>
-                    </div>
-                    <div class="dropdown-item">
-                        <a href="shoess/men.php?category=sportsshoes" class="dropdown-link">
-                            <i class="fas fa-running"></i>
-                            <span>Sports Items</span>
                         </a>
                     </div>
                 </div>
@@ -395,10 +389,6 @@ $regionOptions = [
     </div>
 </div>
 
-<!-- Chat Button -->
-<div class="chat-button">
-    <i class="fas fa-comments"></i>
-</div> 
 
 <!-- Cart Functionality Script -->
 <script>

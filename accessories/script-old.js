@@ -1,6 +1,6 @@
 // Simple Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
+    // console.log('Script loaded');
     
     // Initialize category modal functionality
     initializeCategoryModals();
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('quick-view-overlay');
     const closeBtn = document.getElementById('close-quick-view');
     
-    console.log('Quick view elements found:', {
+    // console.log('Quick view elements found:', {
         sidebar: !!sidebar,
         overlay: !!overlay,
         closeBtn: !!closeBtn
@@ -26,10 +26,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('quick-view') || e.target.closest('.quick-view')) {
             e.preventDefault();
-            console.log('Quick view button clicked!');
+            // console.log('Quick view button clicked!');
             const button = e.target.classList.contains('quick-view') ? e.target : e.target.closest('.quick-view');
             const productId = button.getAttribute('data-product-id');
-            console.log('Product ID:', productId);
+            // console.log('Product ID:', productId);
             if (productId) {
                 openQuickView(productId);
             } else {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedQuickViewSize = '';
 
     function openQuickView(productId) {
-        console.log('Opening quick view for:', productId);
+        // console.log('Opening quick view for:', productId);
         
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
         if (!productCard) return;
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         mainVideo.style.display = 'block';
                         mainVideo.muted = true;
                         mainVideo.loop = true;
-                        mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                        mainVideo.play().catch(e => // console.log('Video autoplay prevented:', e));
                     }
                 } else {
                     mainImage.src = firstMedia.src;
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 mainVideo.style.display = 'block';
                                 mainVideo.muted = true;
                                 mainVideo.loop = true;
-                                mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                                mainVideo.play().catch(e => // console.log('Video autoplay prevented:', e));
                             }
                         } else {
                             // Show image
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     mainVideo.style.display = 'block';
                                     mainVideo.muted = true;
                                     mainVideo.loop = true;
-                                    mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                                    mainVideo.play().catch(e => // console.log('Video autoplay prevented:', e));
                                 }
                             } else {
                                 mainImage.src = firstMedia.src;
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             mainVideo.style.display = 'block';
                                             mainVideo.muted = true;
                                             mainVideo.loop = true;
-                                            mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                                            mainVideo.play().catch(e => // console.log('Video autoplay prevented:', e));
                                         }
                                     } else {
                                         // Show image
@@ -335,21 +335,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Show quick view
-        console.log('Showing quick view...');
+        // console.log('Showing quick view...');
         if (sidebar) {
             sidebar.classList.add('active');
-            console.log('Sidebar active class added');
+            // console.log('Sidebar active class added');
         } else {
             console.error('Sidebar not found');
         }
         if (overlay) {
             overlay.classList.add('active');
-            console.log('Overlay active class added');
+            // console.log('Overlay active class added');
         } else {
             console.error('Overlay not found');
         }
         document.body.style.overflow = 'hidden';
-        console.log('Quick view should be visible now');
+        // console.log('Quick view should be visible now');
     }
     
     function closeQuickView() {
@@ -395,13 +395,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Auto-play video if it's a video
                         if (firstMedia.tagName.toLowerCase() === 'video') {
-                            firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
+                            firstMedia.play().catch(e => // console.log('Video autoplay prevented:', e));
                         }
                         
                         // Now you can click on the media to see back view
                         // The click handler will cycle through all media for this color
-                        console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
-                        console.log('Click on the media to see back view');
+                        // console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
+                        // console.log('Click on the media to see back view');
                     }
                 }
             }
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nextIndex = (currentIndex + 1) % mediaForColor.length;
                     const nextMedia = mediaForColor[nextIndex];
                     
-                    console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
+                    // console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
                     
                     // Hide all media
                     allMedia.forEach(media => {
@@ -444,10 +444,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Auto-play video if it's a video
                     if (nextMedia.tagName.toLowerCase() === 'video') {
-                        nextMedia.play().catch(e => console.log('Video autoplay prevented:', e));
+                        nextMedia.play().catch(e => // console.log('Video autoplay prevented:', e));
                     }
                 } else {
-                    console.log('Only one media item for this color, no switching possible');
+                    // console.log('Only one media item for this color, no switching possible');
                 }
             }
         }
@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Auto-play video if it's a video
                 if (firstMedia.tagName.toLowerCase() === 'video') {
-                    firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
+                    firstMedia.play().catch(e => // console.log('Video autoplay prevented:', e));
                 }
             }
         }
@@ -531,7 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function addToCart(productId, productName) {
-        console.log('Adding to cart:', productId, productName);
+        // console.log('Adding to cart:', productId, productName);
         
         // Show loading state
         const button = document.querySelector(`[data-product-id="${productId}"] .add-to-bag`);
@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
+            // console.log('Cart API response:', data);
             
             if (data.success) {
                 // Update cart count in header
@@ -584,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
-        console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+        // console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
         
         // Show loading state
         const button = document.querySelector('#add-to-bag-quick');
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
+            // console.log('Cart API response:', data);
             
             if (data.success) {
                 // Update cart count in header
@@ -724,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subcategory = subcategoryItem.getAttribute('data-subcategory');
                 const href = subcategoryItem.getAttribute('href');
                 
-                console.log('Subcategory clicked:', category, subcategory);
+                // console.log('Subcategory clicked:', category, subcategory);
                 
                 // Navigate to the section if href is provided
                 if (href && href.startsWith('#')) {
@@ -743,18 +743,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             block: 'start'
                         });
                         
-                        console.log(`Navigating to section: ${href}`);
+                        // console.log(`Navigating to section: ${href}`);
                     }
                 } else if (href && !href.startsWith('#')) {
                     // Allow navigation to full URLs (don't prevent default)
-                    console.log(`Navigating to URL: ${href}`);
+                    // console.log(`Navigating to URL: ${href}`);
                     // Close modals before navigation
                     categoryModals.forEach(modal => {
                         modal.style.opacity = '0';
                         modal.style.visibility = 'hidden';
                     });
                 } else if (subcategory) {
-                    console.log(`Navigating to ${category} > ${subcategory}`);
+                    // console.log(`Navigating to ${category} > ${subcategory}`);
                     // Fallback for other subcategories that don't have sections yet
                 }
             }
@@ -1272,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Filter Functionality
     function initializeFilters() {
-        console.log('Initializing filters...');
+        // console.log('Initializing filters...');
         
         // Get current subcategory from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -1294,7 +1294,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
                 // Update filter state
                 if (isChecked) {
@@ -1308,7 +1308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                console.log('Current filter state:', filterState);
+                // console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1324,7 +1324,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function applyFilters() {
-            console.log('Applying filters...');
+            // console.log('Applying filters...');
             
             // Show loading state
             showFilterLoading();
@@ -1340,7 +1340,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengths: filterState.lengths
             };
             
-            console.log('Sending filter data:', filterData);
+            // console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -1352,7 +1352,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Filter response:', data);
+                // console.log('Filter response:', data);
                 
                 if (data.success) {
                     updateProductGrid(data.data.products);
@@ -1372,7 +1372,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function clearAllFilters() {
-            console.log('Clearing all filters...');
+            // console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
@@ -1396,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.clearAllFilters = clearAllFilters;
         
         function updateProductGrid(products) {
-            console.log(`Updating product grid with ${products.length} products`);
+            // console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -1694,7 +1694,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Size Filter Enhancement Functions
     function selectAllSizes() {
-        console.log('Selecting all sizes...');
+        // console.log('Selecting all sizes...');
         const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
         sizeCheckboxes.forEach(checkbox => {
             if (!checkbox.checked) {
@@ -1705,7 +1705,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function clearSizeFilters() {
-        console.log('Clearing size filters...');
+        // console.log('Clearing size filters...');
         const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
         sizeCheckboxes.forEach(checkbox => {
             if (checkbox.checked) {

@@ -50,6 +50,10 @@ class Product {
             // No need to manually convert - just let MongoDB handle it
         }
         
+        // Add timestamps
+        $productData['createdAt'] = new MongoDB\BSON\UTCDateTime();
+        $productData['updatedAt'] = new MongoDB\BSON\UTCDateTime();
+        
         $result = $this->collection->insertOne($productData);
         return $result->getInsertedId();
     }
@@ -63,6 +67,9 @@ class Product {
             
             // MongoDB will automatically convert arrays to BSONArray when updating
             // No need to manually convert - just let MongoDB handle it
+            
+            // Add updatedAt timestamp
+            $updateData['updatedAt'] = new MongoDB\BSON\UTCDateTime();
             
             $result = $this->collection->updateOne(['_id' => $id], ['$set' => $updateData]);
             return $result->getModifiedCount() > 0;

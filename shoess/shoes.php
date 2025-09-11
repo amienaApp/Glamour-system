@@ -22,6 +22,7 @@ if ($subcategory) {
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/quickview-manager.js"></script>
 </head>
@@ -46,17 +47,9 @@ if ($subcategory) {
                         <img src="../img/shoes/boy/1.0.avif" alt="Children's Shoes">
                         <h3>Children's Shoes</h3>
                     </a>
-                    <a href="shoes.php?subcategory=sportsshoes" class="image-item">
-                        <img src="../img/shoes/menshoes/1.1.0.jpg" alt="Sports Shoes">
-                        <h3>Sports Shoes</h3>
-                    </a>
                     <a href="shoes.php?subcategory=formalshoes" class="image-item">
                         <img src="../img/shoes/menshoes/1.1.jpg" alt="Formal Shoes">
                         <h3>Formal Shoes</h3>
-                    </a>
-                    <a href="shoes.php?subcategory=casualshoes" class="image-item">
-                        <img src="../img/shoes/womenshoes/1.0.webp" alt="Casual Shoes">
-                        <h3>Casual Shoes</h3>
                     </a>
                 </div>
 
@@ -70,13 +63,70 @@ if ($subcategory) {
         <script>
             // Initialize page when DOM is loaded
             document.addEventListener('DOMContentLoaded', function() {
-                console.log('Shoes page loaded successfully');
                 
                 // Initialize any page-specific functionality here
                 const productCards = document.querySelectorAll('.product-card');
-                console.log(`Found ${productCards.length} product cards`);
             });
         </script>
+
+        <!-- Quick View Sidebar -->
+        <div id="quick-view-sidebar" class="quickview-sidebar">
+            <button class="close-btn" onclick="closeQuickView()">×</button>
+            <div class="quickview-content">
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="quick-view-main-image" src="" alt="">
+                        <video id="quick-view-main-video" style="display: none;" muted loop></video>
+                    </div>
+                    <div class="image-thumbnails" id="quick-view-thumbnails"></div>
+                </div>
+                
+                <div class="product-info">
+                    <h2 id="quick-view-title"></h2>
+                    <div class="price-section">
+                        <span id="quick-view-price" class="price"></span>
+                        <span id="quick-view-sale-price" class="sale-price" style="display: none;"></span>
+                    </div>
+                    
+                    <div class="rating-section">
+                        <div class="stars" id="quick-view-stars"></div>
+                        <span id="quick-view-review-count"></span>
+                    </div>
+                    
+                    <p id="quick-view-description"></p>
+                    
+                    <div class="color-section">
+                        <h4>Color:</h4>
+                        <div class="color-selection" id="quick-view-color-selection"></div>
+                    </div>
+                    
+                    <div class="size-section">
+                        <h4>Size:</h4>
+                        <div class="size-selection" id="quick-view-size-selection"></div>
+                    </div>
+                    
+                    <div class="quantity-section">
+                        <label for="quick-view-quantity">Quantity:</label>
+                        <input type="number" id="quick-view-quantity" value="1" min="1" max="99">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="add-to-bag-quick" class="add-to-cart-btn">Add to Cart</button>
+                        <button id="add-to-wishlist-quick" class="wishlist-btn">
+                            <i class="fas fa-heart"></i> Add to Wishlist
+                        </button>
+                    </div>
+                    
+                    <!-- Availability Status -->
+                    <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
+                        <!-- Availability will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick View Overlay -->
+        <div id="quick-view-overlay" class="quickview-overlay"></div>
 
 </body>
 </html> 

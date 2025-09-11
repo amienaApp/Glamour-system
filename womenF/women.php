@@ -1,4 +1,5 @@
 <?php
+session_start();
 $page_title = 'Galamor palace';
 
 // Get subcategory from URL parameter
@@ -23,6 +24,7 @@ if ($subcategory) {
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
@@ -52,10 +54,6 @@ if ($subcategory) {
                     <a href="women.php?subcategory=summer-dresses" class="image-item">
                         <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
                         <h3>Summer-dresses</h3>
-                    </a>
-                    <a href="women.php?subcategory=homecoming" class="image-item">
-                        <img src="../img/women/14.avif" alt="Women Fashion 14">
-                        <h3>Homecoming</h3>
                     </a>
                 </div>
 
@@ -158,7 +156,7 @@ if ($subcategory) {
                     </div>
                     
                     <div class="action-buttons">
-                        <button id="add-to-bag-quick" class="add-to-cart-btn">Add to Cart</button>
+                        <button id="add-to-bag-quick-alt" class="add-to-cart-btn">Add to Cart</button>
                         <button id="add-to-wishlist-quick" class="wishlist-btn">
                             <i class="fas fa-heart"></i> Add to Wishlist
                         </button>

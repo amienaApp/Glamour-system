@@ -1,4 +1,5 @@
 <?php
+session_start();
 $page_title = 'Galamor palace';
 
 // Get subcategory from URL parameter
@@ -23,7 +24,8 @@ if ($subcategory) {
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-            <script src="script.js?v=<?php echo time(); ?>" defer></script>
+            <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="script.js?v=<?php echo time(); ?>" defer></script>
         <script src="../simple-quickview-script.js"></script>
 </head>
 <body>
@@ -55,10 +57,7 @@ if ($subcategory) {
                         <img src="../img/men/shorts/5.jpg" alt=" shorts">
                         <h3>Shorts & Underwear</h3>
                     </a>
-                    <a href="men.php?subcategory=hoodies" class="image-item">
-                        <img src="../img/men/hoodie$sweatshirt/3.jpg" alt=" hoodie">
-                        <h3>Hoodies & Sweatshirts</h3>
-                    </a>
+                  
                 </div>
 
                 <div class="page-layout">

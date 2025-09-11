@@ -90,7 +90,7 @@ if (!empty($products)) {
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['variants'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
@@ -188,7 +188,7 @@ if (!empty($products)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -203,12 +203,16 @@ if (!empty($products)) {
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($product['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($product['color'])): ?>
-                                <span class="color-circle active" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -216,10 +220,11 @@ if (!empty($products)) {
                             if (!empty($product['color_variants'])):
                                 foreach ($product['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -266,7 +271,7 @@ if (!empty($products)) {
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($dress['sizes'] ?? $dress['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($dress['size_category'] ?? ''); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($dress['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($dress['variants'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($dress['color_variants'] ?? $dress['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($dress['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($dress['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($dress['product_options'] ?? [])); ?>"
@@ -372,7 +377,7 @@ if (!empty($products)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -387,12 +392,16 @@ if (!empty($products)) {
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($dress['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($dress['color'])): ?>
-                                <span class="color-circle <?php echo $index === 0 ? 'active' : ''; ?>" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($dress['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($dress['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($dress['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -400,10 +409,11 @@ if (!empty($products)) {
                             if (!empty($dress['color_variants'])):
                                 foreach ($dress['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -468,7 +478,7 @@ if (!empty($products)) {
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($top['sizes'] ?? $top['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($top['size_category'] ?? ''); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($top['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($top['variants'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($top['color_variants'] ?? $top['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($top['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($top['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($top['product_options'] ?? [])); ?>"
@@ -574,7 +584,7 @@ if (!empty($products)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -589,12 +599,16 @@ if (!empty($products)) {
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($top['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($top['color'])): ?>
-                                <span class="color-circle <?php echo $index === 0 ? 'active' : ''; ?>" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($top['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($top['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($top['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -602,10 +616,11 @@ if (!empty($products)) {
                             if (!empty($top['color_variants'])):
                                 foreach ($top['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>

@@ -5,7 +5,6 @@
 
 class QuickviewManager {
     constructor() {
-        console.log('Quickview Manager: Constructor called');
         this.currentProduct = null;
         this.selectedColor = null;
         this.selectedSize = null;
@@ -86,19 +85,15 @@ class QuickviewManager {
     }
 
     async openQuickview(productId) {
-        console.log('QuickviewManager: openQuickview called with productId:', productId);
         
         if (this.isLoading) {
-            console.log('QuickviewManager: Already loading, returning');
             return;
         }
         
         this.isLoading = true;
-        console.log('QuickviewManager: Showing loading state');
         this.showLoadingState();
 
         try {
-            console.log('QuickviewManager: Fetching product data from API...');
             // Fetch product data from API
             // Determine the correct API path based on current page location
             let apiUrl;
@@ -110,26 +105,23 @@ class QuickviewManager {
                 apiUrl = `../get-product-details.php?product_id=${productId}`;
             } else if (window.location.pathname.includes('/perfumes/')) {
                 apiUrl = `../get-product-details.php?product_id=${productId}`;
+            } else if (window.location.pathname.includes('/kidsfolder/')) {
+                apiUrl = `get-product-details-simple.php?product_id=${productId}`;
+            } else if (window.location.pathname.includes('/beautyfolder/')) {
+                apiUrl = `get-product-details.php?product_id=${productId}`;
+            } else if (window.location.pathname.includes('/homedecor/')) {
+                apiUrl = `get-product-details.php?product_id=${productId}`;
             } else {
                 apiUrl = `get-product-details.php?product_id=${productId}`;
             }
-            console.log('QuickviewManager: API URL:', apiUrl);
-            console.log('QuickviewManager: Current location:', window.location.pathname);
-            console.log('QuickviewManager: Full URL:', window.location.href);
             
-            console.log('QuickviewManager: Starting fetch request...');
             const response = await fetch(apiUrl);
-            console.log('QuickviewManager: API response received');
-            console.log('QuickviewManager: API response status:', response.status);
-            console.log('QuickviewManager: API response headers:', response.headers);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            console.log('QuickviewManager: Parsing JSON response...');
             const data = await response.json();
-            console.log('QuickviewManager: API response data:', data);
 
             if (data.success && data.product) {
                 this.currentProduct = data.product;
@@ -158,12 +150,10 @@ class QuickviewManager {
             this.showErrorState(errorMessage);
         } finally {
             this.isLoading = false;
-            console.log('QuickviewManager: Loading completed, isLoading set to false');
         }
     }
 
     populateQuickview(product) {
-        console.log('QuickviewManager: populateQuickview called with product:', product);
         
         // Set product title and price
         this.setElementText('quick-view-title', product.name);
@@ -192,16 +182,44 @@ class QuickviewManager {
     }
 
     populateImages(images) {
-        const mainImage = document.getElementById('quick-view-main-image');
+        const mainImageContainer = document.getElementById('quick-view-main-image');
         const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
 
-        if (!mainImage || !thumbnailsContainer) return;
+        if (!mainImageContainer || !thumbnailsContainer) return;
 
-        // Set main image
+        // Helper function to check if file is video
+        const isVideoFile = (filePath) => {
+            if (!filePath) return false;
+            const videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+            const extension = filePath.split('.').pop().toLowerCase();
+            return videoExtensions.includes(extension);
+        };
+
+        // Set main image/video
         if (images.length > 0) {
-            mainImage.src = images[0].src;
-            mainImage.alt = images[0].alt;
-            mainImage.style.display = 'block';
+            const firstImage = images[0];
+            mainImageContainer.innerHTML = '';
+            
+            if (isVideoFile(firstImage.src)) {
+                const video = document.createElement('video');
+                video.src = firstImage.src;
+                video.alt = firstImage.alt;
+                video.controls = true;
+                video.muted = true;
+                video.loop = true;
+                video.style.display = 'block';
+                video.style.maxWidth = '100%';
+                video.style.height = 'auto';
+                mainImageContainer.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = firstImage.src;
+                img.alt = firstImage.alt;
+                img.style.display = 'block';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                mainImageContainer.appendChild(img);
+            }
         }
 
         // Clear and populate thumbnails
@@ -211,14 +229,25 @@ class QuickviewManager {
             const thumbnail = document.createElement('div');
             thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
             
-            const img = document.createElement('img');
-            img.src = image.src;
-            img.alt = image.alt;
-            img.setAttribute('data-index', index);
+            if (isVideoFile(image.src)) {
+                const video = document.createElement('video');
+                video.src = image.src;
+                video.alt = image.alt;
+                video.muted = true;
+                video.loop = true;
+                video.setAttribute('data-index', index);
+                video.style.maxWidth = '100%';
+                video.style.height = 'auto';
+                thumbnail.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = image.src;
+                img.alt = image.alt;
+                img.setAttribute('data-index', index);
+                thumbnail.appendChild(img);
+            }
             
-            thumbnail.appendChild(img);
             thumbnail.addEventListener('click', () => this.selectImage(index));
-            
             thumbnailsContainer.appendChild(thumbnail);
         });
     }
@@ -274,12 +303,43 @@ class QuickviewManager {
     }
 
     selectImage(imageIndex) {
-        const mainImage = document.getElementById('quick-view-main-image');
+        const mainImageContainer = document.getElementById('quick-view-main-image');
         const thumbnails = document.querySelectorAll('.thumbnail-item');
         
-        if (mainImage && this.currentProduct.images[imageIndex]) {
-            mainImage.src = this.currentProduct.images[imageIndex].src;
-            mainImage.alt = this.currentProduct.images[imageIndex].alt;
+        if (mainImageContainer && this.currentProduct.images[imageIndex]) {
+            const selectedImage = this.currentProduct.images[imageIndex];
+            
+            // Helper function to check if file is video
+            const isVideoFile = (filePath) => {
+                if (!filePath) return false;
+                const videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+                const extension = filePath.split('.').pop().toLowerCase();
+                return videoExtensions.includes(extension);
+            };
+            
+            // Clear container and add new media
+            mainImageContainer.innerHTML = '';
+            
+            if (isVideoFile(selectedImage.src)) {
+                const video = document.createElement('video');
+                video.src = selectedImage.src;
+                video.alt = selectedImage.alt;
+                video.controls = true;
+                video.muted = true;
+                video.loop = true;
+                video.style.display = 'block';
+                video.style.maxWidth = '100%';
+                video.style.height = 'auto';
+                mainImageContainer.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = selectedImage.src;
+                img.alt = selectedImage.alt;
+                img.style.display = 'block';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                mainImageContainer.appendChild(img);
+            }
         }
 
         // Update active thumbnail
@@ -363,8 +423,41 @@ class QuickviewManager {
         if (!this.currentProduct) return;
 
         try {
-            // Implement wishlist functionality
-            alert('Product added to wishlist!');
+            const productId = this.currentProduct._id;
+            if (!productId) {
+                throw new Error('No product ID available');
+            }
+            
+            if (window.wishlistManager) {
+                window.wishlistManager.toggleWishlist(productId, document.getElementById('add-to-wishlist-quick'));
+            } else {
+                // Fallback - simple localStorage approach
+                const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                const existingIndex = wishlist.findIndex(item => item.id === productId);
+                
+                if (existingIndex > -1) {
+                    wishlist.splice(existingIndex, 1);
+                    alert('Removed from wishlist!');
+                } else {
+                    const productDetails = {
+                        id: productId,
+                        name: this.currentProduct.name || 'Product',
+                        price: this.currentProduct.price || '0',
+                        image: this.currentProduct.front_image || this.currentProduct.images?.[0] || '',
+                        category: this.currentProduct.category || 'General',
+                        addedAt: new Date().toISOString()
+                    };
+                    wishlist.push(productDetails);
+                    alert('Added to wishlist!');
+                }
+                
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                
+                // Update wishlist count
+                if (typeof updateWishlistCount === 'function') {
+                    updateWishlistCount();
+                }
+            }
         } catch (error) {
             console.error('Error adding to wishlist:', error);
             alert('Error adding product to wishlist');
@@ -380,16 +473,11 @@ class QuickviewManager {
     }
 
     showQuickview() {
-        console.log('QuickviewManager: showQuickview called');
-        console.log('QuickviewManager: sidebar element:', this.sidebar);
-        console.log('QuickviewManager: overlay element:', this.overlay);
         
         if (this.sidebar && this.overlay) {
-            console.log('QuickviewManager: Adding active classes');
             this.sidebar.classList.add('active');
             this.overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            console.log('QuickviewManager: Quickview should now be visible');
         } else {
             console.error('QuickviewManager: Missing sidebar or overlay elements');
         }
@@ -453,11 +541,8 @@ class QuickviewManager {
 
 // Initialize quickview manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Quickview Manager: DOM loaded, initializing...');
     try {
         window.quickviewManager = new QuickviewManager();
-        console.log('Quickview Manager: Successfully initialized');
-        console.log('Quickview Manager instance:', window.quickviewManager);
     } catch (error) {
         console.error('Quickview Manager: Failed to initialize:', error);
     }

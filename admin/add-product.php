@@ -7,18 +7,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-// Try MongoDB first, fallback if it fails
-try {
+// MongoDB connection
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
 $categoryModel = new Category();
 $categories = $categoryModel->getAll();
-} catch (Exception $e) {
-    require_once '../config1/admin-fallback.php';
-    $db = AdminFallback::getInstance();
-    $categories = $db->getCategories();
-}
 
 $message = '';
 $error = '';
@@ -37,16 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if this is a multi-product submission
     if (isset($_POST['products']) && is_array($_POST['products'])) {
-        // Debug: Log the $_FILES structure for multi-product forms
-        error_log("Multi-product submission detected. Files structure: " . json_encode($_FILES));
         
         // Helper function to restructure $_FILES for multi-product forms
         function restructureMultiProductFiles($files) {
             $restructured = [];
-            error_log("Restructuring files. Files structure: " . json_encode($files));
             
             if (!isset($files['name']['products']) || !is_array($files['name']['products'])) {
-                error_log("No products files found in $_FILES");
                 return $restructured;
             }
             
@@ -63,9 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['front_image']
                                 ];
-                                error_log("Added front image for product $productIndex, variant $variantIndex: " . $variantFiles['front_image']);
                             } else {
-                                error_log("Front image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                         
@@ -79,27 +67,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['back_image']
                                 ];
-                                error_log("Added back image for product $productIndex, variant $variantIndex: " . $variantFiles['back_image']);
                             } else {
-                                error_log("Back image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                     }
                 }
             }
             
-            error_log("Restructured files result: " . json_encode($restructured));
             return $restructured;
         }
         
         $restructuredFiles = restructureMultiProductFiles($_FILES);
-        error_log("Restructured files: " . json_encode($restructuredFiles));
         
         // Multiple products submission
         foreach ($_POST['products'] as $productIndex => $productPost) {
             if (empty($productPost['name'])) continue; // Skip empty products
             
-            error_log("Processing product $productIndex: " . json_encode($productPost));
             
             $productData = [
                 'name' => $productPost['name'] ?? '',
@@ -177,12 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle color variants for this product
             if (isset($productPost['color_variants']) && is_array($productPost['color_variants'])) {
-                error_log("Processing color variants for product $productIndex. Variants count: " . count($productPost['color_variants']));
                 $colorVariants = [];
                 
                 foreach ($productPost['color_variants'] as $variantIndex => $variant) {
                     if (!empty($variant['name']) && !empty($variant['color'])) {
-                        error_log("Processing variant $variantIndex for product $productIndex: " . json_encode($variant));
                         
                         $variantData = [
                             'name' => $variant['name'],
@@ -191,7 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
                         
-                        error_log("Initial variantData for variant $variantIndex: " . json_encode($variantData));
 
                         // Handle perfume-specific fields for variants
                         if (strtolower($productData['category']) === 'perfumes') {
@@ -218,13 +198,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($frontFile['tmp_name'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully: " . $variantData['front_image']);
                                 $frontImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant front image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant front image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -234,9 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['front_image'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully via fallback: " . $variantData['front_image']);
                             } else {
-                                error_log("Failed to move variant front image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
 
@@ -247,13 +222,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($backFile['tmp_name'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully: " . $variantData['back_image']);
                                 $backImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant back image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant back image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -263,25 +235,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['back_image'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully via fallback: " . $variantData['back_image']);
                             } else {
-                                error_log("Failed to move variant back image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
                         
-                        error_log("Final variantData for variant $variantIndex after image processing: " . json_encode($variantData));
                         $colorVariants[] = $variantData;
                     }
                 }
                 
                 // Always set color variants, even if empty
                 $productData['color_variants'] = $colorVariants;
-                error_log("Final productData for product $productIndex with color variants: " . json_encode($productData));
-                error_log("Color variants count for product $productIndex: " . count($colorVariants));
             } else {
                 // No color variants found, set empty array
                 $productData['color_variants'] = [];
-                error_log("No color variants found for product $productIndex, setting empty array");
             }
 
             if (isset($productPost['sale']) && !empty($productPost['salePrice'])) {
@@ -289,26 +255,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Validate and create product
-            error_log("About to create product $productIndex. Final productData: " . json_encode($productData));
             
             // Final check: Ensure color_variants is properly set
             if (!isset($productData['color_variants'])) {
                 $productData['color_variants'] = [];
-                error_log("Color variants was not set, initializing as empty array");
             }
             
             // Validate color variants structure
             if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
                 foreach ($productData['color_variants'] as $vIndex => $variant) {
                     if (!isset($variant['name']) || !isset($variant['color'])) {
-                        error_log("Warning: Variant $vIndex missing required fields: " . json_encode($variant));
                     }
                 }
             }
             
             $validationErrors = $productModel->validateProductData($productData);
             if (empty($validationErrors)) {
-                error_log("Product $productIndex validation passed, creating product...");
                 $newProductId = $productModel->create($productData);
                 if ($newProductId) {
                     $successCount++;
@@ -1517,15 +1479,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                             <label for="subcategory">Subcategory <span id="subcategory-required" style="color: #dc3545;">*</span></label>
-                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories();">
+                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Subcategory</option>
                 </select>
                         </div>
             
-            <!-- Beauty & Cosmetics sub-subcategory field -->
+            <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
@@ -1811,10 +1773,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!category) return;
             
             // Load subcategories from database
-            console.log('Single form: Fetching subcategories for category:', category);
             fetch(`get-subcategories.php?category=${encodeURIComponent(category)}`)
                 .then(response => {
-                    console.log('Single form: Response status:', response.status);
                     return response.text().then(text => {
                         if (text.trim() === '') {
                             throw new Error('Empty response received');
@@ -1828,7 +1788,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 })
                 .then(data => {
-                    console.log('Single form: Subcategory response data:', data);
                     if (data.success && data.subcategories) {
                         data.subcategories.forEach(subcategory => {
                             const option = document.createElement('option');
@@ -1836,9 +1795,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             option.textContent = subcategory;
                             subcategorySelect.appendChild(option);
                         });
-                        console.log(`Single form: Loaded ${data.subcategories.length} subcategories for ${category}`);
                     } else {
-                        console.log('Single form: No subcategories found for category:', category, 'Response:', data);
                     }
                 })
                 .catch(error => {
@@ -2042,6 +1999,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Select Size Category</option>
                             <option value="clothing">Clothing</option>
                             <option value="shoes">Shoes</option>
+                            <option value="beauty">Beauty & Cosmetics</option>
                             <option value="none">No Sizes</option>
                         </select>
                     </div>
@@ -2112,7 +2070,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
             } else if (sizeCategory === 'beauty') {
-                sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
             }
             
             // Event listeners are handled by onclick attributes in the HTML
@@ -2567,6 +2528,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateClothingSizes(true, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(true, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(true, variantIndex, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers and select all buttons
@@ -2885,16 +2851,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function generateProductForms() {
-            console.log('generateProductForms function called');
             try {
                 const count = parseInt(document.getElementById('product-count').value);
-                console.log('Product count:', count);
                 
                 if (count === 1) {
-                    console.log('Showing single product form');
                     showSingleProductForm();
                 } else {
-                    console.log('Showing multi product form with count:', count);
                     showMultiProductForm(count);
                 }
             } catch (error) {
@@ -2912,7 +2874,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showMultiProductForm(count) {
-            console.log('showMultiProductForm called with count:', count);
             try {
                 document.getElementById('single-product-form').classList.remove('form-active');
                 document.getElementById('multi-product-form').classList.add('form-active');
@@ -2924,11 +2885,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 container.innerHTML = '';
                 
-                console.log('Generating forms...');
                 for (let i = 0; i < count; i++) {
-                    console.log('Generating form for index:', i);
                     const productForm = generateProductFormHTML(i);
-                    console.log('Form HTML generated:', productForm.substring(0, 100) + '...');
                     container.innerHTML += productForm;
                 }
                 
@@ -2943,7 +2901,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     initializeMultiProductForms();
                 }, 100);
                 
-                console.log('Multi-product form generation completed');
             } catch (error) {
                 console.error('Error in showMultiProductForm:', error);
                 alert('Error showing multi-product form: ' + error.message);
@@ -2961,7 +2918,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     categories = ['Perfumes', 'Bags', 'Shoes', 'Accessories', 'Home & Living'];
                 }
                 
-                console.log('Categories loaded:', categories);
                 
                 if (!categories || !Array.isArray(categories)) {
                     console.error('Categories not loaded properly:', categories);
@@ -3018,15 +2974,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="subcategory-${productIndex}">Subcategory <span id="subcategory-required-${productIndex}" style="color: #dc3545;">*</span></label>
-                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]" onchange="handleMultiHomeLivingSubcategory(${productIndex}); loadMultiSubSubcategories(${productIndex});">
+                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]" onchange="handleMultiHomeLivingSubcategory(${productIndex}); loadMultiSubSubcategories(${productIndex}); refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Subcategory</option>
                                 </select>
                             </div>
                             
-                            <!-- Beauty & Cosmetics sub-subcategory field -->
+                            <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
                             <div class="form-group" id="sub-subcategory-group-${productIndex}" style="display: none;">
                                 <label for="sub_subcategory-${productIndex}">Sub-Subcategory</label>
-                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]">
+                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Sub-Subcategory</option>
                                 </select>
                             </div>
@@ -3643,18 +3599,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-// Try MongoDB first, fallback if it fails
-try {
+// MongoDB connection
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
 $categoryModel = new Category();
 $categories = $categoryModel->getAll();
-} catch (Exception $e) {
-    require_once '../config1/admin-fallback.php';
-    $db = AdminFallback::getInstance();
-    $categories = $db->getCategories();
-}
 
 $message = '';
 $error = '';
@@ -3673,16 +3623,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if this is a multi-product submission
     if (isset($_POST['products']) && is_array($_POST['products'])) {
-        // Debug: Log the $_FILES structure for multi-product forms
-        error_log("Multi-product submission detected. Files structure: " . json_encode($_FILES));
         
         // Helper function to restructure $_FILES for multi-product forms
         function restructureMultiProductFiles($files) {
             $restructured = [];
-            error_log("Restructuring files. Files structure: " . json_encode($files));
             
             if (!isset($files['name']['products']) || !is_array($files['name']['products'])) {
-                error_log("No products files found in $_FILES");
                 return $restructured;
             }
             
@@ -3699,9 +3645,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['front_image']
                                 ];
-                                error_log("Added front image for product $productIndex, variant $variantIndex: " . $variantFiles['front_image']);
                             } else {
-                                error_log("Front image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                         
@@ -3715,27 +3659,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['back_image']
                                 ];
-                                error_log("Added back image for product $productIndex, variant $variantIndex: " . $variantFiles['back_image']);
                             } else {
-                                error_log("Back image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                     }
                 }
             }
             
-            error_log("Restructured files result: " . json_encode($restructured));
             return $restructured;
         }
         
         $restructuredFiles = restructureMultiProductFiles($_FILES);
-        error_log("Restructured files: " . json_encode($restructuredFiles));
         
         // Multiple products submission
         foreach ($_POST['products'] as $productIndex => $productPost) {
             if (empty($productPost['name'])) continue; // Skip empty products
             
-            error_log("Processing product $productIndex: " . json_encode($productPost));
             
             $productData = [
                 'name' => $productPost['name'] ?? '',
@@ -3813,12 +3752,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle color variants for this product
             if (isset($productPost['color_variants']) && is_array($productPost['color_variants'])) {
-                error_log("Processing color variants for product $productIndex. Variants count: " . count($productPost['color_variants']));
                 $colorVariants = [];
                 
                 foreach ($productPost['color_variants'] as $variantIndex => $variant) {
                     if (!empty($variant['name']) && !empty($variant['color'])) {
-                        error_log("Processing variant $variantIndex for product $productIndex: " . json_encode($variant));
                         
                         $variantData = [
                             'name' => $variant['name'],
@@ -3827,7 +3764,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
                         
-                        error_log("Initial variantData for variant $variantIndex: " . json_encode($variantData));
 
                         // Handle perfume-specific fields for variants
                         if (strtolower($productData['category']) === 'perfumes') {
@@ -3854,13 +3790,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($frontFile['tmp_name'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully: " . $variantData['front_image']);
                                 $frontImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant front image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant front image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -3870,9 +3803,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['front_image'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully via fallback: " . $variantData['front_image']);
                             } else {
-                                error_log("Failed to move variant front image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
 
@@ -3883,13 +3814,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($backFile['tmp_name'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully: " . $variantData['back_image']);
                                 $backImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant back image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant back image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -3899,25 +3827,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['back_image'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully via fallback: " . $variantData['back_image']);
                             } else {
-                                error_log("Failed to move variant back image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
                         
-                        error_log("Final variantData for variant $variantIndex after image processing: " . json_encode($variantData));
                         $colorVariants[] = $variantData;
                     }
                 }
                 
                 // Always set color variants, even if empty
                 $productData['color_variants'] = $colorVariants;
-                error_log("Final productData for product $productIndex with color variants: " . json_encode($productData));
-                error_log("Color variants count for product $productIndex: " . count($colorVariants));
             } else {
                 // No color variants found, set empty array
                 $productData['color_variants'] = [];
-                error_log("No color variants found for product $productIndex, setting empty array");
             }
 
             if (isset($productPost['sale']) && !empty($productPost['salePrice'])) {
@@ -3925,26 +3847,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Validate and create product
-            error_log("About to create product $productIndex. Final productData: " . json_encode($productData));
             
             // Final check: Ensure color_variants is properly set
             if (!isset($productData['color_variants'])) {
                 $productData['color_variants'] = [];
-                error_log("Color variants was not set, initializing as empty array");
             }
             
             // Validate color variants structure
             if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
                 foreach ($productData['color_variants'] as $vIndex => $variant) {
                     if (!isset($variant['name']) || !isset($variant['color'])) {
-                        error_log("Warning: Variant $vIndex missing required fields: " . json_encode($variant));
                     }
                 }
             }
             
             $validationErrors = $productModel->validateProductData($productData);
             if (empty($validationErrors)) {
-                error_log("Product $productIndex validation passed, creating product...");
                 $newProductId = $productModel->create($productData);
                 if ($newProductId) {
                     $successCount++;
@@ -5153,15 +5071,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                             <label for="subcategory">Subcategory <span id="subcategory-required" style="color: #dc3545;">*</span></label>
-                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories();">
+                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Subcategory</option>
                 </select>
                         </div>
             
-            <!-- Beauty & Cosmetics sub-subcategory field -->
+            <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
@@ -5447,10 +5365,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!category) return;
             
             // Load subcategories from database
-            console.log('Single form: Fetching subcategories for category:', category);
             fetch(`get-subcategories.php?category=${encodeURIComponent(category)}`)
                 .then(response => {
-                    console.log('Single form: Response status:', response.status);
                     return response.text().then(text => {
                         if (text.trim() === '') {
                             throw new Error('Empty response received');
@@ -5464,7 +5380,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 })
                 .then(data => {
-                    console.log('Single form: Subcategory response data:', data);
                     if (data.success && data.subcategories) {
                         data.subcategories.forEach(subcategory => {
                             const option = document.createElement('option');
@@ -5472,9 +5387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             option.textContent = subcategory;
                             subcategorySelect.appendChild(option);
                         });
-                        console.log(`Single form: Loaded ${data.subcategories.length} subcategories for ${category}`);
                     } else {
-                        console.log('Single form: No subcategories found for category:', category, 'Response:', data);
                     }
                 })
                 .catch(error => {
@@ -5678,6 +5591,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Select Size Category</option>
                             <option value="clothing">Clothing</option>
                             <option value="shoes">Shoes</option>
+                            <option value="beauty">Beauty & Cosmetics</option>
                             <option value="none">No Sizes</option>
                         </select>
                     </div>
@@ -5748,7 +5662,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
             } else if (sizeCategory === 'beauty') {
-                sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
             }
             
             // Event listeners are handled by onclick attributes in the HTML
@@ -6366,6 +6283,169 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             `;
         }
 
+        // Generate filtered beauty sizes based on subcategory and sub-subcategory
+        function generateFilteredBeautySizes(isVariant = false, variantIndex = null, subcategory = '', subSubcategory = '') {
+            let html = '';
+            
+            // Define size categories and their relevance to subcategories
+            const sizeCategories = {
+                'makeup_sizes': {
+                    name: '💄 Makeup Sizes',
+                    sizes: ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                    relevantSubcategories: ['Makeup'],
+                    relevantSubSubcategories: ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Mascara', 'Lipstick', 'Lip Gloss']
+                },
+                'makeup_tools': {
+                    name: '🖌️ Makeup Tools',
+                    sizes: ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                    relevantSubcategories: ['Makeup Tools'],
+                    relevantSubSubcategories: ['Brushes', 'Sponges', 'Tools']
+                },
+                'skincare_sizes': {
+                    name: '🧴 Skincare Sizes',
+                    sizes: ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask']
+                },
+                'call_who_sizes': {
+                    name: '🌟 Call Who Sizes',
+                    sizes: ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Serum', 'Toner', 'Essence', 'Treatment']
+                },
+                'hair_sizes': {
+                    name: '💇 Hair Care Sizes',
+                    sizes: ['Trial', 'Standard', 'Professional', 'Salon'],
+                    relevantSubcategories: ['Hair Care'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Treatment', 'Styling']
+                },
+                'hair_tools': {
+                    name: '🔧 Hair Tools',
+                    sizes: ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                    relevantSubcategories: ['Hair Tools'],
+                    relevantSubSubcategories: ['Styling Tools', 'Brushes', 'Accessories']
+                },
+                'bath_body_sizes': {
+                    name: '🛁 Bath & Body Sizes',
+                    sizes: ['Travel_Kit', 'Personal', 'Family_bath', 'Economy'],
+                    relevantSubcategories: ['Bath & Body'],
+                    relevantSubSubcategories: ['Body Wash', 'Lotion', 'Scrub', 'Oil']
+                }
+            };
+            
+            // Filter size categories based on subcategory and sub-subcategory
+            const relevantCategories = Object.entries(sizeCategories).filter(([key, category]) => {
+                // If no subcategory is selected, show all categories
+                if (!subcategory) return true;
+                
+                // Check if subcategory matches
+                const subcategoryMatch = category.relevantSubcategories.includes(subcategory);
+                
+                // If sub-subcategory is selected, also check that
+                if (subSubcategory) {
+                    const subSubcategoryMatch = category.relevantSubSubcategories.includes(subSubcategory);
+                    return subcategoryMatch && subSubcategoryMatch;
+                }
+                
+                return subcategoryMatch;
+            });
+            
+            // Generate HTML for relevant categories only
+            relevantCategories.forEach(([categoryKey, category]) => {
+                html += `
+                <div class="size-category main-category">
+                    <div class="size-category-header" onclick="toggleMainSizeCategory(this, '${categoryKey}', ${isVariant}, ${variantIndex})">
+                        <span>${category.name}</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, '${categoryKey}')` : `selectAllInCategory('${categoryKey}')`}">
+                            <input type="checkbox" id="select_all_${categoryKey}${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_${categoryKey}">
+                            <label for="select_all_${categoryKey}${isVariant ? '_' + variantIndex : ''}">✓ Select All ${category.name.replace(/[^\w\s]/g, '')}</label>
+                        </div>`;
+                
+                category.sizes.forEach(size => {
+                    const sizeId = size.replace(/[^a-zA-Z0-9]/g, '_');
+                    html += `
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, '${size}')` : `toggleSize('${size}')`}">
+                            <input type="checkbox" id="size_${sizeId}${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="${size}">
+                            <label for="size_${sizeId}${isVariant ? '_' + variantIndex : ''}">${size.replace(/_/g, ' ')}</label>
+                        </div>`;
+                });
+                
+                html += `
+                    </div>
+                </div>`;
+            });
+            
+            // If no relevant categories found, show a message
+            if (relevantCategories.length === 0) {
+                html = `
+                <div class="no-sizes-message">
+                    <p>No specific sizes available for the selected subcategory/sub-subcategory combination.</p>
+                    <p>Please select a subcategory and sub-subcategory to see relevant size options.</p>
+                </div>`;
+            }
+            
+            return html;
+        }
+
+        // Function to refresh size options when subcategory or sub-subcategory changes
+        function refreshSizeOptions() {
+            const sizeCategory = document.getElementById('size_category').value;
+            if (sizeCategory === 'beauty') {
+                loadSizeOptions();
+            }
+        }
+
+        // Function to refresh multi-product size options when subcategory or sub-subcategory changes
+        function refreshMultiSizeOptions(productIndex) {
+            const sizeCategory = document.querySelector(`select[name="products[${productIndex}][size_category]"]`).value;
+            if (sizeCategory === 'beauty') {
+                loadMultiSizeOptions(productIndex);
+            }
+        }
+
+        // Function to refresh variant size options when subcategory or sub-subcategory changes
+        function refreshVariantSizeOptions(variantIndex) {
+            const variant = document.querySelector(`[name="color_variants[${variantIndex}][size_category]"]`).closest('.variant-item');
+            const sizeCategory = variant.querySelector(`[name="color_variants[${variantIndex}][size_category]"]`).value;
+            if (sizeCategory === 'beauty') {
+                loadVariantSizeOptions(variantIndex);
+            }
+        }
+
+        // Function to refresh multi-product variant size options when subcategory or sub-subcategory changes
+        function refreshMultiVariantSizeOptions(productIndex, variantIndex) {
+            const sizeCategory = document.querySelector(`select[name="products[${productIndex}][color_variants][${variantIndex}][size_category]"]`).value;
+            if (sizeCategory === 'beauty') {
+                loadMultiVariantSizeOptions(productIndex, variantIndex);
+            }
+        }
+
+        // Function to refresh all variant size options (for single product variants)
+        function refreshAllVariantSizeOptions() {
+            // Find all variant size category selects
+            const variantSizeSelects = document.querySelectorAll('select[name^="color_variants["][name$="[size_category]"]');
+            variantSizeSelects.forEach(select => {
+                const variantIndex = select.name.match(/color_variants\[(\d+)\]/)[1];
+                refreshVariantSizeOptions(variantIndex);
+            });
+        }
+
+        // Function to refresh all multi-product variant size options for a specific product
+        function refreshAllMultiVariantSizeOptions(productIndex) {
+            // Find all multi-product variant size category selects for this product
+            const variantSizeSelects = document.querySelectorAll(`select[name^="products[${productIndex}][color_variants]["][name$="[size_category]"]`);
+            variantSizeSelects.forEach(select => {
+                const match = select.name.match(/products\[\d+\]\[color_variants\]\[(\d+)\]/);
+                if (match) {
+                    const variantIndex = match[1];
+                    refreshMultiVariantSizeOptions(productIndex, variantIndex);
+                }
+            });
+        }
+
         function toggleSizeDropdown() {
             const dropdownContent = document.getElementById('size-dropdown-content');
             const dropdownHeader = document.querySelector('.size-dropdown-header');
@@ -6532,6 +6612,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateClothingSizes(true, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(true, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(true, variantIndex, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers and select all buttons
@@ -6850,16 +6935,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function generateProductForms() {
-            console.log('generateProductForms function called');
             try {
                 const count = parseInt(document.getElementById('product-count').value);
-                console.log('Product count:', count);
                 
                 if (count === 1) {
-                    console.log('Showing single product form');
                     showSingleProductForm();
                 } else {
-                    console.log('Showing multi product form with count:', count);
                     showMultiProductForm(count);
                 }
             } catch (error) {
@@ -6877,7 +6958,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showMultiProductForm(count) {
-            console.log('showMultiProductForm called with count:', count);
             try {
                 document.getElementById('single-product-form').classList.remove('form-active');
                 document.getElementById('multi-product-form').classList.add('form-active');
@@ -6889,11 +6969,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 container.innerHTML = '';
                 
-                console.log('Generating forms...');
                 for (let i = 0; i < count; i++) {
-                    console.log('Generating form for index:', i);
                     const productForm = generateProductFormHTML(i);
-                    console.log('Form HTML generated:', productForm.substring(0, 100) + '...');
                     container.innerHTML += productForm;
                 }
                 
@@ -6908,7 +6985,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     initializeMultiProductForms();
                 }, 100);
                 
-                console.log('Multi-product form generation completed');
             } catch (error) {
                 console.error('Error in showMultiProductForm:', error);
                 alert('Error showing multi-product form: ' + error.message);
@@ -6926,7 +7002,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     categories = ['Perfumes', 'Bags', 'Shoes', 'Accessories', 'Home & Living'];
                 }
                 
-                console.log('Categories loaded:', categories);
                 
                 if (!categories || !Array.isArray(categories)) {
                     console.error('Categories not loaded properly:', categories);
@@ -6983,15 +7058,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="subcategory-${productIndex}">Subcategory <span id="subcategory-required-${productIndex}" style="color: #dc3545;">*</span></label>
-                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]" onchange="handleMultiHomeLivingSubcategory(${productIndex}); loadMultiSubSubcategories(${productIndex});">
+                                <select id="subcategory-${productIndex}" name="products[${productIndex}][subcategory]" onchange="handleMultiHomeLivingSubcategory(${productIndex}); loadMultiSubSubcategories(${productIndex}); refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Subcategory</option>
                                 </select>
                             </div>
                             
-                            <!-- Beauty & Cosmetics sub-subcategory field -->
+                            <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
                             <div class="form-group" id="sub-subcategory-group-${productIndex}" style="display: none;">
                                 <label for="sub_subcategory-${productIndex}">Sub-Subcategory</label>
-                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]">
+                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Sub-Subcategory</option>
                                 </select>
                             </div>
@@ -7952,7 +8027,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Load subcategories for multi-product forms
         function loadMultiSubcategories(productIndex) {
-            console.log('loadMultiSubcategories called for product:', productIndex);
             
             const categorySelect = document.querySelector(`select[name="products[${productIndex}][category]"]`);
             const subcategorySelect = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`);
@@ -7963,7 +8037,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             const category = categorySelect.value;
-            console.log('Selected category:', category);
             
             // Reset subcategory
             subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
@@ -8006,7 +8079,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Load subcategories from database for all categories except perfumes
-            console.log('Fetching subcategories for category:', category);
             fetch('get-subcategories.php', {
                 method: 'POST',
                 headers: {
@@ -8015,7 +8087,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 body: `category=${encodeURIComponent(category)}`
             })
             .then(response => {
-                console.log('Response status:', response.status);
                 return response.text().then(text => {
                     if (text.trim() === '') {
                         throw new Error('Empty response received');
@@ -8029,7 +8100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             })
             .then(data => {
-                console.log('Subcategory response data:', data);
                 if (data.success && data.subcategories) {
                     // Clear existing options first to prevent duplicates
                     subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
@@ -8043,9 +8113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
                     });
-                    console.log(`Loaded ${uniqueSubcategories.length} unique subcategories for ${category}`);
                 } else {
-                    console.log('No subcategories found for category:', category, 'Response:', data);
                 }
             })
             .catch(error => {
@@ -8074,8 +8142,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             subSubcategoryGroup.style.display = 'none';
             subSubcategorySelect.innerHTML = '<option value="">Select Sub-Subcategory</option>';
             
-            // Only show sub-subcategories for Beauty & Cosmetics
-            if (category === 'Beauty & Cosmetics' && subcategory) {
+            // Show sub-subcategories for Beauty & Cosmetics and Kids' Clothing
+            if ((category === 'Beauty & Cosmetics' || category === 'Kids\' Clothing') && subcategory) {
                 fetch(`get-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}`)
                     .then(response => response.json())
                     .then(data => {
@@ -8140,33 +8208,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex);
             } else if (sizeCategory === 'beauty') {
-                sizeDropdownContent.innerHTML = generateMultiBeautySizes(productIndex);
+                // Get current subcategory and sub-subcategory selections for this product
+                const subcategory = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`).value;
+                const subSubcategory = document.querySelector(`select[name="products[${productIndex}][sub_subcategory]"]`).value;
+                sizeDropdownContent.innerHTML = generateFilteredMultiBeautySizes(productIndex, subcategory, subSubcategory);
+                
+                // Automatically open the main size dropdown for beauty products
+                setTimeout(() => {
+                    const dropdownContent = document.getElementById(`size-dropdown-content-${productIndex}`);
+                    const dropdownHeader = dropdownContent.previousElementSibling;
+                    const dropdownIcon = document.getElementById(`size-dropdown-icon-${productIndex}`);
+                    
+                    if (!dropdownContent.classList.contains('show')) {
+                        dropdownContent.classList.add('show');
+                        dropdownHeader.classList.add('active');
+                        dropdownIcon.style.transform = 'rotate(180deg)';
+                    }
+                }, 50);
             }
             
-            // Add event listeners to category headers and make size options visible by default
-            setTimeout(() => {
-                const headers = sizeDropdownContent.querySelectorAll('.size-category-header');
-                
-                headers.forEach((header, index) => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
-            }, 100);
+            // Event listeners are handled by inline onclick handlers in the filtered function
         }
 
         // Load size options for multi-product variant forms
         function loadMultiVariantSizeOptions(productIndex, variantIndex) {
-            console.log('loadMultiVariantSizeOptions called for product:', productIndex, 'variant:', variantIndex);
             const sizeCategory = document.querySelector(`select[name="products[${productIndex}][color_variants][${variantIndex}][size_category]"]`).value;
             const sizeSelectionGroup = document.getElementById(`variant-size-selection-group-${productIndex}-${variantIndex}`);
             const sizeDropdownContent = document.getElementById(`variant-size-dropdown-content-${productIndex}-${variantIndex}`);
             
-            console.log('Variant size category:', sizeCategory);
-            console.log('Variant size selection group:', sizeSelectionGroup);
-            console.log('Variant size dropdown content:', sizeDropdownContent);
             
             if (sizeCategory === 'none' || sizeCategory === '') {
                 sizeSelectionGroup.style.display = 'none';
@@ -8177,20 +8246,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if (sizeCategory === 'clothing') {
                 sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex, variantIndex);
-                console.log('Generated variant clothing sizes HTML');
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex, variantIndex);
-                console.log('Generated variant shoe sizes HTML');
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections for this product
+                const subcategory = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`).value;
+                const subSubcategory = document.querySelector(`select[name="products[${productIndex}][sub_subcategory]"]`).value;
+                sizeDropdownContent.innerHTML = generateFilteredMultiBeautySizes(productIndex, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers and make size options visible by default
             setTimeout(() => {
                 const headers = sizeDropdownContent.querySelectorAll('.size-category-header');
-                console.log('Found variant size category headers:', headers.length);
                 
                 headers.forEach((header, index) => {
                     header.addEventListener('click', function() {
-                        console.log('Variant header clicked:', index);
                         this.classList.toggle('expanded');
                         const options = this.nextElementSibling;
                         options.classList.toggle('show');
@@ -8285,9 +8355,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function generateMultiBeautySizes(productIndex) {
             return `
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>💄 Makeup Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Sample" onchange="toggleMultiSize('${productIndex}', 'Sample')"> Sample (1-2ml)</label>
@@ -8299,9 +8369,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🖌️ Makeup Tools</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Foundation_Brush" onchange="toggleMultiSize('${productIndex}', 'Foundation_Brush')"> Foundation Brush</label>
@@ -8315,9 +8385,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🧴 Skincare Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Mini" onchange="toggleMultiSize('${productIndex}', 'Mini')"> Mini (15ml)</label>
@@ -8329,9 +8399,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🌟 Call Who Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Serum_15ml" onchange="toggleMultiSize('${productIndex}', 'Serum_15ml')"> Serum (15ml)</label>
@@ -8343,9 +8413,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>💇 Hair Care Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Trial" onchange="toggleMultiSize('${productIndex}', 'Trial')"> Trial Size (50ml)</label>
@@ -8356,9 +8426,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🔧 Hair Tools</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Hair_Dryer" onchange="toggleMultiSize('${productIndex}', 'Hair_Dryer')"> Hair Dryer</label>
@@ -8371,9 +8441,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🛁 Bath & Body Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Travel_Kit" onchange="toggleMultiSize('${productIndex}', 'Travel_Kit')"> Travel Kit (30ml)</label>
@@ -8383,6 +8453,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             `;
+        }
+
+        // Generate filtered beauty sizes for multi-product forms based on subcategory and sub-subcategory
+        function generateFilteredMultiBeautySizes(productIndex, subcategory = '', subSubcategory = '') {
+            let html = '';
+            
+            // Define size categories and their relevance to subcategories
+            const sizeCategories = {
+                'makeup_sizes': {
+                    name: '💄 Makeup Sizes',
+                    sizes: ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                    relevantSubcategories: ['Makeup'],
+                    relevantSubSubcategories: ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Mascara', 'Lipstick', 'Lip Gloss']
+                },
+                'makeup_tools': {
+                    name: '🖌️ Makeup Tools',
+                    sizes: ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                    relevantSubcategories: ['Makeup Tools'],
+                    relevantSubSubcategories: ['Brushes', 'Sponges', 'Tools']
+                },
+                'skincare_sizes': {
+                    name: '🧴 Skincare Sizes',
+                    sizes: ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask']
+                },
+                'call_who_sizes': {
+                    name: '🌟 Call Who Sizes',
+                    sizes: ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Serum', 'Toner', 'Essence', 'Treatment']
+                },
+                'hair_sizes': {
+                    name: '💇 Hair Care Sizes',
+                    sizes: ['Trial', 'Standard', 'Professional', 'Salon'],
+                    relevantSubcategories: ['Hair Care'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Treatment', 'Styling']
+                },
+                'hair_tools': {
+                    name: '🔧 Hair Tools',
+                    sizes: ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                    relevantSubcategories: ['Hair Tools'],
+                    relevantSubSubcategories: ['Styling Tools', 'Brushes', 'Accessories']
+                },
+                'bath_body_sizes': {
+                    name: '🛁 Bath & Body Sizes',
+                    sizes: ['Travel_Kit', 'Personal', 'Family_bath', 'Economy'],
+                    relevantSubcategories: ['Bath & Body'],
+                    relevantSubSubcategories: ['Body Wash', 'Lotion', 'Scrub', 'Oil']
+                }
+            };
+            
+            // Filter size categories based on subcategory and sub-subcategory
+            const relevantCategories = Object.entries(sizeCategories).filter(([key, category]) => {
+                // If no subcategory is selected, show all categories
+                if (!subcategory) return true;
+                
+                // Check if subcategory matches
+                const subcategoryMatch = category.relevantSubcategories.includes(subcategory);
+                
+                // If sub-subcategory is selected, also check that
+                if (subSubcategory) {
+                    const subSubcategoryMatch = category.relevantSubSubcategories.includes(subSubcategory);
+                    return subcategoryMatch && subSubcategoryMatch;
+                }
+                
+                return subcategoryMatch;
+            });
+            
+            // Generate HTML for relevant categories only
+            relevantCategories.forEach(([categoryKey, category]) => {
+                html += `
+                <div class="size-category">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
+                        <span>${category.name}</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">`;
+                
+                category.sizes.forEach(size => {
+                    html += `
+                        <label><input type="checkbox" value="${size}" onchange="toggleMultiSize('${productIndex}', '${size}')"> ${size.replace(/_/g, ' ')}</label>`;
+                });
+                
+                html += `
+                    </div>
+                </div>`;
+            });
+            
+            // If no relevant categories found, show a message
+            if (relevantCategories.length === 0) {
+                html = `
+                <div class="no-sizes-message">
+                    <p>No specific sizes available for the selected subcategory/sub-subcategory combination.</p>
+                    <p>Please select a subcategory and sub-subcategory to see relevant size options.</p>
+                </div>`;
+            }
+            
+            return html;
         }
 
         // Generate shoe sizes for multi-product forms
@@ -8706,6 +8875,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Select Size Category</option>
                             <option value="clothing">Clothing</option>
                             <option value="shoes">Shoes</option>
+                            <option value="beauty">Beauty & Cosmetics</option>
                             <option value="none">No Sizes</option>
                         </select>
                     </div>
@@ -8771,6 +8941,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections for this product
+                const subcategory = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`).value;
+                const subSubcategory = document.querySelector(`select[name="products[${productIndex}][sub_subcategory]"]`).value;
+                sizeDropdownContent.innerHTML = generateFilteredMultiBeautySizes(productIndex, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers
@@ -9462,12 +9637,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 subSubcategoryGroup.style.display = 'none';
             }
             
-            // Only show sub-subcategory for Beauty & Cosmetics
-            if (category !== 'Beauty & Cosmetics' || !subcategory) {
+            // Show sub-subcategory for Beauty & Cosmetics and Kids' Clothing
+            if ((category !== 'Beauty & Cosmetics' && category !== 'Kids\' Clothing') || !subcategory) {
                 return;
             }
             
-            // Show sub-subcategory field for Beauty & Cosmetics
+            // Show sub-subcategory field for supported categories
             if (subSubcategoryGroup) {
                 subSubcategoryGroup.style.display = 'block';
             }
@@ -9478,7 +9653,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Load sub-subcategories from database
-            console.log('Fetching sub-subcategories for category:', category, 'subcategory:', subcategory);
             fetch(`get-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}`)
                 .then(response => response.text().then(text => {
                     if (text.trim() === '') {
@@ -9492,7 +9666,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }))
                 .then(data => {
-                    console.log('Sub-subcategory response data:', data);
                     if (data.success && data.sub_subcategories) {
                         data.sub_subcategories.forEach(subSubcategory => {
                             const option = document.createElement('option');
@@ -9500,9 +9673,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             option.textContent = subSubcategory;
                             subSubcategorySelect.appendChild(option);
                         });
-                        console.log(`Loaded ${data.sub_subcategories.length} sub-subcategories for ${category} > ${subcategory}:`, data.sub_subcategories);
                     } else {
-                        console.log('No sub-subcategories found for category:', category, 'subcategory:', subcategory, 'Response:', data);
                     }
                 })
                 .catch(error => {

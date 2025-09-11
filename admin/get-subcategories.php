@@ -17,11 +17,6 @@ try {
         $categoryName = $_GET['category'] ?? '';
     }
     
-    // Debug: Log what we received
-    error_log("get-subcategories.php - REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
-    error_log("get-subcategories.php - GET: " . json_encode($_GET));
-    error_log("get-subcategories.php - POST: " . json_encode($_POST));
-    error_log("get-subcategories.php - categoryName: " . $categoryName);
     
     if (empty($categoryName)) {
         ob_clean();

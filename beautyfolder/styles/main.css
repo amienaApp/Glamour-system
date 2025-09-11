@@ -140,6 +140,52 @@
     z-index: 1;
 }
 
+/* Hide video controls and ensure autoplay */
+.image-slider video {
+    controls: none;
+    -webkit-controls: none;
+    -moz-controls: none;
+    -ms-controls: none;
+    background: #000;
+    cursor: pointer;
+}
+
+.image-slider video::-webkit-media-controls {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-panel {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-play-button {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-timeline {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-current-time-display {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-time-remaining-display {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-mute-button {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-volume-slider {
+    display: none !important;
+}
+
+.image-slider video::-webkit-media-controls-fullscreen-button {
+    display: none !important;
+}
+
 .image-slider img.active,
 .image-slider video.active {
     opacity: 1;

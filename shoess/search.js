@@ -1,4 +1,5 @@
 // Global Search Functionality
+if (typeof GlobalSearch === 'undefined') {
 class GlobalSearch {
     constructor() {
         this.searchInput = document.querySelector('.search-input');
@@ -147,7 +148,7 @@ class GlobalSearch {
             'perfumes': ['perfume', 'cologne', 'fragrance', 'scent', 'aroma', 'eau de toilette', 'parfum'],
             'accessories': ['belt', 'watch', 'sunglasses', 'jewelry', 'necklace', 'bracelet', 'ring', 'earrings', 'socks', 'hat', 'cap', 'tie', 'cufflinks'],
             'bags': ['bag', 'purse', 'handbag', 'tote', 'backpack', 'clutch', 'wallet', 'shoulder bag', 'crossbody'],
-            'shoes': ['shoes', 'boots', 'sneakers', 'heels', 'flats', 'sandals', 'loafers', 'pumps', 'athletic'],
+            'shoes': ['shoes', 'boots', 'sneakers', 'heels', 'flats', 'sandals', 'loafers', 'pumps'],
             'home-decor': ['decor', 'decoration', 'home', 'furniture', 'lamp', 'vase', 'cushion', 'curtain', 'rug'],
             'clothing': ['dress', 'shirt', 'pants', 'jeans', 'skirt', 'blouse', 'jacket', 'coat', 'sweater']
         };
@@ -525,3 +526,5 @@ const searchStyles = `
 
 // Inject styles into head
 document.head.insertAdjacentHTML('beforeend', searchStyles);
+
+} // End of GlobalSearch class conditional declaration

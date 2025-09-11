@@ -127,7 +127,12 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <div class="product-card" 
+                     data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -220,7 +225,7 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -277,7 +282,12 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     <div class="product-grid" id="all-accessories-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <div class="product-card" 
+                     data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -370,7 +380,7 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">

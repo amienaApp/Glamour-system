@@ -8,10 +8,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
+// MongoDB connection
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
-
 $categoryModel = new Category();
 $categories = $categoryModel->getAll();
 
@@ -33,6 +33,7 @@ if (!$product) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     // Handle image uploads
     $uploadDir = '../uploads/products/';
     if (!is_dir($uploadDir)) {
@@ -50,16 +51,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $productData = [
             'name' => $_POST['name'] ?? '',
             'price' => floatval($_POST['price'] ?? 0),
+            'color' => $_POST['color'] ?? '',
             'category' => $_POST['category'] ?? '',
             'subcategory' => $_POST['subcategory'] ?? '',
             'sub_subcategory' => $_POST['sub_subcategory'] ?? '',
             'description' => $_POST['description'] ?? '',
+            'featured' => isset($_POST['featured']),
+            'sale' => isset($_POST['sale']),
+            'available' => isset($_POST['available']),
+            'stock' => (int)($_POST['stock'] ?? 0),
             'size_category' => $_POST['size_category'] ?? '',
             'selected_sizes' => $_POST['selected_sizes'] ?? '',
-            'color_variants' => []
+            'shoe_type' => $_POST['shoe_type'] ?? '',
+            'material' => $_POST['material'] ?? '',
+            'length' => $_POST['length'] ?? '',
+            'width' => $_POST['width'] ?? '',
+            'bedding_size' => $_POST['bedding_size'] ?? '',
+            'chair_count' => $_POST['chair_count'] ?? '',
+            'table_length' => $_POST['table_length'] ?? '',
+            'table_width' => $_POST['table_width'] ?? '',
+            'sofa_count' => $_POST['sofa_count'] ?? ''
         ];
 
+        // Handle category-specific fields
+        if (strtolower($productData['category'] ?? '') === 'perfumes') {
+            $productData['category'] = 'Perfumes';
+            $productData['brand'] = $_POST['brand'] ?? '';
+            $productData['gender'] = $_POST['gender'] ?? '';
+            $productData['size'] = $_POST['size'] ?? '';
+        }
+        
+        if (strtolower($productData['category'] ?? '') === 'bags') {
+            $productData['gender'] = $_POST['gender'] ?? '';
+        }
+        
+        if (strtolower($productData['category'] ?? '') === 'accessories') {
+            $productData['gender'] = $_POST['gender'] ?? '';
+        }
+
+        // Handle sale price
+        if (isset($_POST['sale']) && !empty($_POST['salePrice'])) {
+            $productData['salePrice'] = (float)$_POST['salePrice'];
+        }
+
+        // Handle main product images
+        if (isset($_FILES['front_image']) && $_FILES['front_image']['error'] === UPLOAD_ERR_OK) {
+            $frontImageName = time() . '_front_' . $_FILES['front_image']['name'];
+            $frontImagePath = $uploadDir . $frontImageName;
+            if (move_uploaded_file($_FILES['front_image']['tmp_name'], $frontImagePath)) {
+                $productData['front_image'] = 'uploads/products/' . $frontImageName;
+            }
+        }
+
+        if (isset($_FILES['back_image']) && $_FILES['back_image']['error'] === UPLOAD_ERR_OK) {
+            $backImageName = time() . '_back_' . $_FILES['back_image']['name'];
+            $backImagePath = $uploadDir . $backImageName;
+            if (move_uploaded_file($_FILES['back_image']['tmp_name'], $backImagePath)) {
+                $productData['back_image'] = 'uploads/products/' . $backImageName;
+            }
+        }
+
         // Handle color variants
+        $colorVariants = [];
         if (isset($_POST['color_variants']) && is_array($_POST['color_variants'])) {
             foreach ($_POST['color_variants'] as $index => $variant) {
                 $variantData = [
@@ -82,29 +135,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                $productData['color_variants'][] = $variantData;
+                if (isset($_FILES['color_variants']['name'][$index]['back_image']) && 
+                    $_FILES['color_variants']['error'][$index]['back_image'] === UPLOAD_ERR_OK) {
+                    $backImageName = time() . '_variant_' . $index . '_back_' . $_FILES['color_variants']['name'][$index]['back_image'];
+                    $backImagePath = $uploadDir . $backImageName;
+                    if (move_uploaded_file($_FILES['color_variants']['tmp_name'][$index]['back_image'], $backImagePath)) {
+                        $variantData['back_image'] = 'uploads/products/' . $backImageName;
+                    }
+                }
+
+                $colorVariants[] = $variantData;
             }
         }
+        $productData['color_variants'] = $colorVariants;
 
-        // Update the product
-        if ($productModel->update($productId, $productData)) {
-            $message = 'Product updated successfully!';
+        // Validate and update the product
+        $errors = $productModel->validateProductData($productData);
+        if (empty($errors)) {
+            if ($productModel->update($productId, $productData)) {
+                $message = 'Product updated successfully!';
+                // Redirect to manage products with success message
+                header("Location: manage-products.php?highlight=" . urlencode($productId) . "&action=updated");
+                exit;
+            } else {
+                $error = 'Failed to update product.';
+            }
         } else {
-            $error = 'Failed to update product.';
+            $error = 'Validation errors: ' . implode(', ', $errors);
         }
     }
     // Check if this is a multi-product submission
     else if (isset($_POST['products']) && is_array($_POST['products'])) {
-        // Debug: Log the $_FILES structure for multi-product forms
-        error_log("Multi-product submission detected. Files structure: " . json_encode($_FILES));
         
         // Helper function to restructure $_FILES for multi-product forms
         function restructureMultiProductFiles($files) {
             $restructured = [];
-            error_log("Restructuring files. Files structure: " . json_encode($files));
             
             if (!isset($files['name']['products']) || !is_array($files['name']['products'])) {
-                error_log("No products files found in $_FILES");
                 return $restructured;
             }
             
@@ -121,9 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['front_image']
                                 ];
-                                error_log("Added front image for product $productIndex, variant $variantIndex: " . $variantFiles['front_image']);
                             } else {
-                                error_log("Front image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                         
@@ -137,27 +202,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'error' => $error,
                                     'size' => $files['size']['products'][$productIndex]['color_variants'][$variantIndex]['back_image']
                                 ];
-                                error_log("Added back image for product $productIndex, variant $variantIndex: " . $variantFiles['back_image']);
                             } else {
-                                error_log("Back image error for product $productIndex, variant $variantIndex: $error");
                             }
                         }
                     }
                 }
             }
             
-            error_log("Restructured files result: " . json_encode($restructured));
             return $restructured;
         }
         
         $restructuredFiles = restructureMultiProductFiles($_FILES);
-        error_log("Restructured files: " . json_encode($restructuredFiles));
         
         // Multiple products submission
         foreach ($_POST['products'] as $productIndex => $productPost) {
             if (empty($productPost['name'])) continue; // Skip empty products
             
-            error_log("Processing product $productIndex: " . json_encode($productPost));
             
             $productData = [
                 'name' => $productPost['name'] ?? '',
@@ -235,12 +295,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle color variants for this product
             if (isset($productPost['color_variants']) && is_array($productPost['color_variants'])) {
-                error_log("Processing color variants for product $productIndex. Variants count: " . count($productPost['color_variants']));
                 $colorVariants = [];
                 
                 foreach ($productPost['color_variants'] as $variantIndex => $variant) {
                     if (!empty($variant['name']) && !empty($variant['color'])) {
-                        error_log("Processing variant $variantIndex for product $productIndex: " . json_encode($variant));
                         
                         $variantData = [
                             'name' => $variant['name'],
@@ -249,7 +307,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'selected_sizes' => $variant['selected_sizes'] ?? ''
                         ];
                         
-                        error_log("Initial variantData for variant $variantIndex: " . json_encode($variantData));
 
                         // Handle perfume-specific fields for variants
                         if (strtolower($productData['category']) === 'perfumes') {
@@ -276,13 +333,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($frontFile['tmp_name'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully: " . $variantData['front_image']);
                                 $frontImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant front image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant front image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -292,9 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantFrontImagePath = $uploadDir . $variantFrontImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['front_image'], $variantFrontImagePath)) {
                                 $variantData['front_image'] = 'uploads/products/' . $variantFrontImageName;
-                                error_log("Variant front image uploaded successfully via fallback: " . $variantData['front_image']);
                             } else {
-                                error_log("Failed to move variant front image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
 
@@ -305,13 +357,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($backFile['tmp_name'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully: " . $variantData['back_image']);
                                 $backImageProcessed = true;
                             } else {
-                                error_log("Failed to move variant back image for product $productIndex, variant $variantIndex");
                             }
                         } else {
-                            error_log("Variant back image not found in restructured files for product $productIndex, variant $variantIndex");
                         }
                         
                         // Fallback: Try direct $_FILES access if restructured files failed
@@ -321,25 +370,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $variantBackImagePath = $uploadDir . $variantBackImageName;
                             if (move_uploaded_file($_FILES['products']['tmp_name'][$productIndex]['color_variants'][$variantIndex]['back_image'], $variantBackImagePath)) {
                                 $variantData['back_image'] = 'uploads/products/' . $variantBackImageName;
-                                error_log("Variant back image uploaded successfully via fallback: " . $variantData['back_image']);
                             } else {
-                                error_log("Failed to move variant back image via fallback for product $productIndex, variant $variantIndex");
                             }
                         }
                         
-                        error_log("Final variantData for variant $variantIndex after image processing: " . json_encode($variantData));
                         $colorVariants[] = $variantData;
                     }
                 }
                 
                 // Always set color variants, even if empty
                 $productData['color_variants'] = $colorVariants;
-                error_log("Final productData for product $productIndex with color variants: " . json_encode($productData));
-                error_log("Color variants count for product $productIndex: " . count($colorVariants));
             } else {
                 // No color variants found, set empty array
                 $productData['color_variants'] = [];
-                error_log("No color variants found for product $productIndex, setting empty array");
             }
 
             if (isset($productPost['sale']) && !empty($productPost['salePrice'])) {
@@ -347,26 +390,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Validate and create product
-            error_log("About to create product $productIndex. Final productData: " . json_encode($productData));
             
             // Final check: Ensure color_variants is properly set
             if (!isset($productData['color_variants'])) {
                 $productData['color_variants'] = [];
-                error_log("Color variants was not set, initializing as empty array");
             }
             
             // Validate color variants structure
             if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
                 foreach ($productData['color_variants'] as $vIndex => $variant) {
                     if (!isset($variant['name']) || !isset($variant['color'])) {
-                        error_log("Warning: Variant $vIndex missing required fields: " . json_encode($variant));
                     }
                 }
             }
             
             $validationErrors = $productModel->validateProductData($productData);
             if (empty($validationErrors)) {
-                error_log("Product $productIndex validation passed, creating product...");
                 $newProductId = $productModel->create($productData);
                 if ($newProductId) {
                     $successCount++;
@@ -452,22 +491,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $productData['sofa_count'] = $_POST['sofa_count'] ?? '';
         }
 
-        // Handle main product images
-        if (isset($_FILES['front_image']) && $_FILES['front_image']['error'] === UPLOAD_ERR_OK) {
-            $frontImageName = time() . '_front_' . $_FILES['front_image']['name'];
-            $frontImagePath = $uploadDir . $frontImageName;
-            if (move_uploaded_file($_FILES['front_image']['tmp_name'], $frontImagePath)) {
-                $productData['front_image'] = 'uploads/products/' . $frontImageName;
-            }
-        }
-
-        if (isset($_FILES['back_image']) && $_FILES['back_image']['error'] === UPLOAD_ERR_OK) {
-            $backImageName = time() . '_back_' . $_FILES['back_image']['name'];
-            $backImagePath = $uploadDir . $backImageName;
-            if (move_uploaded_file($_FILES['back_image']['tmp_name'], $backImagePath)) {
-                $productData['back_image'] = 'uploads/products/' . $backImageName;
-            }
-        }
 
         // Handle color variants
         if (isset($_POST['color_variants']) && is_array($_POST['color_variants'])) {
@@ -1579,13 +1602,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
                 <?php if ($error): ?>
-                <div class="message error"><?php echo $error; ?></div>
+                <div class="message error">
+                    <?php echo $error; ?>
+                    <br><small>Check the error logs for more details.</small>
+                </div>
         <?php endif; ?>
         
-        <!-- Temporary Debug -->
         <?php if (isset($product) && $product): ?>
             <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
-                <strong>DEBUG - Product Data:</strong><br>
                 Product ID: <?php echo htmlspecialchars($productId); ?><br>
                 Product Name: <?php echo htmlspecialchars($product['name'] ?? 'NOT SET'); ?><br>
                 Product Price: <?php echo htmlspecialchars($product['price'] ?? 'NOT SET'); ?><br>
@@ -1654,7 +1678,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                             <label for="subcategory">Subcategory <span id="subcategory-required" style="color: #dc3545;">*</span></label>
-                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories();">
+                            <select id="subcategory" name="subcategory" onchange="handleHomeLivingSubcategory(); loadSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Subcategory</option>
                 </select>
                         </div>
@@ -1662,7 +1686,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Beauty & Cosmetics sub-subcategory field -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
@@ -1793,6 +1817,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="">Select Size Category</option>
                     <option value="clothing" <?php echo ($product['size_category'] ?? '') === 'clothing' ? 'selected' : ''; ?>>Clothing</option>
                     <option value="shoes" <?php echo ($product['size_category'] ?? '') === 'shoes' ? 'selected' : ''; ?>>Shoes</option>
+                    <option value="beauty" <?php echo ($product['size_category'] ?? '') === 'beauty' ? 'selected' : ''; ?>>Beauty & Cosmetics</option>
                     <option value="none" <?php echo ($product['size_category'] ?? '') === 'none' ? 'selected' : ''; ?>>No Sizes</option>
                 </select>
                 </div>
@@ -2017,14 +2042,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!category) return;
 
             // Load subcategories from database
-            console.log('Single form: Fetching subcategories for category:', category);
             fetch(`get-subcategories.php?category=${encodeURIComponent(category)}`)
                 .then(response => {
-                    console.log('Single form: Response status:', response.status);
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Single form: Subcategory response data:', data);
                     if (data.success && data.subcategories) {
                         data.subcategories.forEach(subcategory => {
                             const option = document.createElement('option');
@@ -2032,9 +2054,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             option.textContent = subcategory;
                             subcategorySelect.appendChild(option);
                         });
-                        console.log(`Single form: Loaded ${data.subcategories.length} subcategories for ${category}`);
                     } else {
-                        console.log('Single form: No subcategories found for category:', category, 'Response:', data);
                     }
                 })
                 .catch(error => {
@@ -2076,7 +2096,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Load sub-subcategories from database
-            console.log('Fetching sub-subcategories for category:', category, 'subcategory:', subcategory);
             fetch(`get-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}`)
                 .then(response => response.text().then(text => {
                     if (text.trim() === '') {
@@ -2090,7 +2109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }))
                 .then(data => {
-                    console.log('Sub-subcategory response data:', data);
                     if (data.success && data.sub_subcategories) {
                         data.sub_subcategories.forEach(subSubcategory => {
                             const option = document.createElement('option');
@@ -2098,9 +2116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             option.textContent = subSubcategory;
                             subSubcategorySelect.appendChild(option);
                         });
-                        console.log(`Loaded ${data.sub_subcategories.length} sub-subcategories for ${category} > ${subcategory}:`, data.sub_subcategories);
                     } else {
-                        console.log('No sub-subcategories found for category:', category, 'subcategory:', subcategory, 'Response:', data);
                     }
                 })
                 .catch(error => {
@@ -2307,6 +2323,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Select Size Category</option>
                             <option value="clothing">Clothing</option>
                             <option value="shoes">Shoes</option>
+                            <option value="beauty">Beauty & Cosmetics</option>
                             <option value="none">No Sizes</option>
                         </select>
                     </div>
@@ -2376,6 +2393,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateClothingSizes(false, null);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers
@@ -2388,6 +2410,379 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 });
             }, 100);
+        }
+
+        function generateBeautySizes(isVariant = false, variantIndex = null) {
+            return `
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'makeup_sizes', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>💄 Makeup Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'makeup_sizes')` : 'selectAllInCategory(\'makeup_sizes\')'}">
+                            <input type="checkbox" id="select_all_makeup_sizes${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_makeup_sizes">
+                            <label for="select_all_makeup_sizes${isVariant ? '_' + variantIndex : ''}">✓ Select All Makeup Sizes</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Sample')` : 'toggleSize(\'Sample\')'}">
+                            <input type="checkbox" id="size_Sample${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Sample">
+                            <label for="size_Sample${isVariant ? '_' + variantIndex : ''}">Sample (1-2ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Travel')` : 'toggleSize(\'Travel\')'}">
+                            <input type="checkbox" id="size_Travel${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Travel">
+                            <label for="size_Travel${isVariant ? '_' + variantIndex : ''}">Travel Size (5-10ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Regular')` : 'toggleSize(\'Regular\')'}">
+                            <input type="checkbox" id="size_Regular${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Regular">
+                            <label for="size_Regular${isVariant ? '_' + variantIndex : ''}">Regular (15-30ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Large')` : 'toggleSize(\'Large\')'}">
+                            <input type="checkbox" id="size_Large${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Large">
+                            <label for="size_Large${isVariant ? '_' + variantIndex : ''}">Large (50-100ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Jumbo')` : 'toggleSize(\'Jumbo\')'}">
+                            <input type="checkbox" id="size_Jumbo${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Jumbo">
+                            <label for="size_Jumbo${isVariant ? '_' + variantIndex : ''}">Jumbo (150ml+)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'makeup_tools', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>🖌️ Makeup Tools</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'makeup_tools')` : 'selectAllInCategory(\'makeup_tools\')'}">
+                            <input type="checkbox" id="select_all_makeup_tools${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_makeup_tools">
+                            <label for="select_all_makeup_tools${isVariant ? '_' + variantIndex : ''}">✓ Select All Makeup Tools</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Foundation_Brush')` : 'toggleSize(\'Foundation_Brush\')'}">
+                            <input type="checkbox" id="size_Foundation_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Foundation_Brush">
+                            <label for="size_Foundation_Brush${isVariant ? '_' + variantIndex : ''}">Foundation Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Concealer_Brush')` : 'toggleSize(\'Concealer_Brush\')'}">
+                            <input type="checkbox" id="size_Concealer_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Concealer_Brush">
+                            <label for="size_Concealer_Brush${isVariant ? '_' + variantIndex : ''}">Concealer Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Eyeshadow_Brush')` : 'toggleSize(\'Eyeshadow_Brush\')'}">
+                            <input type="checkbox" id="size_Eyeshadow_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Eyeshadow_Brush">
+                            <label for="size_Eyeshadow_Brush${isVariant ? '_' + variantIndex : ''}">Eyeshadow Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Blush_Brush')` : 'toggleSize(\'Blush_Brush\')'}">
+                            <input type="checkbox" id="size_Blush_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Blush_Brush">
+                            <label for="size_Blush_Brush${isVariant ? '_' + variantIndex : ''}">Blush Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Lip_Brush')` : 'toggleSize(\'Lip_Brush\')'}">
+                            <input type="checkbox" id="size_Lip_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Lip_Brush">
+                            <label for="size_Lip_Brush${isVariant ? '_' + variantIndex : ''}">Lip Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Makeup_Remover')` : 'toggleSize(\'Makeup_Remover\')'}">
+                            <input type="checkbox" id="size_Makeup_Remover${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Makeup_Remover">
+                            <label for="size_Makeup_Remover${isVariant ? '_' + variantIndex : ''}">Makeup Remover</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Brush_Set')` : 'toggleSize(\'Brush_Set\')'}">
+                            <input type="checkbox" id="size_Brush_Set${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Brush_Set">
+                            <label for="size_Brush_Set${isVariant ? '_' + variantIndex : ''}">Brush Set</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'skincare_sizes', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>🧴 Skincare Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'skincare_sizes')` : 'selectAllInCategory(\'skincare_sizes\')'}">
+                            <input type="checkbox" id="select_all_skincare_sizes${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_skincare_sizes">
+                            <label for="select_all_skincare_sizes${isVariant ? '_' + variantIndex : ''}">✓ Select All Skincare Sizes</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Mini')` : 'toggleSize(\'Mini\')'}">
+                            <input type="checkbox" id="size_Mini${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Mini">
+                            <label for="size_Mini${isVariant ? '_' + variantIndex : ''}">Mini (15ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Small')` : 'toggleSize(\'Small\')'}">
+                            <input type="checkbox" id="size_Small${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Small">
+                            <label for="size_Small${isVariant ? '_' + variantIndex : ''}">Small (30ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Medium')` : 'toggleSize(\'Medium\')'}">
+                            <input type="checkbox" id="size_Medium${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Medium">
+                            <label for="size_Medium${isVariant ? '_' + variantIndex : ''}">Medium (50ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Large')` : 'toggleSize(\'Large\')'}">
+                            <input type="checkbox" id="size_Large_skincare${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Large_skincare">
+                            <label for="size_Large_skincare${isVariant ? '_' + variantIndex : ''}">Large (100ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Family')` : 'toggleSize(\'Family\')'}">
+                            <input type="checkbox" id="size_Family${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Family">
+                            <label for="size_Family${isVariant ? '_' + variantIndex : ''}">Family Size (200ml+)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'call_who_sizes', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>🌟 Call Who Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'call_who_sizes')` : 'selectAllInCategory(\'call_who_sizes\')'}">
+                            <input type="checkbox" id="select_all_call_who_sizes${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_call_who_sizes">
+                            <label for="select_all_call_who_sizes${isVariant ? '_' + variantIndex : ''}">✓ Select All Call Who Sizes</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Serum_15ml')` : 'toggleSize(\'Serum_15ml\')'}">
+                            <input type="checkbox" id="size_Serum_15ml${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Serum_15ml">
+                            <label for="size_Serum_15ml${isVariant ? '_' + variantIndex : ''}">Serum (15ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Toner_100ml')` : 'toggleSize(\'Toner_100ml\')'}">
+                            <input type="checkbox" id="size_Toner_100ml${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Toner_100ml">
+                            <label for="size_Toner_100ml${isVariant ? '_' + variantIndex : ''}">Toner (100ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Essence_30ml')` : 'toggleSize(\'Essence_30ml\')'}">
+                            <input type="checkbox" id="size_Essence_30ml${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Essence_30ml">
+                            <label for="size_Essence_30ml${isVariant ? '_' + variantIndex : ''}">Essence (30ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Spot_Treatment_10ml')` : 'toggleSize(\'Spot_Treatment_10ml\')'}">
+                            <input type="checkbox" id="size_Spot_Treatment_10ml${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Spot_Treatment_10ml">
+                            <label for="size_Spot_Treatment_10ml${isVariant ? '_' + variantIndex : ''}">Spot Treatment (10ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Call_Who_Set')` : 'toggleSize(\'Call_Who_Set\')'}">
+                            <input type="checkbox" id="size_Call_Who_Set${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Call_Who_Set">
+                            <label for="size_Call_Who_Set${isVariant ? '_' + variantIndex : ''}">Call Who Set</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'hair_sizes', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>💇 Hair Care Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'hair_sizes')` : 'selectAllInCategory(\'hair_sizes\')'}">
+                            <input type="checkbox" id="select_all_hair_sizes${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_hair_sizes">
+                            <label for="select_all_hair_sizes${isVariant ? '_' + variantIndex : ''}">✓ Select All Hair Sizes</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Trial')` : 'toggleSize(\'Trial\')'}">
+                            <input type="checkbox" id="size_Trial${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Trial">
+                            <label for="size_Trial${isVariant ? '_' + variantIndex : ''}">Trial Size (50ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Standard')` : 'toggleSize(\'Standard\')'}">
+                            <input type="checkbox" id="size_Standard${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Standard">
+                            <label for="size_Standard${isVariant ? '_' + variantIndex : ''}">Standard (250ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Professional')` : 'toggleSize(\'Professional\')'}">
+                            <input type="checkbox" id="size_Professional${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Professional">
+                            <label for="size_Professional${isVariant ? '_' + variantIndex : ''}">Professional (500ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Salon')` : 'toggleSize(\'Salon\')'}">
+                            <input type="checkbox" id="size_Salon${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Salon">
+                            <label for="size_Salon${isVariant ? '_' + variantIndex : ''}">Salon Size (1L+)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'hair_tools', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>🔧 Hair Tools</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'hair_tools')` : 'selectAllInCategory(\'hair_tools\')'}">
+                            <input type="checkbox" id="select_all_hair_tools${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_hair_tools">
+                            <label for="select_all_hair_tools${isVariant ? '_' + variantIndex : ''}">✓ Select All Hair Tools</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Hair_Dryer')` : 'toggleSize(\'Hair_Dryer\')'}">
+                            <input type="checkbox" id="size_Hair_Dryer${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Hair_Dryer">
+                            <label for="size_Hair_Dryer${isVariant ? '_' + variantIndex : ''}">Hair Dryer</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Straightener')` : 'toggleSize(\'Straightener\')'}">
+                            <input type="checkbox" id="size_Straightener${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Straightener">
+                            <label for="size_Straightener${isVariant ? '_' + variantIndex : ''}">Straightener</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Curling_Iron')` : 'toggleSize(\'Curling_Iron\')'}">
+                            <input type="checkbox" id="size_Curling_Iron${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Curling_Iron">
+                            <label for="size_Curling_Iron${isVariant ? '_' + variantIndex : ''}">Curling Iron</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Hair_Brush')` : 'toggleSize(\'Hair_Brush\')'}">
+                            <input type="checkbox" id="size_Hair_Brush${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Hair_Brush">
+                            <label for="size_Hair_Brush${isVariant ? '_' + variantIndex : ''}">Hair Brush</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Comb')` : 'toggleSize(\'Comb\')'}">
+                            <input type="checkbox" id="size_Comb${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Comb">
+                            <label for="size_Comb${isVariant ? '_' + variantIndex : ''}">Comb</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Hair_Clips')` : 'toggleSize(\'Hair_Clips\')'}">
+                            <input type="checkbox" id="size_Hair_Clips${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Hair_Clips">
+                            <label for="size_Hair_Clips${isVariant ? '_' + variantIndex : ''}">Hair Clips</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="size-category main-category" onclick="toggleMainSizeCategory(this, 'bath_body_sizes', ${isVariant}, ${variantIndex})">
+                    <div class="size-category-header">
+                        <span>🛁 Bath & Body Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, 'bath_body_sizes')` : 'selectAllInCategory(\'bath_body_sizes\')'}">
+                            <input type="checkbox" id="select_all_bath_body_sizes${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_bath_body_sizes">
+                            <label for="select_all_bath_body_sizes${isVariant ? '_' + variantIndex : ''}">✓ Select All Bath & Body Sizes</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Travel_Kit')` : 'toggleSize(\'Travel_Kit\')'}">
+                            <input type="checkbox" id="size_Travel_Kit${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Travel_Kit">
+                            <label for="size_Travel_Kit${isVariant ? '_' + variantIndex : ''}">Travel Kit (30ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Personal')` : 'toggleSize(\'Personal\')'}">
+                            <input type="checkbox" id="size_Personal${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Personal">
+                            <label for="size_Personal${isVariant ? '_' + variantIndex : ''}">Personal (100ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Family')` : 'toggleSize(\'Family\')'}">
+                            <input type="checkbox" id="size_Family_bath${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Family_bath">
+                            <label for="size_Family_bath${isVariant ? '_' + variantIndex : ''}">Family (250ml)</label>
+                        </div>
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, 'Economy')` : 'toggleSize(\'Economy\')'}">
+                            <input type="checkbox" id="size_Economy${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="Economy">
+                            <label for="size_Economy${isVariant ? '_' + variantIndex : ''}">Economy (500ml+)</label>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate filtered beauty sizes based on subcategory and sub-subcategory
+        function generateFilteredBeautySizes(isVariant = false, variantIndex = null, subcategory = '', subSubcategory = '') {
+            let html = '';
+            
+            // Define size categories and their relevance to subcategories
+            const sizeCategories = {
+                'makeup_sizes': {
+                    name: '💄 Makeup Sizes',
+                    sizes: ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                    relevantSubcategories: ['Makeup'],
+                    relevantSubSubcategories: ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Mascara', 'Lipstick', 'Lip Gloss']
+                },
+                'makeup_tools': {
+                    name: '🖌️ Makeup Tools',
+                    sizes: ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                    relevantSubcategories: ['Makeup Tools'],
+                    relevantSubSubcategories: ['Brushes', 'Sponges', 'Tools']
+                },
+                'skincare_sizes': {
+                    name: '🧴 Skincare Sizes',
+                    sizes: ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask']
+                },
+                'call_who_sizes': {
+                    name: '🌟 Call Who Sizes',
+                    sizes: ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                    relevantSubcategories: ['Skincare'],
+                    relevantSubSubcategories: ['Serum', 'Toner', 'Essence', 'Treatment']
+                },
+                'hair_sizes': {
+                    name: '💇 Hair Care Sizes',
+                    sizes: ['Trial', 'Standard', 'Professional', 'Salon'],
+                    relevantSubcategories: ['Hair Care'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Treatment', 'Styling']
+                },
+                'hair_tools': {
+                    name: '🔧 Hair Tools',
+                    sizes: ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                    relevantSubcategories: ['Hair Tools'],
+                    relevantSubSubcategories: ['Styling Tools', 'Brushes', 'Accessories']
+                },
+                'bath_body_sizes': {
+                    name: '🛁 Bath & Body Sizes',
+                    sizes: ['Travel_Kit', 'Personal', 'Family_bath', 'Economy'],
+                    relevantSubcategories: ['Bath & Body'],
+                    relevantSubSubcategories: ['Body Wash', 'Lotion', 'Scrub', 'Oil']
+                }
+            };
+            
+            // Filter size categories based on subcategory and sub-subcategory
+            const relevantCategories = Object.entries(sizeCategories).filter(([key, category]) => {
+                // If no subcategory is selected, show all categories
+                if (!subcategory) return true;
+                
+                // Check if subcategory matches
+                const subcategoryMatch = category.relevantSubcategories.includes(subcategory);
+                
+                // If sub-subcategory is selected, also check that
+                if (subSubcategory) {
+                    const subSubcategoryMatch = category.relevantSubSubcategories.includes(subSubcategory);
+                    return subcategoryMatch && subSubcategoryMatch;
+                }
+                
+                return subcategoryMatch;
+            });
+            
+            // Generate HTML for relevant categories only
+            relevantCategories.forEach(([categoryKey, category]) => {
+                html += `
+                <div class="size-category main-category">
+                    <div class="size-category-header" onclick="toggleMainSizeCategory(this, '${categoryKey}', ${isVariant}, ${variantIndex})">
+                        <span>${category.name}</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <div class="size-option select-all-option" onclick="${isVariant ? `selectAllInVariantCategory(${variantIndex}, '${categoryKey}')` : `selectAllInCategory('${categoryKey}')`}">
+                            <input type="checkbox" id="select_all_${categoryKey}${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="select_all_${categoryKey}">
+                            <label for="select_all_${categoryKey}${isVariant ? '_' + variantIndex : ''}">✓ Select All ${category.name.replace(/[^\w\s]/g, '')}</label>
+                        </div>`;
+                
+                category.sizes.forEach(size => {
+                    const sizeId = size.replace(/[^a-zA-Z0-9]/g, '_');
+                    html += `
+                        <div class="size-option" onclick="${isVariant ? `toggleVariantSize(${variantIndex}, '${size}')` : `toggleSize('${size}')`}">
+                            <input type="checkbox" id="size_${sizeId}${isVariant ? '_' + variantIndex : ''}" name="sizes[]" value="${size}">
+                            <label for="size_${sizeId}${isVariant ? '_' + variantIndex : ''}">${size.replace(/_/g, ' ')}</label>
+                        </div>`;
+                });
+                
+                html += `
+                    </div>
+                </div>`;
+            });
+            
+            // If no relevant categories found, show a message
+            if (relevantCategories.length === 0) {
+                html = `
+                <div class="no-sizes-message">
+                    <p>No specific sizes available for the selected subcategory/sub-subcategory combination.</p>
+                    <p>Please select a subcategory and sub-subcategory to see relevant size options.</p>
+                </div>`;
+            }
+            
+            return html;
+        }
+
+        // Function to refresh size options when subcategory or sub-subcategory changes
+        function refreshSizeOptions() {
+            const sizeCategory = document.getElementById('size_category').value;
+            if (sizeCategory === 'beauty') {
+                loadSizeOptions();
+            }
+        }
+
+        // Function to refresh variant size options when subcategory or sub-subcategory changes
+        function refreshVariantSizeOptions(variantIndex) {
+            const variant = document.querySelector(`[name="color_variants[${variantIndex}][size_category]"]`).closest('.variant-item');
+            const sizeCategory = variant.querySelector(`[name="color_variants[${variantIndex}][size_category]"]`).value;
+            if (sizeCategory === 'beauty') {
+                loadVariantSizeOptions(variantIndex);
+            }
+        }
+
+        // Function to refresh all variant size options (for single product variants)
+        function refreshAllVariantSizeOptions() {
+            // Find all variant size category selects
+            const variantSizeSelects = document.querySelectorAll('select[name^="color_variants["][name$="[size_category]"]');
+            variantSizeSelects.forEach(select => {
+                const variantIndex = select.name.match(/color_variants\[(\d+)\]/)[1];
+                refreshVariantSizeOptions(variantIndex);
+            });
         }
 
         function generateClothingSizes() {
@@ -2778,6 +3173,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        function toggleMainSizeCategory(categoryElement, categoryType, isVariant, variantIndex) {
+            // Handle the case where variantIndex might be passed as string "null"
+            if (variantIndex === 'null' || variantIndex === null) {
+                variantIndex = null;
+            }
+            
+            const sizeOptions = categoryElement.querySelector('.size-options');
+            const chevronIcon = categoryElement.querySelector('i');
+            
+            if (!sizeOptions) {
+                console.error('Size options not found!');
+                return;
+            }
+            
+            // Toggle the expanded state
+            categoryElement.classList.toggle('expanded');
+            sizeOptions.classList.toggle('show');
+            
+            // Rotate the chevron icon
+            if (sizeOptions.classList.contains('show')) {
+                chevronIcon.style.transform = 'rotate(90deg)';
+                chevronIcon.className = 'fas fa-chevron-down';
+            } else {
+                chevronIcon.style.transform = 'rotate(0deg)';
+                chevronIcon.className = 'fas fa-chevron-right';
+            }
+        }
+
         function toggleSize(size) {
             const checkbox = document.querySelector(`input[value="${size}"]`);
             const sizeOption = checkbox.closest('.size-option');
@@ -2824,7 +3247,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
                 'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47']
+                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                'call_who_sizes': ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                'hair_sizes': ['Trial', 'Standard', 'Professional', 'Salon'],
+                'hair_tools': ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                'bath_body_sizes': ['Travel_Kit', 'Personal', 'Family_bath', 'Economy']
             };
             
             const sizesToToggle = categorySizes[category] || [];
@@ -2877,6 +3307,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateClothingSizes(true, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(true, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                // Get current subcategory and sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(true, variantIndex, subcategory, subSubcategory);
             }
             
             // Add event listeners to category headers and select all buttons
@@ -2962,7 +3397,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
                 'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47']
+                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                'call_who_sizes': ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                'hair_sizes': ['Trial', 'Standard', 'Professional', 'Salon'],
+                'hair_tools': ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                'bath_body_sizes': ['Travel_Kit', 'Personal', 'Family_bath', 'Economy']
             };
             
             const sizesToToggle = categorySizes[category] || [];
@@ -3250,16 +3692,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function generateProductForms() {
-            console.log('generateProductForms function called');
             try {
                 const count = parseInt(document.getElementById('product-count').value);
-                console.log('Product count:', count);
                 
                 if (count === 1) {
-                    console.log('Showing single product form');
                     showSingleProductForm();
                 } else {
-                    console.log('Showing multi product form with count:', count);
                     showMultiProductForm(count);
                 }
             } catch (error) {
@@ -3277,7 +3715,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showMultiProductForm(count) {
-            console.log('showMultiProductForm called with count:', count);
             try {
                 document.getElementById('single-product-form').classList.remove('form-active');
                 document.getElementById('multi-product-form').classList.add('form-active');
@@ -3289,11 +3726,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 container.innerHTML = '';
                 
-                console.log('Generating forms...');
                 for (let i = 0; i < count; i++) {
-                    console.log('Generating form for index:', i);
                     const productForm = generateProductFormHTML(i);
-                    console.log('Form HTML generated:', productForm.substring(0, 100) + '...');
                     container.innerHTML += productForm;
                 }
                 
@@ -3308,7 +3742,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     initializeMultiProductForms();
                 }, 100);
                 
-                console.log('Multi-product form generation completed');
             } catch (error) {
                 console.error('Error in showMultiProductForm:', error);
                 alert('Error showing multi-product form: ' + error.message);
@@ -3326,7 +3759,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     categories = ['Perfumes', 'Bags', 'Shoes', 'Accessories', 'Home & Living'];
                 }
                 
-                console.log('Categories loaded:', categories);
                 
                 if (!categories || !Array.isArray(categories)) {
                     console.error('Categories not loaded properly:', categories);
@@ -4018,9 +4450,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function generateMultiBeautySizes(productIndex) {
             return `
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>💄 Makeup Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Sample" onchange="toggleMultiSize('${productIndex}', 'Sample')"> Sample (1-2ml)</label>
@@ -4032,9 +4464,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🖌️ Makeup Tools</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Foundation_Brush" onchange="toggleMultiSize('${productIndex}', 'Foundation_Brush')"> Foundation Brush</label>
@@ -4048,9 +4480,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🧴 Skincare Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Mini" onchange="toggleMultiSize('${productIndex}', 'Mini')"> Mini (15ml)</label>
@@ -4062,22 +4494,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
-                        <span>🌟 Hair Care Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
+                        <span>🌟 Call Who Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
-                        <label><input type="checkbox" value="Travel_Hair" onchange="toggleMultiSize('${productIndex}', 'Travel_Hair')"> Travel Size (50ml)</label>
-                        <label><input type="checkbox" value="Regular_Hair" onchange="toggleMultiSize('${productIndex}', 'Regular_Hair')"> Regular (250ml)</label>
-                        <label><input type="checkbox" value="Large_Hair" onchange="toggleMultiSize('${productIndex}', 'Large_Hair')"> Large (500ml)</label>
-                        <label><input type="checkbox" value="Family_Hair" onchange="toggleMultiSize('${productIndex}', 'Family_Hair')"> Family Size (1L+)</label>
+                        <label><input type="checkbox" value="Serum_15ml" onchange="toggleMultiSize('${productIndex}', 'Serum_15ml')"> Serum (15ml)</label>
+                        <label><input type="checkbox" value="Toner_100ml" onchange="toggleMultiSize('${productIndex}', 'Toner_100ml')"> Toner (100ml)</label>
+                        <label><input type="checkbox" value="Essence_30ml" onchange="toggleMultiSize('${productIndex}', 'Essence_30ml')"> Essence (30ml)</label>
+                        <label><input type="checkbox" value="Spot_Treatment_10ml" onchange="toggleMultiSize('${productIndex}', 'Spot_Treatment_10ml')"> Spot Treatment (10ml)</label>
+                        <label><input type="checkbox" value="Call_Who_Set" onchange="toggleMultiSize('${productIndex}', 'Call_Who_Set')"> Call Who Set</label>
                     </div>
                 </div>
                 
                 <div class="size-category">
-                    <div class="size-category-header">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
+                        <span>💇 Hair Care Sizes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <label><input type="checkbox" value="Trial" onchange="toggleMultiSize('${productIndex}', 'Trial')"> Trial Size (50ml)</label>
+                        <label><input type="checkbox" value="Standard" onchange="toggleMultiSize('${productIndex}', 'Standard')"> Standard (250ml)</label>
+                        <label><input type="checkbox" value="Professional" onchange="toggleMultiSize('${productIndex}', 'Professional')"> Professional (500ml)</label>
+                        <label><input type="checkbox" value="Salon" onchange="toggleMultiSize('${productIndex}', 'Salon')"> Salon Size (1L+)</label>
+                    </div>
+                </div>
+                
+                <div class="size-category">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
+                        <span>🔧 Hair Tools</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="size-options">
+                        <label><input type="checkbox" value="Hair_Dryer" onchange="toggleMultiSize('${productIndex}', 'Hair_Dryer')"> Hair Dryer</label>
+                        <label><input type="checkbox" value="Straightener" onchange="toggleMultiSize('${productIndex}', 'Straightener')"> Straightener</label>
+                        <label><input type="checkbox" value="Curling_Iron" onchange="toggleMultiSize('${productIndex}', 'Curling_Iron')"> Curling Iron</label>
+                        <label><input type="checkbox" value="Hair_Brush" onchange="toggleMultiSize('${productIndex}', 'Hair_Brush')"> Hair Brush</label>
+                        <label><input type="checkbox" value="Comb" onchange="toggleMultiSize('${productIndex}', 'Comb')"> Comb</label>
+                        <label><input type="checkbox" value="Hair_Clips" onchange="toggleMultiSize('${productIndex}', 'Hair_Clips')"> Hair Clips</label>
+                    </div>
+                </div>
+                
+                <div class="size-category">
+                    <div class="size-category-header" onclick="toggleSizeCategory(this, ${productIndex})">
                         <span>🛁 Bath & Body Sizes</span>
-                        <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                     <div class="size-options">
                         <label><input type="checkbox" value="Mini_Bath" onchange="toggleMultiSize('${productIndex}', 'Mini_Bath')"> Mini (50ml)</label>
@@ -4365,7 +4826,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
                 'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47']
+                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                'call_who_sizes': ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                'hair_sizes': ['Trial', 'Standard', 'Professional', 'Salon'],
+                'hair_tools': ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                'bath_body_sizes': ['Travel_Kit', 'Personal', 'Family_bath', 'Economy']
             };
             
             const sizesToToggle = categorySizes[category] || [];
@@ -4437,7 +4905,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Load subcategories for multi-product forms
         function loadMultiSubcategories(productIndex) {
-            console.log('loadMultiSubcategories called for product:', productIndex);
             
             const categorySelect = document.querySelector(`select[name="products[${productIndex}][category]"]`);
             const subcategorySelect = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`);
@@ -4448,7 +4915,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             const category = categorySelect.value;
-            console.log('Selected category:', category);
             
             // Reset subcategory
             subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
@@ -4491,7 +4957,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Load subcategories from database for all categories except perfumes
-            console.log('Fetching subcategories for category:', category);
             fetch('get-subcategories.php', {
                 method: 'POST',
                 headers: {
@@ -4500,11 +4965,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 body: `category=${encodeURIComponent(category)}`
             })
             .then(response => {
-                console.log('Response status:', response.status);
                 return response.json();
             })
             .then(data => {
-                console.log('Subcategory response data:', data);
                 if (data.success && data.subcategories) {
                     // Clear existing options first to prevent duplicates
                     subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
@@ -4518,9 +4981,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         option.textContent = subcategory;
                         subcategorySelect.appendChild(option);
                     });
-                    console.log(`Loaded ${uniqueSubcategories.length} unique subcategories for ${category}`);
             } else {
-                    console.log('No subcategories found for category:', category, 'Response:', data);
                 }
             })
             .catch(error => {
@@ -4647,6 +5108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                sizeDropdownContent.innerHTML = generateMultiBeautySizes(productIndex, variantIndex);
             }
             
             // Add event listeners to category headers
@@ -5033,6 +5496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Select Size Category</option>
                             <option value="clothing">Clothing</option>
                             <option value="shoes">Shoes</option>
+                            <option value="beauty">Beauty & Cosmetics</option>
                             <option value="none">No Sizes</option>
                         </select>
                     </div>
@@ -5098,6 +5562,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sizeDropdownContent.innerHTML = generateMultiClothingSizes(productIndex, variantIndex);
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateMultiShoeSizes(productIndex, variantIndex);
+            } else if (sizeCategory === 'beauty') {
+                sizeDropdownContent.innerHTML = generateMultiBeautySizes(productIndex, variantIndex);
             }
             
             // Add event listeners to category headers
@@ -5180,7 +5646,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
                 'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47']
+                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                'call_who_sizes': ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                'hair_sizes': ['Trial', 'Standard', 'Professional', 'Salon'],
+                'hair_tools': ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                'bath_body_sizes': ['Travel_Kit', 'Personal', 'Family_bath', 'Economy']
             };
             
             const sizesToToggle = categorySizes[category] || [];

@@ -76,24 +76,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $categoryName = trim($_POST['category_name'] ?? '');
             $subcategoryName = trim($_POST['subcategory_name'] ?? '');
             
-            // Debug logging
-            error_log("Delete subcategory request - Category: '$categoryName', Subcategory: '$subcategoryName'");
-            error_log("POST data: " . json_encode($_POST));
             
             if (empty($categoryName) || empty($subcategoryName)) {
                 $message = 'Category name and subcategory name are required.';
                 $messageType = 'error';
-                error_log("Delete subcategory failed - Missing required fields");
             } else {
                 $success = $categoryModel->removeSubcategory($categoryName, $subcategoryName);
                 if ($success) {
                     $message = 'Subcategory deleted successfully!';
                     $messageType = 'success';
-                    error_log("Subcategory '$subcategoryName' deleted successfully from category '$categoryName'");
                 } else {
                     $message = 'Failed to delete subcategory.';
                     $messageType = 'error';
-                    error_log("Failed to delete subcategory '$subcategoryName' from category '$categoryName'");
                 }
             }
             break;
@@ -1413,7 +1407,11 @@ $categories = $categoryModel->getAll();
                                         <div class="subcategories-list">
                                             <?php if (!empty($category['subcategories'])): ?>
                                                 <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                                    <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory); ?></span>
+                                                    <?php if (is_array($subcategory) && isset($subcategory['name'])): ?>
+                                                        <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory['name']); ?></span>
+                                                    <?php elseif (is_string($subcategory)): ?>
+                                                        <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory); ?></span>
+                                                    <?php endif; ?>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
                                                 <span class="no-subcategories">No subcategories</span>
@@ -1660,7 +1658,6 @@ $categories = $categoryModel->getAll();
             const select = document.getElementById('edit_subcategory_select');
             const selectedIndex = select.value;
             
-            console.log('removeSubcategory called with selectedIndex:', selectedIndex);
             
             if (selectedIndex === '') {
                 showMessage('Please select a subcategory to remove!', 'error');
@@ -1670,8 +1667,6 @@ $categories = $categoryModel->getAll();
             const subcategoryName = select.options[select.selectedIndex].textContent;
             const subcategoryIndex = selectedIndex;
             
-            console.log('Subcategory to remove:', subcategoryName, 'at index:', subcategoryIndex);
-            console.log('Current subcategories array:', currentSubcategories);
             
             // Show confirmation modal
             showRemoveSubcategoryModal(subcategoryName, subcategoryIndex);
@@ -1697,7 +1692,6 @@ $categories = $categoryModel->getAll();
             
             const subcategoryName = currentSubcategories[subcategoryIndex];
             
-            console.log('Deleting subcategory:', subcategoryName, 'from category:', categoryName, 'at index:', subcategoryIndex);
             
             // Send deletion request to server
             const formData = new FormData();
@@ -1711,14 +1705,12 @@ $categories = $categoryModel->getAll();
             })
             .then(response => response.text())
             .then(data => {
-                console.log('Server response:', data);
                 
                 // Check if the response indicates success
                 if (data.includes('Subcategory deleted successfully') || data.includes('success')) {
                     // Remove from local array
                     if (currentSubcategories && currentSubcategories.length > subcategoryIndex) {
                         currentSubcategories.splice(subcategoryIndex, 1);
-                        console.log('Updated currentSubcategories:', currentSubcategories);
                     }
                     
                     // Update dropdown with fresh data
@@ -1873,7 +1865,6 @@ $categories = $categoryModel->getAll();
                 });
             }
             
-            console.log('Subcategory dropdown updated with', currentSubcategories ? currentSubcategories.length : 0, 'items');
         }
 
         function closeRemoveSubcategoryModal() {

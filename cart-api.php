@@ -104,7 +104,12 @@ try {
                 $quantity = intval($input['quantity'] ?? 1);
                 $color = $input['color'] ?? '';
                 $size = $input['size'] ?? '';
+                $price = $input['price'] ?? null;
+                $variantName = $input['variant_name'] ?? '';
+                $variantStock = $input['variant_stock'] ?? null;
+                $variantImage = $input['variant_image'] ?? '';
                 $returnUrl = $input['return_url'] ?? '';
+                
                 
                 if (empty($productId)) {
                     throw new Exception('Product ID is required');
@@ -115,7 +120,22 @@ try {
                     $_SESSION['return_url'] = $returnUrl;
                 }
                 
-                $success = $cartModel->addToCart($defaultUserId, $productId, $quantity, $color, $size);
+                // Prepare additional data for variant handling
+                $additionalData = [];
+                if ($price !== null) {
+                    $additionalData['price'] = floatval($price);
+                }
+                if (!empty($variantName)) {
+                    $additionalData['variant_name'] = $variantName;
+                }
+                if ($variantStock !== null) {
+                    $additionalData['variant_stock'] = intval($variantStock);
+                }
+                if (!empty($variantImage)) {
+                    $additionalData['variant_image'] = $variantImage;
+                }
+                
+                $success = $cartModel->addToCart($defaultUserId, $productId, $quantity, $color, $size, $additionalData);
                 
                 if ($success) {
                     $cartCount = $cartModel->getCartItemCount($defaultUserId);

@@ -61,12 +61,21 @@ function getImagePath($imagePath) {
     return null;
 }
 
+// Helper function to check if a file is a video
+function isVideoFile($filePath) {
+    if (empty($filePath)) return false;
+    
+    $videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+    $fileExtension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    return in_array($fileExtension, $videoExtensions);
+}
+
 // Get filters from URL parameters
 $category = $_GET['category'] ?? '';
 $subcategory = $_GET['subcategory'] ?? '';
 $search = $_GET['search'] ?? '';
-$sort = $_GET['sort'] ?? 'name';
-$order = $_GET['order'] ?? 'asc';
+$sort = $_GET['sort'] ?? '_id';
+$order = $_GET['order'] ?? 'desc';
 $page = max(1, intval($_GET['page'] ?? 1));
 $perPage = 12;
 
@@ -83,6 +92,8 @@ if ($sort === 'price') {
     $sortOptions['price'] = $order === 'asc' ? 1 : -1;
 } elseif ($sort === 'createdAt') {
     $sortOptions['createdAt'] = $order === 'asc' ? 1 : -1;
+} elseif ($sort === '_id') {
+    $sortOptions['_id'] = $order === 'asc' ? 1 : -1;
 } else {
     $sortOptions['name'] = $order === 'asc' ? 1 : -1;
 }
@@ -927,17 +938,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="filter-group">
                         <label for="sort">Sort By</label>
                         <select name="sort" id="sort">
+                            <option value="_id" <?php echo $sort === '_id' ? 'selected' : ''; ?>>Date Added</option>
+                            <option value="createdAt" <?php echo $sort === 'createdAt' ? 'selected' : ''; ?>>Date Created</option>
                             <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name</option>
                             <option value="price" <?php echo $sort === 'price' ? 'selected' : ''; ?>>Price</option>
-                            <option value="createdAt" <?php echo $sort === 'createdAt' ? 'selected' : ''; ?>>Date Created</option>
                         </select>
                     </div>
 
                     <div class="filter-group">
                         <label for="order">Order</label>
                         <select name="order" id="order">
-                            <option value="asc" <?php echo $order === 'asc' ? 'selected' : ''; ?>>Ascending</option>
-                            <option value="desc" <?php echo $order === 'desc' ? 'selected' : ''; ?>>Descending</option>
+                            <option value="desc" <?php echo $order === 'desc' ? 'selected' : ''; ?>>Newest First</option>
+                            <option value="asc" <?php echo $order === 'asc' ? 'selected' : ''; ?>>Oldest First</option>
                         </select>
                     </div>
 
@@ -1098,12 +1110,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               if (!empty($images)) {
                                   foreach ($images as $index => $image) {
                                       $isActive = $index === 0 ? 'active' : '';
-                                      echo '<img src="' . htmlspecialchars($image['src']) . '" ' .
-                                                'alt="' . htmlspecialchars($product['name']) . '" ' .
-                                                'class="product-image ' . $isActive . '" ' .
-                                                'data-color="' . htmlspecialchars($image['color']) . '" ' .
-                                                'data-type="' . htmlspecialchars($image['type']) . '" ' .
-                                                'onerror="this.src=\'../img/placeholder.jpg\'">';
+                                      $isVideo = isVideoFile($image['src']);
+                                      
+                                      if ($isVideo) {
+                                          echo '<video controls class="product-image ' . $isActive . '" ' .
+                                                    'data-color="' . htmlspecialchars($image['color']) . '" ' .
+                                                    'data-type="' . htmlspecialchars($image['type']) . '" ' .
+                                                    'style="max-width: 100%; height: auto;" ' .
+                                                    'onerror="this.parentElement.innerHTML=\'<img src=\\\'../img/placeholder.jpg\\\' alt=\\\'Video Error\\\' class=\\\'product-image active\\\'>\'">' .
+                                                    '<source src="' . htmlspecialchars($image['src']) . '" type="video/' . pathinfo($image['src'], PATHINFO_EXTENSION) . '">' .
+                                                    'Your browser does not support the video tag.' .
+                                                '</video>';
+                                      } else {
+                                          echo '<img src="' . htmlspecialchars($image['src']) . '" ' .
+                                                    'alt="' . htmlspecialchars($product['name']) . '" ' .
+                                                    'class="product-image ' . $isActive . '" ' .
+                                                    'data-color="' . htmlspecialchars($image['color']) . '" ' .
+                                                    'data-type="' . htmlspecialchars($image['type']) . '" ' .
+                                                    'onerror="this.src=\'../img/placeholder.jpg\'">';
+                                      }
                                   }
                               } else {
                                   echo '<img src="../img/placeholder.jpg" alt="No image available" class="product-image active">';
@@ -1785,18 +1810,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  colorVariantsHTML += '</div>';
              }
 
+            // Helper function to check if file is video
+            function isVideoFile(filePath) {
+                if (!filePath) return false;
+                const videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+                const extension = filePath.split('.').pop().toLowerCase();
+                return videoExtensions.includes(extension);
+            }
+            
             // Build images HTML
             let imagesHTML = '';
             if (product.front_image) {
                 const frontImagePath = getImagePath(product.front_image);
                 if (frontImagePath) {
-                    imagesHTML += `<img src="${frontImagePath}" alt="${product.name}" class="product-image-modal active" data-color="default" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                    if (isVideoFile(frontImagePath)) {
+                        const extension = frontImagePath.split('.').pop().toLowerCase();
+                        imagesHTML += `<video controls class="product-image-modal active" data-color="default" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal active\\'>'"><source src="${frontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                    } else {
+                        imagesHTML += `<img src="${frontImagePath}" alt="${product.name}" class="product-image-modal active" data-color="default" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                    }
                 }
             }
             if (product.back_image) {
                 const backImagePath = getImagePath(product.back_image);
                 if (backImagePath) {
-                    imagesHTML += `<img src="${backImagePath}" alt="${product.name}" class="product-image-modal" data-color="default" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                    if (isVideoFile(backImagePath)) {
+                        const extension = backImagePath.split('.').pop().toLowerCase();
+                        imagesHTML += `<video controls class="product-image-modal" data-color="default" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${backImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                    } else {
+                        imagesHTML += `<img src="${backImagePath}" alt="${product.name}" class="product-image-modal" data-color="default" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                    }
                 }
             }
             
@@ -1806,13 +1849,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (variant.front_image) {
                         const variantFrontImagePath = getImagePath(variant.front_image);
                         if (variantFrontImagePath) {
-                            imagesHTML += `<img src="${variantFrontImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                            if (isVideoFile(variantFrontImagePath)) {
+                                const extension = variantFrontImagePath.split('.').pop().toLowerCase();
+                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantFrontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                            } else {
+                                imagesHTML += `<img src="${variantFrontImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                            }
                         }
                     }
                     if (variant.back_image) {
                         const variantBackImagePath = getImagePath(variant.back_image);
                         if (variantBackImagePath) {
-                            imagesHTML += `<img src="${variantBackImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                            if (isVideoFile(variantBackImagePath)) {
+                                const extension = variantBackImagePath.split('.').pop().toLowerCase();
+                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantBackImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                            } else {
+                                imagesHTML += `<img src="${variantBackImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                            }
                         }
                     }
                 });

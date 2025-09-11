@@ -28,7 +28,6 @@ try {
         
         if (is_array($subSubcategories) && !empty($subSubcategories)) {
             echo "<p>Sub-subcategories found: " . count($subSubcategories) . "</p>\n";
-            echo "<pre>" . print_r($subSubcategories, true) . "</pre>\n";
         } else {
             echo "<p>No sub-subcategories found</p>\n";
         }
