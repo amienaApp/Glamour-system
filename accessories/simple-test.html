@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Quickview Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-button { 
+            background-color: #007bff; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px;
+            font-size: 16px;
+        }
+        .test-button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Simple Quickview Test</h1>
+    
+    <button class="quick-view test-button" data-product-id="test-001">Test Quick View 1</button>
+    <button class="quick-view test-button" data-product-id="test-002">Test Quick View 2</button>
+    
+    <div id="output"></div>
+
+    <script>
+        console.log('Simple test script loaded');
+        
+        // Test event listener
+        document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target);
+            console.log('Target classes:', e.target.classList);
+            console.log('Has quick-view class:', e.target.classList.contains('quick-view'));
+            
+            if (e.target.classList.contains('quick-view')) {
+                e.preventDefault();
+                console.log('Quick view button clicked!');
+                const productId = e.target.getAttribute('data-product-id');
+                console.log('Product ID:', productId);
+                
+                // Show result
+                document.getElementById('output').innerHTML = 
+                    '<p style="color: green; font-weight: bold;">SUCCESS: Quick view clicked for product ' + productId + '</p>';
+            }
+        });
+        
+        console.log('Event listener set up');
+    </script>
+</body>
+</html>

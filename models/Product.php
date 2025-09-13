@@ -113,6 +113,18 @@ class Product {
         return $this->getAll(['sale' => true]);
     }
 
+    public function getAvailable() {
+        return $this->getAll(['available' => true]);
+    }
+
+    public function getByCategoryAvailable($category) {
+        return $this->getAll(['category' => $category, 'available' => true]);
+    }
+
+    public function getFeaturedAvailable() {
+        return $this->getAll(['featured' => true, 'available' => true]);
+    }
+
     public function getNewArrivals($limit = 8) {
         return $this->getAll([], ['createdAt' => -1], $limit);
     }
@@ -214,6 +226,14 @@ class Product {
         if (empty($data['name'])) $errors[] = 'Product name is required';
         if (!isset($data['price']) || $data['price'] <= 0) $errors[] = 'Valid price is required';
         if (empty($data['category'])) $errors[] = 'Category is required';
+        
+        // Validate stock and availability
+        if (isset($data['stock']) && $data['stock'] < 0) {
+            $errors[] = 'Stock quantity cannot be negative';
+        }
+        if (isset($data['available']) && !is_bool($data['available'])) {
+            $errors[] = 'Availability must be a boolean value';
+        }
         
         // Validate color variants if present
         if (isset($data['color_variants']) && is_array($data['color_variants'])) {

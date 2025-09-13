@@ -207,6 +207,7 @@ try {
                     $response = [
                         'success' => true,
                         'message' => 'Cart cleared successfully!',
+                        'cart_count' => 0,
                         'data' => ['items' => [], 'total' => 0, 'item_count' => 0]
                     ];
                 } else {

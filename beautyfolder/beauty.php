@@ -20,12 +20,10 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-    <script src="../reviews-manager.js?v=<?php echo time(); ?>"></script>
-    <script src="../related-products.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
-    <script src="quickview-manager.js?v=<?php echo time(); ?>"></script>
-    <script src="cart-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php 
@@ -141,6 +139,18 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                     });
                 }
             }
+        </script>
+
+        <!-- Simple Sorting Function -->
+        <script>
+        function updateSort(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortValue);
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+            window.location.reload();
+        }
         </script>
 
         <!-- Quick View Sidebar -->

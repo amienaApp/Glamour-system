@@ -63,16 +63,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceEl = document.getElementById('quick-view-price');
         const addToBagBtn = document.getElementById('add-to-bag-quick');
         
-        if (titleEl) titleEl.textContent = name;
+        if (titleEl) {
+            titleEl.textContent = name;
+            titleEl.setAttribute('data-product-id', productId);
+        }
         if (priceEl) priceEl.textContent = price;
+        
+        // Initialize wishlist button state
+        const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+        if (wishlistBtn && window.wishlistManager) {
+            const isInWishlist = window.wishlistManager.isInWishlist(productId);
+            window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
+        }
         // Handle both button types
         const mainAddToBagBtn = document.getElementById('add-to-bag-quick');
         const altAddToBagBtn = document.getElementById('add-to-bag-quick-alt');
         
         if (mainAddToBagBtn) {
             mainAddToBagBtn.setAttribute('data-product-id', productId);
-            mainAddToBagBtn.disabled = true;
-            mainAddToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Please select a color';
+            mainAddToBagBtn.disabled = false;
+            mainAddToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Bag';
         }
         
         if (altAddToBagBtn) {
@@ -1050,6 +1060,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
             }
         }
+        
+        // Quick view wishlist functionality
+        if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
+            e.preventDefault();
+            const button = e.target.id === 'add-to-wishlist-quick' ? e.target : e.target.closest('#add-to-wishlist-quick');
+            
+            if (button.disabled) return;
+            
+            const productId = document.getElementById('quick-view-title')?.getAttribute('data-product-id');
+            if (productId && window.wishlistManager) {
+                window.wishlistManager.toggleWishlist(productId, button);
+            }
+        }
     });
     
     function addToCart(productId, productName) {
@@ -1179,8 +1202,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // console.log('Cart API response:', data);
             
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 
@@ -1334,8 +1359,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 
@@ -1481,8 +1508,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // console.log('Cart API response:', data);
             
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessories Quickview Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product-card { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; }
+        .product-card img { width: 80px; height: 80px; margin-right: 15px; }
+        .product-name { font-weight: bold; }
+        .product-price { color: green; }
+        .quick-view { background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: auto; }
+        .quick-view:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Accessories Quickview Test Page</h1>
+    
+    <div class="product-card" data-product-id="test-001">
+        <img src="https://picsum.photos/80/80?random=1" alt="Test Product">
+        <div>
+            <div class="product-name">Test Watch</div>
+            <div class="product-price">$120.00</div>
+        </div>
+        <button class="quick-view" data-product-id="test-001">Quick View</button>
+    </div>
+
+    <div class="product-card" data-product-id="test-002">
+        <img src="https://picsum.photos/80/80?random=2" alt="Test Product">
+        <div>
+            <div class="product-name">Test Ring</div>
+            <div class="product-price">$85.00</div>
+        </div>
+        <button class="quick-view" data-product-id="test-002">Quick View</button>
+    </div>
+
+    <!-- Quick View Sidebar -->
+    <div class="quick-view-sidebar" id="quick-view-sidebar">
+        <div class="quick-view-header">
+            <button class="close-quick-view" id="close-quick-view">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="quick-view-content">
+            <!-- Product Images -->
+            <div class="quick-view-images">
+                <div class="main-image-container">
+                    <img id="quick-view-main-image" src="" alt="Product Image">
+                </div>
+                <div class="thumbnail-images" id="quick-view-thumbnails">
+                    <!-- Thumbnails will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Product Details -->
+            <div class="quick-view-details">
+                <h2 id="quick-view-title"></h2>
+                <div class="quick-view-brand" id="quick-view-brand"></div>
+                <div class="quick-view-price" id="quick-view-price"></div>
+                <div class="quick-view-reviews">
+                    <span class="stars">★★★★★</span>
+                    <span class="review-count">(0 Reviews)</span>
+                </div>
+                
+                <!-- Color Selection -->
+                <div class="quick-view-colors">
+                    <h4>Color</h4>
+                    <div class="color-selection" id="quick-view-color-selection">
+                        <!-- Colors will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Size Selection -->
+                <div class="quick-view-sizes">
+                    <h4>Size</h4>
+                    <div class="size-selection" id="quick-view-size-selection">
+                        <!-- Sizes will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="quick-view-actions">
+                    <button class="add-to-bag-quick" id="add-to-bag-quick">
+                        <i class="fas fa-shopping-bag"></i>
+                        Add to Bag
+                    </button>
+                    <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
+                        <i class="fas fa-heart"></i>
+                        + Wishlist
+                    </button>
+                </div>
+                
+                <!-- Product Description -->
+                <div class="quick-view-description">
+                    <p>A beautiful accessory perfect for any occasion. Features a durable design and comfortable fit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Overlay -->
+    <div class="quick-view-overlay" id="quick-view-overlay"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Test if the script loaded
+        console.log('Test page loaded');
+        
+        // Check if quickview elements exist
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking elements...');
+            console.log('Quick view buttons:', document.querySelectorAll('.quick-view').length);
+            console.log('Sidebar:', document.getElementById('quick-view-sidebar'));
+            console.log('Overlay:', document.getElementById('quick-view-overlay'));
+        });
+    </script>
+</body>
+</html>

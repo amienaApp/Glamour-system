@@ -173,7 +173,7 @@ $totalProducts = count($products);
             color: white;
             padding: 20px;
             display: grid;
-            grid-template-columns: 40px 60px 2fr 1fr 1fr 80px 80px 80px 100px;
+            grid-template-columns: 40px 60px 2fr 1fr 1fr 100px 80px 80px 80px 100px;
             gap: 15px;
             align-items: center;
             font-weight: 700;
@@ -187,7 +187,7 @@ $totalProducts = count($products);
         
         .product-row {
             display: grid;
-            grid-template-columns: 40px 60px 2fr 1fr 1fr 80px 80px 80px 100px;
+            grid-template-columns: 40px 60px 2fr 1fr 1fr 100px 80px 80px 80px 100px;
             gap: 15px;
             align-items: center;
             padding: 20px;
@@ -458,13 +458,13 @@ $totalProducts = count($products);
             }
             
             .table-header {
-                grid-template-columns: 30px 50px 1fr 70px 70px 70px 50px 70px;
+                grid-template-columns: 30px 50px 1fr 70px 70px 80px 70px 50px 70px;
                 gap: 8px;
                 padding: 12px;
             }
             
             .product-row {
-                grid-template-columns: 30px 50px 1fr 70px 70px 70px 50px 70px;
+                grid-template-columns: 30px 50px 1fr 70px 70px 80px 70px 50px 70px;
                 gap: 8px;
                 padding: 12px;
             }
@@ -703,6 +703,7 @@ $totalProducts = count($products);
                         <h3>Category</h3>
                         <h3>Price</h3>
                         <h3>Stock</h3>
+                        <h3>Availability</h3>
                         <h3>Status</h3>
                         <h3>Colors</h3>
                         <h3>Actions</h3>
@@ -828,12 +829,18 @@ $totalProducts = count($products);
                                 <div style="font-weight: 600; color: #2d3748;">
                                     <?php echo $product['stock'] ?? 0; ?> pcs
                         </div>
+                        </div>
+
+                            <!-- Availability -->
+                            <div class="product-availability">
                                 <?php if (($product['available'] ?? true) === false): ?>
-                                    <div style="color: #e53e3e; font-size: 0.8rem; font-weight: 600;">SOLD OUT</div>
+                                    <div style="color: #e53e3e; font-size: 0.8rem; font-weight: 600; text-align: center; padding: 4px 8px; background: #fed7d7; border-radius: 12px;">SOLD OUT</div>
+                                <?php elseif (($product['stock'] ?? 0) <= 2): ?>
+                                    <div style="color: #d69e2e; font-size: 0.8rem; font-weight: 600; text-align: center; padding: 4px 8px; background: #fef5e7; border-radius: 12px;">⚠️ LOW STOCK</div>
                                 <?php elseif (($product['stock'] ?? 0) <= 5): ?>
-                                    <div style="color: #d69e2e; font-size: 0.8rem; font-weight: 600;">LOW STOCK</div>
+                                    <div style="color: #d69e2e; font-size: 0.8rem; font-weight: 600; text-align: center; padding: 4px 8px; background: #fef5e7; border-radius: 12px;">LOW STOCK</div>
                                 <?php else: ?>
-                                    <div style="color: #38a169; font-size: 0.8rem; font-weight: 600;">IN STOCK</div>
+                                    <div style="color: #38a169; font-size: 0.8rem; font-weight: 600; text-align: center; padding: 4px 8px; background: #c6f6d5; border-radius: 12px;">IN STOCK</div>
                                 <?php endif; ?>
                         </div>
 

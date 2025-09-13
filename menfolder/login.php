@@ -431,7 +431,7 @@ if (isset($_SESSION['user_id'])) {
                         const urlParams = new URLSearchParams(window.location.search);
                         const redirect = urlParams.get('redirect');
                         if (redirect === 'cart') {
-                            window.location.href = '../cart-unified.php?mode=view';
+                            window.location.href = '/Glamour-system/cart-unified.php?mode=view';
                         } else if (result.redirect) {
                             window.location.href = result.redirect;
                         } else {

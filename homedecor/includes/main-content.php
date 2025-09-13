@@ -7,35 +7,58 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Get products based on subcategory or all home decor products from ALL subcategories
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
     $pageTitle = ucfirst($subcategory);
 } else {
     // Get all home decor/home and living products from ALL subcategories
     $allHomeDecorProducts = [];
     
     // Try to get products from main category first - use exact name from Category model
-    $mainCategoryProducts = $productModel->getByCategory("Home & Living");
+    $mainCategoryProducts = $productModel->getByCategory("Home & Living", $sortOptions);
     if (!empty($mainCategoryProducts)) {
         $allHomeDecorProducts = array_merge($allHomeDecorProducts, $mainCategoryProducts);
     }
     
     // If no products found with "Home & Living", try alternative categories
     if (empty($mainCategoryProducts)) {
-        $altCategoryProducts = $productModel->getByCategory("Home Decor");
+        $altCategoryProducts = $productModel->getByCategory("Home Decor", $sortOptions);
         if (!empty($altCategoryProducts)) {
             $allHomeDecorProducts = array_merge($allHomeDecorProducts, $altCategoryProducts);
         }
     }
     if (empty($mainCategoryProducts) && empty($altCategoryProducts)) {
-        $altCategoryProducts2 = $productModel->getByCategory("Home and Living");
+        $altCategoryProducts2 = $productModel->getByCategory("Home and Living", $sortOptions);
         if (!empty($altCategoryProducts2)) {
             $allHomeDecorProducts = array_merge($allHomeDecorProducts, $altCategoryProducts2);
         }
     }
     if (empty($mainCategoryProducts) && empty($altCategoryProducts) && empty($altCategoryProducts2)) {
-        $altCategoryProducts3 = $productModel->getByCategory("Home");
+        $altCategoryProducts3 = $productModel->getByCategory("Home", $sortOptions);
         if (!empty($altCategoryProducts3)) {
             $allHomeDecorProducts = array_merge($allHomeDecorProducts, $altCategoryProducts3);
         }
@@ -94,19 +117,12 @@ if (empty($featuredProducts)) {
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-men">Sort:</label>
-                <select id="sort-select-men" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-men" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -118,7 +134,13 @@ if (empty($featuredProducts)) {
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -227,7 +249,7 @@ if (empty($featuredProducts)) {
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -295,7 +317,13 @@ if (empty($featuredProducts)) {
     <div class="product-grid" id="all-home-decor-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -404,7 +432,7 @@ if (empty($featuredProducts)) {
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>

@@ -115,12 +115,6 @@ $clutches = $productModel->getBySubcategory('Clutches');
                     <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
             </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option <?php echo $limit === 60 ? 'active' : ''; ?>" onclick="updateLimit(60)">60</a>
-                <span>|</span>
-                <a href="#" class="view-option <?php echo $limit === 120 ? 'active' : ''; ?>" onclick="updateLimit(120)">120</a>
-            </div>
         </div>
     </div>
 
@@ -129,7 +123,13 @@ $clutches = $productModel->getBySubcategory('Clutches');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -228,7 +228,7 @@ $clutches = $productModel->getBySubcategory('Clutches');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -284,7 +284,13 @@ $clutches = $productModel->getBySubcategory('Clutches');
     <div class="product-grid" id="all-bags-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -383,7 +389,7 @@ $clutches = $productModel->getBySubcategory('Clutches');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -464,6 +470,7 @@ $clutches = $productModel->getBySubcategory('Clutches');
         <div class="quick-view-images">
             <div class="main-image-container">
                 <img id="quick-view-main-image" src="" alt="Product Image">
+                <video id="quick-view-main-video" style="display: none;" muted loop></video>
             </div>
             <div class="thumbnail-images" id="quick-view-thumbnails">
                 <!-- Thumbnails will be populated by JavaScript -->
@@ -496,6 +503,11 @@ $clutches = $productModel->getBySubcategory('Clutches');
                 </div>
             </div>
             
+            <!-- Availability -->
+            <div class="quick-view-availability" id="quick-view-availability">
+                <!-- Availability will be populated by JavaScript -->
+            </div>
+            
             <!-- Action Buttons -->
             <div class="quick-view-actions">
                 <button class="add-to-bag-quick" id="add-to-bag-quick">
@@ -510,7 +522,7 @@ $clutches = $productModel->getBySubcategory('Clutches');
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p>A beautiful bag perfect for any occasion. Features a durable design and comfortable carrying experience.</p>
+                <p id="quick-view-description-text">A beautiful bag perfect for any occasion. Features a durable design and comfortable carrying experience.</p>
             </div>
         </div>
     </div>

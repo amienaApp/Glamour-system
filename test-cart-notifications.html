@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Notification Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            margin: 10px;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🛒 Cart Notification System Test</h1>
+        
+        <div class="test-section">
+            <h3>Cart Icon Display</h3>
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </div>
+            <p>Cart count should update automatically when items are added/removed.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>Test Functions</h3>
+            <button class="test-button" onclick="testLoadCartCount()">Load Cart Count</button>
+            <button class="test-button" onclick="testAddToCart()">Add Test Item</button>
+            <button class="test-button" onclick="testRemoveFromCart()">Remove Test Item</button>
+            <button class="test-button" onclick="testUpdateQuantity()">Update Quantity</button>
+            <button class="test-button" onclick="testRefresh()">Refresh Cart</button>
+            <button class="test-button" onclick="testClearCart()">Clear Cart</button>
+            <button class="test-button" onclick="testToggleCartDropdown()">Toggle Cart Dropdown</button>
+        </div>
+
+        <div class="test-section">
+            <h3>System Status</h3>
+            <div id="status-display">
+                <div class="status info">Loading cart notification system...</div>
+            </div>
+            <div id="cart-info">
+                <p><strong>Current Cart Count:</strong> <span id="current-cart-count">0</span></p>
+                <p><strong>Cart Manager Status:</strong> <span id="manager-status">Loading...</span></p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Console Logs</h3>
+            <div id="console-logs" style="background: #f8f9fa; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
+                <!-- Console logs will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Cart Notification System -->
+    <link rel="stylesheet" href="styles/cart-notification.css" type="text/css">
+    <script src="scripts/cart-notification-manager.js"></script>
+
+    <script>
+        // Override console.log to display in the page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logContainer = document.getElementById('console-logs');
+        
+        function addLog(message, type = 'log') {
+            const logEntry = document.createElement('div');
+            logEntry.style.color = type === 'error' ? '#dc3545' : '#333';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        // Test functions
+        function testLoadCartCount() {
+            console.log('Testing load cart count...');
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.loadCartCount();
+                updateStatus('Cart count loaded successfully', 'success');
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testAddToCart() {
+            console.log('Testing add to cart...');
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.addToCart('test-product-1', 1, 'red', 'M', 29.99);
+                updateStatus('Add to cart test initiated', 'info');
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testRemoveFromCart() {
+            console.log('Testing remove from cart...');
+            if (window.cartNotificationManager) {
+                // First ensure there's an item in cart
+                window.cartNotificationManager.addToCart('test-product-1', 1, 'red', 'M', 29.99).then(() => {
+                    // Wait a moment, then remove it
+                    setTimeout(() => {
+                        window.cartNotificationManager.removeFromCart('test-product-1');
+                        updateStatus('Remove from cart test initiated', 'info');
+                    }, 500);
+                }).catch(error => {
+                    console.error('Error adding product for remove test:', error);
+                    updateStatus('Failed to add product for remove test', 'error');
+                });
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testUpdateQuantity() {
+            console.log('Testing update quantity...');
+            if (window.cartNotificationManager) {
+                // First add a product to cart, then update its quantity
+                window.cartNotificationManager.addToCart('test-product-1', 1, 'red', 'M', 29.99).then(() => {
+                    // Wait a moment, then update quantity
+                    setTimeout(() => {
+                        window.cartNotificationManager.updateQuantity('test-product-1', 2);
+                        updateStatus('Update quantity test initiated', 'info');
+                    }, 500);
+                }).catch(error => {
+                    console.error('Error adding product for quantity test:', error);
+                    updateStatus('Failed to add product for quantity test', 'error');
+                });
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testRefresh() {
+            console.log('Testing refresh cart...');
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.refreshCart();
+                updateStatus('Cart refresh initiated', 'info');
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testClearCart() {
+            console.log('Testing clear cart...');
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.clearCart();
+                updateStatus('Clear cart test initiated', 'info');
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function testToggleCartDropdown() {
+            console.log('Testing toggle cart dropdown...');
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.toggleCartDropdown();
+                updateStatus('Cart dropdown toggle test initiated', 'info');
+            } else {
+                updateStatus('Cart notification manager not available', 'error');
+            }
+        }
+
+        function updateStatus(message, type) {
+            const statusDisplay = document.getElementById('status-display');
+            statusDisplay.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // Initialize test
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Cart notification test page loaded');
+            
+            // Check if cart notification manager is available
+            setTimeout(() => {
+                if (window.cartNotificationManager) {
+                    updateStatus('Cart notification system loaded successfully', 'success');
+                    console.log('Cart notification manager available:', window.cartNotificationManager);
+                    
+                    // Update cart info display
+                    document.getElementById('manager-status').textContent = 'Available';
+                    document.getElementById('current-cart-count').textContent = window.cartNotificationManager.getCartCount();
+                } else {
+                    updateStatus('Cart notification system failed to load', 'error');
+                    console.error('Cart notification manager not available');
+                    document.getElementById('manager-status').textContent = 'Not Available';
+                }
+            }, 1000);
+        });
+
+        // Listen for cart count updates
+        document.addEventListener('cartCountUpdated', function(e) {
+            console.log('Cart count updated:', e.detail);
+            updateStatus(`Cart count updated to: ${e.detail.count}`, 'info');
+            
+            // Update the visual cart count display
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = e.detail.count;
+                cartCountElement.style.display = e.detail.count > 0 ? 'flex' : 'none';
+            }
+            
+            // Update the cart info display
+            document.getElementById('current-cart-count').textContent = e.detail.count;
+        });
+    </script>
+</body>
+</html>

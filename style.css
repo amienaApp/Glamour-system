@@ -2975,6 +2975,133 @@ transform: scale(1.03);
     }
 } 
 
+/* Sold Out Product Card Styles */
+.product-card.sold-out {
+    opacity: 0.7;
+    position: relative;
+}
+
+.product-card.sold-out::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    pointer-events: none;
+}
+
+.product-card.sold-out .product-image {
+    filter: grayscale(30%);
+}
+
+.product-card.sold-out .product-name {
+    color: #999;
+}
+
+.product-card.sold-out .product-price {
+    color: #999;
+}
+
+/* Sold Out Button Styles */
+.sold-out-btn {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    border: 1px solid #ddd !important;
+}
+
+.sold-out-btn:hover {
+    background-color: #ccc !important;
+    color: #666 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Quick View Sold Out Styles */
+#add-to-bag-quick.sold-out-btn {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    border: 1px solid #ddd !important;
+}
+
+#add-to-bag-quick.sold-out-btn:hover {
+    background-color: #ccc !important;
+    color: #666 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Quick View Stock Status Styles */
+.quick-view-stock.sold-out {
+    color: #e53e3e !important;
+    font-weight: 600 !important;
+}
+
+.quick-view-stock.low-stock {
+    color: #f39c12 !important;
+    font-weight: 500 !important;
+}
+
+.quick-view-stock.in-stock {
+    color: #38a169 !important;
+    font-weight: 500 !important;
+}
+
+/* Sold Out Text Styles */
+.sold-out-text {
+    color: #e53e3e !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin-top: 5px !important;
+    text-align: center !important;
+}
+
+.product-availability {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 5px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Low Stock Warning */
+.product-card[data-product-stock="1"] .product-availability,
+.product-card[data-product-stock="2"] .product-availability {
+    color: #f39c12;
+    display: block !important;
+}
+
+.product-card[data-product-stock="1"] .product-availability::before {
+    content: "⚠️ ";
+}
+
+.product-card[data-product-stock="2"] .product-availability::before {
+    content: "⚠️ ";
+}
+
+/* Heart button disabled state for sold out */
+.product-card.sold-out .heart-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.product-card.sold-out .heart-button:hover {
+    transform: none;
+    background-color: #fff;
+}
+
+/* Quick view button still works for sold out items */
+.product-card.sold-out .quick-view {
+    opacity: 1;
+    cursor: pointer;
+}
+
 /* Responsive Design for Quick View */
 @media (max-width: 768px) {
     .quick-view-sidebar {

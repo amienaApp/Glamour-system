@@ -428,13 +428,59 @@ body {
     border-bottom: none;
 }
 
+.wishlist-dropdown-item-image-container {
+    position: relative;
+    margin-right: 15px;
+}
+
 .wishlist-dropdown-item img {
     width: 60px;
     height: 60px;
     object-fit: cover;
     border-radius: 8px;
-    margin-right: 15px;
     background: #f8f9fa;
+}
+
+.heart-button-dropdown {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 25px;
+    height: 25px;
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.heart-button-dropdown:hover {
+    background-color: #fff;
+    transform: scale(1.1);
+}
+
+.heart-button-dropdown i {
+    color: #e74c3c;
+    font-size: 10px;
+    transition: color 0.15s ease;
+}
+
+.heart-button-dropdown:hover i {
+    color: #c0392b;
+}
+
+/* Heart button active state (when in wishlist) */
+.heart-button-dropdown.active {
+    background-color: #e74c3c !important;
+    border-color: #e74c3c !important;
+}
+
+.heart-button-dropdown.active i {
+    color: white !important;
 }
 
 .wishlist-dropdown-item-info {

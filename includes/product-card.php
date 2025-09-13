@@ -9,6 +9,9 @@ function renderProductCard($product) {
     $salePrice = $product['salePrice'] ?? null;
     $isOnSale = $product['sale'] ?? false;
     $isFeatured = $product['featured'] ?? false;
+    $stock = $product['stock'] ?? 0;
+    $isAvailable = $product['available'] ?? true;
+    $isSoldOut = $stock <= 0 || !$isAvailable;
     
     // Determine display price
     $displayPrice = $isOnSale && $salePrice ? $salePrice : $product['price'];
@@ -18,7 +21,7 @@ function renderProductCard($product) {
     $cardId = 'product-' . $id;
     ?>
     
-    <div class="product-card" 
+    <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
          data-product-id="<?php echo $id; ?>"
          data-product-name="<?php echo htmlspecialchars($name); ?>"
          data-product-price="<?php echo $product['price']; ?>"
@@ -28,7 +31,8 @@ function renderProductCard($product) {
          data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
          data-product-featured="<?php echo $isFeatured ? 'true' : 'false'; ?>"
          data-product-on-sale="<?php echo $isOnSale ? 'true' : 'false'; ?>"
-         data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+         data-product-stock="<?php echo $stock; ?>"
+         data-product-available="<?php echo $isAvailable ? 'true' : 'false'; ?>"
          data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
          data-product-review-count="<?php echo $product['reviewCount'] ?? 0; ?>"
          data-product-front-image="<?php echo htmlspecialchars($frontImage); ?>"
@@ -79,6 +83,15 @@ function renderProductCard($product) {
                 <?php endif; ?>
             </div>
             
+            <!-- Product Availability Status -->
+            <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+                <?php if ($isSoldOut): ?>
+                    SOLD OUT
+                <?php elseif ($stock <= 2): ?>
+                    ⚠️ Only <?php echo $stock; ?> left in stock!
+                <?php endif; ?>
+            </div>
+            
             <div class="color-options">
                 <div class="color-circle active" 
                      style="background-color: <?php echo $color; ?>"
@@ -87,9 +100,15 @@ function renderProductCard($product) {
             </div>
             
             <div class="product-actions-bottom">
-                <button class="add-to-cart-btn" onclick="openAddToCartModal('<?php echo $id; ?>')" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <i class="fa fa-shopping-cart"></i> Add to Cart
-                </button>
+                <?php if ($isSoldOut): ?>
+                    <button class="add-to-cart-btn sold-out-btn" disabled style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <i class="fa fa-times"></i> Sold Out
+                    </button>
+                <?php else: ?>
+                    <button class="add-to-cart-btn" onclick="openAddToCartModal('<?php echo $id; ?>')" style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <i class="fa fa-shopping-cart"></i> Add to Cart
+                    </button>
+                <?php endif; ?>
             </div>
             
             <!-- Product Reviews Mini -->

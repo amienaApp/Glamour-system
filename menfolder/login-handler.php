@@ -81,7 +81,7 @@ try {
     
     // Check POST data for redirect parameter
     if (isset($input['redirect']) && $input['redirect'] === 'cart') {
-        $redirectUrl = '../cart-unified.php?mode=view';
+        $redirectUrl = '/Glamour-system/cart-unified.php?mode=view';
     }
     
     // Return success response

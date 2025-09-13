@@ -11,6 +11,29 @@ $size = $_GET['size'] ?? '';
 $color = $_GET['color'] ?? '';
 $priceRange = $_GET['price_range'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Build filter conditions
 $filters = ['category' => 'Shoes'];
 $andConditions = [];
@@ -156,10 +179,10 @@ if (!empty($andConditions)) {
 // Get filtered products
 if (empty($filters) || (count($filters) === 1 && isset($filters['category']))) {
     // No specific filters, get all shoes
-    $products = $productModel->getByCategory("Shoes");
+    $products = $productModel->getByCategory("Shoes", $sortOptions);
 } else {
     // Apply specific filters
-    $products = $productModel->getAll($filters, ['createdAt' => -1]);
+    $products = $productModel->getAll($filters, $sortOptions);
 }
 
 // Get all men's shoes from the database
@@ -181,19 +204,12 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-shoes">Sort:</label>
-                <select id="sort-select-shoes" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-shoes" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -203,7 +219,13 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -302,7 +324,7 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -358,7 +380,13 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
     <div class="product-grid" id="all-shoes-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -457,7 +485,7 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>

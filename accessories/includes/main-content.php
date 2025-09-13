@@ -105,19 +105,12 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-accessories">Sort:</label>
-                <select id="sort-select-accessories" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-accessories" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -127,7 +120,13 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -226,7 +225,7 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -282,7 +281,13 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     <div class="product-grid" id="all-accessories-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -381,7 +386,7 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -444,10 +449,11 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     </div>
     
     <div class="quick-view-content">
-        <!-- Product Images -->
+        <!-- Product Media -->
         <div class="quick-view-images">
             <div class="main-image-container">
-                <img id="quick-view-main-image" src="" alt="Product Image">
+                <img id="quick-view-main-image" src="" alt="Product Media">
+                <video id="quick-view-main-video" src="" muted loop style="display: none; max-width: 100%; border-radius: 8px;"></video>
             </div>
             <div class="thumbnail-images" id="quick-view-thumbnails">
                 <!-- Thumbnails will be populated by JavaScript -->
@@ -457,11 +463,10 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
         <!-- Product Details -->
         <div class="quick-view-details">
             <h2 id="quick-view-title"></h2>
-            <div class="quick-view-brand" id="quick-view-brand"></div>
             <div class="quick-view-price" id="quick-view-price"></div>
             <div class="quick-view-reviews">
-                <span class="stars">★★★★★</span>
-                <span class="review-count">(0 Reviews)</span>
+                <span class="stars" id="quick-view-stars"></span>
+                <span class="review-count" id="quick-view-review-count"></span>
             </div>
             
             <!-- Color Selection -->
@@ -487,14 +492,19 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                     Add to Bag
                 </button>
                 <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
-                    <i class="fas fa-heart"></i>
-                    + Wishlist
+                    <i class="far fa-heart"></i>
+                    Add to Wishlist
                 </button>
+            </div>
+            
+            <!-- Availability Status -->
+            <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
+                <!-- Availability will be populated by JavaScript -->
             </div>
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p>A beautiful accessory perfect for any occasion. Features a durable design and comfortable fit.</p>
+                <p id="quick-view-description"></p>
             </div>
         </div>
     </div>

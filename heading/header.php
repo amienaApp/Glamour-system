@@ -97,6 +97,8 @@ $regionOptions = [
         </ul>
     </div>
 
+    <!-- Wishlist Scripts will be loaded by individual pages -->
+
     <!-- Right Side Elements - Compressed -->
     <div class="nav-right-container">
         <!-- Search Box - Compact -->
@@ -170,7 +172,7 @@ $regionOptions = [
                     </div>
                 </div>
             </div>
-            <div class="shopping-cart" title="Cart" style="position: relative;">
+            <div class="shopping-cart" title="Cart" style="position: relative; text-decoration: none; color: inherit; cursor: pointer;" onclick="toggleCartDropdown()">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">0</span>
             </div>
@@ -183,6 +185,8 @@ $regionOptions = [
     </div>
 </nav>
 
+<!-- Cart Notification Manager will be loaded by cart-notification-include.php -->
+
 <script>
 // Initialize cart functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -191,6 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add click event listener for cart functionality
         cartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            
             // Show loading state
             const originalHTML = this.innerHTML;
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -201,8 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
                                    currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
                                    currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
-            window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
+                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                   currentPath.includes('/bagsfolder/');
+            
+            // Small delay to show loading state
+            setTimeout(() => {
+                window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
+            }, 200);
         });
         
         // Add a small tooltip to show cart is clickable
@@ -217,63 +228,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.backgroundColor = '';
         });
         
-        // Update cart count from cart system
-        updateCartCount();
+        // Cart count updates are now handled by cart notification manager
+        // The manager will automatically load and update cart count
         
-        // Refresh cart count when page becomes visible (user returns from cart)
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateCartCount();
-            }
-        });
-        
-        // Also refresh cart count when page loads
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                // Page was loaded from back-forward cache
-                updateCartCount();
-            }
-        });
-        
-        // Refresh cart count every 10 seconds to keep it updated (faster updates)
-        setInterval(updateCartCount, 10000);
+        // Cart count updates are now handled by cart notification manager
+        // No need for periodic updates as the manager handles real-time updates
     }
     
-        // Function to update cart count
+        // Legacy updateCartCount function - now handled by cart notification manager
         function updateCartCount() {
-            const cartCountElement = document.querySelector('.cart-count');
-            if (cartCountElement) {
-                // Determine the correct path to cart API based on current URL
-                const currentPath = window.location.pathname;
-                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
-                const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
-                
-                // Fetch current cart count from cart API
-                fetch(cartApiPath, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'action=get_cart_count'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.count > 0) {
-                        cartCountElement.textContent = data.count;
-                        cartCountElement.style.display = 'flex';
-                    } else {
-                        cartCountElement.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.log('Cart count fetch error:', error);
-                    cartCountElement.style.display = 'none';
-                });
+            if (window.cartNotificationManager) {
+                return window.cartNotificationManager.refreshCart();
             } else {
-                console.log('Cart count element not found!');
+                console.warn('Cart notification manager not available for cart count update');
             }
         }
     
@@ -331,48 +298,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Simple cart count functions (like wishlist)
+    // Legacy updateCartCount function - now handled by cart notification manager
     function updateCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            try {
-                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                const count = cart.length;
-                cartCountElement.textContent = count;
-                
-                if (count > 0) {
-                    cartCountElement.style.display = 'flex';
-                } else {
-                    cartCountElement.style.display = 'none';
-                }
-            } catch (error) {
-                cartCountElement.style.display = 'none';
-            }
+        if (window.cartNotificationManager) {
+            return window.cartNotificationManager.refreshCart();
+        } else {
+            console.warn('Cart notification manager not available for cart count update');
         }
     }
     
+    // Legacy cart count functions - now handled by cart notification manager
     function addToCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            let currentCount = parseInt(cartCountElement.textContent) || 0;
-            currentCount++;
-            cartCountElement.textContent = currentCount;
-            cartCountElement.style.display = 'flex';
+        if (window.cartNotificationManager) {
+            return window.cartNotificationManager.refreshCart();
         }
     }
     
     function removeFromCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            let currentCount = parseInt(cartCountElement.textContent) || 0;
-            currentCount = Math.max(0, currentCount - 1);
-            cartCountElement.textContent = currentCount;
-            
-            if (currentCount > 0) {
-                cartCountElement.style.display = 'flex';
-            } else {
-                cartCountElement.style.display = 'none';
-            }
+        if (window.cartNotificationManager) {
+            return window.cartNotificationManager.refreshCart();
         }
     }
 
@@ -425,7 +369,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const displayItems = wishlist.slice(0, 3);
             content.innerHTML = displayItems.map(item => `
                 <div class="wishlist-dropdown-item">
-                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                    <div class="wishlist-dropdown-item-image-container">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                        <button class="heart-button-dropdown" data-product-id="${item.id}" onclick="toggleWishlistFromDropdown('${item.id}')">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
                     <div class="wishlist-dropdown-item-info">
                         <div class="wishlist-dropdown-item-name">${item.name}</div>
                         <div class="wishlist-dropdown-item-price">$${item.price}</div>
@@ -456,10 +405,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function addToCartFromDropdown(productId) {
-        // Try to use existing cart functionality
-        if (typeof addToCart === 'function') {
-            addToCart(productId);
+        console.log('addToCartFromDropdown called with productId:', productId);
+        
+        // Use cart notification manager if available
+        if (window.cartNotificationManager) {
+            console.log('Using cartNotificationManager to add to cart from dropdown');
+            const success = window.cartNotificationManager.addToCart(productId);
+            
+            if (success) {
+                // Remove from wishlist after successfully adding to cart
+                if (window.wishlistManager) {
+                    window.wishlistManager.removeFromWishlist(productId);
+                    showNotification('Product added to cart and removed from wishlist!', 'success');
+                    // Reload wishlist dropdown to update display
+                    loadWishlistDropdown();
+                    updateWishlistCount();
+                } else {
+                    showNotification('Product added to cart!', 'success');
+                }
+            } else {
+                showNotification('Failed to add product to cart', 'error');
+            }
         } else {
+            console.log('cartNotificationManager not available, using fallback');
+            // Fallback - just show notification
             showNotification('Product added to cart!', 'success');
         }
     }
@@ -471,6 +440,14 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
             
             showNotification('Removed from wishlist', 'info');
+            loadWishlistDropdown();
+            updateWishlistCount();
+        }
+    }
+    
+    function toggleWishlistFromDropdown(productId) {
+        if (window.wishlistManager) {
+            window.wishlistManager.toggleWishlist(productId);
             loadWishlistDropdown();
             updateWishlistCount();
         }
@@ -724,49 +701,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Cart Functionality Script -->
 <script>
-        // Load cart count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-        });
+        // Cart count loading is now handled by cart notification manager
 
-    // Function to be called from other pages when adding to cart
+    // Legacy addToCart function - now handled by cart notification manager
     function addToCart(productId) {
-        // Show immediate feedback
-        showCartNotification('Adding to cart...', 'info');
-        
-        // Determine the correct path to cart API based on current URL
-        const currentPath = window.location.pathname;
-        const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                               currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                               currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                               currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
-                               currentPath.includes('/bagsfolder/');
-        const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
-        
-        // Use requestAnimationFrame for better performance
-        requestAnimationFrame(() => {
-            fetch(cartApiPath, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateCartCount(data.cart_count);
-                    // Show success notification
-                    showCartNotification('Product added to cart successfully!', 'success');
-                } else {
-                    showCartNotification('Error: ' + data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showCartNotification('Error adding product to cart', 'error');
-            });
-        });
+        // Delegate to the cart notification manager if available
+        if (window.cartNotificationManager) {
+            return window.cartNotificationManager.addToCart(productId);
+        } else {
+            console.warn('Cart notification manager not available, using fallback');
+            // Fallback to simple notification
+            showCartNotification('Adding to cart...', 'info');
+        }
     }
 
             // User Dropdown Functionality

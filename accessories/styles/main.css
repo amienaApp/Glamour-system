@@ -60,7 +60,7 @@
     color: #666;
     padding: 5px 10px;
     border-radius: 3px;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .view-option:hover,
@@ -113,7 +113,7 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.1s ease;
 }
 
 .image-slider img.active {
@@ -133,7 +133,7 @@
     border-radius: 20px;
     font-size: 12px;
     opacity: 0;
-    animation: fadeInOut 2s ease-in-out;
+    animation: fadeInOut 1s ease-in-out;
     pointer-events: none;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .product-card:hover .image-slider img.active {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .heart-button {
@@ -159,19 +159,19 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     z-index: 10;
 }
 
 .heart-button:hover {
     background-color: #fff;
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 .heart-button i {
     color: #000;
     font-size: 14px;
-    transition: color 0.3s ease;
+    transition: color 0.15s ease;
 }
 
 .heart-button:hover i {
@@ -188,7 +188,7 @@
     flex-direction: row;
     gap: 5px;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     min-width: 120px;
 }
 
@@ -204,7 +204,7 @@
     font-size: 10px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     text-transform: uppercase;
     letter-spacing: 0.1px;
     flex: 1;
@@ -264,11 +264,11 @@
     border: 2px solid #fff;
     box-shadow: 0 0 0 1px #ddd;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .color-circle:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 .color-circle.active {
@@ -286,7 +286,7 @@
     z-index: 9998;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .quick-view-overlay.active {
@@ -329,7 +329,7 @@
     font-size: 24px;
     cursor: pointer;
     color: #666;
-    transition: color 0.3s ease;
+    transition: color 0.15s ease;
 }
 
 .close-quick-view:hover {
@@ -361,7 +361,7 @@
 }
 
 #quick-view-main-image:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .thumbnail-images {
@@ -458,12 +458,12 @@
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     position: relative;
 }
 
 .quick-view-color-circle:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 .quick-view-color-circle.active {
@@ -512,7 +512,7 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     border-radius: 4px;
     min-width: 50px;
     text-align: center;
@@ -574,7 +574,7 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -585,6 +585,17 @@
 .add-to-wishlist-quick:hover {
     background-color: #000;
     color: #fff;
+}
+
+.add-to-wishlist-quick.active {
+    background-color: #ffffff !important;
+    border-color: #e74c3c !important;
+    color: #e74c3c !important;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
+}
+
+.add-to-wishlist-quick.active i {
+    color: #e74c3c !important;
 }
 
 /* Product Description */

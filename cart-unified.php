@@ -717,10 +717,6 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 }
                 ?>
             </h1>
-            <a href="<?php echo $returnUrl; ?>" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                Back to Shopping
-            </a>
         </div>
 
         <!-- Navigation Tabs -->

@@ -25,6 +25,8 @@ if ($subcategory) {
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
@@ -113,6 +115,18 @@ if ($subcategory) {
                     });
                 }
             }
+        </script>
+
+        <!-- Simple Sorting Function -->
+        <script>
+        function updateSort(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortValue);
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+            window.location.reload();
+        }
         </script>
 
         <!-- Quick View Sidebar -->

@@ -384,19 +384,12 @@ session_start();
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
+                <select id="sort-select" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" selected>Newest</option>
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
                     <option value="popular">Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -404,7 +397,7 @@ session_start();
 
     <div class="product-grid" data-category="shirts">
        
-        <div class="product-card" data-product-id="1">
+        <div class="product-card" data-product-id="1" data-product-stock="5" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/23.jpg" alt="Product 23 - Front" class="active" data-color="default">
@@ -414,7 +407,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="1">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -423,11 +416,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 1</h3>
                 <div class="product-price">$25</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
-        <!-- Product 2 -->
-        <div class="product-card" data-product-id="2">
+        <!-- Product 2 - SOLD OUT -->
+        <div class="product-card sold-out" data-product-id="2" data-product-stock="0" data-product-available="false">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/24.jpg" alt="Product 24 - Front" class="active" data-color="default">
@@ -437,7 +431,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="2">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                 </div>
             </div>
             <div class="product-info">
@@ -446,11 +440,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 2</h3>
                 <div class="product-price">$30</div>
+                <div class="product-availability sold-out-text">SOLD OUT</div>
             </div>
         </div>
 
         <!-- Product 3 -->
-        <div class="product-card" data-product-id="3">
+        <div class="product-card" data-product-id="3" data-product-stock="3" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/20.webp" alt="Product 20 - Front" class="active" data-color="default">
@@ -460,7 +455,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="3">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="3">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -469,11 +464,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 3</h3>
                 <div class="product-price">$28</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
         <!-- Product 4 -->
-        <div class="product-card" data-product-id="4">
+        <div class="product-card" data-product-id="4" data-product-stock="8" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/barca.jpg" alt="Barca Product - Front" class="active" data-color="default">
@@ -483,7 +479,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="4">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="4">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -492,11 +488,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 4</h3>
                 <div class="product-price">$35</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
-        <!-- Product 5 -->
-        <div class="product-card" data-product-id="5">
+        <!-- Product 5 - SOLD OUT -->
+        <div class="product-card sold-out" data-product-id="5" data-product-stock="0" data-product-available="false">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/glas2.jpg" alt="Designer Glasses - Front" class="active" data-color="maroon">
@@ -507,7 +504,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="5">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                 </div>
             </div>
             <div class="product-info">
@@ -517,11 +514,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Designer Glasses</h3>
                 <div class="product-price">$45</div>
+                <div class="product-availability sold-out-text">SOLD OUT</div>
             </div>
         </div>
 
         <!-- Product 6 -->
-        <div class="product-card" data-product-id="6">
+        <div class="product-card" data-product-id="6" data-product-stock="2" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/handbag2.jpg" alt="Handbag Product - Front" class="active" data-color="default">
@@ -531,7 +529,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="6">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="6">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -540,11 +538,12 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 6</h3>
                 <div class="product-price">$55</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
         <!-- Product 7 -->
-        <div class="product-card" data-product-id="7">
+        <div class="product-card" data-product-id="7" data-product-stock="10" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/jwel2.jpg" alt="Jewelry Product - Front" class="active" data-color="default">
@@ -554,7 +553,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="7">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="7">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -563,13 +562,14 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 7</h3>
                 <div class="product-price">$38</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
             
 
         <!-- Product 8 -->
-        <div class="product-card" data-product-id="8">
+        <div class="product-card" data-product-id="8" data-product-stock="1" data-product-available="true">
             <div class="product-image">
                 <div class="image-slider">
                     <img src="img/sawiro/watch2.jpg" alt="Watch Product - Front" class="active" data-color="default">
@@ -579,7 +579,7 @@ session_start();
                 </button>
                 <div class="product-actions">
                     <button class="quick-view" data-product-id="8">Quick View</button>
-                    <button class="add-to-bag">Add To Bag</button>
+                    <button class="add-to-bag" data-product-id="8">Add To Bag</button>
                 </div>
             </div>
             <div class="product-info">
@@ -588,6 +588,7 @@ session_start();
                 </div>
                 <h3 class="product-name">Featured Product 8</h3>
                 <div class="product-price">$65</div>
+                <div class="product-availability" style="display: none;">In Stock</div>
             </div>
         </div>
 
@@ -805,9 +806,23 @@ session_start();
 
          <script src="scripts/main.js"></script>
      
+     <!-- Simple Sorting Function -->
+     <script>
+     function updateSort(sortValue) {
+         const params = new URLSearchParams(window.location.search);
+         params.set('sort', sortValue);
+         
+         const newUrl = window.location.pathname + '?' + params.toString();
+         window.history.pushState({}, '', newUrl);
+         window.location.reload();
+     }
+     </script>
+     
      <!-- Quick View Functionality -->
-     <script src="scripts/quickview-manager.js"></script>
-     <script src="scripts/wishlist-manager.js"></script>
+<script src="scripts/simple-notification.js"></script>
+<script src="scripts/quickview-manager.js"></script>
+<script src="scripts/wishlist-manager.js"></script>
+<script src="scripts/sold-out-manager.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {
              // Quick View buttons event listeners
@@ -869,15 +884,20 @@ session_start();
          });
      </script>
      
+     <!-- Include Cart Notification System -->
+     <?php include 'includes/cart-notification-include.php'; ?>
+     
      <!-- Cart Functionality -->
      <script>
          // Load cart count on page load
          document.addEventListener('DOMContentLoaded', function() {
-
-             loadCartCount();
+             // Use the unified cart notification manager if available
+             if (window.cartNotificationManager) {
+                 window.cartNotificationManager.loadCartCount();
+             } else {
+                 loadCartCount();
+             }
          });
-
-
 
          function updateCartCount(count) {
              try {
@@ -912,6 +932,8 @@ session_start();
                                      align-items: center;
                                      justify-content: center;
                                      font-weight: bold;
+                                     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                     animation: cartCountBounce 0.3s ease-in-out;
                                  `;
                                  parent.style.position = 'relative';
                                  parent.appendChild(badge);
@@ -927,7 +949,6 @@ session_start();
          }
 
          function loadCartCount() {
-
              fetch('cart-api.php', {
                  method: 'POST',
                  headers: {
@@ -942,7 +963,6 @@ session_start();
                  return response.text();
              })
              .then(text => {
-
                  try {
                      const data = JSON.parse(text);
                      if (data.success) {

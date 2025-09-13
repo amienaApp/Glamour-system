@@ -7,13 +7,36 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Get products based on subcategory or all women's clothing
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
     $pageTitle = ucfirst($subcategory);
 } else {
-    // Get all women's clothing products
-    $products = $productModel->getByCategory("Women's Clothing");
+    // Get all women's clothing products (including sold out ones)
+    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
     $pageTitle = "Women's Clothing";
 }
 
@@ -43,19 +66,12 @@ if (!empty($products)) {
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-dresses">Sort:</label>
-                <select id="sort-select-dresses" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-dresses" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -65,7 +81,10 @@ if (!empty($products)) {
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" 
+                <?php 
+                $isSoldOut = ($product['available'] ?? true) === false || ($product['stock'] ?? 0) <= 0;
+                ?>
+                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
@@ -76,6 +95,7 @@ if (!empty($products)) {
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
                      data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
                      data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
                      data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
@@ -189,14 +209,14 @@ if (!empty($products)) {
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" data-product-id="<?php echo $product['_id']; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -231,11 +251,15 @@ if (!empty($products)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
-                        <?php endif; ?>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif (($product['stock'] ?? 0) <= 2): ?>
+                                ⚠️ Only <?php echo $product['stock']; ?> left in stock!
+                            <?php elseif (($product['stock'] ?? 0) <= 5): ?>
+                                Only <?php echo $product['stock']; ?> left
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -252,6 +276,7 @@ if (!empty($products)) {
             <?php foreach ($dresses as $index => $dress): ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $dress['_id']; ?>"
+                     data-product-available="true"
                      data-product-name="<?php echo htmlspecialchars($dress['name']); ?>"
                      data-product-price="<?php echo $dress['price']; ?>"
                      data-product-sale-price="<?php echo $dress['sale_price'] ?? ''; ?>"
@@ -377,15 +402,15 @@ if (!empty($products)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                        <button class="heart-button" data-product-id="<?php echo $dress['_id']; ?>">
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $dress['_id']; ?>">Quick View</button>
                             <?php if (($dress['available'] ?? true) === false): ?>
                                 <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" data-product-id="<?php echo $dress['_id']; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -441,12 +466,11 @@ if (!empty($products)) {
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-tops">Sort:</label>
-                <select id="sort-select-tops" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-tops" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
             </div>
            
@@ -459,6 +483,7 @@ if (!empty($products)) {
             <?php foreach ($tops as $index => $top): ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $top['_id']; ?>"
+                     data-product-available="true"
                      data-product-name="<?php echo htmlspecialchars($top['name']); ?>"
                      data-product-price="<?php echo $top['price']; ?>"
                      data-product-sale-price="<?php echo $top['sale_price'] ?? ''; ?>"
@@ -584,15 +609,15 @@ if (!empty($products)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                        <button class="heart-button" data-product-id="<?php echo $top['_id']; ?>">
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $top['_id']; ?>">Quick View</button>
                             <?php if (($top['available'] ?? true) === false): ?>
                                 <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" data-product-id="<?php echo $top['_id']; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -696,8 +721,8 @@ if (!empty($products)) {
                     Add to Bag
                 </button>
                 <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
-                    <i class="fas fa-heart"></i>
-                    + Wishlist
+                    <i class="far fa-heart"></i>
+                    Add to Wishlist
                 </button>
             </div>
             

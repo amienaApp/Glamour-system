@@ -7,13 +7,36 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Get products based on subcategory or all men's clothing
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
     $pageTitle = ucfirst($subcategory);
 } else {
-    // Get all men's clothing products
-    $products = $productModel->getByCategory("Men's Clothing");
+    // Get all men's clothing products (including sold out ones)
+    $products = $productModel->getByCategory("Men's Clothing", $sortOptions);
     $pageTitle = "Men's Clothing";
 }
 
@@ -39,19 +62,12 @@ $shorts = $productModel->getBySubcategory('Shorts');
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-men">Sort:</label>
-                <select id="sort-select-men" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-men" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -61,6 +77,9 @@ $shorts = $productModel->getBySubcategory('Shorts');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
+                <?php 
+                $isSoldOut = ($product['available'] ?? true) === false || ($product['stock'] ?? 0) <= 0;
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -160,14 +179,23 @@ $shorts = $productModel->getBySubcategory('Shorts');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" data-product-id="<?php echo $product['_id']; ?>">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif (($product['stock'] ?? 0) <= 2): ?>
+                                ⚠️ Only <?php echo $product['stock']; ?> left in stock!
+                            <?php elseif (($product['stock'] ?? 0) <= 5): ?>
+                                Only <?php echo $product['stock']; ?> left
                             <?php endif; ?>
                         </div>
                     </div>
@@ -216,6 +244,9 @@ $shorts = $productModel->getBySubcategory('Shorts');
     <div class="product-grid" id="all-mens-clothing-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
+                <?php 
+                $isSoldOut = ($product['available'] ?? true) === false || ($product['stock'] ?? 0) <= 0;
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -315,14 +346,23 @@ $shorts = $productModel->getBySubcategory('Shorts');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" data-product-id="<?php echo $product['_id']; ?>">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif (($product['stock'] ?? 0) <= 2): ?>
+                                ⚠️ Only <?php echo $product['stock']; ?> left in stock!
+                            <?php elseif (($product['stock'] ?? 0) <= 5): ?>
+                                Only <?php echo $product['stock']; ?> left
                             <?php endif; ?>
                         </div>
                     </div>
@@ -368,76 +408,3 @@ $shorts = $productModel->getBySubcategory('Shorts');
     </div>
     <?php endif; ?>
 </main>
-
-<!-- Quick View Sidebar -->
-<div class="quick-view-sidebar" id="quick-view-sidebar">
-    <div class="quick-view-header">
-        <button class="close-quick-view" id="close-quick-view">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    
-    <div class="quick-view-content">
-        <!-- Product Media -->
-        <div class="quick-view-images">
-            <div class="main-image-container">
-                <img id="quick-view-main-image" src="" alt="Product Media">
-                <video id="quick-view-main-video" src="" muted loop style="display: none; max-width: 100%; border-radius: 8px;"></video>
-            </div>
-            <div class="thumbnail-images" id="quick-view-thumbnails">
-                <!-- Thumbnails will be populated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Product Details -->
-        <div class="quick-view-details">
-            <h2 id="quick-view-title"></h2>
-            <div class="quick-view-price" id="quick-view-price"></div>
-            <div class="quick-view-reviews">
-                <span class="stars">★★★★★</span>
-                <span class="review-count">(0 Reviews)</span>
-            </div>
-            
-            <!-- Color Selection -->
-            <div class="quick-view-colors">
-                <h4>Color</h4>
-                <div class="color-selection" id="quick-view-color-selection">
-                    <!-- Colors will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Size Selection -->
-            <div class="quick-view-sizes">
-                <h4>Size</h4>
-                <div class="size-selection" id="quick-view-size-selection">
-                    <!-- Sizes will be populated by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Action Buttons -->
-            <div class="quick-view-actions">
-                <button class="add-to-bag-quick" id="add-to-bag-quick">
-                    <i class="fas fa-shopping-bag"></i>
-                    Add to Bag
-                </button>
-                <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
-                    <i class="fas fa-heart"></i>
-                    + Wishlist
-                </button>
-            </div>
-            
-            <!-- Availability Status -->
-            <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
-                <!-- Availability will be populated by JavaScript -->
-            </div>
-            
-            <!-- Product Description -->
-            <div class="quick-view-description">
-                <p id="quick-view-description">A beautiful product perfect for any occasion. Features a flattering fit and comfortable fabric.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick View Overlay -->
-<div class="quick-view-overlay" id="quick-view-overlay"></div> 

@@ -19,11 +19,11 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
+                    <?php include '../includes/cart-notification-include.php'; ?>
 
                 
 
@@ -37,7 +37,7 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
-        <script src="../reviews-manager.js"></script>
+        <script src="scripts/simple-notification.js"></script>\n<script src="../reviews-manager.js"></script>
         <script src="../related-products.js"></script>
         
         <script>
@@ -91,6 +91,12 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 
             }
         </script>
 
+
+        <!-- Scripts -->
+        <script src="script.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html> 

@@ -7,13 +7,36 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Get products based on subcategory or all perfumes
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
     $pageTitle = ucfirst($subcategory);
 } else {
     // Get all perfume products
-    $products = $productModel->getByCategory("Perfumes");
+    $products = $productModel->getByCategory("Perfumes", $sortOptions);
     $pageTitle = "Perfumes";
 }
 
@@ -33,19 +56,12 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
         <div class="content-controls">
             <div class="sort-control">
                 <label for="sort-select-perfumes">Sort:</label>
-                <select id="sort-select-perfumes" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-perfumes" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -55,7 +71,13 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> data-product-id="<?php echo $product['_id']; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -149,7 +171,7 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -205,7 +227,13 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     <div class="product-grid" id="all-perfumes-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <?php
+                // Determine if product is sold out
+                $stock = (int)($product['stock'] ?? 0);
+                $isAvailable = ($product['available'] ?? true) !== false;
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                ?>
+                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> data-product-id="<?php echo $product['_id']; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -299,7 +327,7 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
