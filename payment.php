@@ -861,6 +861,20 @@ if ($amount == 0) {
                 
                 if (processResult.success) {
                     showNotification(processResult.message, 'success');
+                    
+                    // Clear cart on frontend if payment was successful
+                    if (processResult.cart_cleared !== false) {
+                        // Update cart count in UI
+                        if (typeof updateCartCount === 'function') {
+                            updateCartCount(0);
+                        }
+                        
+                        // Update cart count in header if cart notification manager is available
+                        if (window.cartNotificationManager) {
+                            window.cartNotificationManager.updateCartCount(0);
+                        }
+                    }
+                    
                     setTimeout(() => {
                         window.location.href = 'orders.php?payment_success=true';
                     }, 2000);

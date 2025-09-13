@@ -91,8 +91,20 @@ class Payment {
             $this->updateOrderStatus($payment['order_id'], 'confirmed');
             $cartCleared = $this->clearUserCart($payment['user_id']);
             if (!$cartCleared) {
+                // Log the error or try alternative user ID formats
+                error_log("Failed to clear cart for user: " . $payment['user_id']);
+                
+                // Try with session-based user ID as fallback
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $sessionUserId = $_SESSION['user_id'] ?? 'session_' . session_id();
+                if ($sessionUserId !== $payment['user_id']) {
+                    $cartCleared = $this->clearUserCart($sessionUserId);
+                }
             }
             $result['message'] = "🎉 Congratulations! Your order is successful!";
+            $result['cart_cleared'] = $cartCleared;
         }
 
         return $result;
@@ -398,8 +410,25 @@ class Payment {
         try {
             require_once __DIR__ . '/Cart.php';
             $cartModel = new Cart();
-            return $cartModel->clearCart($userId);
+            
+            // Get cart before clearing to verify it exists
+            $cart = $cartModel->getCart($userId);
+            if (empty($cart['items'])) {
+                // Cart is already empty, consider it successful
+                return true;
+            }
+            
+            $result = $cartModel->clearCart($userId);
+            
+            if ($result) {
+                error_log("Cart cleared successfully for user: " . $userId);
+            } else {
+                error_log("Failed to clear cart for user: " . $userId);
+            }
+            
+            return $result;
         } catch (Exception $e) {
+            error_log("Exception while clearing cart for user " . $userId . ": " . $e->getMessage());
             return false;
         }
     }

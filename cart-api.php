@@ -218,8 +218,6 @@ try {
             case 'place_order':
                 $cart = $cartModel->getCart($defaultUserId);
                 
-
-                
                 if (empty($cart['items'])) {
                     throw new Exception('Cart is empty');
                 }
@@ -233,13 +231,12 @@ try {
                 
                 $orderId = $orderModel->createOrder($defaultUserId, $cart, $orderDetails);
                 
-
-                
                 if ($orderId) {
                     $response = [
                         'success' => true,
-                        'message' => 'Order placed successfully!',
-                        'order_id' => $orderId
+                        'message' => 'Order placed successfully! Please proceed to payment.',
+                        'order_id' => $orderId,
+                        'cart_count' => $cartModel->getCartItemCount($defaultUserId)
                     ];
                 } else {
                     throw new Exception('Failed to place order');
@@ -290,6 +287,22 @@ try {
                     'cart_count' => $summary['item_count'],
                     'cart_total' => $summary['total']
                 ];
+                break;
+                
+            case 'force_clear_cart':
+                // Force clear cart - useful for testing and manual clearing
+                $success = $cartModel->clearCart($defaultUserId);
+                
+                if ($success) {
+                    $response = [
+                        'success' => true,
+                        'message' => 'Cart force cleared successfully!',
+                        'cart_count' => 0,
+                        'data' => ['items' => [], 'total' => 0, 'item_count' => 0]
+                    ];
+                } else {
+                    throw new Exception('Failed to force clear cart');
+                }
                 break;
                 
             default:
