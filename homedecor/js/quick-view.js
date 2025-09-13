@@ -102,13 +102,40 @@ class QuickViewSidebar {
         document.getElementById('quick-view-price').textContent = `$${parseFloat(productData.price).toLocaleString()}`;
         document.getElementById('quick-view-description').innerHTML = `<p>${productData.description || 'No description available.'}</p>`;
         
-        // Update Add to Bag button data attributes
+        // Update Add to Bag button data attributes and sold out state
         const addToBagBtn = document.getElementById('add-to-bag-quick');
+        console.log('Quick View: Button found:', addToBagBtn);
+        console.log('Quick View: Product stock:', productData.stock);
+        
         if (addToBagBtn) {
             addToBagBtn.setAttribute('data-product-id', productData.id);
             addToBagBtn.setAttribute('data-product-name', productData.name);
             addToBagBtn.setAttribute('data-product-price', productData.price);
             addToBagBtn.setAttribute('data-product-color', productData.color || '');
+            addToBagBtn.setAttribute('data-product-stock', productData.stock || 0);
+            
+            // Check if product is sold out and update button accordingly
+            const stock = parseInt(productData.stock) || 0;
+            const isSoldOut = stock <= 0;
+            
+            console.log('Quick View: Stock:', stock, 'Is sold out:', isSoldOut);
+            
+            if (isSoldOut) {
+                addToBagBtn.classList.add('sold-out-btn');
+                addToBagBtn.disabled = true;
+                addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i>Sold Out';
+                console.log('Quick View: Updated to sold out state');
+            } else {
+                addToBagBtn.classList.remove('sold-out-btn');
+                addToBagBtn.disabled = false;
+                addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i>Add to Bag';
+                console.log('Quick View: Updated to normal state');
+            }
+            
+            console.log('Quick View: Final button classes:', addToBagBtn.className);
+            console.log('Quick View: Final button innerHTML:', addToBagBtn.innerHTML);
+        } else {
+            console.error('Quick View: Add to bag button not found!');
         }
         
         // Handle images
@@ -423,6 +450,15 @@ class QuickViewSidebar {
             this.showErrorMessage('Please select a size first');
             return;
         }
+
+        // Check if product is sold out using simplified stock logic
+        const stock = parseInt(this.currentProduct.stock) || 0;
+        const isSoldOut = stock <= 0;
+
+        if (isSoldOut) {
+            this.showErrorMessage('This product is currently sold out and cannot be added to cart.');
+            return;
+        }
         
         try {
             // Get quantity from the quick view
@@ -540,9 +576,18 @@ async function addToCartFromCard(buttonElement) {
         const productName = buttonElement.getAttribute('data-product-name');
         const productPrice = buttonElement.getAttribute('data-product-price');
         const productColor = buttonElement.getAttribute('data-product-color');
+        const productStock = parseInt(buttonElement.getAttribute('data-product-stock')) || 0;
         
         if (!productId) {
             console.error('Product ID not found');
+            return;
+        }
+
+        // Check if product is sold out using simplified stock logic
+        const isSoldOut = productStock <= 0;
+
+        if (isSoldOut) {
+            alert('This product is currently sold out and cannot be added to cart.');
             return;
         }
         

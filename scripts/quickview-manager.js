@@ -508,10 +508,9 @@ class QuickviewManager {
     }
 
     updateSoldOutStatus(product) {
-        // Check if product is sold out based on stock and availability
+        // Check if product is sold out using simplified stock logic
         const stock = parseInt(product.stock) || 0;
-        const available = product.available !== false; // Default to true if not specified
-        const isSoldOut = stock <= 0 || !available;
+        const isSoldOut = stock <= 0;
 
         // Get the Add to Bag button
         const addToBagBtn = document.getElementById('add-to-bag-quick');
@@ -585,10 +584,9 @@ class QuickviewManager {
             return;
         }
 
-        // Check if product is sold out
+        // Check if product is sold out using simplified stock logic
         const stock = parseInt(this.currentProduct.stock) || 0;
-        const available = this.currentProduct.available !== false;
-        const isSoldOut = stock <= 0 || !available;
+        const isSoldOut = stock <= 0;
 
         if (isSoldOut) {
             alert('This product is currently sold out and cannot be added to cart.');

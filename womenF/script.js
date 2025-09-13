@@ -1060,19 +1060,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
             }
         }
-        
-        // Quick view wishlist functionality
-        if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
-            e.preventDefault();
-            const button = e.target.id === 'add-to-wishlist-quick' ? e.target : e.target.closest('#add-to-wishlist-quick');
-            
-            if (button.disabled) return;
-            
-            const productId = document.getElementById('quick-view-title')?.getAttribute('data-product-id');
-            if (productId && window.wishlistManager) {
-                window.wishlistManager.toggleWishlist(productId, button);
-            }
-        }
     });
     
     function addToCart(productId, productName) {

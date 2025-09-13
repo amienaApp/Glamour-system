@@ -2463,12 +2463,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
@@ -2613,12 +2613,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
@@ -2957,7 +2957,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="category-${productIndex}">Category *</label>
-                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required>
+                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required onchange="loadMultiSubcategories(${productIndex})">
                                     ${categoryOptions}
                                 </select>
                             </div>
@@ -6547,12 +6547,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
@@ -6697,12 +6697,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
@@ -7041,7 +7041,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             
                             <div class="form-group">
                                 <label for="category-${productIndex}">Category *</label>
-                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required>
+                                <select id="category-${productIndex}" name="products[${productIndex}][category]" required onchange="loadMultiSubcategories(${productIndex})">
                                     ${categoryOptions}
                                 </select>
                             </div>
@@ -7942,12 +7942,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
@@ -7972,6 +7972,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         checkbox.closest('.size-option').classList.remove('selected');
                     }
                 });
+                // Update Select All checkbox to unchecked
+                const selectAllCheckbox = document.querySelector(`#select_all_${category}_${productIndex}`);
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = false;
+                }
             } else {
                 // If not all are selected, select all in this category
                 sizesToToggle.forEach(size => {
@@ -7982,6 +7987,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         checkbox.closest('.size-option').classList.add('selected');
                     }
                 });
+                // Update Select All checkbox to checked
+                const selectAllCheckbox = document.querySelector(`#select_all_${category}_${productIndex}`);
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = true;
+                }
             }
             
             updateMultiSelectedSizesDisplay(productIndex);
@@ -8328,12 +8338,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="XS" onchange="toggleMultiSize('${productIndex}', 'XS')"> XS</label>
-                    <label><input type="checkbox" value="S" onchange="toggleMultiSize('${productIndex}', 'S')"> S</label>
-                    <label><input type="checkbox" value="M" onchange="toggleMultiSize('${productIndex}', 'M')"> M</label>
-                    <label><input type="checkbox" value="L" onchange="toggleMultiSize('${productIndex}', 'L')"> L</label>
-                    <label><input type="checkbox" value="XL" onchange="toggleMultiSize('${productIndex}', 'XL')"> XL</label>
-                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSize('${productIndex}', 'XXL')"> XXL</label>
+                    <div class="size-option select-all-option" onclick="selectAllInMultiCategory(${productIndex}, 'women')">
+                        <input type="checkbox" id="select_all_women_${productIndex}" value="select_all_women">
+                        <label for="select_all_women_${productIndex}">✓ Select All Women</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XS')">
+                        <input type="checkbox" id="size_XS_${productIndex}" value="XS">
+                        <label for="size_XS_${productIndex}">XS</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'S')">
+                        <input type="checkbox" id="size_S_${productIndex}" value="S">
+                        <label for="size_S_${productIndex}">S</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'M')">
+                        <input type="checkbox" id="size_M_${productIndex}" value="M">
+                        <label for="size_M_${productIndex}">M</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'L')">
+                        <input type="checkbox" id="size_L_${productIndex}" value="L">
+                        <label for="size_L_${productIndex}">L</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XL')">
+                        <input type="checkbox" id="size_XL_${productIndex}" value="XL">
+                        <label for="size_XL_${productIndex}">XL</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XXL')">
+                        <input type="checkbox" id="size_XXL_${productIndex}" value="XXL">
+                        <label for="size_XXL_${productIndex}">XXL</label>
+                    </div>
                 </div>
                 
                 <div class="size-category-header" data-product="${productIndex}" onclick="toggleSizeCategory(this, ${productIndex})">
@@ -8341,12 +8373,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="S" onchange="toggleMultiSize('${productIndex}', 'S')"> S</label>
-                    <label><input type="checkbox" value="M" onchange="toggleMultiSize('${productIndex}', 'M')"> M</label>
-                    <label><input type="checkbox" value="L" onchange="toggleMultiSize('${productIndex}', 'L')"> L</label>
-                    <label><input type="checkbox" value="XL" onchange="toggleMultiSize('${productIndex}', 'XL')"> XL</label>
-                    <label><input type="checkbox" value="XXL" onchange="toggleMultiSize('${productIndex}', 'XXL')"> XXL</label>
-                    <label><input type="checkbox" value="XXXL" onchange="toggleMultiSize('${productIndex}', 'XXXL')"> XXXL</label>
+                    <div class="size-option select-all-option" onclick="selectAllInMultiCategory(${productIndex}, 'men')">
+                        <input type="checkbox" id="select_all_men_${productIndex}" value="select_all_men">
+                        <label for="select_all_men_${productIndex}">✓ Select All Men</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'S')">
+                        <input type="checkbox" id="size_MS_${productIndex}" value="S">
+                        <label for="size_MS_${productIndex}">S</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'M')">
+                        <input type="checkbox" id="size_MM_${productIndex}" value="M">
+                        <label for="size_MM_${productIndex}">M</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'L')">
+                        <input type="checkbox" id="size_ML_${productIndex}" value="L">
+                        <label for="size_ML_${productIndex}">L</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XL')">
+                        <input type="checkbox" id="size_MXL_${productIndex}" value="XL">
+                        <label for="size_MXL_${productIndex}">XL</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XXL')">
+                        <input type="checkbox" id="size_MXXL_${productIndex}" value="XXL">
+                        <label for="size_MXXL_${productIndex}">XXL</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, 'XXXL')">
+                        <input type="checkbox" id="size_MXXXL_${productIndex}" value="XXXL">
+                        <label for="size_MXXXL_${productIndex}">XXXL</label>
+                    </div>
                 </div>
             `;
         }
@@ -8562,17 +8616,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="5" onchange="toggleMultiSize('${productIndex}', '5')"> 5</label>
-                    <label><input type="checkbox" value="5.5" onchange="toggleMultiSize('${productIndex}', '5.5')"> 5.5</label>
-                    <label><input type="checkbox" value="6" onchange="toggleMultiSize('${productIndex}', '6')"> 6</label>
-                    <label><input type="checkbox" value="6.5" onchange="toggleMultiSize('${productIndex}', '6.5')"> 6.5</label>
-                    <label><input type="checkbox" value="7" onchange="toggleMultiSize('${productIndex}', '7')"> 7</label>
-                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSize('${productIndex}', '7.5')"> 7.5</label>
-                    <label><input type="checkbox" value="8" onchange="toggleMultiSize('${productIndex}', '8')"> 8</label>
-                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSize('${productIndex}', '8.5')"> 8.5</label>
-                    <label><input type="checkbox" value="9" onchange="toggleMultiSize('${productIndex}', '9')"> 9</label>
-                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSize('${productIndex}', '9.5')"> 9.5</label>
-                    <label><input type="checkbox" value="10" onchange="toggleMultiSize('${productIndex}', '10')"> 10</label>
+                    <div class="size-option select-all-option" onclick="selectAllInMultiCategory(${productIndex}, 'women_shoes')">
+                        <input type="checkbox" id="select_all_women_shoes_${productIndex}" value="select_all_women_shoes">
+                        <label for="select_all_women_shoes_${productIndex}">✓ Select All Women Shoes</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '5')">
+                        <input type="checkbox" id="size_5_${productIndex}" value="5">
+                        <label for="size_5_${productIndex}">5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '5.5')">
+                        <input type="checkbox" id="size_5.5_${productIndex}" value="5.5">
+                        <label for="size_5.5_${productIndex}">5.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '6')">
+                        <input type="checkbox" id="size_6_${productIndex}" value="6">
+                        <label for="size_6_${productIndex}">6</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '6.5')">
+                        <input type="checkbox" id="size_6.5_${productIndex}" value="6.5">
+                        <label for="size_6.5_${productIndex}">6.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '7')">
+                        <input type="checkbox" id="size_7_${productIndex}" value="7">
+                        <label for="size_7_${productIndex}">7</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '7.5')">
+                        <input type="checkbox" id="size_7.5_${productIndex}" value="7.5">
+                        <label for="size_7.5_${productIndex}">7.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '8')">
+                        <input type="checkbox" id="size_8_${productIndex}" value="8">
+                        <label for="size_8_${productIndex}">8</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '8.5')">
+                        <input type="checkbox" id="size_8.5_${productIndex}" value="8.5">
+                        <label for="size_8.5_${productIndex}">8.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '9')">
+                        <input type="checkbox" id="size_9_${productIndex}" value="9">
+                        <label for="size_9_${productIndex}">9</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '9.5')">
+                        <input type="checkbox" id="size_9.5_${productIndex}" value="9.5">
+                        <label for="size_9.5_${productIndex}">9.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '10')">
+                        <input type="checkbox" id="size_10_${productIndex}" value="10">
+                        <label for="size_10_${productIndex}">10</label>
+                    </div>
                 </div>
                 
                 <div class="size-category-header" data-product="${productIndex}" onclick="toggleSizeCategory(this, ${productIndex})">
@@ -8580,17 +8671,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="size-options">
-                    <label><input type="checkbox" value="7" onchange="toggleMultiSize('${productIndex}', '7')"> 7</label>
-                    <label><input type="checkbox" value="7.5" onchange="toggleMultiSize('${productIndex}', '7.5')"> 7.5</label>
-                    <label><input type="checkbox" value="8" onchange="toggleMultiSize('${productIndex}', '8')"> 8</label>
-                    <label><input type="checkbox" value="8.5" onchange="toggleMultiSize('${productIndex}', '8.5')"> 8.5</label>
-                    <label><input type="checkbox" value="9" onchange="toggleMultiSize('${productIndex}', '9')"> 9</label>
-                    <label><input type="checkbox" value="9.5" onchange="toggleMultiSize('${productIndex}', '9.5')"> 9.5</label>
-                    <label><input type="checkbox" value="10" onchange="toggleMultiSize('${productIndex}', '10')"> 10</label>
-                    <label><input type="checkbox" value="10.5" onchange="toggleMultiSize('${productIndex}', '10.5')"> 10.5</label>
-                    <label><input type="checkbox" value="11" onchange="toggleMultiSize('${productIndex}', '11')"> 11</label>
-                    <label><input type="checkbox" value="11.5" onchange="toggleMultiSize('${productIndex}', '11.5')"> 11.5</label>
-                    <label><input type="checkbox" value="12" onchange="toggleMultiSize('${productIndex}', '12')"> 12</label>
+                    <div class="size-option select-all-option" onclick="selectAllInMultiCategory(${productIndex}, 'men_shoes')">
+                        <input type="checkbox" id="select_all_men_shoes_${productIndex}" value="select_all_men_shoes">
+                        <label for="select_all_men_shoes_${productIndex}">✓ Select All Men Shoes</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '7')">
+                        <input type="checkbox" id="size_M7_${productIndex}" value="7">
+                        <label for="size_M7_${productIndex}">7</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '7.5')">
+                        <input type="checkbox" id="size_M7.5_${productIndex}" value="7.5">
+                        <label for="size_M7.5_${productIndex}">7.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '8')">
+                        <input type="checkbox" id="size_M8_${productIndex}" value="8">
+                        <label for="size_M8_${productIndex}">8</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '8.5')">
+                        <input type="checkbox" id="size_M8.5_${productIndex}" value="8.5">
+                        <label for="size_M8.5_${productIndex}">8.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '9')">
+                        <input type="checkbox" id="size_M9_${productIndex}" value="9">
+                        <label for="size_M9_${productIndex}">9</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '9.5')">
+                        <input type="checkbox" id="size_M9.5_${productIndex}" value="9.5">
+                        <label for="size_M9.5_${productIndex}">9.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '10')">
+                        <input type="checkbox" id="size_M10_${productIndex}" value="10">
+                        <label for="size_M10_${productIndex}">10</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '10.5')">
+                        <input type="checkbox" id="size_M10.5_${productIndex}" value="10.5">
+                        <label for="size_M10.5_${productIndex}">10.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '11')">
+                        <input type="checkbox" id="size_M11_${productIndex}" value="11">
+                        <label for="size_M11_${productIndex}">11</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '11.5')">
+                        <input type="checkbox" id="size_M11.5_${productIndex}" value="11.5">
+                        <label for="size_M11.5_${productIndex}">11.5</label>
+                    </div>
+                    <div class="size-option" onclick="toggleMultiSize(${productIndex}, '12')">
+                        <input type="checkbox" id="size_M12_${productIndex}" value="12">
+                        <label for="size_M12_${productIndex}">12</label>
+                    </div>
                 </div>
             `;
         }
@@ -8608,13 +8736,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (multiSelectedSizes[key].has(size)) {
                     multiSelectedSizes[key].delete(size);
                     checkbox.checked = false;
+                    checkbox.closest('.size-option').classList.remove('selected');
                 } else {
                     multiSelectedSizes[key].add(size);
                     checkbox.checked = true;
+                    checkbox.closest('.size-option').classList.add('selected');
                 }
             }
             
+            // Update Select All checkboxes based on category completion
+            updateSelectAllCheckboxes(productIndex);
+            
             updateMultiSelectedSizesDisplay(productIndex);
+        }
+
+        // Update Select All checkboxes based on category completion
+        function updateSelectAllCheckboxes(productIndex) {
+            const categorySizes = {
+                'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
+                'toddler': ['2T', '3T', '4T'],
+                'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+                'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
+                'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
+                'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
+                'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
+                'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
+                'call_who_sizes': ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
+                'hair_sizes': ['Trial', 'Standard', 'Professional', 'Salon'],
+                'hair_tools': ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
+                'bath_body_sizes': ['Travel_Kit', 'Personal', 'Family_bath', 'Economy']
+            };
+            
+            // Check each category's Select All checkbox
+            Object.keys(categorySizes).forEach(category => {
+                const selectAllCheckbox = document.querySelector(`#select_all_${category}_${productIndex}`);
+                if (selectAllCheckbox) {
+                    const sizesInCategory = categorySizes[category];
+                    const allSelected = sizesInCategory.every(size => multiSelectedSizes[productIndex] && multiSelectedSizes[productIndex].has(size));
+                    selectAllCheckbox.checked = allSelected;
+                }
+            });
         }
 
         // Update selected sizes display for multi-product forms
@@ -9023,12 +9188,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'infant': ['0M', '3M', '6M', '9M', '12M', '18M', '24M'],
                 'toddler': ['2T', '3T', '4T'],
                 'children': ['4Y', '5Y', '6Y', '7Y', '8Y', '10Y', '12Y', '14Y'],
-                'women': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
-                'men': ['X', 'S', 'M', 'L', 'XL', 'XXL'],
+                'women': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                'men': ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
                 'infant_shoes': ['16', '17', '18', '19', '20', '21', '22'],
                 'children_shoes': ['23', '24', '25', '26', '27', '28', '29', '30'],
-                'women_shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
-                'men_shoes': ['39', '40', '41', '42', '43', '44', '45', '46', '47'],
+                'women_shoes': ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10'],
+                'men_shoes': ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
                 'makeup_sizes': ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                 'makeup_tools': ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
                 'skincare_sizes': ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],

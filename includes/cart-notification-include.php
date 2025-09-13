@@ -175,6 +175,45 @@ window.getCartCountGlobal = function() {
     background: #6c757d;
 }
 
+/* OPTIMIZED: Enhanced loading states */
+.shopping-cart.loading {
+    opacity: 0.7;
+    cursor: wait;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.shopping-cart.loading .cart-count {
+    background: #ffc107;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Optimized cart icon transitions */
+.shopping-cart {
+    transition: all 0.2s ease;
+}
+
+.shopping-cart:hover {
+    transform: scale(1.05);
+}
+
+.cart-count {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 11px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Error state for cart */
 .cart-error .cart-count {
     background: #dc3545;

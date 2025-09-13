@@ -135,12 +135,12 @@ if (empty($featuredProducts)) {
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php
-                // Determine if product is sold out
+                // Determine stock status
                 $stock = (int)($product['stock'] ?? 0);
-                $isAvailable = ($product['available'] ?? true) !== false;
-                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isSoldOut = $stock <= 0;
+                $isLowStock = $stock > 0 && $stock <= 7;
                 ?>
-                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
+                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -253,8 +253,8 @@ if (empty($featuredProducts)) {
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
                                 <button class="add-to-bag" 
                                         data-product-id="<?php echo $product['_id']; ?>"
@@ -264,6 +264,13 @@ if (empty($featuredProducts)) {
                                         onclick="addToCartFromCard(this)">
                                     Add To Bag
                                 </button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
                             <?php endif; ?>
                         </div>
                     </div>
@@ -318,12 +325,12 @@ if (empty($featuredProducts)) {
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php
-                // Determine if product is sold out
+                // Determine stock status
                 $stock = (int)($product['stock'] ?? 0);
-                $isAvailable = ($product['available'] ?? true) !== false;
-                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isSoldOut = $stock <= 0;
+                $isLowStock = $stock > 0 && $stock <= 7;
                 ?>
-                <div class="product-card" <?php echo $isSoldOut ? 'sold-out' : ''; ?> 
+                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -436,8 +443,8 @@ if (empty($featuredProducts)) {
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
                                 <button class="add-to-bag" 
                                         data-product-id="<?php echo $product['_id']; ?>"
@@ -447,6 +454,13 @@ if (empty($featuredProducts)) {
                                         onclick="addToCartFromCard(this)">
                                     Add To Bag
                                 </button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
                             <?php endif; ?>
                         </div>
                     </div>
@@ -584,7 +598,8 @@ if (empty($featuredProducts)) {
                                     data-product-id="" 
                                     data-product-name="" 
                                     data-product-price="" 
-                                    data-product-color="">
+                                    data-product-color=""
+                                    data-product-stock="">
                                 <i class="fas fa-shopping-bag"></i>
                                 Add to Bag
                             </button>

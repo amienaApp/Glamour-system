@@ -76,10 +76,92 @@ class Order {
         $result = $this->collection->insertOne($orderData);
         
         if ($result->getInsertedId()) {
+            // Reduce stock for all items in the order (payment successful)
+            $this->reduceOrderStock($result->getInsertedId());
             return $result->getInsertedId();
         }
         
         return false;
+    }
+
+    /**
+     * Reduce product stock when order is successfully placed
+     */
+    private function reduceOrderStock($orderId) {
+        $order = $this->collection->findOne(['_id' => $orderId]);
+        
+        if (!$order || empty($order['items'])) {
+            return false;
+        }
+        
+        $productCollection = $this->db->getCollection('products');
+        $items = $this->toArray($order['items']);
+        
+        foreach ($items as $item) {
+            $quantity = (int)($item['quantity'] ?? 0);
+            if ($quantity > 0) {
+                // Convert string ID to ObjectId if needed
+                $productId = $item['product_id'];
+                if (is_string($productId)) {
+                    try {
+                        $productId = new MongoDB\BSON\ObjectId($productId);
+                    } catch (Exception $e) {
+                        // If conversion fails, try with string
+                    }
+                }
+                
+                // Reduce stock
+                $productCollection->updateOne(
+                    ['_id' => $productId],
+                    [
+                        '$inc' => ['stock' => -$quantity],
+                        '$set' => ['updated_at' => date('Y-m-d H:i:s')]
+                    ]
+                );
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Restore product stock when order is cancelled
+     */
+    private function restoreOrderStock($orderId) {
+        $order = $this->collection->findOne(['_id' => $orderId]);
+        
+        if (!$order || empty($order['items'])) {
+            return false;
+        }
+        
+        $productCollection = $this->db->getCollection('products');
+        $items = $this->toArray($order['items']);
+        
+        foreach ($items as $item) {
+            $quantity = (int)($item['quantity'] ?? 0);
+            if ($quantity > 0) {
+                // Convert string ID to ObjectId if needed
+                $productId = $item['product_id'];
+                if (is_string($productId)) {
+                    try {
+                        $productId = new MongoDB\BSON\ObjectId($productId);
+                    } catch (Exception $e) {
+                        // If conversion fails, try with string
+                    }
+                }
+                
+                // Restore stock
+                $productCollection->updateOne(
+                    ['_id' => $productId],
+                    [
+                        '$inc' => ['stock' => $quantity],
+                        '$set' => ['updated_at' => date('Y-m-d H:i:s')]
+                    ]
+                );
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -273,6 +355,9 @@ class Order {
         if (!$order) {
             return false;
         }
+        
+        // Restore stock for cancelled order
+        $this->restoreOrderStock($orderId);
         
         $result = $this->collection->updateOne(
             ['_id' => $orderId],

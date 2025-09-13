@@ -173,6 +173,42 @@ class QuickviewManager {
 
         // Update availability
         this.updateAvailability();
+
+        // Update Add to Bag button data attributes and sold out state
+        const addToBagBtn = document.getElementById('add-to-bag-quick');
+        console.log('Beauty Quick View: Button found:', addToBagBtn);
+        console.log('Beauty Quick View: Product stock:', product.stock);
+        
+        if (addToBagBtn) {
+            addToBagBtn.setAttribute('data-product-id', product.id);
+            addToBagBtn.setAttribute('data-product-name', product.name);
+            addToBagBtn.setAttribute('data-product-price', product.price);
+            addToBagBtn.setAttribute('data-product-color', product.color || '');
+            addToBagBtn.setAttribute('data-product-stock', product.stock || 0);
+            
+            // Check if product is sold out and update button accordingly
+            const stock = parseInt(product.stock) || 0;
+            const isSoldOut = stock <= 0;
+            
+            console.log('Beauty Quick View: Stock:', stock, 'Is sold out:', isSoldOut);
+            
+            if (isSoldOut) {
+                addToBagBtn.classList.add('sold-out-btn');
+                addToBagBtn.disabled = true;
+                addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i>Sold Out';
+                console.log('Beauty Quick View: Updated to sold out state');
+            } else {
+                addToBagBtn.classList.remove('sold-out-btn');
+                addToBagBtn.disabled = false;
+                addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i>Add to Bag';
+                console.log('Beauty Quick View: Updated to normal state');
+            }
+            
+            console.log('Beauty Quick View: Final button classes:', addToBagBtn.className);
+            console.log('Beauty Quick View: Final button innerHTML:', addToBagBtn.innerHTML);
+        } else {
+            console.error('Beauty Quick View: Add to bag button not found!');
+        }
     }
 
     populateImages(images) {
@@ -316,6 +352,15 @@ class QuickviewManager {
     async addToCart() {
         if (!this.currentProduct || !this.selectedColor || !this.selectedSize) {
             alert('Please select both color and size');
+            return;
+        }
+
+        // Check if product is sold out using simplified stock logic
+        const stock = parseInt(this.currentProduct.stock) || 0;
+        const isSoldOut = stock <= 0;
+
+        if (isSoldOut) {
+            alert('This product is currently sold out and cannot be added to cart.');
             return;
         }
 

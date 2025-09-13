@@ -9,6 +9,48 @@ $subcategory = $_GET['subcategory'] ?? '';
 if ($subcategory) {
     $page_title = ucfirst($subcategory) . ' - ' . $page_title;
 }
+
+// Load categories and subcategories from database
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+
+$categoryModel = new Category();
+$womenCategory = $categoryModel->getByName("Women's Clothing");
+$subcategories = [];
+
+if ($womenCategory && isset($womenCategory['subcategories'])) {
+    // Convert BSONArray to regular array if needed
+    $allSubcategories = [];
+    foreach ($womenCategory['subcategories'] as $sub) {
+        if (is_array($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } elseif (is_object($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } else {
+            $allSubcategories[] = $sub;
+        }
+    }
+    
+    // Filter out unwanted subcategories
+    $excludedSubcategories = ['Outerwear', 'Bottoms'];
+    $subcategories = array_filter($allSubcategories, function($subcategory) use ($excludedSubcategories) {
+        return !in_array($subcategory, $excludedSubcategories);
+    });
+}
+
+// Define image mapping for subcategories
+$subcategoryImages = [
+    'Dresses' => '../img/women/13.webp',
+    'Tops' => '../img/women/tops/1.webp',
+    'Activewear' => '../img/women/activewear/1.webp',
+    'Wedding Dress' => '../img/women/wedding/1.webp',
+    'Bridesmaid Wear' => '../img/women/bridesmaid/1.webp',
+    'Wedding Guest' => '../img/women/14.avif',
+    'Summer Dresses' => '../img/women/dresses/20.1.webp'
+];
+
+// Default image for subcategories without specific images
+$defaultImage = '../img/women/dresses/12.webp';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,30 +75,51 @@ if ($subcategory) {
 
                 <!-- Image Bar Section -->
                 <div class="image-bar">
+                    <!-- Shop All Link -->
                     <a href="women.php" class="image-item">
-                        <img src="../img/women/dresses/12.webp" alt="Women Fashion 12">
+                        <img src="../img/women/dresses/12.webp" alt="Shop All Women's Clothing">
                         <h3>Shop All</h3>
                     </a>
-                    <a href="women.php?subcategory=dresses" class="image-item">
-                        <img src="../img/women/13.webp" alt="Women Fashion 13">
-                        <h3>Dresses</h3>
-                    </a>
-                    <a href="women.php?subcategory=wedding-guest" class="image-item">
-                        <img src="../img/women/14.avif" alt="Women Fashion 14">
-                        <h3>Wedding Guest</h3>
-                    </a>
-                    <a href="women.php?subcategory=wedding-dress" class="image-item">
-                        <img src="../img/women/dresses/17.webp" alt="Women Fashion 17">
-                        <h3>Wedding-dress</h3>
-                    </a>
-                    <a href="women.php?subcategory=abaya" class="image-item">
-                        <img src="../img/women/NEW/11.webp" alt="Women Fashion 12">
-                        <h3>Abaya</h3>
-                    </a>
-                    <a href="women.php?subcategory=summer-dresses" class="image-item">
-                        <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
-                        <h3>Summer-dresses</h3>
-                    </a>
+                    
+                    <?php if (!empty($subcategories)): ?>
+                        <?php foreach ($subcategories as $subcategoryName): ?>
+                            <?php
+                            // Convert subcategory name to URL-friendly format
+                            $subcategoryUrl = strtolower(str_replace([' ', '&'], ['-', 'and'], $subcategoryName));
+                            
+                            // Get image for this subcategory
+                            $subcategoryImage = $subcategoryImages[$subcategoryName] ?? $defaultImage;
+                            
+                            // Convert display name (handle special cases)
+                            $displayName = $subcategoryName;
+                            if ($subcategoryName === 'Wedding Dress') {
+                                $displayName = 'Wedding Dress';
+                            } elseif ($subcategoryName === 'Bridesmaid Wear') {
+                                $displayName = 'Bridesmaid Wear';
+                            }
+                            ?>
+                            <a href="women.php?subcategory=<?php echo urlencode($subcategoryUrl); ?>" class="image-item">
+                                <img src="<?php echo htmlspecialchars($subcategoryImage); ?>" 
+                                     alt="<?php echo htmlspecialchars($subcategoryName); ?>"
+                                     onerror="this.src='<?php echo $defaultImage; ?>'">
+                                <h3><?php echo htmlspecialchars($displayName); ?></h3>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback if no subcategories found -->
+                        <a href="women.php?subcategory=dresses" class="image-item">
+                            <img src="../img/women/13.webp" alt="Dresses">
+                            <h3>Dresses</h3>
+                        </a>
+                        <a href="women.php?subcategory=tops" class="image-item">
+                            <img src="../img/women/tops/1.webp" alt="Tops">
+                            <h3>Tops</h3>
+                        </a>
+                        <a href="women.php?subcategory=bottoms" class="image-item">
+                            <img src="../img/women/bottoms/1.webp" alt="Bottoms">
+                            <h3>Bottoms</h3>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="page-layout">

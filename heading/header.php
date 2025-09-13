@@ -193,27 +193,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartIcon = document.querySelector('.shopping-cart');
     if (cartIcon) {
         
-        // Add click event listener for cart functionality
+        // Add click event listener for cart functionality (OPTIMIZED)
         cartIcon.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Show loading state
-            const originalHTML = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            this.style.cursor = 'wait';
-            
-            // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
-            const currentPath = window.location.pathname;
-            const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                                   currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                                   currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
-                                   currentPath.includes('/bagsfolder/');
-            
-            // Small delay to show loading state
-            setTimeout(() => {
-                window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
-            }, 200);
+            // OPTIMIZATION: Use cart notification manager for instant loading
+            if (window.cartNotificationManager) {
+                window.cartNotificationManager.openCartPage();
+            } else {
+                // Fallback: Show loading state and redirect
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                this.style.cursor = 'wait';
+                
+                // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
+                const currentPath = window.location.pathname;
+                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                       currentPath.includes('/bagsfolder/');
+                
+                // Small delay to show loading state
+                setTimeout(() => {
+                    window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
+                }, 100);
+            }
         });
         
         // Add a small tooltip to show cart is clickable

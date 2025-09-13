@@ -30,31 +30,30 @@ switch ($sort) {
         break;
 }
 
-// Get products based on subcategory or all women's clothing
+// Convert URL-friendly subcategory back to database format
+$subcategoryForQuery = '';
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
-    $pageTitle = ucfirst($subcategory);
+    // Convert URL format back to database format
+    $subcategoryForQuery = str_replace(['-', 'and'], [' ', '&'], $subcategory);
+    $subcategoryForQuery = ucwords($subcategoryForQuery);
+    
+    // Handle special cases
+    if ($subcategoryForQuery === 'Wedding Dress') {
+        $subcategoryForQuery = 'Wedding Dress';
+    } elseif ($subcategoryForQuery === 'Bridesmaid Wear') {
+        $subcategoryForQuery = 'Bridesmaid Wear';
+    }
+}
+
+// Get products based on subcategory or all women's clothing
+if ($subcategoryForQuery) {
+    $products = $productModel->getBySubcategory($subcategoryForQuery, $sortOptions);
+    $pageTitle = $subcategoryForQuery;
 } else {
     // Get all women's clothing products (including sold out ones)
     $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
     $pageTitle = "Women's Clothing";
 }
-
-// Get all dresses from the database
-$dresses = $productModel->getBySubcategory('Dresses');
-
-// Get all tops from the database
-$tops = $productModel->getBySubcategory('Tops');
-
-// Debug: Show what's in the database
-if (!empty($products)) {
-    echo "<!-- DEBUG: First product from database -->\n";
-    echo "<!-- Product: " . htmlspecialchars(json_encode($products[0])) . " -->\n";
-    echo "<!-- Color field: " . htmlspecialchars($products[0]['color'] ?? 'NULL') . " -->\n";
-    echo "<!-- Color variants: " . htmlspecialchars(json_encode($products[0]['color_variants'] ?? [])) . " -->\n";
-}
-
-
 
 ?>
 
@@ -65,8 +64,8 @@ if (!empty($products)) {
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
             <div class="sort-control">
-                <label for="sort-select-dresses">Sort:</label>
-                <select id="sort-select-dresses" class="sort-select" onchange="updateSort(this.value)">
+                <label for="sort-select-women">Sort:</label>
+                <select id="sort-select-women" class="sort-select" onchange="updateSort(this.value)">
                     <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
                     <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
                     <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
@@ -76,13 +75,14 @@ if (!empty($products)) {
         </div>
     </div>
 
-    <?php if ($subcategory): ?>
-    <!-- Filtered Products Grid -->
-    <div class="product-grid" id="filtered-products-grid">
+    <!-- Unified Products Grid (No Sectioning) -->
+    <div class="product-grid" id="women-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php 
-                $isSoldOut = ($product['available'] ?? true) === false || ($product['stock'] ?? 0) <= 0;
+                $stock = (int)($product['stock'] ?? 0);
+                $isSoldOut = $stock <= 0;
+                $isLowStock = $stock > 0 && $stock <= 7;
                 ?>
                 <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
@@ -103,10 +103,6 @@ if (!empty($products)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
                      data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     
-                     <!-- DEBUG: Raw color data -->
-                     <!-- Color: <?php echo htmlspecialchars($product['color'] ?? 'NULL'); ?> -->
-                     <!-- Color Variants: <?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?> -->
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
@@ -216,7 +212,12 @@ if (!empty($products)) {
                             <?php if ($isSoldOut): ?>
                                 <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag" data-product-id="<?php echo $product['_id']; ?>">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -251,13 +252,11 @@ if (!empty($products)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
                             <?php if ($isSoldOut): ?>
                                 SOLD OUT
-                            <?php elseif (($product['stock'] ?? 0) <= 2): ?>
-                                ⚠️ Only <?php echo $product['stock']; ?> left in stock!
-                            <?php elseif (($product['stock'] ?? 0) <= 5): ?>
-                                Only <?php echo $product['stock']; ?> left
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
                             <?php endif; ?>
                         </div>
                     </div>
@@ -265,408 +264,11 @@ if (!empty($products)) {
             <?php endforeach; ?>
         <?php else: ?>
             <div class="no-products">
-                <p>No products found in this category.</p>
+                <h3>No products found</h3>
+                <p>We couldn't find any products in this category.</p>
             </div>
         <?php endif; ?>
     </div>
-    <?php else: ?>
-    <div class="product-grid" id="dresses-grid">
-        <?php if (!empty($dresses)): ?>
-            
-            <?php foreach ($dresses as $index => $dress): ?>
-                <div class="product-card" 
-                     data-product-id="<?php echo $dress['_id']; ?>"
-                     data-product-available="true"
-                     data-product-name="<?php echo htmlspecialchars($dress['name']); ?>"
-                     data-product-price="<?php echo $dress['price']; ?>"
-                     data-product-sale-price="<?php echo $dress['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($dress['description'] ?? ''); ?>"
-                     data-product-category="<?php echo htmlspecialchars($dress['category'] ?? ''); ?>"
-                     data-product-subcategory="<?php echo htmlspecialchars($dress['subcategory'] ?? ''); ?>"
-                     data-product-featured="<?php echo ($dress['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($dress['on_sale'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-stock="<?php echo $dress['stock'] ?? 0; ?>"
-                     data-product-rating="<?php echo $dress['rating'] ?? 0; ?>"
-                     data-product-review-count="<?php echo $dress['review_count'] ?? 0; ?>"
-                     data-product-front-image="<?php echo htmlspecialchars($dress['front_image'] ?? $dress['image_front'] ?? ''); ?>"
-                     data-product-back-image="<?php echo htmlspecialchars($dress['back_image'] ?? $dress['image_back'] ?? ''); ?>"
-                     data-product-color="<?php echo htmlspecialchars($dress['color'] ?? ''); ?>"
-                     data-product-images="<?php echo htmlspecialchars(json_encode($dress['images'] ?? [])); ?>"
-                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($dress['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($dress['sizes'] ?? $dress['selected_sizes'] ?? [])); ?>"
-                     data-product-size-category="<?php echo htmlspecialchars($dress['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($dress['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($dress['color_variants'] ?? $dress['variants'] ?? [])); ?>"
-                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($dress['product_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($dress['options'] ?? [])); ?>"
-                     data-product-product-options="<?php echo htmlspecialchars(json_encode($dress['product_options'] ?? [])); ?>"
-                     data-product-image-front="<?php echo htmlspecialchars($dress['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($dress['image_back'] ?? ''); ?>">
-                    <div class="product-image">
-                        <div class="image-slider">
-                            <?php 
-                            // Main product images
-                            $frontImage = $dress['front_image'] ?? $dress['image_front'] ?? '';
-                            $backImage = $dress['back_image'] ?? $dress['image_back'] ?? '';
-                            
-                            // If no back image, use front image for both
-                            if (empty($backImage) && !empty($frontImage)) {
-                                $backImage = $frontImage;
-                            }
-                            
-                            if ($frontImage): 
-                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
-                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                           alt="<?php echo htmlspecialchars($dress['name']); ?> - Front" 
-                                           class="active" 
-                                           data-color="<?php echo htmlspecialchars($dress['color']); ?>"
-                                           muted
-                                           loop
-                                           onerror="console.error('Failed to load video:', this.src);"
->
-                                    </video>
-                                <?php else: ?>
-                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                         alt="<?php echo htmlspecialchars($dress['name']); ?> - Front" 
-                                         class="active" 
-                                         data-color="<?php echo htmlspecialchars($dress['color']); ?>"
-                                         onerror="console.error('Failed to load image:', this.src);"
->
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <?php if ($backImage): 
-                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
-                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                           alt="<?php echo htmlspecialchars($dress['name']); ?> - Back" 
-                                           data-color="<?php echo htmlspecialchars($dress['color']); ?>"
-                                           muted
-                                           loop>
-                                    </video>
-                                <?php else: ?>
-                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                         alt="<?php echo htmlspecialchars($dress['name']); ?> - Back" 
-                                         data-color="<?php echo htmlspecialchars($dress['color']); ?>">
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            // Color variant images
-                            if (!empty($dress['color_variants'])):
-                                foreach ($dress['color_variants'] as $variant):
-                                    $variantFrontImage = $variant['front_image'] ?? '';
-                                    $variantBackImage = $variant['back_image'] ?? '';
-                                    
-                                    // If no back image for variant, use front image for both
-                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
-                                        $variantBackImage = $variantFrontImage;
-                                    }
-                                    
-                                    if ($variantFrontImage): 
-                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
-                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
-                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
-                                                   alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                   muted
-                                                   loop
-                                                   onerror="console.error('Failed to load variant video:', this.src);"
->
-                                            </video>
-                                        <?php else: ?>
-                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
-                                                 alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                 onerror="console.error('Failed to load variant image:', this.src);"
->
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                    
-                                    <?php if ($variantBackImage): 
-                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
-                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
-                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
-                                                   alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                   muted
-                                                   loop>
-                                            </video>
-                                        <?php else: ?>
-                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
-                                                 alt="<?php echo htmlspecialchars($dress['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <button class="heart-button" data-product-id="<?php echo $dress['_id']; ?>">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <div class="product-actions">
-                            <button class="quick-view" data-product-id="<?php echo $dress['_id']; ?>">Quick View</button>
-                            <?php if (($dress['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
-                            <?php else: ?>
-                                <button class="add-to-bag" data-product-id="<?php echo $dress['_id']; ?>">Add To Bag</button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="color-options">
-                            <?php 
-                            $hasColorVariants = !empty($dress['color_variants']);
-                            $isFirstColor = true;
-                            
-                            // Main product color
-                            if (!empty($dress['color'])): ?>
-                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
-                                      style="background-color: <?php echo htmlspecialchars($dress['color']); ?>;" 
-                                      title="<?php echo htmlspecialchars($dress['color']); ?>" 
-                                      data-color="<?php echo htmlspecialchars($dress['color']); ?>"></span>
-                                <?php $isFirstColor = false; ?>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            // Color variant colors
-                            if (!empty($dress['color_variants'])):
-                                foreach ($dress['color_variants'] as $variant):
-                                    if (!empty($variant['color'])): ?>
-                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
-                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
-                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
-                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
-                                        <?php $isFirstColor = false; ?>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <h3 class="product-name"><?php echo htmlspecialchars($dress['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($dress['price'], 0); ?></div>
-                        <?php if (($dress['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($dress['stock'] ?? 0) <= 5 && ($dress['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $dress['stock']; ?> left</div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="no-products">
-                <p>No dresses available at the moment.</p>
-            </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Tops Section -->
-    <div class="content-header" id="tops-section" style="margin-top: 60px;">
-        <h1 class="page-title">Tops</h1>
-        <div class="content-controls">
-            <div class="sort-control">
-                <label for="sort-select-tops">Sort:</label>
-                <select id="sort-select-tops" class="sort-select" onchange="updateSort(this.value)">
-                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
-                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
-                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
-                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
-                </select>
-            </div>
-           
-        </div>
-    </div>
-
-    <div class="product-grid" id="tops-grid">
-        <?php if (!empty($tops)): ?>
-            
-            <?php foreach ($tops as $index => $top): ?>
-                <div class="product-card" 
-                     data-product-id="<?php echo $top['_id']; ?>"
-                     data-product-available="true"
-                     data-product-name="<?php echo htmlspecialchars($top['name']); ?>"
-                     data-product-price="<?php echo $top['price']; ?>"
-                     data-product-sale-price="<?php echo $top['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($top['description'] ?? ''); ?>"
-                     data-product-category="<?php echo htmlspecialchars($top['category'] ?? ''); ?>"
-                     data-product-subcategory="<?php echo htmlspecialchars($top['subcategory'] ?? ''); ?>"
-                     data-product-featured="<?php echo ($top['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($top['on_sale'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-stock="<?php echo $top['stock'] ?? 0; ?>"
-                     data-product-rating="<?php echo $top['rating'] ?? 0; ?>"
-                     data-product-review-count="<?php echo $top['review_count'] ?? 0; ?>"
-                     data-product-front-image="<?php echo htmlspecialchars($top['front_image'] ?? $top['image_front'] ?? ''); ?>"
-                     data-product-back-image="<?php echo htmlspecialchars($top['back_image'] ?? $top['image_back'] ?? ''); ?>"
-                     data-product-color="<?php echo htmlspecialchars($top['color'] ?? ''); ?>"
-                     data-product-images="<?php echo htmlspecialchars(json_encode($top['images'] ?? [])); ?>"
-                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($top['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($top['sizes'] ?? $top['selected_sizes'] ?? [])); ?>"
-                     data-product-size-category="<?php echo htmlspecialchars($top['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($top['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($top['color_variants'] ?? $top['variants'] ?? [])); ?>"
-                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($top['product_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($top['options'] ?? [])); ?>"
-                     data-product-product-options="<?php echo htmlspecialchars(json_encode($top['product_options'] ?? [])); ?>"
-                     data-product-image-front="<?php echo htmlspecialchars($top['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($top['image_back'] ?? ''); ?>">
-                    <div class="product-image">
-                        <div class="image-slider">
-                            <?php 
-                            // Main product images
-                            $frontImage = $top['front_image'] ?? $top['image_front'] ?? '';
-                            $backImage = $top['back_image'] ?? $top['image_back'] ?? '';
-                            
-                            // If no back image, use front image for both
-                            if (empty($backImage) && !empty($frontImage)) {
-                                $backImage = $frontImage;
-                            }
-                            
-                            if ($frontImage): 
-                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
-                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                           alt="<?php echo htmlspecialchars($top['name']); ?> - Front" 
-                                           class="active" 
-                                           data-color="<?php echo htmlspecialchars($top['color']); ?>"
-                                           muted
-                                           loop
-                                           onerror="console.error('Failed to load video:', this.src);"
->
-                                    </video>
-                                <?php else: ?>
-                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                         alt="<?php echo htmlspecialchars($top['name']); ?> - Front" 
-                                         class="active" 
-                                         data-color="<?php echo htmlspecialchars($top['color']); ?>"
-                                         onerror="console.error('Failed to load image:', this.src);"
->
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <?php if ($backImage): 
-                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
-                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                           alt="<?php echo htmlspecialchars($top['name']); ?> - Back" 
-                                           data-color="<?php echo htmlspecialchars($top['color']); ?>"
-                                           muted
-                                           loop>
-                                    </video>
-                                <?php else: ?>
-                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                         alt="<?php echo htmlspecialchars($top['name']); ?> - Back" 
-                                         data-color="<?php echo htmlspecialchars($top['color']); ?>">
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            // Color variant images
-                            if (!empty($top['color_variants'])):
-                                foreach ($top['color_variants'] as $variant):
-                                    $variantFrontImage = $variant['front_image'] ?? '';
-                                    $variantBackImage = $variant['back_image'] ?? '';
-                                    
-                                    // If no back image for variant, use front image for both
-                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
-                                        $variantBackImage = $variantFrontImage;
-                                    }
-                                    
-                                    if ($variantFrontImage): 
-                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
-                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
-                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
-                                                   alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                   muted
-                                                   loop
-                                                   onerror="console.error('Failed to load variant video:', this.src);"
->
-                                            </video>
-                                        <?php else: ?>
-                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
-                                                 alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                 onerror="console.error('Failed to load variant image:', this.src);"
->
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                    
-                                    <?php if ($variantBackImage): 
-                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
-                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
-                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
-                                                   alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                   muted
-                                                   loop>
-                                            </video>
-                                        <?php else: ?>
-                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
-                                                 alt="<?php echo htmlspecialchars($top['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
-                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <button class="heart-button" data-product-id="<?php echo $top['_id']; ?>">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <div class="product-actions">
-                            <button class="quick-view" data-product-id="<?php echo $top['_id']; ?>">Quick View</button>
-                            <?php if (($top['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
-                            <?php else: ?>
-                                <button class="add-to-bag" data-product-id="<?php echo $top['_id']; ?>">Add To Bag</button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="color-options">
-                            <?php 
-                            $hasColorVariants = !empty($top['color_variants']);
-                            $isFirstColor = true;
-                            
-                            // Main product color
-                            if (!empty($top['color'])): ?>
-                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
-                                      style="background-color: <?php echo htmlspecialchars($top['color']); ?>;" 
-                                      title="<?php echo htmlspecialchars($top['color']); ?>" 
-                                      data-color="<?php echo htmlspecialchars($top['color']); ?>"></span>
-                                <?php $isFirstColor = false; ?>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            // Color variant colors
-                            if (!empty($top['color_variants'])):
-                                foreach ($top['color_variants'] as $variant):
-                                    if (!empty($variant['color'])): ?>
-                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
-                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
-                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
-                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
-                                        <?php $isFirstColor = false; ?>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <h3 class="product-name"><?php echo htmlspecialchars($top['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($top['price'], 0); ?></div>
-                        <?php if (($top['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($top['stock'] ?? 0) <= 5 && ($top['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $top['stock']; ?> left</div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="no-products">
-                <p>No tops available at the moment.</p>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php endif; ?>
 </main>
 
 <!-- Quick View Sidebar -->

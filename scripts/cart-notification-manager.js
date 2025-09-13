@@ -73,13 +73,17 @@ class CartNotificationManager {
         
         this.isLoading = true;
         
+        // OPTIMIZATION: Show loading state immediately
+        this.showCartLoadingState();
+        
         try {
+            // OPTIMIZATION: Use fast cart summary API
             const response = await fetch(this.apiPath, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: 'action=get_cart_count'
+                body: 'action=get_cart_summary'
             });
             
             if (!response.ok) {
@@ -91,6 +95,7 @@ class CartNotificationManager {
             if (data.success) {
                 // Ensure cart count is properly parsed as integer
                 this.cartCount = parseInt(data.cart_count) || 0;
+                this.cartTotal = parseFloat(data.cart_total) || 0;
                 this.updateCartCountDisplay();
             } else {
                 throw new Error(data.message || 'Failed to load cart count');
@@ -98,9 +103,11 @@ class CartNotificationManager {
         } catch (error) {
             console.error('Error loading cart count:', error);
             this.cartCount = 0;
+            this.cartTotal = 0;
             this.updateCartCountDisplay();
         } finally {
             this.isLoading = false;
+            this.hideCartLoadingState();
         }
     }
     
@@ -148,6 +155,30 @@ class CartNotificationManager {
             } else {
                 cartCountElement.style.display = 'none';
             }
+        }
+    }
+    
+    showCartLoadingState() {
+        const cartIcon = document.querySelector('.shopping-cart');
+        const cartCountElement = document.querySelector('.cart-count');
+        
+        if (cartIcon) {
+            cartIcon.style.opacity = '0.7';
+            cartIcon.style.cursor = 'wait';
+        }
+        
+        if (cartCountElement) {
+            cartCountElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            cartCountElement.style.display = 'flex';
+        }
+    }
+    
+    hideCartLoadingState() {
+        const cartIcon = document.querySelector('.shopping-cart');
+        
+        if (cartIcon) {
+            cartIcon.style.opacity = '1';
+            cartIcon.style.cursor = 'pointer';
         }
     }
     
@@ -569,6 +600,7 @@ class CartNotificationManager {
     }
     
     openCartPage() {
+        // OPTIMIZATION: Instant redirect without waiting for API calls
         const currentPath = window.location.pathname;
         const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
                                currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
@@ -576,11 +608,17 @@ class CartNotificationManager {
                                currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
                                currentPath.includes('/bagsfolder/');
         
-        if (isInSubdirectory) {
-            window.location.href = '../cart-unified.php';
-        } else {
-            window.location.href = 'cart-unified.php';
-        }
+        // Show immediate visual feedback
+        this.showCartLoadingState();
+        
+        // Instant redirect - no API calls needed
+        setTimeout(() => {
+            if (isInSubdirectory) {
+                window.location.href = '../cart-unified.php';
+            } else {
+                window.location.href = 'cart-unified.php';
+            }
+        }, 50); // Minimal delay for visual feedback
     }
     
     // Public methods for external use

@@ -226,7 +226,7 @@ class Category {
         $defaultCategories = [
             [
                 'name' => "Women's Clothing",
-                'subcategories' => ['Dresses', 'Tops', 'Bottoms', 'Outerwear', 'Activewear', 'Lingerie', 'Swimwear'],
+                'subcategories' => ['Dresses', 'Tops', 'Bottoms', 'Outerwear', 'Activewear', 'Wedding Dress', 'Bridesmaid Wear'],
                 'description' => 'Fashionable clothing for women of all ages',
                 'icon' => 'fa-female'
             ],

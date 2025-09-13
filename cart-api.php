@@ -274,10 +274,21 @@ try {
                 break;
                 
             case 'get_cart_count':
+                // OPTIMIZATION: Use fast cart count method
                 $cartCount = $cartModel->getCartItemCount($defaultUserId);
                 $response = [
                     'success' => true,
                     'cart_count' => $cartCount
+                ];
+                break;
+                
+            case 'get_cart_summary':
+                // OPTIMIZATION: Fast cart summary for header display
+                $summary = $cartModel->getCartSummary($defaultUserId);
+                $response = [
+                    'success' => true,
+                    'cart_count' => $summary['item_count'],
+                    'cart_total' => $summary['total']
                 ];
                 break;
                 
