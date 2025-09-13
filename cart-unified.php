@@ -16,16 +16,15 @@ if (file_exists('cart-config.php')) {
     require_once 'cart-config.php';
 }
 
-// Get user ID from session - allow cart operations without auth
-$userId = $_SESSION['user_id'] ?? null;
+// Get user ID using consistent function
+$userId = getCartUserId();
 
 $cartModel = new Cart();
 $productModel = new Product();
 $orderModel = new Order();
 
-// Get current cart (use session-based cart for unauthenticated users)
-$cartUserId = $userId ?: 'session_' . session_id();
-$cart = $cartModel->getCart($cartUserId);
+// Get current cart using consistent user ID
+$cart = $cartModel->getCart($userId);
 
 // Get return URL from session or default to main page
 $returnUrl = $_SESSION['return_url'] ?? 'index.php';
@@ -47,6 +46,9 @@ unset($_SESSION['return_url']);
 // Get current page mode
 $mode = $_GET['mode'] ?? 'view'; // view, add, checkout
 $productId = $_GET['product_id'] ?? null;
+
+// Check if user was redirected after successful payment
+$paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] === 'true';
 
 // Get product details if in add mode
 $product = null;
@@ -703,6 +705,13 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
         <div class="alert alert-warning" style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeaa7;">
             <i class="fas fa-exclamation-triangle"></i>
             <strong>Empty Cart:</strong> You need to add items to your cart before proceeding to payment.
+        </div>
+        <?php endif; ?>
+        
+        <?php if ($paymentSuccess): ?>
+        <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <i class="fas fa-check-circle"></i>
+            <strong>Payment Successful!</strong> Your order has been placed successfully and your cart has been cleared.
         </div>
         <?php endif; ?>
         <!-- Header -->
@@ -1455,10 +1464,31 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showModal('Success', 'Order placed successfully! Your order ID is: ' + data.order_id, function() {
-                            closeModal();
-                            window.location.href = 'orders.php?order_id=' + data.order_id;
-                        });
+                        // Update cart count if cart was cleared
+                        if (data.cart_cleared) {
+                            if (typeof updateCartCount === 'function') {
+                                updateCartCount(0);
+                            }
+                            if (window.cartNotificationManager) {
+                                window.cartNotificationManager.updateCartCount(0);
+                            }
+                        }
+                        
+                        const paymentMethod = formData.get('payment_method');
+                        
+                        if (paymentMethod === 'cash_on_delivery') {
+                            // For cash on delivery, cart should already be cleared by backend
+                            showModal('Success', data.message + ' Order ID: ' + data.order_id, function() {
+                                closeModal();
+                                window.location.href = 'orders.php?order_id=' + data.order_id;
+                            });
+                        } else {
+                            // For other payment methods, redirect to payment page
+                            showModal('Success', 'Order placed successfully! Please proceed to payment. Order ID: ' + data.order_id, function() {
+                                closeModal();
+                                window.location.href = 'payment.php?order_id=' + data.order_id;
+                            });
+                        }
                     } else if (data.requires_auth) {
                         showAuthenticationModal();
                         submitBtn.disabled = false;
@@ -1481,9 +1511,81 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
         <?php if ($mode === 'add'): ?>
         updateAddToCartButton();
         <?php endif; ?>
+        
+        // Refresh cart data if payment was successful
+        <?php if ($paymentSuccess): ?>
+        // Force refresh the page to show empty cart after successful payment
+        setTimeout(() => {
+            window.location.href = 'cart-unified.php?mode=view';
+        }, 3000);
+        <?php endif; ?>
+
+        // Simple cart clearing function
+        async function clearCartAfterPayment(orderId, userId) {
+            try {
+                const response = await fetch('cart-api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'clear_cart_after_payment',
+                        order_id: orderId,
+                        user_id: userId
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // Update cart count in UI
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(0);
+                    }
+                    if (window.cartNotificationManager) {
+                        window.cartNotificationManager.updateCartCount(0);
+                    }
+                    return true;
+                }
+            } catch (error) {
+                console.error('Cart clearing failed:', error);
+            }
+            return false;
+        }
+
+        // Check for payment success and clear cart
+        function checkPaymentSuccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentSuccess = urlParams.get('payment_success');
+            const orderId = urlParams.get('order_id');
+            
+            if (paymentSuccess === 'true' && orderId) {
+                // Clear cart immediately and show success message
+                clearCartAfterPayment(orderId, '<?php echo $userId; ?>').then(cleared => {
+                    if (cleared) {
+                        // Update cart count in UI
+                        if (typeof updateCartCount === 'function') {
+                            updateCartCount(0);
+                        }
+                        if (window.cartNotificationManager) {
+                            window.cartNotificationManager.updateCartCount(0);
+                        }
+                        
+                        showModal('Success', 'Payment successful! Your cart has been cleared.', function() {
+                            closeModal();
+                            // Remove payment success parameters from URL
+                            const newUrl = window.location.pathname + '?mode=view';
+                            window.history.replaceState({}, document.title, newUrl);
+                            location.reload();
+                        });
+                    }
+                });
+            }
+        }
 
         // Authentication form handlers
         document.addEventListener('DOMContentLoaded', function() {
+            // Check for payment success and clear cart
+            checkPaymentSuccess();
             // Login form handler
             const checkoutLoginForm = document.getElementById('checkoutLoginForm');
             if (checkoutLoginForm) {

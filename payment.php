@@ -860,24 +860,18 @@ if ($amount == 0) {
                 const processResult = await processResponse.json();
                 
                 if (processResult.success) {
-                    showNotification(processResult.message, 'success');
-                    
-                    // Clear cart on frontend if payment was successful
-                    if (processResult.cart_cleared !== false) {
-                        // Update cart count in UI
-                        if (typeof updateCartCount === 'function') {
-                            updateCartCount(0);
+                    // Clear cart after successful payment
+                    clearCartAfterPayment('<?php echo $orderId ?? "cart"; ?>', '<?php echo $userId; ?>').then(cleared => {
+                        if (cleared) {
+                            showNotification(processResult.message, 'success');
+                        } else {
+                            showNotification(processResult.message + ' (Note: Cart may not have been cleared)', 'success');
                         }
                         
-                        // Update cart count in header if cart notification manager is available
-                        if (window.cartNotificationManager) {
-                            window.cartNotificationManager.updateCartCount(0);
-                        }
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = 'orders.php?payment_success=true';
-                    }, 2000);
+                        setTimeout(() => {
+                            window.location.href = 'orders.php?payment_success=true&order_id=<?php echo $orderId ?? "cart"; ?>';
+                        }, 2000);
+                    });
                 } else {
                     throw new Error(processResult.message);
                 }
@@ -1109,6 +1103,39 @@ if ($amount == 0) {
             // Full number will be: +252 + 10 digits = 13 characters total
             value = value.substring(0, 10);
             input.value = value;
+        }
+
+
+        // Simple cart clearing function
+        async function clearCartAfterPayment(orderId, userId) {
+            try {
+                const response = await fetch('cart-api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'clear_cart_after_payment',
+                        order_id: orderId,
+                        user_id: userId
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // Update cart count in UI
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(0);
+                    }
+                    if (window.cartNotificationManager) {
+                        window.cartNotificationManager.updateCartCount(0);
+                    }
+                    return true;
+                }
+            } catch (error) {
+                console.error('Cart clearing failed:', error);
+            }
+            return false;
         }
 
         // Initialize

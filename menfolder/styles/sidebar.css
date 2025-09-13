@@ -9,12 +9,6 @@
     position: sticky;
     top: 80px;
     flex-shrink: 0;
-    transition: opacity 0.3s ease;
-}
-
-.sidebar.filter-loading {
-    opacity: 0.6;
-    pointer-events: none;
 }
 
 /* Side class - aligns items to the left like the logo */
@@ -47,30 +41,6 @@
     font-size: 14px;
     color: #666666;
     font-weight: 400;
-}
-
-.clear-filters-btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    color: #6c757d;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.clear-filters-btn:hover {
-    background: #e9ecef;
-    color: #495057;
-    border-color: #dee2e6;
-}
-
-.clear-filters-btn:active {
-    transform: translateY(1px);
 }
 
 /* Filter Sections */
@@ -109,54 +79,6 @@
     gap: 12px;
     padding: 0;
     align-items: flex-start;
-}
-
-.filter-option {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 4px 0;
-    transition: all 0.2s ease;
-    width: 100%;
-}
-
-.filter-option:hover {
-    color: #007bff;
-}
-
-.filter-option input[type="checkbox"] {
-    display: none;
-}
-
-.checkmark {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ddd;
-    border-radius: 3px;
-    margin-right: 10px;
-    position: relative;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.filter-option input[type="checkbox"]:checked + .checkmark {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.filter-option input[type="checkbox"]:checked + .checkmark::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.filter-option:hover .checkmark {
-    border-color: #007bff;
 }
 
 /* Size Filter Specific Styles */
@@ -269,6 +191,33 @@
     gap: 10px;
     width: 100%;
     justify-items: start;
+}
+
+/* Category Filter Specific Styles */
+#category-filter-options {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.category-count {
+    color: #666666;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+.loading-categories {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #666666;
+    font-size: 14px;
+}
+
+.loading-categories div {
+    margin-bottom: 8px;
 }
 
 .color-option {

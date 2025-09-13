@@ -14,37 +14,12 @@
                 <div class="filter-header">
                     <h4>Category</h4>
                 </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="shirts" data-filter="category">
-                        <span class="checkmark"></span>
-                        Shirts
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="t-shirts" data-filter="category">
-                        <span class="checkmark"></span>
-                        T-Shirts
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="suits" data-filter="category">
-                        <span class="checkmark"></span>
-                        Suits
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="pants" data-filter="category">
-                        <span class="checkmark"></span>
-                        Pants
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="shorts" data-filter="category">
-                        <span class="checkmark"></span>
-                        Shorts & Underwear
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="hoodies" data-filter="category">
-                        <span class="checkmark"></span>
-                        Hoodies & Sweatshirts
-                    </label>
+                <div class="filter-options" id="category-filter-options">
+                    <!-- Categories will be loaded dynamically -->
+                    <div class="loading-categories" style="text-align: center; padding: 10px; color: #666;">
+                        <div style="width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 5px;"></div>
+                        Loading categories...
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,38 +77,6 @@
                         <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
                         <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
                     </div>
-                    <script>
-                        // Ensure size filter functions are available
-                        if (typeof selectAllSizes === 'undefined') {
-                            window.selectAllSizes = function() {
-                                const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-                                sizeCheckboxes.forEach(checkbox => {
-                                    checkbox.checked = true;
-                                    const changeEvent = new Event('change', { bubbles: true });
-                                    checkbox.dispatchEvent(changeEvent);
-                                });
-                                // Update count if function exists
-                                if (typeof updateSizeCount === 'function') {
-                                    updateSizeCount();
-                                }
-                            };
-                        }
-                        
-                        if (typeof clearSizeFilters === 'undefined') {
-                            window.clearSizeFilters = function() {
-                                const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-                                sizeCheckboxes.forEach(checkbox => {
-                                    checkbox.checked = false;
-                                    const changeEvent = new Event('change', { bubbles: true });
-                                    checkbox.dispatchEvent(changeEvent);
-                                });
-                                // Update count if function exists
-                                if (typeof updateSizeCount === 'function') {
-                                    updateSizeCount();
-                                }
-                            };
-                        }
-                    </script>
                 </div>
             </div>
         </div>
@@ -269,27 +212,27 @@
                 </div>
                 <div class="filter-options">
                     <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="casual" data-filter="style">
+                        <input type="checkbox" name="style[]" value="casual">
                         <span class="checkmark"></span>
                         Casual
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="formal" data-filter="style">
+                        <input type="checkbox" name="style[]" value="formal">
                         <span class="checkmark"></span>
                         Formal
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="sporty" data-filter="style">
+                        <input type="checkbox" name="style[]" value="sporty">
                         <span class="checkmark"></span>
                         Sporty
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="streetwear" data-filter="style">
+                        <input type="checkbox" name="style[]" value="streetwear">
                         <span class="checkmark"></span>
                         Streetwear
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="business" data-filter="style">
+                        <input type="checkbox" name="style[]" value="business">
                         <span class="checkmark"></span>
                         Business
                     </label>
@@ -305,32 +248,32 @@
                 </div>
                 <div class="filter-options">
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="cotton" data-filter="material">
+                        <input type="checkbox" name="material[]" value="cotton">
                         <span class="checkmark"></span>
                         Cotton
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="polyester" data-filter="material">
+                        <input type="checkbox" name="material[]" value="polyester">
                         <span class="checkmark"></span>
                         Polyester
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="wool" data-filter="material">
+                        <input type="checkbox" name="material[]" value="wool">
                         <span class="checkmark"></span>
                         Wool
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="linen" data-filter="material">
+                        <input type="checkbox" name="material[]" value="linen">
                         <span class="checkmark"></span>
                         Linen
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="denim" data-filter="material">
+                        <input type="checkbox" name="material[]" value="denim">
                         <span class="checkmark"></span>
                         Denim
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="silk" data-filter="material">
+                        <input type="checkbox" name="material[]" value="silk">
                         <span class="checkmark"></span>
                         Silk
                     </label>
@@ -346,22 +289,22 @@
                 </div>
                 <div class="filter-options">
                     <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="slim" data-filter="fit">
+                        <input type="checkbox" name="fit[]" value="slim">
                         <span class="checkmark"></span>
                         Slim
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="regular" data-filter="fit">
+                        <input type="checkbox" name="fit[]" value="regular">
                         <span class="checkmark"></span>
                         Regular
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="loose" data-filter="fit">
+                        <input type="checkbox" name="fit[]" value="loose">
                         <span class="checkmark"></span>
                         Loose
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="relaxed" data-filter="fit">
+                        <input type="checkbox" name="fit[]" value="relaxed">
                         <span class="checkmark"></span>
                         Relaxed
                     </label>
@@ -377,17 +320,17 @@
                 </div>
                 <div class="filter-options">
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="in-stock" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="in-stock">
                         <span class="checkmark"></span>
                         In Stock
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="on-sale" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="on-sale">
                         <span class="checkmark"></span>
                         On Sale
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="new-arrival" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="new-arrival">
                         <span class="checkmark"></span>
                         New Arrival
                     </label>

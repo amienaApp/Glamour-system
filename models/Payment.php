@@ -89,22 +89,11 @@ class Payment {
         // Update order status if payment is successful
         if ($result && $result['success']) {
             $this->updateOrderStatus($payment['order_id'], 'confirmed');
-            $cartCleared = $this->clearUserCart($payment['user_id']);
-            if (!$cartCleared) {
-                // Log the error or try alternative user ID formats
-                error_log("Failed to clear cart for user: " . $payment['user_id']);
-                
-                // Try with session-based user ID as fallback
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $sessionUserId = $_SESSION['user_id'] ?? 'session_' . session_id();
-                if ($sessionUserId !== $payment['user_id']) {
-                    $cartCleared = $this->clearUserCart($sessionUserId);
-                }
-            }
-            $result['message'] = "🎉 Congratulations! Your order is successful!";
-            $result['cart_cleared'] = $cartCleared;
+            
+            // Clear the user's cart after successful payment
+            $this->clearUserCart($payment['user_id'], $payment['order_id']);
+            
+            $result['message'] = "🎉 Congratulations! Your order is successful! Your cart has been cleared.";
         }
 
         return $result;
@@ -406,29 +395,29 @@ class Payment {
     /**
      * Clear user's cart after successful payment
      */
-    private function clearUserCart($userId) {
+    private function clearUserCart($userId, $orderId) {
         try {
+            // Directly clear the cart using the Cart model
             require_once __DIR__ . '/Cart.php';
             $cartModel = new Cart();
             
-            // Get cart before clearing to verify it exists
-            $cart = $cartModel->getCart($userId);
-            if (empty($cart['items'])) {
-                // Cart is already empty, consider it successful
-                return true;
+            // Try different user ID formats to ensure we clear the right cart
+            $cleared = $cartModel->clearCart($userId);
+            
+            if (!$cleared && strpos($userId, 'session_') === 0) {
+                // Try without session_ prefix
+                $sessionId = str_replace('session_', '', $userId);
+                $cleared = $cartModel->clearCart($sessionId);
             }
             
-            $result = $cartModel->clearCart($userId);
-            
-            if ($result) {
-                error_log("Cart cleared successfully for user: " . $userId);
-            } else {
-                error_log("Failed to clear cart for user: " . $userId);
+            if (!$cleared) {
+                // Try with session_ prefix
+                $cleared = $cartModel->clearCart('session_' . $userId);
             }
             
-            return $result;
+            return $cleared;
         } catch (Exception $e) {
-            error_log("Exception while clearing cart for user " . $userId . ": " . $e->getMessage());
+            error_log("Cart clearing failed for user ID: $userId, Error: " . $e->getMessage());
             return false;
         }
     }
