@@ -73,7 +73,10 @@ foreach ($allShoes as $shoe) {
     <div class="sidebar-header">
         <h3>Refine By</h3>
         <span class="style-count" id="style-count"><?php echo count($allShoes); ?> Styles</span>
-        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
+        <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
+            <i class="fas fa-times"></i>
+            Clear All Filters
+        </button>
     </div>
     
     <!-- Gender Filter -->
@@ -425,112 +428,9 @@ foreach ($allShoes as $shoe) {
                 <h4>Color</h4>
             </div>
             <div class="filter-options">
-                <div class="color-grid">
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="black" 
-                               <?php echo $currentColor === 'black' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('black', this.checked)">
-                        <span class="color-swatch" style="background-color: #000000;"></span>
-                        Black
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="beige" 
-                               <?php echo $currentColor === 'beige' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('beige', this.checked)">
-                        <span class="color-swatch" style="background-color: #ecbcaf;"></span>
-                        Beige
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="blue" 
-                               <?php echo $currentColor === 'blue' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('blue', this.checked)">
-                        <span class="color-swatch" style="background-color: #0066cc;"></span>
-                        Blue
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="brown" 
-                               <?php echo $currentColor === 'brown' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('brown', this.checked)">
-                        <span class="color-swatch" style="background-color: #8b4513;"></span>
-                        Brown
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="gold" 
-                               <?php echo $currentColor === 'gold' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('gold', this.checked)">
-                        <span class="color-swatch" style="background-color: #ffd700;"></span>
-                        Gold
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="green" 
-                               <?php echo $currentColor === 'green' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('green', this.checked)">
-                        <span class="color-swatch" style="background-color: #228b22;"></span>
-                        Green
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="grey" 
-                               <?php echo $currentColor === 'grey' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('grey', this.checked)">
-                        <span class="color-swatch" style="background-color: #808080;"></span>
-                        Grey
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="orange" 
-                               <?php echo $currentColor === 'orange' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('orange', this.checked)">
-                        <span class="color-swatch" style="background-color: #ffa500;"></span>
-                        Orange
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="pink" 
-                               <?php echo $currentColor === 'pink' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('pink', this.checked)">
-                        <span class="color-swatch" style="background-color: #ffc0cb;"></span>
-                        Pink
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="purple" 
-                               <?php echo $currentColor === 'purple' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('purple', this.checked)">
-                        <span class="color-swatch" style="background-color: #422d58;"></span>
-                        Purple
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="red" 
-                               <?php echo $currentColor === 'red' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('red', this.checked)">
-                        <span class="color-swatch" style="background-color: #ff0000;"></span>
-                        Red
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="silver" 
-                               <?php echo $currentColor === 'silver' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('silver', this.checked)">
-                        <span class="color-swatch" style="background-color: #c0c0c0;"></span>
-                        Silver
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="taupe" 
-                               <?php echo $currentColor === 'taupe' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('taupe', this.checked)">
-                        <span class="color-swatch" style="background-color: #483c32;"></span>
-                        Taupe
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="white" 
-                               <?php echo $currentColor === 'white' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('white', this.checked)">
-                        <span class="color-swatch" style="background-color: #fff; border: 1px solid #ddd;"></span>
-                        White
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="yellow" 
-                               <?php echo $currentColor === 'yellow' ? 'checked' : ''; ?>
-                               onchange="updateColorFilter('yellow', this.checked)">
-                        <span class="color-swatch" style="background-color: #ffff00;"></span>
-                        Yellow
-                    </label>
+                <div class="color-grid" id="color-filter-container">
+                    <!-- Colors will be loaded dynamically from database -->
+                    <div class="loading-colors">Loading colors...</div>
                 </div>
             </div>
         </div>
@@ -667,8 +567,11 @@ function applyFilters() {
     window.location.reload();
 }
 
-// Function to clear all filters
+// Function to clear all filters - This is the main clearAllFilters for shoes system
 function clearAllFilters() {
+    console.log('Shoes: Clearing all filters...');
+    
+    // Reset filter state
     currentFilters = {
         gender: '',
         size: '',
@@ -676,20 +579,17 @@ function clearAllFilters() {
         priceRange: ''
     };
     
-    // Uncheck all checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
+    // Clear ALL URL parameters to show all available products (default state)
+    // This will show all shoes regardless of subcategory
+    const newUrl = window.location.pathname;
     
-    // Redirect to base URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentSubcategory = urlParams.get('subcategory') || '';
-    if (currentSubcategory) {
-        window.location.href = window.location.pathname + '?subcategory=' + currentSubcategory;
-    } else {
-        window.location.href = window.location.pathname;
-    }
+    // Redirect immediately to the clean URL to show all products
+    // This bypasses all the checkbox change events
+    window.location.href = newUrl;
 }
+
+// Override the global clearAllFilters function to ensure this version is used
+window.clearAllFilters = clearAllFilters;
 
 // Function to select all sizes
 function selectAllSizes() {
@@ -774,5 +674,163 @@ document.addEventListener('DOMContentLoaded', function() {
     currentFilters.size = urlParams.get('size') || '';
     currentFilters.color = urlParams.get('color') || '';
     currentFilters.priceRange = urlParams.get('price_range') || '';
+    
+    // Load colors dynamically from database
+    loadColorsFromDatabase();
 });
-</script> 
+
+// Function to load colors from database
+function loadColorsFromDatabase() {
+    fetch('get-colors-api.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayColors(data.data.colors);
+            } else {
+                console.error('Error loading colors:', data.message);
+                displayFallbackColors();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching colors:', error);
+            displayFallbackColors();
+        });
+}
+
+// Function to display colors in the filter
+function displayColors(colors) {
+    const container = document.getElementById('color-filter-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    colors.forEach(color => {
+        const colorOption = document.createElement('label');
+        colorOption.className = 'color-option';
+        
+        const isChecked = currentFilters.color === color.value ? 'checked' : '';
+        const borderStyle = color.value.toLowerCase() === 'white' ? 'border: 1px solid #ddd;' : '';
+        
+        colorOption.innerHTML = `
+            <input type="checkbox" name="color[]" value="${color.value}" 
+                   ${isChecked}
+                   onchange="updateColorFilter('${color.value}', this.checked)">
+            <span class="color-swatch" style="background-color: ${color.hex}; ${borderStyle}"></span>
+            ${color.name}
+        `;
+        
+        container.appendChild(colorOption);
+    });
+}
+
+// Function to display fallback colors if API fails
+function displayFallbackColors() {
+    const container = document.getElementById('color-filter-container');
+    if (!container) return;
+    
+    const fallbackColors = [
+        { value: 'black', name: 'Black', hex: '#000000' },
+        { value: 'white', name: 'White', hex: '#ffffff' },
+        { value: 'red', name: 'Red', hex: '#ff0000' },
+        { value: 'blue', name: 'Blue', hex: '#0066cc' },
+        { value: 'green', name: 'Green', hex: '#228b22' },
+        { value: 'yellow', name: 'Yellow', hex: '#ffff00' },
+        { value: 'orange', name: 'Orange', hex: '#ffa500' },
+        { value: 'purple', name: 'Purple', hex: '#800080' },
+        { value: 'pink', name: 'Pink', hex: '#ffc0cb' },
+        { value: 'brown', name: 'Brown', hex: '#8b4513' },
+        { value: 'grey', name: 'Grey', hex: '#808080' },
+        { value: 'gray', name: 'Gray', hex: '#808080' },
+        { value: 'beige', name: 'Beige', hex: '#f5f5dc' },
+        { value: 'navy', name: 'Navy', hex: '#000080' },
+        { value: 'maroon', name: 'Maroon', hex: '#800000' },
+        { value: 'teal', name: 'Teal', hex: '#008080' },
+        { value: 'lime', name: 'Lime', hex: '#00ff00' },
+        { value: 'cyan', name: 'Cyan', hex: '#00ffff' },
+        { value: 'magenta', name: 'Magenta', hex: '#ff00ff' },
+        { value: 'silver', name: 'Silver', hex: '#c0c0c0' },
+        { value: 'gold', name: 'Gold', hex: '#ffd700' },
+        { value: 'taupe', name: 'Taupe', hex: '#483c32' },
+        { value: 'olive', name: 'Olive', hex: '#808000' },
+        { value: 'aqua', name: 'Aqua', hex: '#00ffff' },
+        { value: 'fuchsia', name: 'Fuchsia', hex: '#ff00ff' },
+        { value: 'coral', name: 'Coral', hex: '#ff7f50' },
+        { value: 'salmon', name: 'Salmon', hex: '#fa8072' },
+        { value: 'tan', name: 'Tan', hex: '#d2b48c' },
+        { value: 'ivory', name: 'Ivory', hex: '#fffff0' },
+        { value: 'cream', name: 'Cream', hex: '#fff8dc' },
+        { value: 'mint', name: 'Mint', hex: '#f5fffa' },
+        { value: 'lavender', name: 'Lavender', hex: '#e6e6fa' },
+        { value: 'peach', name: 'Peach', hex: '#ffdab9' },
+        { value: 'rose', name: 'Rose', hex: '#ff69b4' },
+        { value: 'turquoise', name: 'Turquoise', hex: '#40e0d0' },
+        { value: 'indigo', name: 'Indigo', hex: '#4b0082' },
+        { value: 'violet', name: 'Violet', hex: '#8a2be2' },
+        { value: 'amber', name: 'Amber', hex: '#ffbf00' },
+        { value: 'bronze', name: 'Bronze', hex: '#cd7f32' },
+        { value: 'copper', name: 'Copper', hex: '#b87333' },
+        { value: 'charcoal', name: 'Charcoal', hex: '#36454f' },
+        { value: 'slate', name: 'Slate', hex: '#708090' },
+        { value: 'steel', name: 'Steel', hex: '#4682b4' },
+        { value: 'denim', name: 'Denim', hex: '#1560bd' },
+        { value: 'khaki', name: 'Khaki', hex: '#f0e68c' },
+        { value: 'burgundy', name: 'Burgundy', hex: '#800020' },
+        { value: 'wine', name: 'Wine', hex: '#722f37' },
+        { value: 'plum', name: 'Plum', hex: '#8e4585' },
+        { value: 'mauve', name: 'Mauve', hex: '#e0b0ff' },
+        { value: 'sage', name: 'Sage', hex: '#9caf88' }
+    ];
+    
+    displayColors(fallbackColors);
+}
+</script>
+
+<style>
+.loading-colors {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 13px;
+}
+
+.color-option:hover {
+    background-color: #f5f5f5;
+}
+
+.color-option input[type="checkbox"] {
+    margin: 0;
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.color-option label {
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    margin: 0;
+}
+</style> 

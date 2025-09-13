@@ -49,28 +49,46 @@
     font-weight: 400;
 }
 
-.clear-filters-btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    color: #6c757d;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
+/* Clear All Filters Button */
+.clear-all-filters-btn {
     width: 100%;
+    padding: 10px 16px;
+    background-color: #f5f5f5;
+    border: 1px solid #999999;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333333;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
 }
 
-.clear-filters-btn:hover {
-    background: #e9ecef;
-    color: #495057;
-    border-color: #dee2e6;
+.clear-all-filters-btn:hover {
+    background-color: #e8e8e8;
+    color: #000000;
+    border-color: #666666;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.clear-filters-btn:active {
-    transform: translateY(1px);
+.clear-all-filters-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.clear-all-filters-btn i {
+    font-size: 12px;
+}
+
+.sidebar.filter-loading .clear-all-filters-btn {
+    background-color: #e8e8e8;
+    cursor: not-allowed;
 }
 
 /* Filter Sections */
@@ -111,6 +129,54 @@
     align-items: flex-start;
 }
 
+/* Color Grid Styles */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.color-option:hover {
+    background-color: #f8f9fa;
+}
+
+.color-option input[type="checkbox"] {
+    display: none;
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.color-option input[type="checkbox"]:checked + .color-swatch {
+    border-color: #333;
+    transform: scale(1.1);
+}
+
+.color-option input[type="checkbox"]:checked ~ span:not(.color-swatch) {
+    font-weight: 600;
+    color: #333;
+}
+
 .filter-option {
     display: flex;
     align-items: center;
@@ -146,17 +212,17 @@
     border-color: #007bff;
 }
 
-.filter-option input[type="radio"]:checked + .checkmark::after,
-.filter-option input[type="checkbox"]:checked + .checkmark::after {
+/* Radio buttons - tick mark instead of circle */
+.filter-option input[type="radio"]:checked + .checkmark::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
+    left: 4px;
+    top: 1px;
+    width: 4px;
     height: 8px;
-    background-color: white;
-    border-radius: 50%;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
 .filter-option:hover .checkmark {
@@ -243,6 +309,7 @@
     border-color: #000000;
 }
 
+/* Checkboxes - tick mark (checkmark) */
 .filter-option input[type="checkbox"]:checked + .checkmark::after {
     content: '';
     position: absolute;
@@ -254,6 +321,68 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
+
+/* Alternative Option 2: Filled circle (uncomment to use)
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+*/
+
+/* Alternative Option 3: Plus sign (uncomment to use)
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 2px;
+    background-color: white;
+    transform: translate(-50%, -50%);
+}
+
+.filter-option input[type="checkbox"]:checked + .checkmark::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 8px;
+    background-color: white;
+    transform: translate(-50%, -50%);
+}
+*/
+
+/* Alternative Option 4: Heart shape (uncomment to use)
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '♥';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: white;
+    font-size: 10px;
+    transform: translate(-50%, -50%);
+}
+*/
+
+/* Alternative Option 5: Star shape (uncomment to use)
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '★';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: white;
+    font-size: 10px;
+    transform: translate(-50%, -50%);
+}
+*/
 
 /* Size Filter Grid */
 .size-grid {

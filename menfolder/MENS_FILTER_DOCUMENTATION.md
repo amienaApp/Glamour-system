@@ -181,7 +181,7 @@ const filterData = {
 // Filter by multiple categories
 const filterData = {
     action: 'filter_products',
-    categories: ['shirts', 'tshirts']
+    categories: ['shirts', 'T-Shirts']
 };
 ```
 

@@ -44,39 +44,141 @@
             </div>
         </div>
 
-        <!-- Makeup Type Filter -->
-        <div class="filter-group">
+        <!-- Beauty Category Type Filter -->
+        <div class="filter-group" id="beauty-type-group" style="display: none;">
             <div class="filter-header">
-                <h4>Makeup Type</h4>
+                <h4 id="beauty-type-title">Category Type</h4>
             </div>
             <div class="filter-options">
-                <div class="makeup-type-grid" id="makeup-type-filter">
+                <!-- Makeup Types -->
+                <div class="beauty-type-grid" id="makeup-types" style="display: none;">
                     <label class="filter-option">
-                        <input type="checkbox" name="makeup_types[]" value="face" data-filter="makeup_types">
+                        <input type="checkbox" name="beauty_types[]" value="face" data-filter="beauty_types">
                         <span class="checkmark"></span>
                         Face
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="makeup_types[]" value="eye" data-filter="makeup_types">
+                        <input type="checkbox" name="beauty_types[]" value="eye" data-filter="beauty_types">
                         <span class="checkmark"></span>
                         Eye
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="makeup_types[]" value="lip" data-filter="makeup_types">
+                        <input type="checkbox" name="beauty_types[]" value="lip" data-filter="beauty_types">
                         <span class="checkmark"></span>
                         Lip
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="makeup_types[]" value="nails" data-filter="makeup_types">
+                        <input type="checkbox" name="beauty_types[]" value="nail" data-filter="beauty_types">
                         <span class="checkmark"></span>
-                        Nails
+                        Nail
+                    </label>
+                </div>
+                
+                <!-- Skincare Types -->
+                <div class="beauty-type-grid" id="skincare-types" style="display: none;">
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="moisturizers" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Moisturizers
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="cleansers" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Cleansers
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="masks" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Masks
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="sun-care" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Sun Care
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="cream" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Cream
+                    </label>
+                </div>
+                
+                <!-- Hair Care Types -->
+                <div class="beauty-type-grid" id="hair-care-types" style="display: none;">
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="shampoo" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Shampoo
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="conditioner" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Conditioner
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="tools" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Tools
+                    </label>
+                </div>
+                
+                <!-- Bath & Body Types -->
+                <div class="beauty-type-grid" id="bath-body-types" style="display: none;">
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="shower-gel" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Shower Gel
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="scrubs" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Scrubs
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="soap" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Soap
+                    </label>
+                </div>
+                
+                <!-- Beauty Tools Types -->
+                <div class="beauty-type-grid" id="beauty-tools-types" style="display: none;">
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="makeup-brushes" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Makeup Brushes
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="beauty-sponges" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Beauty Sponges
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="eyelash-curlers" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Eyelash Curlers
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="tweezers" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Tweezers
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="mirrors" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Mirrors
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="beauty_types[]" value="storage-organization" data-filter="beauty_types">
+                        <span class="checkmark"></span>
+                        Storage & Organization
                     </label>
                 </div>
             </div>
         </div>
 
         <!-- Sub-Subcategory Filter -->
-        <div class="filter-group" id="sub-subcategory-filter-group">
+        <div class="filter-group" id="sub-subcategory-filter-group" style="display: none;">
             <div class="filter-header">
                 <h4>Product Type</h4>
             </div>
@@ -146,14 +248,86 @@
             </div>
         </div>
 
-        <!-- Color Filter -->
+    </div>
+
+    <!-- Color Filter -->
+    <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Color/Shade</h4>
+                <h4>Color</h4>
             </div>
             <div class="filter-options">
-                <div class="color-grid" id="color-filter">
-                    <div class="loading-colors">Loading colors...</div>
+                <div class="color-grid">
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="beige" data-filter="color">
+                        <span class="color-swatch" style="background-color: #f5f5dc;"></span>
+                        Beige
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="black" data-filter="color">
+                        <span class="color-swatch" style="background-color: #000;"></span>
+                        Black
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="blue" data-filter="color">
+                        <span class="color-swatch" style="background-color: #0066cc;"></span>
+                        Blue
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="brown" data-filter="color">
+                        <span class="color-swatch" style="background-color: #8b4513;"></span>
+                        Brown
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="gold" data-filter="color">
+                        <span class="color-swatch" style="background-color: #ffd700;"></span>
+                        Gold
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="green" data-filter="color">
+                        <span class="color-swatch" style="background-color: #228b22;"></span>
+                        Green
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="grey" data-filter="color">
+                        <span class="color-swatch" style="background-color: #808080;"></span>
+                        Grey
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="orange" data-filter="color">
+                        <span class="color-swatch" style="background-color: #ffa500;"></span>
+                        Orange
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="pink" data-filter="color">
+                        <span class="color-swatch" style="background-color: #ffc0cb;"></span>
+                        Pink
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="purple" data-filter="color">
+                        <span class="color-swatch" style="background-color: #800080;"></span>
+                        Purple
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="red" data-filter="color">
+                        <span class="color-swatch" style="background-color: #ff0000;"></span>
+                        Red
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="silver" data-filter="color">
+                        <span class="color-swatch" style="background-color: #c0c0c0;"></span>
+                        Silver
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="taupe" data-filter="color">
+                        <span class="color-swatch" style="background-color: #483c32;"></span>
+                        Taupe
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="white" data-filter="color">
+                        <span class="color-swatch" style="background-color: #fff; border: 1px solid #ddd;"></span>
+                        White
+                    </label>
                 </div>
             </div>
         </div>
@@ -167,32 +341,32 @@
             </div>
             <div class="filter-options" id="price-filter">
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="on-sale" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="on-sale" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     On Sale
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="0-15" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="0-15" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     $0 - $15
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="15-30" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="15-30" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     $15 - $30
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="30-50" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="30-50" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     $30 - $50
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="50-75" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="50-75" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     $50 - $75
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="75+" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="75+" data-filter="price_ranges">
                     <span class="checkmark"></span>
                     $75+
                 </label>

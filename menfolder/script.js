@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHeaderModals();
     initializeFilters();
     initializeQuickView();
+    loadColorsFromDatabase();
     
     // Global variables to track selected variants in quick view
     let selectedQuickViewColor = '';
@@ -2383,5 +2384,125 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateSizeCount();
         };
+    }
+    
+    // Function to load colors from database
+    function loadColorsFromDatabase() {
+        console.log('Loading colors from database...');
+        fetch('get-colors-api.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('API response:', data);
+                if (data.success && data.data && data.data.colors) {
+                    console.log('Colors loaded successfully:', data.data.colors);
+                    populateColorFilter(data.data.colors);
+                } else {
+                    console.error('Error loading colors:', data.message || 'Unknown error');
+                    showColorLoadError();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching colors:', error);
+                showColorLoadError();
+            });
+    }
+    
+    // Function to populate color filter with database colors
+    function populateColorFilter(colors) {
+        const colorContainer = document.getElementById('color-filter-options');
+        if (!colorContainer) {
+            console.error('Color container not found');
+            return;
+        }
+        
+        colorContainer.innerHTML = '';
+        
+        colors.forEach(color => {
+            const label = document.createElement('label');
+            label.className = 'color-option';
+            
+            // Use the color name and hex from the API response
+            const displayName = color.name;
+            const hexValue = color.hex;
+            
+            label.innerHTML = `
+                <input type="checkbox" name="color[]" value="${color.value}" data-filter="color">
+                <span class="color-swatch" style="background-color: ${hexValue};"></span>
+                ${displayName}
+            `;
+            
+            colorContainer.appendChild(label);
+        });
+        
+        console.log('Color filter populated with', colors.length, 'colors');
+    }
+    
+    // Function to get color name from hex value
+    function getColorNameFromHex(hex) {
+        const colorMap = {
+            '#000000': 'Black',
+            '#ffffff': 'White',
+            '#ff0000': 'Red',
+            '#00ff00': 'Green',
+            '#0000ff': 'Blue',
+            '#ffff00': 'Yellow',
+            '#ff00ff': 'Magenta',
+            '#00ffff': 'Cyan',
+            '#808080': 'Grey',
+            '#c0c0c0': 'Silver',
+            '#ffd700': 'Gold',
+            '#ffa500': 'Orange',
+            '#800080': 'Purple',
+            '#ffc0cb': 'Pink',
+            '#8b4513': 'Brown',
+            '#f5f5dc': 'Beige',
+            '#483c32': 'Taupe',
+            '#0066cc': 'Blue',
+            '#228b22': 'Green',
+            '#ffa500': 'Orange'
+        };
+        return colorMap[hex.toLowerCase()] || hex;
+    }
+    
+    // Function to get hex value from color name
+    function getHexFromColorName(colorName) {
+        const colorMap = {
+            'black': '#000000',
+            'white': '#ffffff',
+            'red': '#ff0000',
+            'green': '#228b22',
+            'blue': '#0066cc',
+            'yellow': '#ffff00',
+            'magenta': '#ff00ff',
+            'cyan': '#00ffff',
+            'grey': '#808080',
+            'silver': '#c0c0c0',
+            'gold': '#ffd700',
+            'orange': '#ffa500',
+            'purple': '#800080',
+            'pink': '#ffc0cb',
+            'brown': '#8b4513',
+            'beige': '#f5f5dc',
+            'taupe': '#483c32'
+        };
+        return colorMap[colorName.toLowerCase()] || '#cccccc';
+    }
+    
+    // Function to show color load error
+    function showColorLoadError() {
+        const colorContainer = document.getElementById('color-filter-options');
+        if (colorContainer) {
+            colorContainer.innerHTML = `
+                <div class="color-load-error" style="text-align: center; padding: 20px; color: #e53e3e;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error loading colors. Please refresh the page.</p>
+                </div>
+            `;
+        }
     }
 });

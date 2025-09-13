@@ -3,7 +3,10 @@
     <div class="sidebar-header">
         <h3>Refine By</h3>
         <span class="style-count" id="style-count">0 Styles</span>
-        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
+        <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
+            <i class="fas fa-times"></i>
+            Clear All Filters
+        </button>
     </div>
 
     <!-- Category Filter -->
@@ -39,7 +42,7 @@
                     Dining Room
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="lighting" data-filter="category">
+                    <input type="checkbox" name="category[]" value="lightinning" data-filter="category">
                     <span class="checkmark"></span>
                     Lighting
                 </label>
@@ -55,22 +58,22 @@
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="0-300" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="0-300" data-filter="price">
                     <span class="checkmark"></span>
                     $0 - $300
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="300-600" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="300-600" data-filter="price">
                     <span class="checkmark"></span>
                     $300 - $600
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="600-900" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="600-900" data-filter="price">
                     <span class="checkmark"></span>
                     $600 - $900
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="900+" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="900+" data-filter="price">
                     <span class="checkmark"></span>
                     $900+
                 </label>
@@ -82,69 +85,15 @@
     <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Colors</h4>
+                <h4>Color</h4>
             </div>
             <div class="filter-options">
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Black" data-filter="color">
-                    <span class="checkmark"></span>
-                    Black
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="White" data-filter="color">
-                    <span class="checkmark"></span>
-                    White
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Brown" data-filter="color">
-                    <span class="checkmark"></span>
-                    Brown
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Tan" data-filter="color">
-                    <span class="checkmark"></span>
-                    Tan
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Navy" data-filter="color">
-                    <span class="checkmark"></span>
-                    Navy
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Gray" data-filter="color">
-                    <span class="checkmark"></span>
-                    Gray
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Red" data-filter="color">
-                    <span class="checkmark"></span>
-                    Red
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Blue" data-filter="color">
-                    <span class="checkmark"></span>
-                    Blue
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Green" data-filter="color">
-                    <span class="checkmark"></span>
-                    Green
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Pink" data-filter="color">
-                    <span class="checkmark"></span>
-                    Pink
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Purple" data-filter="color">
-                    <span class="checkmark"></span>
-                    Purple
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="color[]" value="Gold" data-filter="color">
-                    <span class="checkmark"></span>
-                    Gold
-                </label>
+                <div class="color-grid" id="color-filter-grid">
+                    <!-- Colors will be loaded dynamically from database -->
+                    <div class="loading-colors" style="text-align: center; padding: 20px; color: #666;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading colors...
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -157,40 +106,16 @@
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="radio" name="material" value="" data-filter="material">
+                    <input type="radio" name="material" value="" data-filter="material" checked>
                     <span class="checkmark"></span>
                     All Materials
                 </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Wood" data-filter="material">
-                    <span class="checkmark"></span>
-                    Wood
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Metal" data-filter="material">
-                    <span class="checkmark"></span>
-                    Metal
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Fabric" data-filter="material">
-                    <span class="checkmark"></span>
-                    Fabric
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Glass" data-filter="material">
-                    <span class="checkmark"></span>
-                    Glass
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Ceramic" data-filter="material">
-                    <span class="checkmark"></span>
-                    Ceramic
-                </label>
-                <label class="filter-option">
-                    <input type="radio" name="material" value="Plastic" data-filter="material">
-                    <span class="checkmark"></span>
-                    Plastic
-                </label>
+                <div id="material-filter-options">
+                    <!-- Materials will be loaded dynamically from database -->
+                    <div class="loading-materials" style="text-align: center; padding: 20px; color: #666;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading materials...
+                    </div>
+                </div>
             </div>
         </div>
     </div>

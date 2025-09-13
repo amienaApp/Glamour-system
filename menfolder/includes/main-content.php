@@ -29,6 +29,9 @@ $pants = $productModel->getBySubcategory('Pants');
 // Get all shorts from the database
 $shorts = $productModel->getBySubcategory('Shorts');
 
+// Get all T-Shirts from the database
+$tshirts = $productModel->getBySubcategory('T-Shirts');
+
 ?>
 
 <!-- Main Content Section -->
@@ -61,10 +64,18 @@ $shorts = $productModel->getBySubcategory('Shorts');
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
+                <?php
+                // Ensure product has size data for filtering
+                $productSizes = $product['sizes'] ?? [];
+                if (empty($productSizes) && empty($product['selected_sizes']) && empty($product['size_category'])) {
+                    // Add default men's sizes if no size data exists
+                    $productSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
+                }
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? $productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
@@ -216,10 +227,18 @@ $shorts = $productModel->getBySubcategory('Shorts');
     <div class="product-grid" id="all-mens-clothing-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
+                <?php
+                // Ensure product has size data for filtering
+                $productSizes = $product['sizes'] ?? [];
+                if (empty($productSizes) && empty($product['selected_sizes']) && empty($product['size_category'])) {
+                    // Add default men's sizes if no size data exists
+                    $productSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
+                }
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? $productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">

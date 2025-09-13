@@ -52,7 +52,7 @@ try {
                 
                 // Apply subcategory filter if provided (but only if no category filters are selected)
                 if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
-                    $filters['subcategory'] = ucfirst($subcategory);
+                    $filters['subcategory'] = $subcategory;
                 }
                 
                 // Size filter
@@ -115,18 +115,25 @@ try {
                     $categoryFilters = array_merge($categoryFilters, $input['category']);
                 }
                 if (!empty($categoryFilters)) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $categoryFilters)]];
+                    // Use exact match for subcategory values
+                    $andConditions[] = ['subcategory' => ['$in' => $categoryFilters]];
                 }
                 
                 // Material filter
-                if (!empty($input['materials']) && is_array($input['materials'])) {
-                    $andConditions[] = ['material' => ['$in' => $input['materials']]];
+                if (!empty($input['material'])) {
+                    if (is_array($input['material'])) {
+                        $andConditions[] = ['material' => ['$in' => $input['material']]];
+                    } else {
+                        $andConditions[] = ['material' => $input['material']];
+                    }
                 }
                 
                 // Availability filter
-                if (!empty($input['availabilities']) && is_array($input['availabilities'])) {
+                if (!empty($input['availability'])) {
                     $availabilityFilters = [];
-                    foreach ($input['availabilities'] as $availability) {
+                    $availabilities = is_array($input['availability']) ? $input['availability'] : [$input['availability']];
+                    
+                    foreach ($availabilities as $availability) {
                         switch ($availability) {
                             case 'in-stock':
                                 $availabilityFilters[] = ['available' => true];
@@ -206,8 +213,8 @@ try {
                 break;
                 
             case 'get_filter_options':
-                // Get all men's clothing products to extract filter options
-                $allProducts = $productModel->getByCategory("Men's Clothing");
+                // Get all home decor products to extract filter options
+                $allProducts = $productModel->getByCategory("Home Decor");
                 
                 $filterOptions = [
                     'sizes' => [],
@@ -215,11 +222,10 @@ try {
                     'categories' => [],
                     'price_ranges' => [
                         'on-sale' => 0,
-                        '0-25' => 0,
-                        '25-50' => 0,
-                        '50-75' => 0,
-                        '75-100' => 0,
-                        '100+' => 0
+                        '0-300' => 0,
+                        '300-600' => 0,
+                        '600-900' => 0,
+                        '900+' => 0
                     ]
                 ];
                 
@@ -260,16 +266,14 @@ try {
                     if ($product['sale'] ?? false) {
                         $filterOptions['price_ranges']['on-sale']++;
                     }
-                    if ($price >= 0 && $price <= 25) {
-                        $filterOptions['price_ranges']['0-25']++;
-                    } elseif ($price > 25 && $price <= 50) {
-                        $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 75) {
-                        $filterOptions['price_ranges']['50-75']++;
-                    } elseif ($price > 75 && $price <= 100) {
-                        $filterOptions['price_ranges']['75-100']++;
-                    } elseif ($price > 100) {
-                        $filterOptions['price_ranges']['100+']++;
+                    if ($price >= 0 && $price <= 300) {
+                        $filterOptions['price_ranges']['0-300']++;
+                    } elseif ($price > 300 && $price <= 600) {
+                        $filterOptions['price_ranges']['300-600']++;
+                    } elseif ($price > 600 && $price <= 900) {
+                        $filterOptions['price_ranges']['600-900']++;
+                    } elseif ($price > 900) {
+                        $filterOptions['price_ranges']['900+']++;
                     }
                 }
                 

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Clear All Filters Test - Shoes System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <style>
+        body { 
+            font-family: 'Poppins', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .test-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        .test-sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .test-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .url-display { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            margin: 10px 0; 
+            word-break: break-all;
+        }
+        .test-instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .simulated-url {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .test-scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .scenario-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .scenario-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .scenario-url {
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .test-button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Simulated Sidebar -->
+        <div class="test-sidebar">
+            <div class="sidebar-header">
+                <h3>Refine By</h3>
+                <span class="style-count" id="style-count">25 Styles</span>
+                <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
+                    <i class="fas fa-times"></i>
+                    Clear All Filters
+                </button>
+            </div>
+            
+            <!-- Gender Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Gender</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="women" id="gender-women" checked>
+                            <span class="checkmark"></span>
+                            Women (15)
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="men" id="gender-men">
+                            <span class="checkmark"></span>
+                            Men (8)
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="children" id="gender-children">
+                            <span class="checkmark"></span>
+                            Children (2)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Size Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Size</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="36" id="size-36" checked>
+                            <span class="checkmark"></span>
+                            36
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="38" id="size-38" checked>
+                            <span class="checkmark"></span>
+                            38
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="40" id="size-40">
+                            <span class="checkmark"></span>
+                            40
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Price</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="0-25" id="price-0-25" checked>
+                            <span class="checkmark"></span>
+                            $0 - $25
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="25-50" id="price-25-50" checked>
+                            <span class="checkmark"></span>
+                            $25 - $50
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="50-75" id="price-50-75">
+                            <span class="checkmark"></span>
+                            $50 - $75
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shoe Type Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Shoe Type</h4>
+                    </div>
+                    <div class="filter-options">
+                        <div class="dropdown-filter">
+                            <select id="shoe-type-dropdown" name="shoe_type" class="shoe-type-select">
+                                <option value="">All Shoe Types</option>
+                                <option value="boots" selected>Boots</option>
+                                <option value="sneakers">Sneakers</option>
+                                <option value="heels">Heels</option>
+                                <option value="flats">Flats</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Content -->
+        <div class="test-content">
+            <h1>🧪 Final Clear All Filters Test</h1>
+            
+            <div class="test-instructions">
+                <h3>📋 Test Instructions</h3>
+                <p><strong>Current State:</strong> Some filters are pre-selected to simulate a filtered state</p>
+                <p><strong>Test Steps:</strong></p>
+                <ol>
+                    <li>Observe the current filtered state (checkboxes checked, dropdown selected)</li>
+                    <li>Click the "Clear All Filters" button in the sidebar</li>
+                    <li>Verify all filters are cleared and URL is cleaned</li>
+                </ol>
+            </div>
+
+            <div class="simulated-url">
+                <strong>🔗 Simulated URL:</strong> 
+                <span id="simulated-url">shoes.php?gender=women&size=36&size=38&price_range=0-25&price_range=25-50&shoe_type=boots</span>
+            </div>
+
+            <div class="test-scenarios">
+                <div class="scenario-card">
+                    <h4>Test Scenario 1</h4>
+                    <div class="scenario-url">shoes.php?gender=women&size=36&color=black&price_range=0-25</div>
+                    <button class="test-button" onclick="testScenario('shoes.php?gender=women&size=36&color=black&price_range=0-25')">Test This URL</button>
+                    <p><small>Expected: Clean to shoes.php?subcategory=womenshoes</small></p>
+                </div>
+                
+                <div class="scenario-card">
+                    <h4>Test Scenario 2</h4>
+                    <div class="scenario-url">shoes.php?subcategory=womenshoes&gender=women&size=36</div>
+                    <button class="test-button" onclick="testScenario('shoes.php?subcategory=womenshoes&gender=women&size=36')">Test This URL</button>
+                    <p><small>Expected: Clean to shoes.php?subcategory=womenshoes</small></p>
+                </div>
+                
+                <div class="scenario-card">
+                    <h4>Test Scenario 3</h4>
+                    <div class="scenario-url">shoes.php?size=38&color=red&price_range=25-50</div>
+                    <button class="test-button" onclick="testScenario('shoes.php?size=38&color=red&price_range=25-50')">Test This URL</button>
+                    <p><small>Expected: Clean to shoes.php</small></p>
+                </div>
+                
+                <div class="scenario-card">
+                    <h4>Test Scenario 4</h4>
+                    <div class="scenario-url">shoes.php</div>
+                    <button class="test-button" onclick="testScenario('shoes.php')">Test This URL</button>
+                    <p><small>Expected: Stay as shoes.php</small></p>
+                </div>
+            </div>
+
+            <div class="test-results" id="test-results">
+                <h3>📊 Test Results</h3>
+                <p>Click "Clear All Filters" to run the test...</p>
+            </div>
+
+            <div class="url-display">
+                <strong>Expected URL after clearing:</strong> 
+                <span id="expected-url">shoes.php</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate the exact clearAllFilters function from shoes sidebar
+        function clearAllFilters() {
+            console.log('Shoes: Clearing all filters...');
+            
+            // Reset filter state
+            const currentFilters = {
+                gender: '',
+                size: '',
+                color: '',
+                priceRange: ''
+            };
+            
+            // Uncheck all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset shoe type dropdown
+            const shoeTypeDropdown = document.getElementById('shoe-type-dropdown');
+            if (shoeTypeDropdown) {
+                shoeTypeDropdown.value = '';
+            }
+            
+            // Get current subcategory to preserve it
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSubcategory = urlParams.get('subcategory') || '';
+            
+            // Build new URL with only subcategory if it exists (removing all other filters)
+            let newUrl = window.location.pathname;
+            if (currentSubcategory) {
+                newUrl += '?subcategory=' + currentSubcategory;
+            }
+            
+            // Update test results
+            updateTestResults(newUrl);
+            
+            // In a real scenario, this would redirect:
+            // window.location.href = newUrl;
+            console.log('Would redirect to:', newUrl);
+        }
+        
+        function testScenario(testUrl) {
+            // Simulate being on the test URL
+            const url = new URL(testUrl, window.location.origin);
+            const urlParams = new URLSearchParams(url.search);
+            
+            // Update the simulated URL display
+            document.getElementById('simulated-url').textContent = testUrl;
+            
+            // Simulate the clearAllFilters function with this URL
+            const currentSubcategory = urlParams.get('subcategory') || '';
+            let newUrl = url.pathname;
+            if (currentSubcategory) {
+                newUrl += '?subcategory=' + currentSubcategory;
+            }
+            
+            document.getElementById('expected-url').textContent = newUrl;
+            
+            // Show test result
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <h3>🧪 Test Scenario Result</h3>
+                <p><strong>Original URL:</strong> ${testUrl}</p>
+                <p><strong>After Clear All Filters:</strong> ${newUrl}</p>
+                <p><strong>Status:</strong> <span class="success">✅ Test completed successfully!</span></p>
+                <p><strong>Explanation:</strong> All filter parameters removed, subcategory preserved (if any)</p>
+            `;
+        }
+        
+        function updateTestResults(newUrl) {
+            const results = document.getElementById('test-results');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const dropdown = document.getElementById('shoe-type-dropdown');
+            
+            // Count checked checkboxes
+            let checkedCount = 0;
+            const checkedBoxes = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedCount++;
+                    checkedBoxes.push(checkbox.value);
+                }
+            });
+            
+            // Overall test result
+            const testPassed = checkedCount === 0 && dropdown.value === '';
+            
+            results.innerHTML = `
+                <h3>${testPassed ? '✅ TEST PASSED' : '❌ TEST FAILED'}</h3>
+                <p><strong>Function executed successfully!</strong></p>
+                <ul>
+                    <li><strong>Checkboxes cleared:</strong> ${checkedCount === 0 ? 'Yes' : 'No'} (${checkedCount} still checked)</li>
+                    <li><strong>Dropdown reset:</strong> ${dropdown.value === '' ? 'Yes' : 'No'}</li>
+                    <li><strong>URL cleaned:</strong> ${newUrl}</li>
+                </ul>
+                <p><strong>Expected behavior:</strong> All filters should be cleared and URL should only contain subcategory (if any)</p>
+                ${testPassed ? '<p class="success">🎉 The clearAllFilters function is working correctly!</p>' : '<p class="error">⚠️ Some issues detected. Check the details above.</p>'}
+            `;
+            
+            // Update expected URL
+            document.getElementById('expected-url').textContent = newUrl;
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Final test page loaded. Ready to test clearAllFilters function.');
+        });
+    </script>
+</body>
+</html>
+

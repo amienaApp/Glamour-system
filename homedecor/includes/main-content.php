@@ -9,7 +9,7 @@ $subcategory = $_GET['subcategory'] ?? '';
 
 // Get products based on subcategory or all home decor products from ALL subcategories
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory($subcategory);
     $pageTitle = ucfirst($subcategory);
 } else {
     // Get all home decor/home and living products from ALL subcategories

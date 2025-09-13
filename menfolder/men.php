@@ -41,7 +41,7 @@ if ($subcategory) {
                         <img src="../img//men/shirts/14.jpg" alt="men Fashion 13">
                         <h3>Shirts</h3>
                     </a>
-                    <a href="men.php?subcategory=tshirts" class="image-item">
+                    <a href="men.php?subcategory=T-Shirts" class="image-item">
                         <img src="../img/men/t-shirts/6.2.png" alt="men Fashion 14">
                         <h3>T-Shirts</h3>
                     </a>

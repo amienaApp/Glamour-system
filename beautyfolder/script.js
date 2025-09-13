@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHeaderModals();
     initializeFilters();
     initializeQuickView();
-    loadColorFilters();
     
     // Global variables to track selected variants in quick view
     let selectedQuickViewColor = '';
@@ -1678,15 +1677,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentSubcategory = urlParams.get('subcategory') || '';
         
-        // Filter state
-        let filterState = {
-            sizes: [],
-            colors: [],
-            price_ranges: [],
-            beauty_categories: [],
-            makeup_types: [],
-            sub_subcategories: []
-        };
+    // Filter state
+    let filterState = {
+        sizes: [],
+        colors: [],
+        price_ranges: [],
+        beauty_categories: [],
+        beauty_types: [],
+        sub_subcategories: []
+    };
+    
         
         // Add event listeners to all filter checkboxes
         document.addEventListener('change', function(e) {
@@ -1709,6 +1709,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
+                // Handle hierarchical filter visibility
+                handleFilterVisibility(filterType, filterValue, isChecked);
+                
                 // console.log('Current filter state:', filterState);
                 
                 // Update active filter count
@@ -1727,6 +1730,113 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Handle hierarchical filter visibility
+        function handleFilterVisibility(filterType, filterValue, isChecked) {
+            const beautyTypeGroup = document.getElementById('beauty-type-group');
+            const subSubcategoryGroup = document.getElementById('sub-subcategory-filter-group');
+            
+            if (filterType === 'beauty_categories') {
+                if (isChecked) {
+                    // Show beauty type filter when any beauty category is selected
+                    if (beautyTypeGroup) {
+                        beautyTypeGroup.style.display = 'block';
+                        updateBeautyTypeTitle(filterValue);
+                        showBeautyTypeOptions(filterValue);
+                    }
+                } else {
+                    // Hide beauty type and product type filters when category is deselected
+                    if (beautyTypeGroup) {
+                        beautyTypeGroup.style.display = 'none';
+                        // Clear beauty type selections
+                        clearBeautyTypeSelections();
+                    }
+                    if (subSubcategoryGroup) {
+                        subSubcategoryGroup.style.display = 'none';
+                        // Clear product type selections
+                        clearProductTypeSelections();
+                    }
+                }
+            } else if (filterType === 'beauty_types') {
+                if (isChecked) {
+                    // Show product type filter when beauty type is selected (only for makeup)
+                    const selectedCategories = filterState.beauty_categories;
+                    if (selectedCategories.includes('makeup') && subSubcategoryGroup) {
+                        subSubcategoryGroup.style.display = 'block';
+                    }
+                } else {
+                    // Check if any beauty types are still selected
+                    const hasSelectedBeautyTypes = filterState.beauty_types.length > 0;
+                    if (!hasSelectedBeautyTypes && subSubcategoryGroup) {
+                        subSubcategoryGroup.style.display = 'none';
+                        // Clear product type selections
+                        clearProductTypeSelections();
+                    }
+                }
+            }
+        }
+        
+        // Update beauty type title based on selected category
+        function updateBeautyTypeTitle(category) {
+            const titleElement = document.getElementById('beauty-type-title');
+            if (titleElement) {
+                const titles = {
+                    'makeup': 'Makeup Type',
+                    'skincare': 'Skincare Type',
+                    'hair': 'Hair Care Type',
+                    'bath-body': 'Bath & Body Type',
+                    'tools': 'Beauty Tools Type'
+                };
+                titleElement.textContent = titles[category] || 'Category Type';
+            }
+        }
+        
+        // Show appropriate beauty type options based on selected category
+        function showBeautyTypeOptions(category) {
+            // Hide all beauty type grids
+            const allTypeGrids = document.querySelectorAll('.beauty-type-grid');
+            allTypeGrids.forEach(grid => {
+                grid.style.display = 'none';
+            });
+            
+            // Show the appropriate grid
+            const categoryGrids = {
+                'makeup': 'makeup-types',
+                'skincare': 'skincare-types',
+                'hair': 'hair-care-types',
+                'bath-body': 'bath-body-types',
+                'tools': 'beauty-tools-types'
+            };
+            
+            const targetGrid = document.getElementById(categoryGrids[category]);
+            if (targetGrid) {
+                targetGrid.style.display = 'block';
+            }
+        }
+        
+        // Clear beauty type selections
+        function clearBeautyTypeSelections() {
+            const beautyTypeCheckboxes = document.querySelectorAll('input[data-filter="beauty_types"]');
+            beautyTypeCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const index = filterState.beauty_types.indexOf(checkbox.value);
+                if (index > -1) {
+                    filterState.beauty_types.splice(index, 1);
+                }
+            });
+        }
+        
+        // Clear product type selections
+        function clearProductTypeSelections() {
+            const productTypeCheckboxes = document.querySelectorAll('input[data-filter="sub_subcategories"]');
+            productTypeCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const index = filterState.sub_subcategories.indexOf(checkbox.value);
+                if (index > -1) {
+                    filterState.sub_subcategories.splice(index, 1);
+                }
+            });
+        }
+        
         function applyFilters() {
             // console.log('Applying filters...');
             
@@ -1741,7 +1851,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
                 beauty_categories: filterState.beauty_categories,
-                makeup_types: filterState.makeup_types,
+                beauty_types: filterState.beauty_types,
                 sub_subcategories: filterState.sub_subcategories
             };
             
@@ -1784,13 +1894,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkbox.checked = false;
             });
             
+            // Hide hierarchical filter groups
+            const beautyTypeGroup = document.getElementById('beauty-type-group');
+            const subSubcategoryGroup = document.getElementById('sub-subcategory-filter-group');
+            
+            if (beautyTypeGroup) {
+                beautyTypeGroup.style.display = 'none';
+            }
+            if (subSubcategoryGroup) {
+                subSubcategoryGroup.style.display = 'none';
+            }
+            
             // Reset filter state
             filterState = {
                 sizes: [],
                 colors: [],
                 price_ranges: [],
                 beauty_categories: [],
-                makeup_types: [],
+                beauty_types: [],
                 sub_subcategories: []
             };
             
@@ -2394,129 +2515,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSizeCount();
     };
     
-    // Load color filters dynamically
-    function loadColorFilters() {
-        const colorFilterContainer = document.getElementById('color-filter');
-        if (!colorFilterContainer) return;
-        
-        // Show loading state
-        colorFilterContainer.innerHTML = '<div class="loading-colors">Loading colors...</div>';
-        
-        // Fetch colors from API
-        fetch('get-colors-api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'get_colors',
-                category: 'Beauty & Cosmetics'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.colors && data.colors.length > 0) {
-                // Clear loading state
-                colorFilterContainer.innerHTML = '';
-                
-                // Create color filter options
-                data.colors.forEach(color => {
-                    const colorOption = document.createElement('label');
-                    colorOption.className = 'filter-option color-option';
-                    colorOption.innerHTML = `
-                        <input type="checkbox" name="colors[]" value="${color}" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: ${color};" title="${color}"></span>
-                        <span class="color-name">${color}</span>
-                    `;
-                    colorFilterContainer.appendChild(colorOption);
-                });
-            } else {
-                // Show fallback colors if API fails
-                colorFilterContainer.innerHTML = `
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="red" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: red;" title="Red"></span>
-                        <span class="color-name">Red</span>
-                    </label>
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="pink" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: pink;" title="Pink"></span>
-                        <span class="color-name">Pink</span>
-                    </label>
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="nude" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: #f5deb3;" title="Nude"></span>
-                        <span class="color-name">Nude</span>
-                    </label>
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="brown" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: brown;" title="Brown"></span>
-                        <span class="color-name">Brown</span>
-                    </label>
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="black" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: black;" title="Black"></span>
-                        <span class="color-name">Black</span>
-                    </label>
-                    <label class="filter-option color-option">
-                        <input type="checkbox" name="colors[]" value="white" data-filter="colors">
-                        <span class="checkmark"></span>
-                        <span class="color-circle" style="background-color: white; border: 1px solid #ddd;" title="White"></span>
-                        <span class="color-name">White</span>
-                    </label>
-                `;
-            }
-        })
-        .catch(error => {
-            console.error('Error loading colors:', error);
-            // Show fallback colors on error
-            colorFilterContainer.innerHTML = `
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="red" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: red;" title="Red"></span>
-                    <span class="color-name">Red</span>
-                </label>
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="pink" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: pink;" title="Pink"></span>
-                    <span class="color-name">Pink</span>
-                </label>
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="nude" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: #f5deb3;" title="Nude"></span>
-                    <span class="color-name">Nude</span>
-                </label>
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="brown" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: brown;" title="Brown"></span>
-                    <span class="color-name">Brown</span>
-                </label>
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="black" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: black;" title="Black"></span>
-                    <span class="color-name">Black</span>
-                </label>
-                <label class="filter-option color-option">
-                    <input type="checkbox" name="colors[]" value="white" data-filter="colors">
-                    <span class="checkmark"></span>
-                    <span class="color-circle" style="background-color: white; border: 1px solid #ddd;" title="White"></span>
-                    <span class="color-name">White</span>
-                </label>
-            `;
-        });
-    }
     
+
     // Global function to convert size codes to full names
     window.getSizeName = function(sizeCode) {
         const sizeMap = {

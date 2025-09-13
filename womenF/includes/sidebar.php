@@ -7,6 +7,52 @@
     </div>
      <div class="side">
     <div class="filter-section">
+
+    <!-- Category Filter -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <div class="filter-header">
+                <h4>Category</h4>
+            </div>
+            <div class="filter-options" id="category-filter">
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="dresses" data-filter="category">
+                    <span class="checkmark"></span>
+                    Dresses
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="tops" data-filter="category">
+                    <span class="checkmark"></span>
+                    Tops
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="bottoms" data-filter="category">
+                    <span class="checkmark"></span>
+                    Bottoms
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="outerwear" data-filter="category">
+                    <span class="checkmark"></span>
+                    Outerwear
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="activewear" data-filter="category">
+                    <span class="checkmark"></span>
+                    Activewear
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="lingerie" data-filter="category">
+                    <span class="checkmark"></span>
+                    Lingerie
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="swimwear" data-filter="category">
+                    <span class="checkmark"></span>
+                    Swimwear
+                </label>
+            </div>
+        </div>
+    </div>
         <!-- Size Filter -->
         <div class="filter-group">
             <div class="filter-header">
@@ -253,56 +299,8 @@
         </div>
     </div>
 
-    <!-- Category Filter -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Category</h4>
-            </div>
-            <div class="filter-options" id="category-filter">
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="dresses" data-filter="category">
-                    <span class="checkmark"></span>
-                    Dresses
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="tops" data-filter="category">
-                    <span class="checkmark"></span>
-                    Tops
-                </label>
-            </div>
-        </div>
-    </div>
+    
 
-    <!-- Dress Length Filter -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Dress Length</h4>
-            </div>
-            <div class="filter-options" id="length-filter">
-                <label class="filter-option">
-                    <input type="checkbox" name="length[]" value="mini" data-filter="length">
-                    <span class="checkmark"></span>
-                    Mini
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="length[]" value="midi" data-filter="length">
-                    <span class="checkmark"></span>
-                    Midi
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="length[]" value="maxi" data-filter="length">
-                    <span class="checkmark"></span>
-                    Maxi
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="length[]" value="high-low" data-filter="length">
-                    <span class="checkmark"></span>
-                    High Low
-                </label>
-            </div>
-        </div>
-    </div>
+    
     </div>
 </aside> 

@@ -21,7 +21,7 @@
                         Shirts
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="t-shirts" data-filter="category">
+                        <input type="checkbox" name="category[]" value="T-Shirts" data-filter="category">
                         <span class="checkmark"></span>
                         T-Shirts
                     </label>
@@ -145,41 +145,12 @@
                     <h4>Color</h4>
                 </div>
                 <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#000000" data-filter="color">
-                        <span class="checkmark"></span>
-                        Black
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#ffffff" data-filter="color">
-                        <span class="checkmark"></span>
-                        White
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#0066cc" data-filter="color">
-                        <span class="checkmark"></span>
-                        Blue
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#812d2d" data-filter="color">
-                        <span class="checkmark"></span>
-                        Maroon
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#808080" data-filter="color">
-                        <span class="checkmark"></span>
-                        Gray
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#333333" data-filter="color">
-                        <span class="checkmark"></span>
-                        Dark Gray
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#667eea" data-filter="color">
-                        <span class="checkmark"></span>
-                        Light Blue
-                    </label>
+                    <div class="color-grid" id="color-filter-options">
+                        <!-- Colors will be loaded dynamically from database -->
+                        <div class="loading-colors" style="text-align: center; padding: 20px; color: #666;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading colors...
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -91,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'category' => $productPost['category'] ?? '',
                 'subcategory' => $productPost['subcategory'] ?? '',
                 'sub_subcategory' => $productPost['sub_subcategory'] ?? '',
+                'deeper_sub_subcategory' => $productPost['deeper_sub_subcategory'] ?? '',
                 'description' => $productPost['description'] ?? '',
                 'featured' => isset($productPost['featured']),
                 'sale' => isset($productPost['sale']),
@@ -308,6 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category' => $_POST['category'] ?? '',
             'subcategory' => $_POST['subcategory'] ?? '',
             'sub_subcategory' => $_POST['sub_subcategory'] ?? '',
+            'deeper_sub_subcategory' => $_POST['deeper_sub_subcategory'] ?? '',
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
@@ -1487,10 +1489,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="loadDeeperSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
+            
+            <!-- Deeper Sub-subcategory field (Makeup only) -->
+            <div class="form-group" id="deeper-sub-subcategory-group" style="display: none;">
+                <label for="deeper_sub_subcategory">Deeper Sub-Subcategory</label>
+                <select id="deeper_sub_subcategory" name="deeper_sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                    <option value="">Select Deeper Sub-Subcategory</option>
+                </select>
+            </div>
             
             <!-- Home & Living specific fields -->
             <div class="form-group" id="home-living-fields" style="display: none;">
@@ -2982,8 +2992,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
                             <div class="form-group" id="sub-subcategory-group-${productIndex}" style="display: none;">
                                 <label for="sub_subcategory-${productIndex}">Sub-Subcategory</label>
-                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
+                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="loadMultiDeeperSubSubcategories(${productIndex}); refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Sub-Subcategory</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Deeper Sub-subcategory field for multi-product (Makeup only) -->
+                            <div class="form-group" id="deeper-sub-subcategory-group-${productIndex}" style="display: none;">
+                                <label for="deeper_sub_subcategory-${productIndex}">Deeper Sub-Subcategory</label>
+                                <select id="deeper_sub_subcategory-${productIndex}" name="products[${productIndex}][deeper_sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
+                                    <option value="">Select Deeper Sub-Subcategory</option>
                                 </select>
                             </div>
                             
@@ -3683,6 +3701,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'category' => $productPost['category'] ?? '',
                 'subcategory' => $productPost['subcategory'] ?? '',
                 'sub_subcategory' => $productPost['sub_subcategory'] ?? '',
+                'deeper_sub_subcategory' => $productPost['deeper_sub_subcategory'] ?? '',
                 'description' => $productPost['description'] ?? '',
                 'featured' => isset($productPost['featured']),
                 'sale' => isset($productPost['sale']),
@@ -3900,6 +3919,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category' => $_POST['category'] ?? '',
             'subcategory' => $_POST['subcategory'] ?? '',
             'sub_subcategory' => $_POST['sub_subcategory'] ?? '',
+            'deeper_sub_subcategory' => $_POST['deeper_sub_subcategory'] ?? '',
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
@@ -5079,10 +5099,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="loadDeeperSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
+            
+            <!-- Deeper Sub-subcategory field (Makeup only) -->
+            <div class="form-group" id="deeper-sub-subcategory-group" style="display: none;">
+                <label for="deeper_sub_subcategory">Deeper Sub-Subcategory</label>
+                <select id="deeper_sub_subcategory" name="deeper_sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                    <option value="">Select Deeper Sub-Subcategory</option>
+                </select>
+            </div>
             
             <!-- Home & Living specific fields -->
             <div class="form-group" id="home-living-fields" style="display: none;">
@@ -6293,43 +6321,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     name: '💄 Makeup Sizes',
                     sizes: ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                     relevantSubcategories: ['Makeup'],
-                    relevantSubSubcategories: ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Mascara', 'Lipstick', 'Lip Gloss']
+                    relevantSubSubcategories: ['Face', 'Eye', 'Lip', 'Nail']
                 },
                 'makeup_tools': {
                     name: '🖌️ Makeup Tools',
                     sizes: ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
-                    relevantSubcategories: ['Makeup Tools'],
-                    relevantSubSubcategories: ['Brushes', 'Sponges', 'Tools']
+                    relevantSubcategories: ['Makeup'],
+                    relevantSubSubcategories: ['Face', 'Eye', 'Lip', 'Nail']
                 },
                 'skincare_sizes': {
                     name: '🧴 Skincare Sizes',
                     sizes: ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
                     relevantSubcategories: ['Skincare'],
-                    relevantSubSubcategories: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask']
+                    relevantSubSubcategories: ['Moisturizers', 'Cleansers', 'Masks', 'Sun Care', 'cream']
                 },
                 'call_who_sizes': {
                     name: '🌟 Call Who Sizes',
                     sizes: ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
                     relevantSubcategories: ['Skincare'],
-                    relevantSubSubcategories: ['Serum', 'Toner', 'Essence', 'Treatment']
+                    relevantSubSubcategories: ['Moisturizers', 'Cleansers', 'Masks', 'Sun Care', 'cream']
                 },
                 'hair_sizes': {
                     name: '💇 Hair Care Sizes',
                     sizes: ['Trial', 'Standard', 'Professional', 'Salon'],
-                    relevantSubcategories: ['Hair Care'],
-                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Treatment', 'Styling']
+                    relevantSubcategories: ['Hair'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Tools']
                 },
                 'hair_tools': {
                     name: '🔧 Hair Tools',
                     sizes: ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
-                    relevantSubcategories: ['Hair Tools'],
-                    relevantSubSubcategories: ['Styling Tools', 'Brushes', 'Accessories']
+                    relevantSubcategories: ['Hair'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Tools']
                 },
                 'bath_body_sizes': {
                     name: '🛁 Bath & Body Sizes',
                     sizes: ['Travel_Kit', 'Personal', 'Family_bath', 'Economy'],
                     relevantSubcategories: ['Bath & Body'],
-                    relevantSubSubcategories: ['Body Wash', 'Lotion', 'Scrub', 'Oil']
+                    relevantSubSubcategories: ['Shower gel', 'Scrubs', 'soap']
                 }
             };
             
@@ -7066,8 +7094,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <!-- Sub-subcategory field (Beauty & Cosmetics, Kids' Clothing) -->
                             <div class="form-group" id="sub-subcategory-group-${productIndex}" style="display: none;">
                                 <label for="sub_subcategory-${productIndex}">Sub-Subcategory</label>
-                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
+                                <select id="sub_subcategory-${productIndex}" name="products[${productIndex}][sub_subcategory]" onchange="loadMultiDeeperSubSubcategories(${productIndex}); refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
                                     <option value="">Select Sub-Subcategory</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Deeper Sub-subcategory field for multi-product (Makeup only) -->
+                            <div class="form-group" id="deeper-sub-subcategory-group-${productIndex}" style="display: none;">
+                                <label for="deeper_sub_subcategory-${productIndex}">Deeper Sub-Subcategory</label>
+                                <select id="deeper_sub_subcategory-${productIndex}" name="products[${productIndex}][deeper_sub_subcategory]" onchange="refreshMultiSizeOptions(${productIndex}); refreshAllMultiVariantSizeOptions(${productIndex});">
+                                    <option value="">Select Deeper Sub-Subcategory</option>
                                 </select>
                             </div>
                             
@@ -8465,43 +8501,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     name: '💄 Makeup Sizes',
                     sizes: ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'],
                     relevantSubcategories: ['Makeup'],
-                    relevantSubSubcategories: ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Mascara', 'Lipstick', 'Lip Gloss']
+                    relevantSubSubcategories: ['Face', 'Eye', 'Lip', 'Nail']
                 },
                 'makeup_tools': {
                     name: '🖌️ Makeup Tools',
                     sizes: ['Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set'],
-                    relevantSubcategories: ['Makeup Tools'],
-                    relevantSubSubcategories: ['Brushes', 'Sponges', 'Tools']
+                    relevantSubcategories: ['Makeup'],
+                    relevantSubSubcategories: ['Face', 'Eye', 'Lip', 'Nail']
                 },
                 'skincare_sizes': {
                     name: '🧴 Skincare Sizes',
                     sizes: ['Mini', 'Small', 'Medium', 'Large_skincare', 'Family'],
                     relevantSubcategories: ['Skincare'],
-                    relevantSubSubcategories: ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask']
+                    relevantSubSubcategories: ['Moisturizers', 'Cleansers', 'Masks', 'Sun Care', 'cream']
                 },
                 'call_who_sizes': {
                     name: '🌟 Call Who Sizes',
                     sizes: ['Serum_15ml', 'Toner_100ml', 'Essence_30ml', 'Spot_Treatment_10ml', 'Call_Who_Set'],
                     relevantSubcategories: ['Skincare'],
-                    relevantSubSubcategories: ['Serum', 'Toner', 'Essence', 'Treatment']
+                    relevantSubSubcategories: ['Moisturizers', 'Cleansers', 'Masks', 'Sun Care', 'cream']
                 },
                 'hair_sizes': {
                     name: '💇 Hair Care Sizes',
                     sizes: ['Trial', 'Standard', 'Professional', 'Salon'],
-                    relevantSubcategories: ['Hair Care'],
-                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Treatment', 'Styling']
+                    relevantSubcategories: ['Hair'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Tools']
                 },
                 'hair_tools': {
                     name: '🔧 Hair Tools',
                     sizes: ['Hair_Dryer', 'Straightener', 'Curling_Iron', 'Hair_Brush', 'Comb', 'Hair_Clips'],
-                    relevantSubcategories: ['Hair Tools'],
-                    relevantSubSubcategories: ['Styling Tools', 'Brushes', 'Accessories']
+                    relevantSubcategories: ['Hair'],
+                    relevantSubSubcategories: ['Shampoo', 'Conditioner', 'Tools']
                 },
                 'bath_body_sizes': {
                     name: '🛁 Bath & Body Sizes',
                     sizes: ['Travel_Kit', 'Personal', 'Family_bath', 'Economy'],
                     relevantSubcategories: ['Bath & Body'],
-                    relevantSubSubcategories: ['Body Wash', 'Lotion', 'Scrub', 'Oil']
+                    relevantSubSubcategories: ['Shower gel', 'Scrubs', 'soap']
                 }
             };
             
@@ -9678,6 +9714,128 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 })
                 .catch(error => {
                     console.error('Error loading sub-subcategories:', error);
+                });
+        }
+
+        // Function to load deeper sub-subcategories for Makeup
+        function loadDeeperSubSubcategories() {
+            const categorySelect = document.getElementById('category');
+            const subcategorySelect = document.getElementById('subcategory');
+            const subSubcategorySelect = document.getElementById('sub_subcategory');
+            const deeperSubSubcategorySelect = document.getElementById('deeper_sub_subcategory');
+            const deeperSubSubcategoryGroup = document.getElementById('deeper-sub-subcategory-group');
+            
+            const category = categorySelect.value;
+            const subcategory = subcategorySelect.value;
+            const subSubcategory = subSubcategorySelect.value;
+            
+            // Hide deeper sub-subcategory field by default
+            if (deeperSubSubcategoryGroup) {
+                deeperSubSubcategoryGroup.style.display = 'none';
+            }
+            
+            // Show deeper sub-subcategory only for Beauty & Cosmetics > Makeup
+            if (category !== 'Beauty & Cosmetics' || subcategory !== 'Makeup' || !subSubcategory) {
+                return;
+            }
+            
+            // Show deeper sub-subcategory field for makeup
+            if (deeperSubSubcategoryGroup) {
+                deeperSubSubcategoryGroup.style.display = 'block';
+            }
+            
+            // Reset deeper sub-subcategory options
+            if (deeperSubSubcategorySelect) {
+                deeperSubSubcategorySelect.innerHTML = '<option value="">Select Deeper Sub-Subcategory</option>';
+            }
+            
+            // Load deeper sub-subcategories from database
+            fetch(`get-deeper-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}&sub_subcategory=${encodeURIComponent(subSubcategory)}`)
+                .then(response => response.text().then(text => {
+                    if (text.trim() === '') {
+                        throw new Error('Empty response received');
+                    }
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        throw new Error('Invalid JSON: ' + e.message);
+                    }
+                }))
+                .then(data => {
+                    if (data.success && data.deeper_sub_subcategories) {
+                        data.deeper_sub_subcategories.forEach(deeperSubSubcategory => {
+                            const option = document.createElement('option');
+                            option.value = deeperSubSubcategory;
+                            option.textContent = deeperSubSubcategory;
+                            deeperSubSubcategorySelect.appendChild(option);
+                        });
+                    } else {
+                        console.log('No deeper sub-subcategories found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading deeper sub-subcategories:', error);
+                });
+        }
+
+        // Function to load deeper sub-subcategories for multi-product forms
+        function loadMultiDeeperSubSubcategories(productIndex) {
+            const categorySelect = document.querySelector(`select[name="products[${productIndex}][category]"]`);
+            const subcategorySelect = document.querySelector(`select[name="products[${productIndex}][subcategory]"]`);
+            const subSubcategorySelect = document.querySelector(`select[name="products[${productIndex}][sub_subcategory]"]`);
+            const deeperSubSubcategorySelect = document.getElementById(`deeper_sub_subcategory-${productIndex}`);
+            const deeperSubSubcategoryGroup = document.getElementById(`deeper-sub-subcategory-group-${productIndex}`);
+            
+            if (!categorySelect || !subcategorySelect || !subSubcategorySelect || !deeperSubSubcategorySelect || !deeperSubSubcategoryGroup) {
+                return;
+            }
+            
+            const category = categorySelect.value;
+            const subcategory = subcategorySelect.value;
+            const subSubcategory = subSubcategorySelect.value;
+            
+            // Hide deeper sub-subcategory field by default
+            deeperSubSubcategoryGroup.style.display = 'none';
+            
+            // Show deeper sub-subcategory only for Beauty & Cosmetics > Makeup
+            if (category !== 'Beauty & Cosmetics' || subcategory !== 'Makeup' || !subSubcategory) {
+                return;
+            }
+            
+            // Show deeper sub-subcategory field for makeup
+            deeperSubSubcategoryGroup.style.display = 'block';
+            
+            // Reset deeper sub-subcategory options
+            deeperSubSubcategorySelect.innerHTML = '<option value="">Select Deeper Sub-Subcategory</option>';
+            
+            // Load deeper sub-subcategories from database
+            fetch(`get-deeper-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}&sub_subcategory=${encodeURIComponent(subSubcategory)}`)
+                .then(response => response.text().then(text => {
+                    if (text.trim() === '') {
+                        throw new Error('Empty response received');
+                    }
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        throw new Error('Invalid JSON: ' + e.message);
+                    }
+                }))
+                .then(data => {
+                    if (data.success && data.deeper_sub_subcategories) {
+                        data.deeper_sub_subcategories.forEach(deeperSubSubcategory => {
+                            const option = document.createElement('option');
+                            option.value = deeperSubSubcategory;
+                            option.textContent = deeperSubSubcategory;
+                            deeperSubSubcategorySelect.appendChild(option);
+                        });
+                    } else {
+                        console.log('No deeper sub-subcategories found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading deeper sub-subcategories:', error);
                 });
         }
     </script>

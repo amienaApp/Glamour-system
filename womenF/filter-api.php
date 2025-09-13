@@ -55,6 +55,7 @@ try {
                     $filters['subcategory'] = ucfirst($subcategory);
                 }
                 
+                
                 // Size filter
                 if (!empty($input['sizes']) && is_array($input['sizes'])) {
                     $sizeFilters = [];
