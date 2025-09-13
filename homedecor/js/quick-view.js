@@ -9,6 +9,8 @@ class QuickViewSidebar {
         this.overlay = document.getElementById('quick-view-overlay');
         this.currentProduct = null;
         this.currentImageIndex = 0;
+        this.selectedColor = '';
+        this.selectedSize = '';
         
         this.init();
     }
@@ -117,6 +119,9 @@ class QuickViewSidebar {
         
         // Handle color variants
         this.setupColorVariants(productData);
+
+        // Handle size selection
+        this.setupSizeSelection(productData);
         
         // Handle availability
         this.setupAvailability(productData);
@@ -258,6 +263,7 @@ class QuickViewSidebar {
         if (productData.color) {
             const colorCircle = this.createColorCircle(productData.color, true);
             colorSelection.appendChild(colorCircle);
+            this.selectedColor = productData.color; // Set initial selected color
         }
         
         // Add color variant colors
@@ -288,8 +294,66 @@ class QuickViewSidebar {
         // Add active class to selected color
         circleElement.classList.add('active');
         
+        // Store selected color
+        this.selectedColor = color;
+        
         // Here you could implement color-specific image switching
-        console.log('Selected color:', color);
+        // console.log('Selected color:', color);
+    }
+
+    setupSizeSelection(productData) {
+        const sizeSelection = document.getElementById('quick-view-size-selection');
+        if (sizeSelection) {
+            sizeSelection.innerHTML = '';
+            
+            // Default sizes for home & living products
+            const sizes = ['Small', 'Medium', 'Large', 'Extra Large'];
+            
+            sizes.forEach((size, index) => {
+                const sizeBtn = document.createElement('div');
+                sizeBtn.className = 'size-option';
+                sizeBtn.textContent = size;
+                sizeBtn.style.cssText = `
+                    padding: 8px 12px;
+                    border: 2px solid #ddd;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    margin: 0 5px 5px 0;
+                    display: inline-block;
+                    transition: all 0.3s ease;
+                    font-size: 14px;
+                    font-weight: 500;
+                `;
+                
+                // Set default selected size (middle size)
+                if (index === Math.floor(sizes.length / 2)) {
+                    sizeBtn.style.border = '2px solid #333';
+                    sizeBtn.style.backgroundColor = '#333';
+                    sizeBtn.style.color = 'white';
+                    this.selectedSize = size;
+                }
+                
+                // Add click handler
+                sizeBtn.addEventListener('click', () => {
+                    // Remove active class from all size options
+                    sizeSelection.querySelectorAll('.size-option').forEach(opt => {
+                        opt.style.border = '2px solid #ddd';
+                        opt.style.backgroundColor = 'transparent';
+                        opt.style.color = '#333';
+                    });
+                    
+                    // Add active class to clicked option
+                    sizeBtn.style.border = '2px solid #333';
+                    sizeBtn.style.backgroundColor = '#333';
+                    sizeBtn.style.color = 'white';
+                    
+                    // Store selected size
+                    this.selectedSize = size;
+                });
+                
+                sizeSelection.appendChild(sizeBtn);
+            });
+        }
     }
     
     setupAvailability(productData) {
@@ -343,22 +407,34 @@ class QuickViewSidebar {
         // Reset state
         this.currentProduct = null;
         this.currentImageIndex = 0;
+        this.selectedColor = '';
+        this.selectedSize = '';
     }
     
     async addToBag() {
         if (!this.currentProduct) return;
         
+        // Check if variants are selected
+        if (!this.selectedColor) {
+            this.showErrorMessage('Please select a color first');
+            return;
+        }
+        if (!this.selectedSize) {
+            this.showErrorMessage('Please select a size first');
+            return;
+        }
+        
         try {
             // Get quantity from the quick view
             const quantity = 1; // Default to 1 for quick view
             
-            // Prepare cart data
+            // Prepare cart data with selected variants
             const cartData = {
                 action: 'add_to_cart',
                 product_id: this.currentProduct.id,
                 quantity: quantity,
-                color: this.currentProduct.color || '',
-                size: '', // Home & Living products typically don't have sizes
+                color: this.selectedColor,
+                size: this.selectedSize,
                 return_url: window.location.href
             };
             
@@ -375,7 +451,7 @@ class QuickViewSidebar {
             
             if (result.success) {
                 // Show success message
-                this.showSuccessMessage(result.message);
+                this.showSuccessMessage(`Product added to cart successfully! (${this.selectedColor}, ${this.selectedSize})`);
                 
                 // Update cart count if available
                 if (result.cart_count !== undefined) {

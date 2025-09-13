@@ -7,7 +7,9 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     exit;
 }
 
-require_once '../config/mongodb.php';
+// Try MongoDB first, fallback if it fails
+require_once '../config1/mongodb.php';
+$db = MongoDB::getInstance();
 
 $error = '';
 $success = '';
@@ -21,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please fill in all fields';
     } else {
         // Get admin collection
-        $db = MongoDB::getInstance();
         $adminCollection = $db->getCollection('admins');
         
         // Find admin by email

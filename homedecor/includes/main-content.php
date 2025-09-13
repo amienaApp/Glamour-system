@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/mongodb.php';
+require_once __DIR__ . '/../../config1/mongodb.php';
 require_once __DIR__ . '/../../models/Product.php';
 
 $productModel = new Product();
@@ -9,7 +9,7 @@ $subcategory = $_GET['subcategory'] ?? '';
 
 // Get products based on subcategory or all home decor products from ALL subcategories
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory($subcategory);
     $pageTitle = ucfirst($subcategory);
 } else {
     // Get all home decor/home and living products from ALL subcategories
@@ -121,6 +121,10 @@ if (empty($featuredProducts)) {
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-price="<?php echo $product['price'] ?? 0; ?>"
                      data-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-material="<?php echo htmlspecialchars($product['material'] ?? ''); ?>"
@@ -222,7 +226,7 @@ if (empty($featuredProducts)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -244,12 +248,16 @@ if (empty($featuredProducts)) {
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($product['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($product['color'])): ?>
-                                <span class="color-circle active" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['name']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -257,10 +265,11 @@ if (empty($featuredProducts)) {
                             if (!empty($product['color_variants'])):
                                 foreach ($product['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -289,6 +298,10 @@ if (empty($featuredProducts)) {
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-price="<?php echo $product['price'] ?? 0; ?>"
                      data-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-material="<?php echo htmlspecialchars($product['material'] ?? ''); ?>"
@@ -390,7 +403,7 @@ if (empty($featuredProducts)) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                        <button class="heart-button">
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                             <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
@@ -412,12 +425,16 @@ if (empty($featuredProducts)) {
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($product['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($product['color'])): ?>
-                                <span class="color-circle active" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -425,10 +442,11 @@ if (empty($featuredProducts)) {
                             if (!empty($product['color_variants'])):
                                 foreach ($product['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>

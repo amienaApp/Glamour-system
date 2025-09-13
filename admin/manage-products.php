@@ -7,8 +7,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+// MongoDB connection
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
+$productModel = new Product();
 
 // Helper function to convert BSONArray to regular array
 function toArray($value) {
@@ -121,8 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Get all products without pagination (newest first)
-$products = $productModel->getAll([], ['createdAt' => -1]);
+// Use _id for sorting as it contains timestamp information and is always available
+$products = $productModel->getAll([], ['_id' => -1]);
 $totalProducts = count($products);
+
 ?>
 
 <!DOCTYPE html>
@@ -753,15 +757,31 @@ $totalProducts = count($products);
                                 if (!empty($displayImage)): 
                                     $imagePath = "../" . $displayImage;
                                     $fullImagePath = __DIR__ . "/../" . $displayImage;
+                                    
+                                    // Check if it's a video file
+                                    $isVideo = false;
+                                    $videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+                                    $fileExtension = strtolower(pathinfo($displayImage, PATHINFO_EXTENSION));
+                                    if (in_array($fileExtension, $videoExtensions)) {
+                                        $isVideo = true;
+                                    }
                                 ?>
-                                    <img src="<?php echo htmlspecialchars($imagePath); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                         onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-image\'></i><br><small>Path: <?php echo htmlspecialchars($imagePath); ?></small></div>'"
-                                         style="max-width: 100%; height: auto;">
+                                    <?php if ($isVideo): ?>
+                                        <video controls style="max-width: 100%; height: auto; max-height: 80px;" 
+                                               onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-video\'></i><br><small>Video Error</small></div>'">
+                                            <source src="<?php echo htmlspecialchars($imagePath); ?>" type="video/<?php echo $fileExtension; ?>">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    <?php else: ?>
+                                        <img src="<?php echo htmlspecialchars($imagePath); ?>" 
+                                             alt="<?php echo htmlspecialchars($product['name']); ?>" 
+                                             onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-image\'></i><br><small>Path: <?php echo htmlspecialchars($imagePath); ?></small></div>'"
+                                             style="max-width: 100%; height: auto;">
+                                    <?php endif; ?>
                                 <?php else: ?>
                                     <div class="no-image">
                                         <i class="fas fa-image"></i>
-                                        <br><small>No image available</small>
+                                        <br><small>No media available</small>
                                     </div>
                                 <?php endif; ?>
                             </div>

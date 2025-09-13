@@ -27,21 +27,18 @@ header('Content-Type: application/json');
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    error_log('Unauthorized access attempt');
     sendErrorResponse('Unauthorized', 401, ['session_data' => $_SESSION]);
 }
 
 // Check if files exist before requiring them
-$configPath = '../config/mongodb.php';
+$configPath = '../config1/mongodb.php';
 $modelPath = '../models/Product.php';
 
 if (!file_exists($configPath)) {
-    error_log('Config file not found: ' . realpath($configPath));
     sendErrorResponse('Configuration file not found', 500, ['path' => $configPath]);
 }
 
 if (!file_exists($modelPath)) {
-    error_log('Model file not found: ' . realpath($modelPath));
     sendErrorResponse('Model file not found', 500, ['path' => $modelPath]);
 }
 
@@ -94,7 +91,6 @@ function processMongoObject($value) {
             return $result;
         } elseif (is_array($value)) {
             // Handle regular arrays
-            error_log('Processing regular array with ' . count($value) . ' items');
             $result = [];
             foreach ($value as $item) {
                 $result[] = processMongoObject($item);
@@ -130,7 +126,6 @@ try {
         $product = $productModel->getById($productId);
         
         if (!$product) {
-            error_log('Product not found for ID: ' . $productId);
             sendErrorResponse('Product not found', 404, ['product_id' => $productId]);
         }
         
@@ -166,14 +161,12 @@ try {
     }
     
 } catch (Exception $e) {
-    error_log('API Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     sendErrorResponse('Internal server error', 500, [
         'message' => $e->getMessage(),
         'file' => $e->getFile(),
         'line' => $e->getLine()
     ]);
 } catch (Error $e) {
-    error_log('Fatal Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     sendErrorResponse('Fatal error', 500, ['message' => $e->getMessage()]);
 }
 ?>

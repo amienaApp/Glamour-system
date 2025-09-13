@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 require_once '../models/Category.php';
 
@@ -61,12 +61,21 @@ function getImagePath($imagePath) {
     return null;
 }
 
+// Helper function to check if a file is a video
+function isVideoFile($filePath) {
+    if (empty($filePath)) return false;
+    
+    $videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+    $fileExtension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    return in_array($fileExtension, $videoExtensions);
+}
+
 // Get filters from URL parameters
 $category = $_GET['category'] ?? '';
 $subcategory = $_GET['subcategory'] ?? '';
 $search = $_GET['search'] ?? '';
-$sort = $_GET['sort'] ?? 'name';
-$order = $_GET['order'] ?? 'asc';
+$sort = $_GET['sort'] ?? '_id';
+$order = $_GET['order'] ?? 'desc';
 $page = max(1, intval($_GET['page'] ?? 1));
 $perPage = 12;
 
@@ -76,11 +85,6 @@ if (!empty($category)) $filters['category'] = $category;
 if (!empty($subcategory)) $filters['subcategory'] = $subcategory;
 if (!empty($search)) $filters['name'] = ['$regex' => $search, '$options' => 'i'];
 
-// Debug: Log the filters being applied
-error_log('Applied filters: ' . print_r($filters, true));
-error_log('Category: ' . $category);
-error_log('Subcategory: ' . $subcategory);
-error_log('Search: ' . $search);
 
 // Build sort options
 $sortOptions = [];
@@ -88,38 +92,18 @@ if ($sort === 'price') {
     $sortOptions['price'] = $order === 'asc' ? 1 : -1;
 } elseif ($sort === 'createdAt') {
     $sortOptions['createdAt'] = $order === 'asc' ? 1 : -1;
+} elseif ($sort === '_id') {
+    $sortOptions['_id'] = $order === 'asc' ? 1 : -1;
 } else {
     $sortOptions['name'] = $order === 'asc' ? 1 : -1;
 }
 
 // Get paginated products
-error_log('=== FILTERING DEBUG ===');
-error_log('Page: ' . $page);
-error_log('Per Page: ' . $perPage);
-error_log('Filters: ' . print_r($filters, true));
-error_log('Sort Options: ' . print_r($sortOptions, true));
-
 $result = $productModel->getPaginated($page, $perPage, $filters, $sortOptions);
 $products = $result['products'];
 $totalProducts = $result['total'];
 $totalPages = $result['pages'];
 
-error_log('Result: ' . print_r($result, true));
-error_log('Total Products: ' . $totalProducts);
-error_log('Products Returned: ' . count($products));
-error_log('=== END FILTERING DEBUG ===');
-
-// Debug: Log the results
-error_log('Total products found: ' . $totalProducts);
-error_log('Products returned: ' . count($products));
-
-// Debug: Check first product structure if available
-if (!empty($products)) {
-    $firstProduct = $products[0];
-    error_log('First product structure: ' . print_r($firstProduct, true));
-    error_log('First product category: ' . ($firstProduct['category'] ?? 'NULL'));
-    error_log('First product subcategory: ' . ($firstProduct['subcategory'] ?? 'NULL'));
-}
 
 // Get categories and subcategories for filters
 $categories = $categoryModel->getAll();
@@ -128,57 +112,7 @@ if ($category) {
     $subcategories = $categoryModel->getSubcategories($category);
 }
 
-// Debug: Test simple queries to verify database structure
-if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-    error_log('=== DATABASE STRUCTURE TEST ===');
-    
-    // Test 1: Get all products without filters
-    $allProducts = $productModel->getAll();
-    error_log('Total products in database: ' . count($allProducts));
-    
-    // Test 2: Get products by category if category is set
-    if (!empty($category)) {
-        $categoryProducts = $productModel->getByCategory($category);
-        error_log('Products with category "' . $category . '": ' . count($categoryProducts));
-        
-        // Show first few category products
-        foreach (array_slice($categoryProducts, 0, 3) as $index => $prod) {
-            error_log('Category product ' . ($index + 1) . ': ' . $prod['name'] . ' (Category: ' . ($prod['category'] ?? 'NULL') . ')');
-        }
-    }
-    
-    // Test 3: Get products by subcategory if subcategory is set
-    if (!empty($subcategory)) {
-        $subcategoryProducts = $productModel->getBySubcategory($subcategory);
-        error_log('Products with subcategory "' . $subcategory . '": ' . count($subcategoryProducts));
-        
-        // Show first few subcategory products
-        foreach (array_slice($subcategoryProducts, 0, 3) as $index => $prod) {
-            error_log('Subcategory product ' . ($index + 1) . ': ' . $prod['name'] . ' (Subcategory: ' . ($prod['subcategory'] ?? 'NULL') . ')');
-        }
-    }
-    
-    error_log('=== END DATABASE STRUCTURE TEST ===');
-}
 
-// Additional debugging: Test direct filtering
-error_log('=== DIRECT FILTERING TEST ===');
-if (!empty($category)) {
-    // Test using existing model methods instead of direct MongoDB access
-    $filter = ['category' => $category];
-    error_log('Testing filter: ' . json_encode($filter));
-    
-    // Test the existing getByCategory method
-    $categoryProducts = $productModel->getByCategory($category);
-    error_log('getByCategory method returned ' . count($categoryProducts) . ' products');
-    
-    if (!empty($categoryProducts)) {
-        foreach (array_slice($categoryProducts, 0, 3) as $index => $prod) {
-            error_log('Category product ' . ($index + 1) . ': ' . $prod['name'] . ' (Category: ' . ($prod['category'] ?? 'NULL') . ')');
-        }
-    }
-}
-error_log('=== END DIRECT FILTERING TEST ===');
 
 // Handle product actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -356,7 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 12px 30px;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
@@ -559,7 +493,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-sm {
-            padding: 8px 15px;
+            padding: 8px 20px;
             font-size: 0.9rem;
         }
 
@@ -660,7 +594,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .btn-sm {
-            padding: 8px 15px;
+            padding: 8px 20px;
             font-size: 0.9rem;
         }
 
@@ -1004,17 +938,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="filter-group">
                         <label for="sort">Sort By</label>
                         <select name="sort" id="sort">
+                            <option value="_id" <?php echo $sort === '_id' ? 'selected' : ''; ?>>Date Added</option>
+                            <option value="createdAt" <?php echo $sort === 'createdAt' ? 'selected' : ''; ?>>Date Created</option>
                             <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name</option>
                             <option value="price" <?php echo $sort === 'price' ? 'selected' : ''; ?>>Price</option>
-                            <option value="createdAt" <?php echo $sort === 'createdAt' ? 'selected' : ''; ?>>Date Created</option>
                         </select>
                     </div>
 
                     <div class="filter-group">
                         <label for="order">Order</label>
                         <select name="order" id="order">
-                            <option value="asc" <?php echo $order === 'asc' ? 'selected' : ''; ?>>Ascending</option>
-                            <option value="desc" <?php echo $order === 'desc' ? 'selected' : ''; ?>>Descending</option>
+                            <option value="desc" <?php echo $order === 'desc' ? 'selected' : ''; ?>>Newest First</option>
+                            <option value="asc" <?php echo $order === 'asc' ? 'selected' : ''; ?>>Oldest First</option>
                         </select>
                     </div>
 
@@ -1027,18 +962,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                         <a href="add-product.php" class="btn btn-success">
                             <i class="fas fa-plus"></i> Add New Product
-                        </a>
-                                                 <a href="?<?php echo http_build_query(array_merge($_GET, ['debug' => '1'])); ?>" class="btn btn-secondary">
-                             <i class="fas fa-bug"></i> Debug
-                         </a>
-                         <a href="test-filtering.php" class="btn btn-secondary" target="_blank">
-                             <i class="fas fa-filter"></i> Test Filtering
-                         </a>
-                         <a href="debug-images.php" class="btn btn-secondary" target="_blank">
-                             <i class="fas fa-images"></i> Debug Images
-                         </a>
-                         <a href="migrate-all-images.php" class="btn btn-warning">
-                             <i class="fas fa-sync-alt"></i> Migrate All Images
                          </a>
                     </div>
                 </div>
@@ -1187,13 +1110,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               if (!empty($images)) {
                                   foreach ($images as $index => $image) {
                                       $isActive = $index === 0 ? 'active' : '';
-                                      echo '<img src="' . htmlspecialchars($image['src']) . '" 
-                                                alt="' . htmlspecialchars($product['name']) . '" 
-                                                class="product-image ' . $isActive . '" 
-                                                data-color="' . htmlspecialchars($image['color']) . '" 
-                                                data-type="' . htmlspecialchars($image['type']) . '"
-                                                onload="console.log(\'Image loaded successfully:\', \'' . htmlspecialchars($image['src']) . '\')"
-                                                onerror="console.log(\'Image failed to load:\', \'' . htmlspecialchars($image['src']) . '\'); this.src=\'../img/placeholder.jpg\'">';
+                                      $isVideo = isVideoFile($image['src']);
+                                      
+                                      if ($isVideo) {
+                                          echo '<video controls class="product-image ' . $isActive . '" ' .
+                                                    'data-color="' . htmlspecialchars($image['color']) . '" ' .
+                                                    'data-type="' . htmlspecialchars($image['type']) . '" ' .
+                                                    'style="max-width: 100%; height: auto;" ' .
+                                                    'onerror="this.parentElement.innerHTML=\'<img src=\\\'../img/placeholder.jpg\\\' alt=\\\'Video Error\\\' class=\\\'product-image active\\\'>\'">' .
+                                                    '<source src="' . htmlspecialchars($image['src']) . '" type="video/' . pathinfo($image['src'], PATHINFO_EXTENSION) . '">' .
+                                                    'Your browser does not support the video tag.' .
+                                                '</video>';
+                                      } else {
+                                          echo '<img src="' . htmlspecialchars($image['src']) . '" ' .
+                                                    'alt="' . htmlspecialchars($product['name']) . '" ' .
+                                                    'class="product-image ' . $isActive . '" ' .
+                                                    'data-color="' . htmlspecialchars($image['color']) . '" ' .
+                                                    'data-type="' . htmlspecialchars($image['type']) . '" ' .
+                                                    'onerror="this.src=\'../img/placeholder.jpg\'">';
+                                      }
                                   }
                               } else {
                                   echo '<img src="../img/placeholder.jpg" alt="No image available" class="product-image active">';
@@ -1374,99 +1309,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div style="text-align: center; margin-top: 30px; color: #8D6E63;">
             <p>Showing <?php echo count($products); ?> of <?php echo $totalProducts; ?> products</p>
             
-            <!-- Current Filter Values (Debug) -->
-            <div style="background: #f0f0f0; padding: 15px; margin-top: 20px; border-radius: 8px; display: inline-block; text-align: left;">
-                <h4 style="margin: 0 0 10px 0; color: #333;">🔍 Current Filters:</h4>
-                <p style="margin: 5px 0;"><strong>Category:</strong> <?php echo $category ?: 'None'; ?></p>
-                <p style="margin: 5px 0;"><strong>Subcategory:</strong> <?php echo $subcategory ?: 'None'; ?></p>
-                <p style="margin: 5px 0;"><strong>Search:</strong> <?php echo $search ?: 'None'; ?></p>
-                <p style="margin: 5px 0;"><strong>Applied Filters Array:</strong> <?php echo htmlspecialchars(json_encode($filters)); ?></p>
-            </div>
             
-            <!-- Debug Information (Remove in production) -->
-            <?php if (isset($_GET['debug']) && $_GET['debug'] === '1'): ?>
-                <div style="background: #f8f9fa; padding: 20px; margin-top: 20px; border-radius: 10px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
-                    <h4>🔍 Filter Debug Information</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div>
-                            <h5>Applied Filters:</h5>
-                            <ul>
-                                <li><strong>Category:</strong> <?php echo $category ?: 'None'; ?></li>
-                                <li><strong>Subcategory:</strong> <?php echo $subcategory ?: 'None'; ?></li>
-                                <li><strong>Search:</strong> <?php echo $search ?: 'None'; ?></li>
-                                <li><strong>Sort:</strong> <?php echo $sort; ?></li>
-                                <li><strong>Order:</strong> <?php echo $order; ?></li>
-                                <li><strong>Page:</strong> <?php echo $page; ?></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h5>MongoDB Query:</h5>
-                            <pre style="background: #e9ecef; padding: 10px; border-radius: 5px; font-size: 0.9rem;"><?php echo htmlspecialchars(json_encode($filters, JSON_PRETTY_PRINT)); ?></pre>
-                        </div>
                     </div>
                     
-                    <div style="margin-top: 20px;">
-                        <h5>Results:</h5>
-                        <ul>
-                            <li><strong>Total Products:</strong> <?php echo $totalProducts; ?></li>
-                            <li><strong>Products Returned:</strong> <?php echo count($products); ?></li>
-                            <li><strong>Total Pages:</strong> <?php echo $totalPages; ?></li>
-                        </ul>
-                    </div>
-                    
-                    <?php if (!empty($products)): ?>
-                        <div style="margin-top: 20px;">
-                            <h5>Sample Products (First 3):</h5>
-                            <ul>
-                                <?php foreach (array_slice($products, 0, 3) as $index => $product): ?>
-                                    <li>
-                                        <strong>Product <?php echo $index + 1; ?>:</strong> 
-                                        <?php echo htmlspecialchars($product['name']); ?> 
-                                        (Category: <?php echo htmlspecialchars($product['category'] ?? 'None'); ?>, 
-                                        Subcategory: <?php echo htmlspecialchars($product['subcategory'] ?? 'None'); ?>)
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-        
-        <!-- Debug Information (Remove in production) -->
-        <?php if (isset($_GET['debug']) && $_GET['debug'] === '1'): ?>
-            <div style="background: #f8f9fa; padding: 20px; margin-top: 30px; border-radius: 10px; text-align: left;">
-                <h4>Debug Information</h4>
-                <p><strong>Uploads Directory:</strong> <?php echo realpath('../uploads/products/'); ?></p>
-                <p><strong>Placeholder Image:</strong> <?php echo realpath('../img/placeholder.jpg'); ?></p>
-                <p><strong>Sample Product Images:</strong></p>
-                <?php if (!empty($products)): ?>
-                    <ul>
-                        <?php 
-                        $sampleProduct = $products[0];
-                        echo '<li><strong>Product:</strong> ' . htmlspecialchars($sampleProduct['name']) . '</li>';
-                        echo '<li><strong>Front Image Path:</strong> ' . htmlspecialchars($sampleProduct['front_image'] ?? 'None') . '</li>';
-                        echo '<li><strong>Front Image Resolved:</strong> ' . htmlspecialchars(getImagePath($sampleProduct['front_image'] ?? '') ?? 'None') . '</li>';
-                        echo '<li><strong>Back Image Path:</strong> ' . htmlspecialchars($sampleProduct['back_image'] ?? 'None') . '</li>';
-                        echo '<li><strong>Back Image Resolved:</strong> ' . htmlspecialchars(getImagePath($sampleProduct['back_image'] ?? '') ?? 'None') . '</li>';
-                        if (!empty($sampleProduct['color_variants'])) {
-                            echo '<li><strong>Color Variants:</strong> ' . count($sampleProduct['color_variants']) . '</li>';
-                            foreach ($sampleProduct['color_variants'] as $index => $variant) {
-                                echo '<li>&nbsp;&nbsp;Variant ' . $index . ': ' . htmlspecialchars($variant['front_image'] ?? 'None') . ' → ' . htmlspecialchars(getImagePath($variant['front_image'] ?? '') ?? 'None') . '</li>';
-                            }
-                        }
-                        ?>
-                    </ul>
-                <?php endif; ?>
-                
-                <h4>Path Resolution Examples</h4>
-                <ul>
-                    <li><strong>Filename only:</strong> "1.webp" → <?php echo getImagePath('1.webp'); ?></li>
-                    <li><strong>Relative path:</strong> "img/men/suits/1.1.avif" → <?php echo getImagePath('img/men/suits/1.1.avif'); ?></li>
-                    <li><strong>Full path:</strong> "uploads/products/1755266162_front_9.webp" → <?php echo getImagePath('uploads/products/1755266162_front_9.webp'); ?></li>
-                </ul>
-            </div>
-        <?php endif; ?>
     </div>
 
     <!-- Quick View Modal -->
@@ -1543,7 +1388,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (categorySelect && subcategorySelect) {
                 categorySelect.addEventListener('change', function() {
                     const selectedCategory = this.value;
-                    console.log('Category changed to:', selectedCategory);
                     
                     // Clear subcategory and enable/disable based on selection
                     subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
@@ -1554,14 +1398,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         subcategorySelect.innerHTML = '<option value="">Loading...</option>';
                         
                         // Fetch subcategories for selected category
-                        console.log('Fetching subcategories for category:', selectedCategory);
                         fetch(`get-subcategories.php?category=${encodeURIComponent(selectedCategory)}`)
-                            .then(response => {
-                                console.log('Response status:', response.status);
-                                return response.json();
-                            })
+                            .then(response => response.json())
                             .then(data => {
-                                console.log('Subcategories data:', data);
                                 // Clear loading and add subcategories
                                 subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
                                 
@@ -1572,9 +1411,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         option.textContent = subcat;
                                         subcategorySelect.appendChild(option);
                                     });
-                                    console.log('Loaded', data.subcategories.length, 'subcategories');
-                                } else {
-                                    console.log('No subcategories found or error in response');
                                 }
                             })
                             .catch(error => {
@@ -1611,24 +1447,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             }
             
-            // Debug: Log current form values
-            console.log('Current form values:', {
-                category: categorySelect?.value,
-                subcategory: subcategorySelect?.value,
-                search: searchInput?.value
-            });
             
-            // Add filter count display
-            const updateFilterCount = () => {
-                const activeFilters = document.querySelectorAll('.filter-tag');
-                const filterCount = activeFilters.length;
-                if (filterCount > 0) {
-                    console.log(`Active filters: ${filterCount}`);
-                }
-            };
-            
-                    // Call on page load
-        updateFilterCount();
         
         // Initialize bulk selection functionality
         initializeBulkSelection();
@@ -1884,12 +1703,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Quick View Modal Functions
         function openQuickView(productId) {
-            console.log('Opening quick view for product:', productId);
             // Fetch product details
             fetch(`get-product-variants.php?id=${productId}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Product data received:', data);
                     if (data.success && data.product) {
                         const product = data.product;
                         displayQuickView(product);
@@ -1910,26 +1727,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         function displayQuickView(product) {
             const modalContent = document.getElementById('modalContent');
-            console.log('Displaying quick view for product:', product);
             
             // Helper function to get correct image path
             function getImagePath(imagePath) {
                 if (!imagePath) return null;
                 
-                console.log('Processing image path:', imagePath);
-                
                 // If path already starts with uploads/products/, use as is
                 if (imagePath.startsWith('uploads/products/')) {
-                    const finalPath = '../' + imagePath;
-                    console.log('Path starts with uploads/products/, using:', finalPath);
-                    return finalPath;
+                    return '../' + imagePath;
                 }
                 
                 // If path starts with uploads/, add ../
                 if (imagePath.startsWith('uploads/')) {
-                    const finalPath = '../' + imagePath;
-                    console.log('Path starts with uploads/, using:', finalPath);
-                    return finalPath;
+                    return '../' + imagePath;
                 }
                 
                 // If path starts with img/, it's from the old static system
@@ -1937,24 +1747,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (imagePath.startsWith('img/')) {
                     // Extract the filename from the img/ path
                     const filename = imagePath.split('/').pop();
-                    const finalPath = '../uploads/products/' + filename;
-                    console.log('Path starts with img/, trying filename:', filename, '→', finalPath);
-                    return finalPath;
+                    return '../uploads/products/' + filename;
                 }
                 
                 // If it's just a filename, assume it's in uploads/products/
                 if (!imagePath.includes('/')) {
-                    const finalPath = '../uploads/products/' + imagePath;
-                    console.log('Path is filename only, using:', finalPath);
-                    return finalPath;
+                    return '../uploads/products/' + imagePath;
                 }
                 
                 // If it contains slashes but doesn't start with known prefixes, 
                 // try to extract filename and look in uploads/products/
                 const filename = imagePath.split('/').pop();
-                const finalPath = '../uploads/products/' + filename;
-                console.log('Path contains slashes, trying filename:', filename, '→', finalPath);
-                return finalPath;
+                return '../uploads/products/' + filename;
             }
             
                          // Build color variants HTML
@@ -2006,18 +1810,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  colorVariantsHTML += '</div>';
              }
 
+            // Helper function to check if file is video
+            function isVideoFile(filePath) {
+                if (!filePath) return false;
+                const videoExtensions = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+                const extension = filePath.split('.').pop().toLowerCase();
+                return videoExtensions.includes(extension);
+            }
+            
             // Build images HTML
             let imagesHTML = '';
             if (product.front_image) {
                 const frontImagePath = getImagePath(product.front_image);
                 if (frontImagePath) {
-                    imagesHTML += `<img src="${frontImagePath}" alt="${product.name}" class="product-image-modal active" data-color="default" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                    if (isVideoFile(frontImagePath)) {
+                        const extension = frontImagePath.split('.').pop().toLowerCase();
+                        imagesHTML += `<video controls class="product-image-modal active" data-color="default" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal active\\'>'"><source src="${frontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                    } else {
+                        imagesHTML += `<img src="${frontImagePath}" alt="${product.name}" class="product-image-modal active" data-color="default" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                    }
                 }
             }
             if (product.back_image) {
                 const backImagePath = getImagePath(product.back_image);
                 if (backImagePath) {
-                    imagesHTML += `<img src="${backImagePath}" alt="${product.name}" class="product-image-modal" data-color="default" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                    if (isVideoFile(backImagePath)) {
+                        const extension = backImagePath.split('.').pop().toLowerCase();
+                        imagesHTML += `<video controls class="product-image-modal" data-color="default" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${backImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                    } else {
+                        imagesHTML += `<img src="${backImagePath}" alt="${product.name}" class="product-image-modal" data-color="default" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                    }
                 }
             }
             
@@ -2027,13 +1849,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (variant.front_image) {
                         const variantFrontImagePath = getImagePath(variant.front_image);
                         if (variantFrontImagePath) {
-                            imagesHTML += `<img src="${variantFrontImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                            if (isVideoFile(variantFrontImagePath)) {
+                                const extension = variantFrontImagePath.split('.').pop().toLowerCase();
+                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantFrontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                            } else {
+                                imagesHTML += `<img src="${variantFrontImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
+                            }
                         }
                     }
                     if (variant.back_image) {
                         const variantBackImagePath = getImagePath(variant.back_image);
                         if (variantBackImagePath) {
-                            imagesHTML += `<img src="${variantBackImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                            if (isVideoFile(variantBackImagePath)) {
+                                const extension = variantBackImagePath.split('.').pop().toLowerCase();
+                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantBackImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                            } else {
+                                imagesHTML += `<img src="${variantBackImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
+                            }
                         }
                     }
                 });

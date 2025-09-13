@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 
 $categoryModel = new Category();
@@ -69,6 +69,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $message = 'Failed to delete category.';
                 $messageType = 'error';
+            }
+            break;
+
+        case 'delete_subcategory':
+            $categoryName = trim($_POST['category_name'] ?? '');
+            $subcategoryName = trim($_POST['subcategory_name'] ?? '');
+            
+            
+            if (empty($categoryName) || empty($subcategoryName)) {
+                $message = 'Category name and subcategory name are required.';
+                $messageType = 'error';
+            } else {
+                $success = $categoryModel->removeSubcategory($categoryName, $subcategoryName);
+                if ($success) {
+                    $message = 'Subcategory deleted successfully!';
+                    $messageType = 'success';
+                } else {
+                    $message = 'Failed to delete subcategory.';
+                    $messageType = 'error';
+                }
             }
             break;
 
@@ -1387,7 +1407,11 @@ $categories = $categoryModel->getAll();
                                         <div class="subcategories-list">
                                             <?php if (!empty($category['subcategories'])): ?>
                                                 <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                                    <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory); ?></span>
+                                                    <?php if (is_array($subcategory) && isset($subcategory['name'])): ?>
+                                                        <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory['name']); ?></span>
+                                                    <?php elseif (is_string($subcategory)): ?>
+                                                        <span class="subcategory-tag"><?php echo htmlspecialchars($subcategory); ?></span>
+                                                    <?php endif; ?>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
                                                 <span class="no-subcategories">No subcategories</span>
@@ -1634,6 +1658,7 @@ $categories = $categoryModel->getAll();
             const select = document.getElementById('edit_subcategory_select');
             const selectedIndex = select.value;
             
+            
             if (selectedIndex === '') {
                 showMessage('Please select a subcategory to remove!', 'error');
                 return;
@@ -1641,6 +1666,7 @@ $categories = $categoryModel->getAll();
             
             const subcategoryName = select.options[select.selectedIndex].textContent;
             const subcategoryIndex = selectedIndex;
+            
             
             // Show confirmation modal
             showRemoveSubcategoryModal(subcategoryName, subcategoryIndex);
@@ -1655,37 +1681,59 @@ $categories = $categoryModel->getAll();
         function confirmRemoveSubcategory() {
             const modal = document.getElementById('removeSubcategoryModal');
             const subcategoryIndex = parseInt(modal.getAttribute('data-index'));
-            const select = document.getElementById('edit_subcategory_select');
+            const categoryName = document.getElementById('edit_category_name').value;
             
-
-            
-            // Remove from array immediately
-            currentSubcategories.splice(subcategoryIndex, 1);
-            
-
-            
-            // Update dropdown immediately
-            select.innerHTML = '<option value="">Select subcategory to edit</option>';
-            
-            if (currentSubcategories && currentSubcategories.length > 0) {
-                currentSubcategories.forEach((subcategory, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = subcategory;
-                    select.appendChild(option);
-                });
+            // Get the subcategory name from the currentSubcategories array
+            if (!currentSubcategories || !currentSubcategories[subcategoryIndex]) {
+                showMessage('Subcategory not found!', 'error');
+                closeRemoveSubcategoryModal();
+                return;
             }
             
-            // Close modal immediately
-            closeRemoveSubcategoryModal();
+            const subcategoryName = currentSubcategories[subcategoryIndex];
             
-            // Show success message immediately
-            showMessage('Subcategory removed successfully!', 'success');
             
-            // Ensure buttons remain clickable
-            setTimeout(ensureButtonClickability, 100);
+            // Send deletion request to server
+            const formData = new FormData();
+            formData.append('action', 'delete_subcategory');
+            formData.append('category_name', categoryName);
+            formData.append('subcategory_name', subcategoryName);
             
-
+            fetch('manage-categories.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                
+                // Check if the response indicates success
+                if (data.includes('Subcategory deleted successfully') || data.includes('success')) {
+                    // Remove from local array
+                    if (currentSubcategories && currentSubcategories.length > subcategoryIndex) {
+                        currentSubcategories.splice(subcategoryIndex, 1);
+                    }
+                    
+                    // Update dropdown with fresh data
+                    updateSubcategoryDropdown();
+                    
+                    // Close modal
+                    closeRemoveSubcategoryModal();
+                    
+                    // Show success message
+                    showMessage('Subcategory deleted successfully!', 'success');
+                    
+                    // Ensure buttons remain clickable
+                    setTimeout(ensureButtonClickability, 100);
+                } else {
+                    // Show error message if deletion failed
+                    showMessage('Failed to delete subcategory. Please try again.', 'error');
+                    console.error('Deletion failed. Server response:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting subcategory:', error);
+                showMessage('Failed to delete subcategory. Please try again.', 'error');
+            });
         }
 
         function saveSubcategory() {
@@ -1798,6 +1846,25 @@ $categories = $categoryModel->getAll();
 
         function closeDeleteModal() {
             document.getElementById('deleteCategoryModal').style.display = 'none';
+        }
+
+        function updateSubcategoryDropdown() {
+            const select = document.getElementById('edit_subcategory_select');
+            if (!select) return;
+            
+            // Clear existing options
+            select.innerHTML = '<option value="">Select subcategory to edit</option>';
+            
+            // Add current subcategories
+            if (currentSubcategories && currentSubcategories.length > 0) {
+                currentSubcategories.forEach((subcategory, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = subcategory;
+                    select.appendChild(option);
+                });
+            }
+            
         }
 
         function closeRemoveSubcategoryModal() {

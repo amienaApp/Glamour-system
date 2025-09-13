@@ -1,35 +1,36 @@
-// Simple Script
+// Unified Accessories Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
+    console.log('Accessories script loaded successfully');
     
-    // Initialize category modal functionality
+    // Initialize all functionality
     initializeCategoryModals();
-    
-    // Initialize header modals functionality
     initializeHeaderModals();
-    
-    // Initialize filter functionality
     initializeFilters();
+    initializeQuickView();
     
-    // Quick View functionality
-    const sidebar = document.getElementById('quick-view-sidebar');
-    const overlay = document.getElementById('quick-view-overlay');
-    const closeBtn = document.getElementById('close-quick-view');
-    
-    console.log('Quick view elements found:', {
-        sidebar: !!sidebar,
-        overlay: !!overlay,
-        closeBtn: !!closeBtn
-    });
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
+    function initializeQuickView() {
+        const sidebar = document.getElementById('quick-view-sidebar');
+        const overlay = document.getElementById('quick-view-overlay');
+        const closeBtn = document.getElementById('close-quick-view');
+        
+        console.log('Quick view elements found:', {
+            sidebar: !!sidebar,
+            overlay: !!overlay,
+            closeBtn: !!closeBtn
+        }); 
     
     // Quick View button click handler
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('quick-view') || e.target.closest('.quick-view')) {
             e.preventDefault();
-            console.log('Quick view button clicked!');
+            // console.log('Quick view button clicked!');
             const button = e.target.classList.contains('quick-view') ? e.target : e.target.closest('.quick-view');
             const productId = button.getAttribute('data-product-id');
-            console.log('Product ID:', productId);
+            // console.log('Product ID:', productId);
             if (productId) {
                 openQuickView(productId);
             } else {
@@ -42,11 +43,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeBtn) closeBtn.addEventListener('click', closeQuickView);
     if (overlay) overlay.addEventListener('click', closeQuickView);
     
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
     function openQuickView(productId) {
-        console.log('Opening quick view for:', productId);
+        // console.log('Opening quick view for:', productId);
         
+        try {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-        if (!productCard) return;
+            if (!productCard) {
+                console.error('Product card not found for ID:', productId);
+                return;
+            }
+            
+            // console.log('Product card found:', productCard);
         
         const name = productCard.querySelector('.product-name')?.textContent || 'Product';
         const price = productCard.querySelector('.product-price')?.textContent || '$0';
@@ -176,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (isActive) {
                         colorBtn.classList.add('active');
+                        selectedQuickViewColor = color; // Set initial selected color
                     }
                     
                     // Add click handler for quick view color circles
@@ -189,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Add active class to clicked option
                         this.classList.add('active');
                         this.style.border = '2px solid #000';
+                        
+                        // Store selected color
+                        selectedQuickViewColor = color;
                         
                         // Update media for this color
                         const mediaForColor = productCard.querySelectorAll(`.image-slider img[data-color="${color}"], .image-slider video[data-color="${color}"]`);
@@ -272,71 +287,457 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Handle size selection in quick view
+        // Handle size selection in quick view - Enhanced for Multiple Forms
         const sizeSelection = document.getElementById('quick-view-size-selection');
         if (sizeSelection) {
+            // console.log('Size selection element found, processing sizes...');
+            
+            try {
             sizeSelection.innerHTML = '';
             
-            // Default sizes
-            const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                // Helper function to clean JSON strings
+                function cleanJsonString(jsonString) {
+                    if (!jsonString || jsonString === '[]' || jsonString === 'null') {
+                        return null;
+                    }
+                    
+                    let cleaned = jsonString;
+                    // Remove outer quotes if present
+                    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+                        cleaned = cleaned.slice(1, -1);
+                    }
+                    // Unescape quotes
+                    cleaned = cleaned.replace(/\\"/g, '"');
+                    return cleaned;
+                }
+                
+                // Get actual available sizes from product data
+                let sizes = [];
+                
+                // Try to get sizes from product data - check all possible sources
+                const productSizes = productCard.dataset.productSizes;
+                const productSelectedSizes = productCard.dataset.productSelectedSizes;
+                const productVariants = productCard.dataset.productVariants;
+                const productProductVariants = productCard.dataset.productProductVariants;
+                const productOptions = productCard.dataset.productOptions;
+                const productProductOptions = productCard.dataset.productProductOptions;
+            
+            /* console.log('Raw product size data:', {
+                productSizes: productSizes,
+                productSelectedSizes: productSelectedSizes,
+                productVariants: productVariants,
+                productProductVariants: productProductVariants,
+                productOptions: productOptions,
+                productProductOptions: productProductOptions
+            }); */
+            
+            // Check multiple possible size data sources in order of preference
+            if (productSizes && productSizes !== '[]' && productSizes !== 'null') {
+                try {
+                    const cleanSizes = cleanJsonString(productSizes);
+                    if (cleanSizes) {
+                        // console.log('Cleaned productSizes:', cleanSizes);
+                        const parsedSizes = JSON.parse(cleanSizes);
+                        if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
+                            sizes = parsedSizes.filter(size => size && size.trim() !== '');
+                            // console.log('Found sizes in productSizes:', sizes);
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse productSizes:', e);
+                    // console.log('Raw productSizes:', productSizes);
+                }
+            }
+            
+            // If no sizes from productSizes, try selectedSizes
+            if (sizes.length === 0 && productSelectedSizes && productSelectedSizes !== '[]' && productSelectedSizes !== 'null') {
+                try {
+                    const cleanSelectedSizes = cleanJsonString(productSelectedSizes);
+                    if (cleanSelectedSizes) {
+                        // console.log('Cleaned productSelectedSizes:', cleanSelectedSizes);
+                        const parsedSelectedSizes = JSON.parse(cleanSelectedSizes);
+                        if (Array.isArray(parsedSelectedSizes) && parsedSelectedSizes.length > 0) {
+                            sizes = parsedSelectedSizes.filter(size => size && size.trim() !== '');
+                            // console.log('Found sizes in productSelectedSizes:', sizes);
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse productSelectedSizes:', e);
+                    // console.log('Raw productSelectedSizes:', productSelectedSizes);
+                }
+            }
+            
+            // If still no sizes, try to extract from variants
+            if (sizes.length === 0 && (productVariants || productProductVariants)) {
+                try {
+                    const variantsData = productVariants || productProductVariants;
+                    if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                        const parsedVariants = JSON.parse(variantsData);
+                        if (Array.isArray(parsedVariants)) {
+                            const variantSizes = [];
+                            parsedVariants.forEach(variant => {
+                                if (variant && variant.size && variant.size.trim() !== '' && !variantSizes.includes(variant.size)) {
+                                    variantSizes.push(variant.size);
+                                }
+                            });
+                            if (variantSizes.length > 0) {
+                                sizes = variantSizes;
+                                // console.log('Found sizes in variants:', sizes);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse variants for sizes:', e);
+                }
+            }
+            
+            // If still no sizes, try to extract from options
+            if (sizes.length === 0 && (productOptions || productProductOptions)) {
+                try {
+                    const optionsData = productOptions || productProductOptions;
+                    if (optionsData && optionsData !== '[]' && optionsData !== 'null') {
+                        const parsedOptions = JSON.parse(optionsData);
+                        if (Array.isArray(parsedOptions)) {
+                            const optionSizes = [];
+                            parsedOptions.forEach(option => {
+                                if (option && option.size && option.size.trim() !== '' && !optionSizes.includes(option.size)) {
+                                    optionSizes.push(option.size);
+                                }
+                            });
+                            if (optionSizes.length > 0) {
+                                sizes = optionSizes;
+                                // console.log('Found sizes in options:', sizes);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse options for sizes:', e);
+                }
+            }
+            
+            // If still no sizes, hide the size section
+            if (sizes.length === 0) {
+                console.log('No sizes found for this product - hiding size section');
+                const sizeSection = document.querySelector('.size-section');
+                if (sizeSection) {
+                    sizeSection.style.display = 'none';
+                }
+                return; // Exit early, don't show size selection
+            }
+            
+            // Check if this is a one-size item
+            if (sizes.length === 1 && (sizes[0] === 'One Size' || sizes[0] === 'One-Size')) {
+                // Hide the entire size section for one-size items
+                const sizeSection = document.querySelector('.size-section');
+                if (sizeSection) {
+                    sizeSection.style.display = 'none';
+                }
+                return;
+            }
+            
+            // Show size section for items with multiple sizes
+            const sizeSection = document.querySelector('.size-section');
+            if (sizeSection) {
+                sizeSection.style.display = 'block';
+            }
+            
+            // console.log('Available sizes for product:', sizes);
+            /* console.log('Product size data sources:', {
+                productSizes: productSizes,
+                productSelectedSizes: productSelectedSizes,
+                productVariants: productVariants,
+                productProductVariants: productProductVariants
+            }); */
+            
+            // Function to convert size codes to full names
+            function getSizeName(sizeCode) {
+                const sizeMap = {
+                    'XXS': 'Extra Extra Small',
+                    'XS': 'Extra Small', 
+                    'S': 'Small',
+                    'M': 'Medium',
+                    'L': 'Large',
+                    'XL': 'Extra Large',
+                    'XXL': 'Extra Extra Large',
+                    'XXXL': 'Extra Extra Extra Large',
+                    '0': 'Size 0',
+                    '2': 'Size 2',
+                    '4': 'Size 4',
+                    '6': 'Size 6',
+                    '8': 'Size 8',
+                    '10': 'Size 10',
+                    '12': 'Size 12',
+                    '14': 'Size 14',
+                    '16': 'Size 16',
+                    '18': 'Size 18',
+                    '20': 'Size 20',
+                    '22': 'Size 22',
+                    '24': 'Size 24',
+                    '26': 'Size 26',
+                    '28': 'Size 28',
+                    '30': 'Size 30',
+                    '32': 'Size 32',
+                    '34': 'Size 34',
+                    '36': 'Size 36',
+                    '38': 'Size 38',
+                    '40': 'Size 40',
+                    '42': 'Size 42',
+                    '44': 'Size 44',
+                    '46': 'Size 46',
+                    '48': 'Size 48',
+                    '50': 'Size 50',
+                    '52': 'Size 52',
+                    '54': 'Size 54',
+                    '56': 'Size 56',
+                    '58': 'Size 58',
+                    '60': 'Size 60',
+                    '62': 'Size 62',
+                    '64': 'Size 64',
+                    '66': 'Size 66',
+                    '68': 'Size 68',
+                    '70': 'Size 70',
+                    '72': 'Size 72',
+                    '74': 'Size 74',
+                    '76': 'Size 76',
+                    '78': 'Size 78',
+                    '80': 'Size 80',
+                    '82': 'Size 82',
+                    '84': 'Size 84',
+                    '86': 'Size 86',
+                    '88': 'Size 88',
+                    '90': 'Size 90',
+                    '92': 'Size 92',
+                    '94': 'Size 94',
+                    '96': 'Size 96',
+                    '98': 'Size 98',
+                    '100': 'Size 100'
+                };
+                
+                // Return full name if found, otherwise return the original code
+                return sizeMap[sizeCode] || sizeCode;
+            }
+            
+            // If no sizes available, show appropriate message but still allow selection
+            if (sizes.length === 0) {
+                // This should not happen anymore since we added fallback above, but keep as safety
+                sizes = ['S', 'M', 'L', 'XL'];
+                selectedQuickViewSize = 'M';
+            }
+            
+            // Create size selection header with count
+            const sizeHeader = document.createElement('div');
+            sizeHeader.className = 'size-selection-header';
+            sizeHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            `;
+            
+            const sizeTitle = document.createElement('h4');
+            sizeTitle.textContent = 'Size';
+            sizeTitle.style.cssText = 'margin: 0; font-size: 14px; font-weight: 600;';
+            
+            const sizeCount = document.createElement('span');
+            sizeCount.id = 'quick-view-size-count';
+            sizeCount.style.cssText = 'font-size: 12px; color: #666; font-weight: 400;';
+            
+            sizeHeader.appendChild(sizeTitle);
+            sizeHeader.appendChild(sizeCount);
+            sizeSelection.appendChild(sizeHeader);
+            
+            // Create size action buttons
+            const sizeActions = document.createElement('div');
+            sizeActions.className = 'size-actions';
+            sizeActions.style.cssText = `
+                display: flex;
+                gap: 8px;
+                margin-bottom: 10px;
+                width: 100%;
+            `;
+            
+            const selectAllBtn = document.createElement('button');
+            selectAllBtn.textContent = 'Select All';
+            selectAllBtn.className = 'size-action-btn';
+            selectAllBtn.style.cssText = `
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            `;
+            
+            const clearAllBtn = document.createElement('button');
+            clearAllBtn.textContent = 'Clear';
+            clearAllBtn.className = 'size-action-btn';
+            clearAllBtn.style.cssText = `
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            `;
+            
+            // Add event listeners for action buttons
+            selectAllBtn.addEventListener('click', function() {
+                sizeSelection.querySelectorAll('.size-option').forEach(opt => {
+                    opt.classList.add('selected');
+                    opt.style.border = '2px solid #333';
+                    opt.style.backgroundColor = '#333';
+                    opt.style.color = 'white';
+                });
+                updateSizeCount();
+            });
+            
+            clearAllBtn.addEventListener('click', function() {
+                sizeSelection.querySelectorAll('.size-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.style.border = '2px solid #ddd';
+                    opt.style.backgroundColor = 'transparent';
+                    opt.style.color = '#333';
+                });
+                selectedQuickViewSize = '';
+                updateSizeCount();
+            });
+            
+            sizeActions.appendChild(selectAllBtn);
+            sizeActions.appendChild(clearAllBtn);
+            sizeSelection.appendChild(sizeActions);
+            
+            // Create size options container
+            const sizeOptionsContainer = document.createElement('div');
+            sizeOptionsContainer.className = 'size-options-container';
+            sizeOptionsContainer.style.cssText = `
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            `;
             
             sizes.forEach(size => {
                 const sizeBtn = document.createElement('div');
                 sizeBtn.className = 'size-option';
+                
+                // Use the original size code from database (S, M, L, etc.)
                 sizeBtn.textContent = size;
+                sizeBtn.setAttribute('data-size', size);
+                sizeBtn.setAttribute('title', `Size: ${size}`);
                 sizeBtn.style.cssText = `
+                    display: inline-block;
                     padding: 8px 12px;
+                    margin: 2px;
                     border: 2px solid #ddd;
                     border-radius: 4px;
                     cursor: pointer;
-                    margin: 0 5px 5px 0;
-                    display: inline-block;
+                    background-color: transparent;
+                    color: #333;
                     transition: all 0.3s ease;
                     font-size: 14px;
                     font-weight: 500;
+                    min-width: 40px;
+                    text-align: center;
                 `;
                 
-                // Add click handler
+                // Set default selected size (first available size)
+                if (sizes.indexOf(size) === 0) {
+                    sizeBtn.classList.add('selected');
+                    sizeBtn.style.border = '2px solid #333';
+                    sizeBtn.style.backgroundColor = '#333';
+                    sizeBtn.style.color = 'white';
+                    selectedQuickViewSize = size;
+                }
+                
+                // Add click handler with enhanced functionality
                 sizeBtn.addEventListener('click', function() {
-                    // Remove active class from all size options
-                    sizeSelection.querySelectorAll('.size-option').forEach(opt => {
-                        opt.style.border = '2px solid #ddd';
-                        opt.style.backgroundColor = 'transparent';
-                        opt.style.color = '#333';
-                    });
-                    
-                    // Add active class to clicked option
+                    // Toggle selection instead of single selection
+                    if (this.classList.contains('selected')) {
+                        // Deselect
+                        this.classList.remove('selected');
+                        this.style.border = '2px solid #ddd';
+                        this.style.backgroundColor = 'transparent';
+                        this.style.color = '#333';
+                        
+                        // If this was the selected size, clear it
+                        if (selectedQuickViewSize === size) {
+                            selectedQuickViewSize = '';
+                        }
+                    } else {
+                        // Select
+                        this.classList.add('selected');
                     this.style.border = '2px solid #333';
                     this.style.backgroundColor = '#333';
                     this.style.color = 'white';
+                    
+                        // Set as selected size if none selected
+                        if (!selectedQuickViewSize) {
+                    selectedQuickViewSize = size;
+                        }
+                    }
+                    
+                    // Update count display
+                    updateSizeCount();
                 });
                 
-                sizeSelection.appendChild(sizeBtn);
+                sizeOptionsContainer.appendChild(sizeBtn);
             });
+            
+            sizeSelection.appendChild(sizeOptionsContainer);
+            
+            // Initialize size count
+            updateSizeCount();
+            
+            } catch (error) {
+                console.error('Error in size selection:', error);
+                // Show a simple fallback message
+                sizeSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Size selection temporarily unavailable</div>';
+            }
         }
         
         // Show quick view
-        console.log('Showing quick view...');
+        // console.log('Showing quick view...');
         if (sidebar) {
             sidebar.classList.add('active');
-            console.log('Sidebar active class added');
+            // console.log('Sidebar active class added');
         } else {
             console.error('Sidebar not found');
         }
         if (overlay) {
             overlay.classList.add('active');
-            console.log('Overlay active class added');
+            // console.log('Overlay active class added');
         } else {
             console.error('Overlay not found');
         }
         document.body.style.overflow = 'hidden';
-        console.log('Quick view should be visible now');
+        // console.log('Quick view should be visible now');
+        
+        } catch (error) {
+            console.error('Error in openQuickView:', error);
+            // Still try to show the quickview even if there was an error
+            if (sidebar) sidebar.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
     
     function closeQuickView() {
+        // console.log('Closing quick view...');
         if (sidebar) sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
+    }
+    
+        // Make functions globally accessible
+        window.closeQuickView = closeQuickView;
+        window.openQuickView = openQuickView;
     }
     
     // Color circle functionality
@@ -381,8 +782,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Now you can click on the media to see back view
                         // The click handler will cycle through all media for this color
-                        console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
-                        console.log('Click on the media to see back view');
+                        // console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
+                        // console.log('Click on the media to see back view');
                     }
                 }
             }
@@ -411,7 +812,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nextIndex = (currentIndex + 1) % mediaForColor.length;
                     const nextMedia = mediaForColor[nextIndex];
                     
-                    console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
+                    // console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
                     
                     // Hide all media
                     allMedia.forEach(media => {
@@ -428,7 +829,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         nextMedia.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
                 } else {
-                    console.log('Only one media item for this color, no switching possible');
+                    // console.log('Only one media item for this color, no switching possible');
                 }
             }
         }
@@ -496,13 +897,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const productName = document.getElementById('quick-view-title')?.textContent || 'Product';
             
             if (productId) {
-                addToCart(productId, productName);
+                // Check if variants are selected
+                if (!selectedQuickViewColor) {
+                    showNotification('Please select a color first', 'error');
+                    return;
+                }
+                if (!selectedQuickViewSize) {
+                    // For products without sizes, use fallback
+                    selectedQuickViewSize = 'M';
+                }
+                
+                addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
             }
         }
     });
     
     function addToCart(productId, productName) {
-        console.log('Adding to cart:', productId, productName);
+        // console.log('Adding to cart:', productId, productName);
         
         // Show loading state
         const button = document.querySelector(`[data-product-id="${productId}"] .add-to-bag`);
@@ -513,8 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
         }
         
-        // Show immediate feedback notification
-        showNotification(`Adding ${productName} to cart...`, 'info');
+        // No loading notification needed
         
         // Make API call to add to cart
         fetch('../cart-api.php', {
@@ -526,16 +936,74 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Cart API response:', data);
+            // console.log('Cart API response:', data);
             
             if (data.success) {
                 // Update cart count in header
-                if (typeof updateCartCount === 'function') {
-                    updateCartCount(data.cart_count);
+                if (typeof addToCartCount === 'function') {
+                    addToCartCount();
+                }
+                
+                // Show brief success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            if (button && originalText) {
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        });
+    }
+
+    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
+        // console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+        
+        // Show loading state
+        const button = document.querySelector('#add-to-bag-quick');
+        let originalText = '';
+        if (button) {
+            originalText = button.textContent;
+            button.textContent = 'Adding...';
+            button.disabled = true;
+        }
+        
+        // Show immediate feedback notification
+        showNotification(`Adding ${productName} (${selectedColor}, ${selectedSize}) to cart...`, 'info');
+        
+        // Make API call to add to cart with selected variants
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&return_url=${encodeURIComponent(window.location.href)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            // console.log('Cart API response:', data);
+            
+            if (data.success) {
+                // Update cart count in header
+                if (typeof addToCartCount === 'function') {
+                    addToCartCount();
                 }
                 
                 // Show success notification
-                showNotification(`✓ ${productName} added to cart!`, 'success');
+                showNotification(`✓ ${productName} (${selectedColor}, ${selectedSize}) added to cart!`, 'success');
+                
+                // Close quick view after successful addition
+                setTimeout(() => {
+                    closeQuickView();
+                }, 1500);
             } else {
                 // Show error notification
                 showNotification(`✗ Error: ${data.message}`, 'error');
@@ -613,7 +1081,8 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.style.transform = 'translateX(0)';
         }, 100);
         
-        // Remove after 3 seconds
+        // Remove after 1 second for success messages, longer for others
+        const duration = type === 'success' ? 1000 : 3000; // 1 second for success, 3 seconds for others
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -621,7 +1090,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, duration);
     }
     
     // Category Modal Functionality
@@ -637,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subcategory = subcategoryItem.getAttribute('data-subcategory');
                 const href = subcategoryItem.getAttribute('href');
                 
-                console.log('Subcategory clicked:', category, subcategory);
+                // console.log('Subcategory clicked:', category, subcategory);
                 
                 // Navigate to the section if href is provided
                 if (href && href.startsWith('#')) {
@@ -656,18 +1125,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             block: 'start'
                         });
                         
-                        console.log(`Navigating to section: ${href}`);
+                        // console.log(`Navigating to section: ${href}`);
                     }
                 } else if (href && !href.startsWith('#')) {
                     // Allow navigation to full URLs (don't prevent default)
-                    console.log(`Navigating to URL: ${href}`);
+                    // console.log(`Navigating to URL: ${href}`);
                     // Close modals before navigation
                     categoryModals.forEach(modal => {
                         modal.style.opacity = '0';
                         modal.style.visibility = 'hidden';
                     });
                 } else if (subcategory) {
-                    console.log(`Navigating to ${category} > ${subcategory}`);
+                    // console.log(`Navigating to ${category} > ${subcategory}`);
                     // Fallback for other subcategories that don't have sections yet
                 }
             }
@@ -1185,7 +1654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Filter Functionality
     function initializeFilters() {
-        console.log('Initializing filters...');
+        // console.log('Initializing filters...');
         
         // Get current subcategory from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -1207,7 +1676,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
                 // Update filter state
                 if (isChecked) {
@@ -1221,7 +1690,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                console.log('Current filter state:', filterState);
+                // console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1237,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function applyFilters() {
-            console.log('Applying filters...');
+            // console.log('Applying filters...');
             
             // Show loading state
             showFilterLoading();
@@ -1253,7 +1722,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengths: filterState.lengths
             };
             
-            console.log('Sending filter data:', filterData);
+            // console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -1265,7 +1734,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Filter response:', data);
+                // console.log('Filter response:', data);
                 
                 if (data.success) {
                     updateProductGrid(data.data.products);
@@ -1285,7 +1754,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function clearAllFilters() {
-            console.log('Clearing all filters...');
+            // console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
@@ -1309,7 +1778,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.clearAllFilters = clearAllFilters;
         
         function updateProductGrid(products) {
-            console.log(`Updating product grid with ${products.length} products`);
+            // console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -1340,197 +1809,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Add products to grid
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                productGrid.appendChild(productCard);
-            });
-            
-            // Reinitialize product cards
-            const newProductCards = productGrid.querySelectorAll('.product-card');
-            newProductCards.forEach(card => {
-                initializeProductCard(card);
-            });
+            // Products will be loaded from the main page, no need to create ugly product cards
         }
         
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.setAttribute('data-product-id', product.id);
-            
-            // Build image slider HTML
-            let imageSliderHTML = '';
-            
-            // Main product images
-            const frontImage = product.front_image || product.image_front || '';
-            const backImage = product.back_image || product.image_back || '';
-            
-            // If no back image, use front image for both
-            const finalBackImage = (backImage || frontImage);
-            
-            if (frontImage) {
-                const frontExtension = frontImage.split('.').pop().toLowerCase();
-                if (['mp4', 'webm', 'mov'].includes(frontExtension)) {
-                    imageSliderHTML += `
-                        <video src="../${frontImage}" 
-                               alt="${product.name} - Front" 
-                               class="active" 
-                               data-color="${product.color}"
-                               muted
-                               loop>
-                        </video>
-                    `;
-                } else {
-                    imageSliderHTML += `
-                        <img src="../${frontImage}" 
-                             alt="${product.name} - Front" 
-                             class="active" 
-                             data-color="${product.color}">
-                    `;
-                }
-            }
-            
-            if (finalBackImage && finalBackImage !== frontImage) {
-                const backExtension = finalBackImage.split('.').pop().toLowerCase();
-                if (['mp4', 'webm', 'mov'].includes(backExtension)) {
-                    imageSliderHTML += `
-                        <video src="../${finalBackImage}" 
-                               alt="${product.name} - Back" 
-                               data-color="${product.color}"
-                               muted
-                               loop>
-                        </video>
-                    `;
-                } else {
-                    imageSliderHTML += `
-                        <img src="../${finalBackImage}" 
-                             alt="${product.name} - Back" 
-                             data-color="${product.color}">
-                    `;
-                }
-            }
-            
-            // Color variant images
-            if (product.color_variants && product.color_variants.length > 0) {
-                product.color_variants.forEach(variant => {
-                    const variantFrontImage = variant.front_image || '';
-                    const variantBackImage = variant.back_image || '';
-                    const finalVariantBackImage = (variantBackImage || variantFrontImage);
-                    
-                    if (variantFrontImage) {
-                        const variantFrontExtension = variantFrontImage.split('.').pop().toLowerCase();
-                        if (['mp4', 'webm', 'mov'].includes(variantFrontExtension)) {
-                            imageSliderHTML += `
-                                <video src="../${variantFrontImage}" 
-                                       alt="${product.name} - ${variant.name} - Front" 
-                                       data-color="${variant.color}"
-                                       muted
-                                       loop>
-                                </video>
-                            `;
-                        } else {
-                            imageSliderHTML += `
-                                <img src="../${variantFrontImage}" 
-                                     alt="${product.name} - ${variant.name} - Front" 
-                                     data-color="${variant.color}">
-                            `;
-                        }
-                    }
-                    
-                    if (finalVariantBackImage && finalVariantBackImage !== variantFrontImage) {
-                        const variantBackExtension = finalVariantBackImage.split('.').pop().toLowerCase();
-                        if (['mp4', 'webm', 'mov'].includes(variantBackExtension)) {
-                            imageSliderHTML += `
-                                <video src="../${finalVariantBackImage}" 
-                                       alt="${product.name} - ${variant.name} - Back" 
-                                       data-color="${variant.color}"
-                                       muted
-                                       loop>
-                                </video>
-                            `;
-                        } else {
-                            imageSliderHTML += `
-                                <img src="../${finalVariantBackImage}" 
-                                     alt="${product.name} - ${variant.name} - Back" 
-                                     data-color="${variant.color}">
-                            `;
-                        }
-                    }
-                });
-            }
-            
-            // Build color options HTML
-            let colorOptionsHTML = '';
-            
-            // Main product color
-            if (product.color) {
-                colorOptionsHTML += `
-                    <span class="color-circle active" 
-                          style="background-color: ${product.color};" 
-                          title="${product.color}" 
-                          data-color="${product.color}"></span>
-                `;
-            }
-            
-            // Color variant colors
-            if (product.color_variants && product.color_variants.length > 0) {
-                product.color_variants.forEach(variant => {
-                    if (variant.color) {
-                        colorOptionsHTML += `
-                            <span class="color-circle" 
-                                  style="background-color: ${variant.color};" 
-                                  title="${variant.name}" 
-                                  data-color="${variant.color}"></span>
-                        `;
-                    }
-                });
-            }
-            
-            card.innerHTML = `
-                <div class="product-image">
-                    <div class="image-slider">
-                        ${imageSliderHTML}
-                    </div>
-                    <button class="heart-button">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <div class="product-actions">
-                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                        ${product.available ? 
-                            '<button class="add-to-bag">Add To Bag</button>' : 
-                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>'
-                        }
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="color-options">
-                        ${colorOptionsHTML}
-                    </div>
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${product.price}</div>
-                    ${!product.available ? 
-                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' : 
-                        (product.stock <= 5 && product.stock > 0 ? 
-                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : 
-                            ''
-                        )
-                    }
-                </div>
-            `;
-            
-            return card;
-        }
         
-        function getProductImage(product) {
-            if (product.front_image) {
-                return product.front_image;
-            } else if (product.back_image) {
-                return product.back_image;
-            } else if (product.color_variants && product.color_variants.length > 0) {
-                return product.color_variants[0].front_image || product.color_variants[0].back_image || 'img/default-product.jpg';
-            }
-            return 'img/default-product.jpg';
-        }
         
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
@@ -1601,46 +1883,342 @@ document.addEventListener('DOMContentLoaded', function() {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
+            
+            /* Enhanced Size Selection Styles */
+            .size-selection-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                padding: 5px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .size-actions {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .size-action-btn {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            }
+            
+            .size-action-btn:hover {
+                background: #e9ecef;
+                border-color: #dee2e6;
+            }
+            
+            .size-options-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                margin-top: 5px;
+            }
+            
+            .size-option {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 2px;
+                border: 2px solid #ddd;
+                border-radius: 4px;
+                cursor: pointer;
+                background-color: transparent;
+                color: #333;
+                transition: all 0.3s ease;
+                font-size: 14px;
+                font-weight: 500;
+                min-width: 40px;
+                text-align: center;
+                user-select: none;
+                white-space: nowrap;
+            }
+            
+            .size-option:hover {
+                border-color: #999;
+                background-color: #f8f9fa;
+            }
+            
+            .size-option.selected {
+                border: 2px solid #333;
+                background-color: #333;
+                color: white;
+            }
+            
+            .size-option.selected:hover {
+                background-color: #555;
+            }
+            
+            /* Quick View Size Count */
+            #quick-view-size-count {
+                font-size: 12px;
+                color: #666;
+                font-weight: 400;
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .size-option {
+                    min-width: 35px;
+                    padding: 6px 10px;
+                    font-size: 13px;
+                }
+                
+                .size-action-btn {
+                    padding: 5px 10px;
+                    font-size: 10px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .size-option {
+                    min-width: 32px;
+                    padding: 5px 8px;
+                    font-size: 12px;
+                }
+            }
         `;
         document.head.appendChild(style);
     }
     
-    // Size Filter Enhancement Functions
+    // Enhanced Size Filter Functions - Works with Multiple Forms
     function selectAllSizes() {
-        console.log('Selecting all sizes...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-        sizeCheckboxes.forEach(checkbox => {
+        // console.log('Selecting all sizes...');
+        
+        // Handle sidebar filter sizes
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
+        sidebarSizeCheckboxes.forEach(checkbox => {
             if (!checkbox.checked) {
                 checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
             }
         });
-    }
-    
-    function clearSizeFilters() {
-        console.log('Clearing size filters...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-        sizeCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                checkbox.dispatchEvent(new Event('change'));
+        
+        // Handle quickview size selections for all open quickviews
+        const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizeSelections.forEach(sizeOption => {
+            if (!sizeOption.classList.contains('selected')) {
+                sizeOption.classList.add('selected');
+                sizeOption.style.border = '2px solid #333';
+                sizeOption.style.backgroundColor = '#333';
+                sizeOption.style.color = 'white';
             }
         });
-    }
-    
-    function updateSizeCount() {
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
-        const sizeCountElement = document.getElementById('size-count');
-        if (sizeCountElement) {
-            const count = sizeCheckboxes.length;
-            sizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            // console.log('Size selection changed, updating filters...');
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
         }
     }
     
-    // Make functions globally accessible
+    function clearSizeFilters() {
+        // console.log('Clearing size filters...');
+        
+        // Handle sidebar filter sizes
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
+        sidebarSizeCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            }
+        });
+        
+        // Handle quickview size selections for all open quickviews
+        const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizeSelections.forEach(sizeOption => {
+            if (sizeOption.classList.contains('selected')) {
+                sizeOption.classList.remove('selected');
+                sizeOption.style.border = '2px solid #ddd';
+                sizeOption.style.backgroundColor = 'transparent';
+                sizeOption.style.color = '#333';
+            }
+        });
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            // console.log('Size selection cleared, updating filters...');
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
+    }
+    
+    function updateSizeCount() {
+        // Update sidebar size count
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        const sidebarSizeCountElement = document.getElementById('size-count');
+        if (sidebarSizeCountElement) {
+            const count = sidebarSizeCheckboxes.length;
+            sidebarSizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
+        }
+        
+        // Update quickview size count if available
+        const quickviewSizeCountElement = document.getElementById('quick-view-size-count');
+        if (quickviewSizeCountElement) {
+            const quickviewSelectedSizes = document.querySelectorAll('#quick-view-size-selection .size-option.selected');
+            const quickviewCount = quickviewSelectedSizes.length;
+            quickviewSizeCountElement.textContent = quickviewCount > 0 ? `(${quickviewCount} selected)` : '';
+        }
+    }
+    
+    // Enhanced global functions for multiple form handling
     window.selectAllSizes = selectAllSizes;
     window.clearSizeFilters = clearSizeFilters;
     window.updateSizeCount = updateSizeCount;
+    
+    // Global function to handle size selection across all forms
+    window.handleSizeSelection = function(sizeElement, isSelected) {
+        if (isSelected) {
+            sizeElement.classList.add('selected');
+            sizeElement.style.border = '2px solid #333';
+            sizeElement.style.backgroundColor = '#333';
+            sizeElement.style.color = 'white';
+        } else {
+            sizeElement.classList.remove('selected');
+            sizeElement.style.border = '2px solid #ddd';
+            sizeElement.style.backgroundColor = 'transparent';
+            sizeElement.style.color = '#333';
+        }
+        updateSizeCount();
+    };
+    
+    // Global function to get all selected sizes from all forms
+    window.getAllSelectedSizes = function() {
+        const selectedSizes = [];
+        
+        // Get from sidebar filters
+        const sidebarSelected = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        sidebarSelected.forEach(checkbox => {
+            selectedSizes.push(checkbox.value);
+        });
+        
+        // Get from quickview
+        const quickviewSelected = document.querySelectorAll('#quick-view-size-selection .size-option.selected');
+        quickviewSelected.forEach(sizeOption => {
+            selectedSizes.push(sizeOption.getAttribute('data-size'));
+        });
+        
+        return [...new Set(selectedSizes)]; // Remove duplicates
+    };
+    
+    // Global function to reset all size selections
+    window.resetAllSizeSelections = function() {
+        // Reset sidebar filters
+        const sidebarCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        sidebarCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            const changeEvent = new Event('change', { bubbles: true });
+            checkbox.dispatchEvent(changeEvent);
+        });
+        
+        // Reset quickview selections
+        const quickviewSizes = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizes.forEach(sizeOption => {
+            sizeOption.classList.remove('selected');
+            sizeOption.style.border = '2px solid #ddd';
+            sizeOption.style.backgroundColor = 'transparent';
+            sizeOption.style.color = '#333';
+        });
+        
+        updateSizeCount();
+    };
+    
+    // Global function to convert size codes to full names
+    window.getSizeName = function(sizeCode) {
+        const sizeMap = {
+            'XXS': 'Extra Extra Small',
+            'XS': 'Extra Small', 
+            'S': 'Small',
+            'M': 'Medium',
+            'L': 'Large',
+            'XL': 'Extra Large',
+            'XXL': 'Extra Extra Large',
+            'XXXL': 'Extra Extra Extra Large',
+            '0': 'Size 0',
+            '2': 'Size 2',
+            '4': 'Size 4',
+            '6': 'Size 6',
+            '8': 'Size 8',
+            '10': 'Size 10',
+            '12': 'Size 12',
+            '14': 'Size 14',
+            '16': 'Size 16',
+            '18': 'Size 18',
+            '20': 'Size 20',
+            '22': 'Size 22',
+            '24': 'Size 24',
+            '26': 'Size 26',
+            '28': 'Size 28',
+            '30': 'Size 30',
+            '32': 'Size 32',
+            '34': 'Size 34',
+            '36': 'Size 36',
+            '38': 'Size 38',
+            '40': 'Size 40',
+            '42': 'Size 42',
+            '44': 'Size 44',
+            '46': 'Size 46',
+            '48': 'Size 48',
+            '50': 'Size 50',
+            '52': 'Size 52',
+            '54': 'Size 54',
+            '56': 'Size 56',
+            '58': 'Size 58',
+            '60': 'Size 60',
+            '62': 'Size 62',
+            '64': 'Size 64',
+            '66': 'Size 66',
+            '68': 'Size 68',
+            '70': 'Size 70',
+            '72': 'Size 72',
+            '74': 'Size 74',
+            '76': 'Size 76',
+            '78': 'Size 78',
+            '80': 'Size 80',
+            '82': 'Size 82',
+            '84': 'Size 84',
+            '86': 'Size 86',
+            '88': 'Size 88',
+            '90': 'Size 90',
+            '92': 'Size 92',
+            '94': 'Size 94',
+            '96': 'Size 96',
+            '98': 'Size 98',
+            '100': 'Size 100'
+        };
+        
+        // Return full name if found, otherwise return the original code
+        return sizeMap[sizeCode] || sizeCode;
+    };
     
     // Add event listener for size count updates
     document.addEventListener('change', function(e) {
@@ -1653,4 +2231,55 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         updateSizeCount();
     });
+    
+    // Enhanced fallback functions for multiple forms
+    if (!window.selectAllSizes) {
+        window.selectAllSizes = function() {
+            // console.log('Fallback selectAllSizes called...');
+            
+            // Handle sidebar filter sizes
+            const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sidebarSizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            
+            // Handle quickview size selections
+            const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+            quickviewSizeSelections.forEach(sizeOption => {
+                sizeOption.classList.add('selected');
+                sizeOption.style.border = '2px solid #333';
+                sizeOption.style.backgroundColor = '#333';
+                sizeOption.style.color = 'white';
+            });
+            
+            updateSizeCount();
+        };
+    }
+    
+    if (!window.clearSizeFilters) {
+        window.clearSizeFilters = function() {
+            // console.log('Fallback clearSizeFilters called...');
+            
+            // Handle sidebar filter sizes
+            const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sidebarSizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            
+            // Handle quickview size selections
+            const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+            quickviewSizeSelections.forEach(sizeOption => {
+                sizeOption.classList.remove('selected');
+                sizeOption.style.border = '2px solid #ddd';
+                sizeOption.style.backgroundColor = 'transparent';
+                sizeOption.style.color = '#333';
+            });
+            
+            updateSizeCount();
+        };
+    }
 });

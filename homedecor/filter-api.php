@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include required files
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 
 $productModel = new Product();
@@ -47,12 +47,12 @@ try {
                 // Get subcategory from URL or input
                 $subcategory = $input['subcategory'] ?? '';
                 
-                // Base filter - only men's clothing
-                $filters['category'] = "Men's Clothing";
+                // Base filter - only home decor products
+                $filters['category'] = "Home Decor";
                 
                 // Apply subcategory filter if provided (but only if no category filters are selected)
                 if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
-                    $filters['subcategory'] = ucfirst($subcategory);
+                    $filters['subcategory'] = $subcategory;
                 }
                 
                 // Size filter
@@ -87,20 +87,17 @@ try {
                             case 'on-sale':
                                 $priceFilters[] = ['sale' => true];
                                 break;
-                            case '0-25':
-                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 25]];
+                            case '0-300':
+                                $priceFilters[] = ['price' => ['$gte' => 0, '$lte' => 300]];
                                 break;
-                            case '25-50':
-                                $priceFilters[] = ['price' => ['$gte' => 25, '$lte' => 50]];
+                            case '300-600':
+                                $priceFilters[] = ['price' => ['$gte' => 300, '$lte' => 600]];
                                 break;
-                            case '50-75':
-                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 75]];
+                            case '600-900':
+                                $priceFilters[] = ['price' => ['$gte' => 600, '$lte' => 900]];
                                 break;
-                            case '75-100':
-                                $priceFilters[] = ['price' => ['$gte' => 75, '$lte' => 100]];
-                                break;
-                            case '100+':
-                                $priceFilters[] = ['price' => ['$gte' => 100]];
+                            case '900+':
+                                $priceFilters[] = ['price' => ['$gte' => 900]];
                                 break;
                         }
                     }
@@ -109,9 +106,51 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
+                // Category filter (subcategories) - handle both 'categories' and 'category' input
+                $categoryFilters = [];
                 if (!empty($input['categories']) && is_array($input['categories'])) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
+                    $categoryFilters = array_merge($categoryFilters, $input['categories']);
+                }
+                if (!empty($input['category']) && is_array($input['category'])) {
+                    $categoryFilters = array_merge($categoryFilters, $input['category']);
+                }
+                if (!empty($categoryFilters)) {
+                    // Use exact match for subcategory values
+                    $andConditions[] = ['subcategory' => ['$in' => $categoryFilters]];
+                }
+                
+                // Material filter
+                if (!empty($input['material'])) {
+                    if (is_array($input['material'])) {
+                        $andConditions[] = ['material' => ['$in' => $input['material']]];
+                    } else {
+                        $andConditions[] = ['material' => $input['material']];
+                    }
+                }
+                
+                // Availability filter
+                if (!empty($input['availability'])) {
+                    $availabilityFilters = [];
+                    $availabilities = is_array($input['availability']) ? $input['availability'] : [$input['availability']];
+                    
+                    foreach ($availabilities as $availability) {
+                        switch ($availability) {
+                            case 'in-stock':
+                                $availabilityFilters[] = ['available' => true];
+                                break;
+                            case 'on-sale':
+                                $availabilityFilters[] = ['sale' => true];
+                                break;
+                            case 'new-arrival':
+                                // Assuming new arrivals are products created in the last 30 days
+                                $thirtyDaysAgo = new DateTime('-30 days');
+                                $availabilityFilters[] = ['createdAt' => ['$gte' => new MongoDB\BSON\UTCDateTime($thirtyDaysAgo->getTimestamp() * 1000)]];
+                                break;
+                        }
+                    }
+                    if (!empty($availabilityFilters)) {
+                        $andConditions[] = ['$or' => $availabilityFilters];
+                    }
                 }
                 
                 // Dress length filter
@@ -174,8 +213,8 @@ try {
                 break;
                 
             case 'get_filter_options':
-                // Get all men's clothing products to extract filter options
-                $allProducts = $productModel->getByCategory("Men's Clothing");
+                // Get all home decor products to extract filter options
+                $allProducts = $productModel->getByCategory("Home Decor");
                 
                 $filterOptions = [
                     'sizes' => [],
@@ -183,11 +222,10 @@ try {
                     'categories' => [],
                     'price_ranges' => [
                         'on-sale' => 0,
-                        '0-25' => 0,
-                        '25-50' => 0,
-                        '50-75' => 0,
-                        '75-100' => 0,
-                        '100+' => 0
+                        '0-300' => 0,
+                        '300-600' => 0,
+                        '600-900' => 0,
+                        '900+' => 0
                     ]
                 ];
                 
@@ -228,16 +266,14 @@ try {
                     if ($product['sale'] ?? false) {
                         $filterOptions['price_ranges']['on-sale']++;
                     }
-                    if ($price >= 0 && $price <= 25) {
-                        $filterOptions['price_ranges']['0-25']++;
-                    } elseif ($price > 25 && $price <= 50) {
-                        $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 75) {
-                        $filterOptions['price_ranges']['50-75']++;
-                    } elseif ($price > 75 && $price <= 100) {
-                        $filterOptions['price_ranges']['75-100']++;
-                    } elseif ($price > 100) {
-                        $filterOptions['price_ranges']['100+']++;
+                    if ($price >= 0 && $price <= 300) {
+                        $filterOptions['price_ranges']['0-300']++;
+                    } elseif ($price > 300 && $price <= 600) {
+                        $filterOptions['price_ranges']['300-600']++;
+                    } elseif ($price > 600 && $price <= 900) {
+                        $filterOptions['price_ranges']['600-900']++;
+                    } elseif ($price > 900) {
+                        $filterOptions['price_ranges']['900+']++;
                     }
                 }
                 

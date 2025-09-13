@@ -1947,32 +1947,6 @@ transform: scale(1.03);
     display: block;
 }
 
-/* Chat Button */
-.chat-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: #000;
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-}
-
-.chat-button:hover {
-    transform: scale(1.1);
-}
-
-.chat-button i {
-    font-size: 20px;
-}
 
 /* Main Content Styles */
 .main-content {
@@ -2870,6 +2844,40 @@ transform: scale(1.03);
     color: #666;
     line-height: 1.6;
     font-size: 14px;
+}
+
+/* Stock Status */
+.quick-view-stock {
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.quick-view-stock.in-stock {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.quick-view-stock.out-of-stock {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Sale Price Styles */
+.sale-price {
+    color: #e53e3e;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.9em;
 }
 
 /* Responsive Design */

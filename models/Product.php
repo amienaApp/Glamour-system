@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 
 class Product {
     private $collection;
@@ -50,6 +50,10 @@ class Product {
             // No need to manually convert - just let MongoDB handle it
         }
         
+        // Add timestamps
+        $productData['createdAt'] = new MongoDB\BSON\UTCDateTime();
+        $productData['updatedAt'] = new MongoDB\BSON\UTCDateTime();
+        
         $result = $this->collection->insertOne($productData);
         return $result->getInsertedId();
     }
@@ -63,6 +67,9 @@ class Product {
             
             // MongoDB will automatically convert arrays to BSONArray when updating
             // No need to manually convert - just let MongoDB handle it
+            
+            // Add updatedAt timestamp
+            $updateData['updatedAt'] = new MongoDB\BSON\UTCDateTime();
             
             $result = $this->collection->updateOne(['_id' => $id], ['$set' => $updateData]);
             return $result->getModifiedCount() > 0;
@@ -90,7 +97,8 @@ class Product {
     }
 
     public function getBySubcategory($subcategory) {
-        return $this->getAll(['subcategory' => $subcategory]);
+        // Use case-insensitive search for subcategory
+        return $this->getAll(['subcategory' => new MongoDB\BSON\Regex('^' . preg_quote($subcategory, '/') . '$', 'i')]);
     }
 
     // Special Types
@@ -174,6 +182,49 @@ class Product {
                 'description' => 'Classic white formal shirt for business',
                 'featured' => true,
                 'sale' => false
+            ],
+            [
+                'name' => 'Classic Cotton T-Shirt',
+                'price' => 24.99,
+                'color' => '#FFFFFF',
+                'category' => "Men's Clothing",
+                'subcategory' => 'T-Shirts',
+                'images' => ['front' => 'img/men/t-shirts/1.jpg', 'back' => 'img/men/t-shirts/1.1.jpg'],
+                'description' => 'Comfortable cotton t-shirt perfect for everyday wear',
+                'featured' => true,
+                'sale' => false,
+                'sizes' => ['S', 'M', 'L', 'XL', 'XXL'],
+                'available' => true,
+                'stock' => 50
+            ],
+            [
+                'name' => 'Graphic Print T-Shirt',
+                'price' => 29.99,
+                'color' => '#000000',
+                'category' => "Men's Clothing",
+                'subcategory' => 'T-Shirts',
+                'images' => ['front' => 'img/men/t-shirts/2.jpg', 'back' => 'img/men/t-shirts/2.1.jpg'],
+                'description' => 'Stylish graphic print t-shirt with modern design',
+                'featured' => false,
+                'sale' => true,
+                'salePrice' => 19.99,
+                'sizes' => ['S', 'M', 'L', 'XL'],
+                'available' => true,
+                'stock' => 25
+            ],
+            [
+                'name' => 'V-Neck T-Shirt',
+                'price' => 22.99,
+                'color' => '#2E86AB',
+                'category' => "Men's Clothing",
+                'subcategory' => 'T-Shirts',
+                'images' => ['front' => 'img/men/t-shirts/3.jpg', 'back' => 'img/men/t-shirts/3.1.jpg'],
+                'description' => 'Elegant v-neck t-shirt in navy blue',
+                'featured' => false,
+                'sale' => false,
+                'sizes' => ['M', 'L', 'XL', 'XXL'],
+                'available' => true,
+                'stock' => 30
             ],
             [
                 'name' => 'Leather Handbag',

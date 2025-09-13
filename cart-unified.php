@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once 'config/mongodb.php';
+require_once 'config1/mongodb.php';
 require_once 'models/Cart.php';
 require_once 'models/Product.php';
 require_once 'models/Order.php';
@@ -58,10 +58,15 @@ if ($mode === 'add' && $productId) {
 }
 
 // Function to get the best available image for a product
-function getProductImage($product, $itemColor = '') {
+function getProductImage($product, $itemColor = '', $variantImage = '') {
     $imagePath = '';
     
-    // First, try to get image from color variants if color is specified
+    // First, use the stored variant image if available
+    if (!empty($variantImage)) {
+        $imagePath = $variantImage;
+    }
+    
+    // If no variant image, try to get image from color variants if color is specified
     if (!empty($itemColor) && isset($product['color_variants']) && is_array($product['color_variants'])) {
         foreach ($product['color_variants'] as $variant) {
             if (isset($variant['color']) && $variant['color'] === $itemColor) {
@@ -755,7 +760,7 @@ function getProductImage($product, $itemColor = '') {
                 <div class="cart-items">
                     <?php foreach ($cart['items'] as $item): ?>
                     <div class="cart-item">
-                        <img src="<?php echo getProductImage($item['product'], $item['color'] ?? ''); ?>" 
+                        <img src="<?php echo getProductImage($item['product'], $item['color'] ?? '', $item['variant_image'] ?? ''); ?>" 
                              alt="<?php echo htmlspecialchars($item['product']['name']); ?>">
                         
                         <div class="item-details">
@@ -818,7 +823,7 @@ function getProductImage($product, $itemColor = '') {
         <div class="content-section">
             <div class="product-section">
                 <div>
-                    <img src="<?php echo getProductImage($product); ?>" 
+                    <img src="<?php echo getProductImage($product, '', ''); ?>" 
                          alt="<?php echo htmlspecialchars($product['name']); ?>" 
                          class="product-image">
                 </div>

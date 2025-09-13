@@ -7,7 +7,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 
 $productModel = new Product();
@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (!empty($errors)) {
-            error_log('Bulk delete errors: ' . implode(', ', $errors));
         }
     }
 }

@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once 'config/mongodb.php';
+require_once 'config1/mongodb.php';
 require_once 'models/Cart.php';
 require_once 'models/Order.php';
 require_once 'models/Payment.php';

@@ -68,12 +68,6 @@
         </div>
     </div>
 
-    <!-- Chat Widget -->
-    <div class="chat-widget" id="chatWidget">
-        <div class="chat-icon">
-            <i class="fas fa-comments"></i>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script src="assets/js/main.js"></script>

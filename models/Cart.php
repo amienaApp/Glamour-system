@@ -5,7 +5,7 @@
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/Product.php'; // Required for getById in getCart
 
 class Cart {
@@ -48,7 +48,7 @@ class Cart {
     /**
      * Add item to cart
      */
-    public function addToCart($userId, $productId, $quantity = 1, $color = '', $size = '', $productData = null) {
+    public function addToCart($userId, $productId, $quantity = 1, $color = '', $size = '', $additionalData = null) {
         // Convert string ID to ObjectId if needed
         if (is_string($productId)) {
             try {
@@ -76,13 +76,31 @@ class Cart {
             
             if (!$productExists) {
                 // Add new product to cart
-                $existingCart['items'][] = [
+                $cartItem = [
                     'product_id' => $productId,
                     'quantity' => $quantity,
                     'color' => $color,
                     'size' => $size,
                     'added_at' => date('Y-m-d H:i:s')
                 ];
+                
+                // Add variant-specific data if provided
+                if ($additionalData) {
+                    if (isset($additionalData['price'])) {
+                        $cartItem['variant_price'] = $additionalData['price'];
+                    }
+                    if (isset($additionalData['variant_name'])) {
+                        $cartItem['variant_name'] = $additionalData['variant_name'];
+                    }
+                    if (isset($additionalData['variant_stock'])) {
+                        $cartItem['variant_stock'] = $additionalData['variant_stock'];
+                    }
+                    if (isset($additionalData['variant_image'])) {
+                        $cartItem['variant_image'] = $additionalData['variant_image'];
+                    }
+                }
+                
+                $existingCart['items'][] = $cartItem;
             }
             
             // Update cart
@@ -95,17 +113,33 @@ class Cart {
             );
         } else {
             // Create new cart
+            $cartItem = [
+                'product_id' => $productId,
+                'quantity' => $quantity,
+                'color' => $color,
+                'size' => $size,
+                'added_at' => date('Y-m-d H:i:s')
+            ];
+            
+            // Add variant-specific data if provided
+            if ($additionalData) {
+                if (isset($additionalData['price'])) {
+                    $cartItem['variant_price'] = $additionalData['price'];
+                }
+                if (isset($additionalData['variant_name'])) {
+                    $cartItem['variant_name'] = $additionalData['variant_name'];
+                }
+                if (isset($additionalData['variant_stock'])) {
+                    $cartItem['variant_stock'] = $additionalData['variant_stock'];
+                }
+                if (isset($additionalData['variant_image'])) {
+                    $cartItem['variant_image'] = $additionalData['variant_image'];
+                }
+            }
+            
             $cartData = [
                 'user_id' => $userId,
-                'items' => [
-                    [
-                        'product_id' => $productId,
-                        'quantity' => $quantity,
-                        'color' => $color,
-                        'size' => $size,
-                        'added_at' => date('Y-m-d H:i:s')
-                    ]
-                ],
+                'items' => [$cartItem],
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ];
@@ -153,7 +187,14 @@ class Cart {
             $product = $productModel->getById($productId);
             if ($product) {
                 $item['product'] = $product;
-                $item['subtotal'] = $product['price'] * $item['quantity'];
+                
+                // Use variant price if available, otherwise use product price
+                $itemPrice = $product['price'];
+                if (isset($item['variant_price']) && $item['variant_price'] > 0) {
+                    $itemPrice = $item['variant_price'];
+                }
+                
+                $item['subtotal'] = $itemPrice * $item['quantity'];
                 $total += $item['subtotal'];
                 $itemCount += $item['quantity'];
                 $items[] = $item;
@@ -345,7 +386,6 @@ class Cart {
             );
             return $result->getModifiedCount() > 0;
         } catch (Exception $e) {
-            error_log('Cart transfer failed: ' . $e->getMessage());
             return false;
         }
     }

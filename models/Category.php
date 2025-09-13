@@ -5,7 +5,7 @@
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 
 class Category {
     private $collection;
@@ -50,7 +50,26 @@ class Category {
     // Subcategory Operations
     public function getSubcategories($categoryName) {
         $category = $this->getByName($categoryName);
-        return $category['subcategories'] ?? [];
+        if (!$category || !isset($category['subcategories'])) {
+            return [];
+        }
+        
+        // Handle both old format (array of strings) and new format (array of objects/BSONDocument)
+        $subcategories = [];
+        foreach ($category['subcategories'] as $sub) {
+            if (is_array($sub) && isset($sub['name'])) {
+                // New format: array with name and sub_subcategories
+                $subcategories[] = $sub['name'];
+            } elseif (is_object($sub) && isset($sub['name'])) {
+                // New format: BSONDocument with name and sub_subcategories
+                $subcategories[] = $sub['name'];
+            } else {
+                // Old format: just a string
+                $subcategories[] = $sub;
+            }
+        }
+        
+        return $subcategories;
     }
 
     public function addSubcategory($categoryName, $subcategoryName) {
@@ -65,6 +84,169 @@ class Category {
         $result = $this->collection->updateOne(
             ['name' => $categoryName],
             ['$pull' => ['subcategories' => $subcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    // Sub-subcategory Operations (for Beauty & Cosmetics)
+    public function getSubSubcategories($categoryName, $subcategoryName) {
+        $category = $this->getByName($categoryName);
+        if (!$category || !isset($category['subcategories'])) {
+        return [];
+    }
+        
+        // Find the subcategory and return its sub-subcategories
+        foreach ($category['subcategories'] as $sub) {
+            // Handle both arrays and BSONDocument objects
+            $subName = null;
+            $subSubcategories = null;
+            
+            if (is_array($sub)) {
+                $subName = $sub['name'] ?? null;
+                $subSubcategories = $sub['sub_subcategories'] ?? null;
+            } elseif (is_object($sub)) {
+                $subName = $sub['name'] ?? null;
+                $subSubcategories = $sub['sub_subcategories'] ?? null;
+            }
+            
+            if ($subName === $subcategoryName && $subSubcategories) {
+                
+                // Convert BSONDocument/BSONArray to array if needed
+                if (is_object($subSubcategories)) {
+                    // For BSONDocument/BSONArray, convert to regular array
+                    $subSubcategories = iterator_to_array($subSubcategories);
+                }
+                
+                // Handle nested structure (like Kids' Clothing) vs flat structure (like Beauty)
+                $flattenedSubSubcategories = [];
+                
+                if (is_array($subSubcategories)) {
+                    foreach ($subSubcategories as $key => $value) {
+                        // Convert BSONArray to regular array if needed
+                        if (is_object($value)) {
+                            $value = iterator_to_array($value);
+                        }
+                        
+                        if (is_array($value)) {
+                            // Nested structure: ['Category Name' => ['item1', 'item2', ...]]
+                            foreach ($value as $item) {
+                                // Convert BSONString to regular string if needed
+                                if (is_object($item)) {
+                                    $item = (string) $item;
+                                }
+                                $flattenedSubSubcategories[] = $item;
+                            }
+                        } else {
+                            // Flat structure: ['item1', 'item2', ...]
+                            // Convert BSONString to regular string if needed
+                            if (is_object($value)) {
+                                $value = (string) $value;
+                            }
+                            $flattenedSubSubcategories[] = $value;
+                        }
+                    }
+                }
+                
+                return $flattenedSubSubcategories;
+            }
+        }
+        
+        return [];
+    }
+
+    public function addSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$push' => ['subcategories.$.sub_subcategories' => $subSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    public function removeSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$pull' => ['subcategories.$.sub_subcategories' => $subSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    // Deeper Sub-subcategory Operations (for Makeup items)
+    public function getDeeperSubSubcategories($categoryName, $subcategoryName, $subSubcategoryName) {
+        $category = $this->getByName($categoryName);
+        if (!$category || !isset($category['subcategories'])) {
+            return [];
+        }
+        
+        // Find the subcategory and return its deeper sub-subcategories
+        foreach ($category['subcategories'] as $sub) {
+            // Handle both arrays and BSONDocument objects
+            $subName = null;
+            $deeperSubSubcategories = null;
+            
+            if (is_array($sub)) {
+                $subName = $sub['name'] ?? null;
+                $deeperSubSubcategories = $sub['deeper_sub_subcategories'] ?? null;
+            } elseif (is_object($sub)) {
+                $subName = $sub['name'] ?? null;
+                $deeperSubSubcategories = $sub['deeper_sub_subcategories'] ?? null;
+            }
+            
+            if ($subName === $subcategoryName && $deeperSubSubcategories) {
+                // Convert BSONDocument/BSONArray to array if needed
+                if (is_object($deeperSubSubcategories)) {
+                    $deeperSubSubcategories = iterator_to_array($deeperSubSubcategories);
+                }
+                
+                // Get the specific deeper sub-subcategories for the given sub-subcategory
+                if (is_array($deeperSubSubcategories) && isset($deeperSubSubcategories[$subSubcategoryName])) {
+                    $specificDeeper = $deeperSubSubcategories[$subSubcategoryName];
+                    
+                    // Convert BSONArray to regular array if needed
+                    if (is_object($specificDeeper)) {
+                        $specificDeeper = iterator_to_array($specificDeeper);
+                    }
+                    
+                    // Convert BSONString to regular string if needed
+                    $result = [];
+                    foreach ($specificDeeper as $item) {
+                        if (is_object($item)) {
+                            $item = (string) $item;
+                        }
+                        $result[] = $item;
+                    }
+                    
+                    return $result;
+                }
+            }
+        }
+        
+        return [];
+    }
+
+    public function addDeeperSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName, $deeperSubSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$push' => ["subcategories.$.deeper_sub_subcategories.$subSubcategoryName" => $deeperSubSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    public function removeDeeperSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName, $deeperSubSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$pull' => ["subcategories.$.deeper_sub_subcategories.$subSubcategoryName" => $deeperSubSubcategoryName]]
         );
         return $result->getModifiedCount() > 0;
     }
@@ -125,15 +307,50 @@ class Category {
             ],
             [
                 'name' => "Men's Clothing",
-                'subcategories' => ['Shirts', 'Pants', 'Jackets', 'Activewear', 'Underwear', 'Swimwear'],
+                'subcategories' => ['Shirts', 'T-Shirts', 'Pants', 'Jackets', 'Activewear', 'Underwear', 'Swimwear'],
                 'description' => 'Stylish clothing for men',
                 'icon' => 'fa-male'
             ],
             [
                 'name' => "Kids' Clothing",
-                'subcategories' => ['Boys', 'Girls', 'Baby', 'Toddler'],
-                'description' => 'Adorable clothing for children',
-                'icon' => 'fa-child'
+                'subcategories' => [
+                    [
+                        'name' => 'Boys',
+                        'sub_subcategories' => [
+                            'T-Shirts', 'Polo Shirts', 'Button-Down Shirts', 'Tank Tops', 'Long Sleeve Tees',
+                            'Jeans', 'Cargo Pants', 'Dress Pants', 'Shorts', 'Sweatpants'
+                        ]
+                    ],
+                    [
+                        'name' => 'Girls',
+                        'sub_subcategories' => [
+                            'Dresses', 'Tops', 'Blouses', 'T-Shirts', 'Tank Tops',
+                            'Jeans', 'Leggings', 'Skirts', 'Shorts', 'Pants'
+                        ]
+                    ],
+                    [
+                        'name' => 'Toddlers',
+                        'sub_subcategories' => [
+                            'T-Shirts', 'Polo Shirts', 'Long Sleeve Tops', 'Tank Tops', 'Hoodies',
+                            'Pants', 'Shorts', 'Dresses', 'Pajamas', 'Sweaters'
+                        ]
+                    ],
+                    [
+                        'name' => 'Baby',
+                        'sub_subcategories' => [
+                            'Onesies', 'Bodysuits', 'Sleepwear', 'Tops', 'T-Shirts',
+                            'Pants', 'Dresses', 'Rompers', 'Jumpsuits', 'Sleep Gowns'
+                        ]
+                    ]
+                ],
+                'description' => 'Professional kids clothing for all occasions',
+                'icon' => 'fa-child',
+                'age_groups' => ['0-3 Months', '3-6 Months', '6-9 Months', '9-12 Months', '12-18 Months', '18-24 Months', '2-4 Years', '4-6 Years', '6-8 Years', '8-10 Years', '10-12 Years', '12-14 Years'],
+                'sizes' => ['Preemie', 'Newborn', '0-3M', '3-6M', '6-9M', '9-12M', '12-18M', '18-24M', '2T', '3T', '4T', '5', '6', '7', '8', '10', '12', '14'],
+                'genders' => ['Boys', 'Girls', 'Unisex'],
+                'brands' => ['Carter\'s', 'Gap Kids', 'Old Navy', 'H&M Kids', 'Zara Kids', 'Uniqlo Kids'],
+                'price_ranges' => ['$0-$10', '$10-$20', '$20-$30', '$30-$40', '$40+'],
+                'colors' => ['Blue', 'Red', 'Green', 'Yellow', 'Pink', 'Purple', 'Orange', 'Black', 'White', 'Gray']
             ],
             [
                 'name' => "Accessories",
@@ -149,17 +366,47 @@ class Category {
             ],
             [
                 'name' => "Beauty & Cosmetics",
-                'subcategories' => ['Skincare', 'Makeup', 'Hair Care', 'Fragrances', 'Tools'],
+                'subcategories' => [
+                    [
+                        'name' => 'Makeup',
+                        'sub_subcategories' => [
+                            'Face',
+                            'Eye',
+                            'Lip',
+                            'Nail'
+                        ]
+                    ],
+                    [
+                        'name' => 'Skincare',
+                        'sub_subcategories' => [
+                            'Moisturizers',
+                            'Cleansers',
+                            'Masks',
+                            'Sun Care',
+                            'cream'
+                        ]
+                    ],
+                    [
+                        'name' => 'Hair',
+                        'sub_subcategories' => [
+                            'Shampoo',
+                            'Conditioner',
+                            'Tools'
+                        ]
+                    ],
+                    [
+                        'name' => 'Bath & Body',
+                        'sub_subcategories' => [
+                            'Shower gel',
+                            'Scrubs',
+                            'soap'
+                        ]
+                    ]
+                ],
                 'description' => 'Beauty products for everyone',
                 'icon' => 'fa-magic'
             ],
           
-            [
-                'name' => "Sports & Fitness",
-                'subcategories' => ['Athletic Wear', 'Sports Equipment', 'Fitness Accessories', 'Outdoor Gear'],
-                'description' => 'Everything for an active lifestyle',
-                'icon' => 'fa-futbol-o'
-            ]
         ];
 
         $addedCount = 0;

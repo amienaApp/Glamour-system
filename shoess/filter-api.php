@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include required files
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 
 $productModel = new Product();
@@ -109,9 +109,36 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
+                // Category filter (subcategories) - handle both categories and gender
                 if (!empty($input['categories']) && is_array($input['categories'])) {
-                    $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
+                    $categoryFilters = [];
+                    foreach ($input['categories'] as $category) {
+                        // Map gender values to proper subcategory names
+                        switch (strtolower($category)) {
+                            case 'women':
+                                $categoryFilters[] = "Women's Shoes";
+                                break;
+                            case 'men':
+                                $categoryFilters[] = "Men's Shoes";
+                                break;
+                            case 'children':
+                                $categoryFilters[] = "Children's Shoes";
+                                break;
+                            case 'boys':
+                                $categoryFilters[] = "Boys' Shoes";
+                                break;
+                            case 'girls':
+                                $categoryFilters[] = "Girls' Shoes";
+                                break;
+                            case 'infant':
+                                $categoryFilters[] = "Infant Shoes";
+                                break;
+                            default:
+                                $categoryFilters[] = ucfirst($category);
+                                break;
+                        }
+                    }
+                    $andConditions[] = ['subcategory' => ['$in' => $categoryFilters]];
                 }
                 
                 // Dress length filter
@@ -135,6 +162,7 @@ try {
                 
                 // Get products with filters
                 $products = $productModel->getAll($filters, ['createdAt' => -1]);
+                
                 
                 // Process products for frontend
                 $processedProducts = [];

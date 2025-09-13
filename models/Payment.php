@@ -6,7 +6,7 @@
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/Order.php';
 // Email functionality removed for local system
 
@@ -91,7 +91,6 @@ class Payment {
             $this->updateOrderStatus($payment['order_id'], 'confirmed');
             $cartCleared = $this->clearUserCart($payment['user_id']);
             if (!$cartCleared) {
-                error_log("Warning: Failed to clear cart for user: " . $payment['user_id']);
             }
             $result['message'] = "🎉 Congratulations! Your order is successful!";
         }
@@ -388,7 +387,6 @@ class Payment {
             $orderModel = new Order();
             return $orderModel->updateOrderStatus($orderId, $status);
         } catch (Exception $e) {
-            error_log("Failed to update order status: " . $e->getMessage());
             return false;
         }
     }
@@ -402,7 +400,6 @@ class Payment {
             $cartModel = new Cart();
             return $cartModel->clearCart($userId);
         } catch (Exception $e) {
-            error_log("Failed to clear user cart: " . $e->getMessage());
             return false;
         }
     }

@@ -7,11 +7,11 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
-require_once '../config/mongodb.php';
+// Try MongoDB first, fallback if it fails
+require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
 require_once '../models/Product.php';
 require_once '../models/User.php';
-
 $categoryModel = new Category();
 $productModel = new Product();
 $userModel = new User();

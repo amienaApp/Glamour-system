@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Include required files
-    require_once __DIR__ . '/../config/mongodb.php';
+    require_once __DIR__ . '/../config1/mongodb.php';
     require_once __DIR__ . '/../models/User.php';
 
     // Get POST data
@@ -67,16 +67,13 @@ try {
                 
                 // Use the new public transfer method
                 if ($cartModel->transferCart($sessionCartId, $user['_id'])) {
-                    error_log('Cart transferred successfully from ' . $sessionCartId . ' to ' . $user['_id']);
                 }
             }
         }
     } catch (Exception $e) {
         // Cart transfer failed, but login should still succeed
-        error_log('Cart transfer failed: ' . $e->getMessage());
     } catch (Error $e) {
         // Cart transfer failed, but login should still succeed
-        error_log('Cart transfer failed: ' . $e->getMessage());
     }
 
     // Check if there's a redirect parameter in the request

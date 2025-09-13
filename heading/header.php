@@ -1,8 +1,16 @@
 <?php
-session_start();
 // Ensure vendor autoload is included first
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/mongodb.php';
+
+// Function to get the correct path for assets
+function getAssetPath($path) {
+    // Check if we're in a subdirectory by looking at the current script's directory
+    $currentDir = dirname($_SERVER['SCRIPT_NAME']);
+    $isInSubdirectory = (substr_count($currentDir, '/') > 1);
+    
+    return $isInSubdirectory ? '../' . $path : $path;
+}
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/../models/Category.php';
 
 $categoryModel = new Category();
@@ -12,93 +20,21 @@ $isLoggedIn = isset($_SESSION['user_id']);
 // Function to get the correct URL for each category
 function getCategoryUrl($categoryName) {
     $categoryMap = [
-        "Women's Clothing" => '../womenF/women.php',
-        "Men's Clothing" => '../menfolder/men.php',
-        "Kids' Clothing" => '#kids',
-        "Accessories" => '../accessories/accessories.php',
-        "Home & Living" => '../homedecor/homedecor.php',
-        "Beauty & Cosmetics" => '../perfumes/index.php',
-        "Sports & Fitness" => '#sports',
-        "Perfumes" => '../perfumes/index.php',
-        "Shoes" => '../shoess/shoes.php',
-        "Bags" => '../bagsfolder/bags.php'
+        "Women's Clothing" => 'womenF/women.php',
+        "Men's Clothing" => 'menfolder/men.php',
+        "Kids' Clothing" => 'kidsfolder/kids.php',
+        "Accessories" => 'accessories/accessories.php',
+        "Home & Living" => 'homedecor/homedecor.php',
+        "Beauty & Cosmetics" => 'beautyfolder/beauty.php',
+        "Perfumes" => 'perfumes/index.php',
+        "Shoes" => 'shoess/shoes.php',
+        "Bags" => 'bagsfolder/bags.php'
     ];
     
-    return $categoryMap[$categoryName] ?? '#';
+    $path = $categoryMap[$categoryName] ?? '#';
+    return $path === '#' ? '#' : getAssetPath($path);
 }
 
-    // Function to get the correct URL for subcategories
-    function getSubcategoryUrl($categoryName, $subcategoryName) {
-        $subcategoryMap = [
-            "Women's Clothing" => [
-                "Dresses" => '../womenF/women.php#products-section',
-                "Tops" => '../womenF/women.php#tops-section',
-                "Bottoms" => '../womenF/women.php?subcategory=bottoms',
-                "Outerwear" => '../womenF/women.php?subcategory=outerwear',
-                "Activewear" => '../womenF/women.php?subcategory=activewear',
-                "Lingerie" => '../womenF/women.php?subcategory=lingerie',
-                "Swimwear" => '../womenF/women.php?subcategory=swimwear',
-                "Wedding Guest" => '../womenF/women.php?subcategory=wedding-guest',
-                "Wedding-dress" => '../womenF/women.php?subcategory=wedding-dress',
-                "Abaya" => '../womenF/women.php?subcategory=abaya',
-                "Summer-dresses" => '../womenF/women.php?subcategory=summer-dresses',
-                "Homecoming" => '../womenF/women.php?subcategory=homecoming'
-            ],
-            "Men's Clothing" => [
-                "Shirts" => '../menfolder/men.php#shirts-section',
-                "T-Shirts" => '../menfolder/men.php#tshirts-section',
-                "Suits" => '../menfolder/men.php#suits-section',
-                "Pants" => '../menfolder/men.php#pants-section',
-                "Shorts" => '../menfolder/men.php#shorts-section',
-                "Hoodies & Sweatshirts" => '../menfolder/men.php#hoodies-section',
-                "Jackets" => '../menfolder/men.php?subcategory=jackets',
-                "Activewear" => '../menfolder/men.php?subcategory=activewear',
-                "Underwear" => '../menfolder/men.php?subcategory=underwear',
-                "Swimwear" => '../menfolder/men.php?subcategory=swimwear'
-            ],
-        "Accessories" => [
-            "Shoes" => '../shoess/shoes.php',
-            "Bags" => '../bagsfolder/bags.php',
-            "Jewelry" => '#jewelry',
-            "Hats" => '#hats',
-            "Scarves" => '#scarves',
-            "Belts" => '#belts'
-        ],
-        "Shoes" => [
-            "Men's Shoes" => '../shoess/shoes.php?subcategory=menshoes',
-            "Women's Shoes" => '../shoess/shoes.php?subcategory=womenshoes',
-            "Children's Shoes" => '../shoess/shoes.php?subcategory=childrenshoes',
-            "Sports Shoes" => '../shoess/shoes.php?subcategory=sportsshoes',
-            "Formal Shoes" => '../shoess/shoes.php?subcategory=formalshoes',
-            "Casual Shoes" => '../shoess/shoes.php?subcategory=casualshoes'
-        ],
-        "Beauty & Cosmetics" => [
-            "Fragrances" => '../perfumes/index.php',
-            "Skincare" => '#skincare',
-            "Makeup" => '#makeup',
-            "Hair Care" => '#hair-care',
-            "Tools" => '#tools'
-        ],
-        "Home & Living" => [
-            "Bedding" => '../homedecor/homedecor.php?subcategory=bedding',
-            "Dining Room" => '../homedecor/homedecor.php?subcategory=dining-room',
-            "Living Room" => '../homedecor/homedecor.php?subcategory=living-room',
-            "Kitchen" => '../homedecor/homedecor.php?subcategory=kitchen',
-            "Bathroom" => '../homedecor/homedecor.php?subcategory=bathroom',
-            "Outdoor" => '../homedecor/homedecor.php?subcategory=outdoor'
-        ],
-        "Bags" => [
-            "Handbags" => '../bagsfolder/bags.php?subcategory=handbags',
-            "Backpacks" => '../bagsfolder/bags.php?subcategory=backpacks',
-            "Totes" => '../bagsfolder/bags.php?subcategory=totes',
-            "Clutches" => '../bagsfolder/bags.php?subcategory=clutches',
-            "Crossbody" => '../bagsfolder/bags.php?subcategory=crossbody',
-            "Travel Bags" => '../bagsfolder/bags.php?subcategory=travel'
-        ]
-    ];
-    
-    return $subcategoryMap[$categoryName][$subcategoryName] ?? getCategoryUrl($categoryName);
-}
 
 // Define region options to avoid duplication
 $regionOptions = [
@@ -129,7 +65,7 @@ $regionOptions = [
     <!-- Logo Container - Left Side -->
     <div class="logo-container">
         <div class="logo">
-            <a href="../index.php" class="logo-text">
+            <a href="<?php echo getAssetPath('index.php'); ?>" class="logo-text">
                 <span class="logo-main">Glamour</span>
                 <span class="logo-accent">Palace</span>
             </a>
@@ -141,83 +77,22 @@ $regionOptions = [
         <ul class="nav-menu">
             <?php if (!empty($categories)): ?>
                 <?php foreach ($categories as $category): ?>
-                    <li class="nav-item-modal">
-                        <a href="<?php echo getCategoryUrl($category['name']); ?>" class="nav-link modal-trigger" data-category="<?php echo htmlspecialchars($category['name']); ?>">
+                    <li>
+                        <a href="<?php echo getCategoryUrl($category['name']); ?>" class="nav-link">
                             <?php echo htmlspecialchars($category['name']); ?>
                         </a>
-                        <!-- Category Modal -->
-                        <div class="category-modal" data-category="<?php echo htmlspecialchars($category['name']); ?>">
-                            <div class="modal-header">
-                                <h3><?php echo htmlspecialchars($category['name']); ?></h3>
-                                <p><?php echo htmlspecialchars($category['description'] ?? ''); ?></p>
-                            </div>
-                            <?php if (!empty($category['subcategories'])): ?>
-                                <div class="modal-content">
-                                    <div class="subcategories-grid">
-                                        <?php foreach ($category['subcategories'] as $subcategory): ?>
-                                            <a href="<?php echo getSubcategoryUrl($category['name'], $subcategory); ?>" class="subcategory-item" data-category="<?php echo htmlspecialchars($category['name']); ?>" data-subcategory="<?php echo htmlspecialchars($subcategory); ?>">
-                                                <div class="subcategory-icon">
-                                                    <i class="fas fa-chevron-right"></i>
-                                                </div>
-                                                <div class="subcategory-info">
-                                                    <h4><?php echo htmlspecialchars($subcategory); ?></h4>
-                                                    <span>Shop <?php echo htmlspecialchars($subcategory); ?></span>
-                                                </div>
-                                            </a>
-                                        <?php endforeach; ?>
-                                    </div>
-                                    <div class="subcategory-info">
-                                        <h4>Dresses</h4>
-                                        <span>Shop Dresses</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="subcategory-item">
-                                    <div class="subcategory-icon">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                    <div class="subcategory-info">
-                                        <h4>Clothing</h4>
-                                        <span>Shop Clothing</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="subcategory-item">
-                                    <div class="subcategory-icon">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                    <div class="subcategory-info">
-                                        <h4>Tops</h4>
-                                        <span>Shop Tops</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="subcategory-item">
-                                    <div class="subcategory-icon">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                    <div class="subcategory-info">
-                                        <h4>Accessories</h4>
-                                        <span>Shop Accessories</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="subcategory-item">
-                                    <div class="subcategory-icon">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                    <div class="subcategory-info">
-                                        <h4>Sale</h4>
-                                        <span>Shop Sale</span>
-                                    </div>
-                                </a>
-                            <?php endif; ?>
-                        </div>
                     </li>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Fallback static menu if no categories found -->
-                <li><a href="../womenF/women.php" class="nav-link">Women's Clothing</a></li>
-                <li><a href="../menfolder/men.php" class="nav-link">Men's Clothing</a></li>
-                <li><a href="../perfumes/index.php" class="nav-link">Perfumes</a></li>
-                <li><a href="../shoess/shoes.php" class="nav-link">Shoes</a></li>
-                <li><a href="../accessories/accessories.php" class="nav-link">Accessories</a></li>
+                <li><a href="<?php echo getAssetPath('womenF/women.php'); ?>" class="nav-link">Women's Clothing</a></li>
+                <li><a href="<?php echo getAssetPath('menfolder/men.php'); ?>" class="nav-link">Men's Clothing</a></li>
+                <li><a href="<?php echo getAssetPath('beautyfolder/beauty.php'); ?>" class="nav-link">Beauty & Cosmetics</a></li>
+                <li><a href="<?php echo getAssetPath('shoess/shoes.php'); ?>" class="nav-link">Shoes</a></li>
+                <li><a href="<?php echo getAssetPath('bagsfolder/bags.php'); ?>" class="nav-link">Bags</a></li>
+                <li><a href="<?php echo getAssetPath('accessories/accessories.php'); ?>" class="nav-link">Accessories</a></li>
+                <li><a href="<?php echo getAssetPath('homedecor/homedecor.php'); ?>" class="nav-link">Home & Living</a></li>
+                <li><a href="<?php echo getAssetPath('perfumes/index.php'); ?>" class="nav-link">Perfumes</a></li>
             <?php endif; ?>
         </ul>
     </div>
@@ -255,7 +130,7 @@ $regionOptions = [
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
                             </a>
-                            <a href="../orders.php" class="menu-item">
+                            <a href="<?php echo getAssetPath('orders.php'); ?>" class="menu-item">
                                 <i class="fas fa-box"></i>
                                 <span>My orders</span>
                             </a>
@@ -275,23 +150,410 @@ $regionOptions = [
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="heart-icon" title="Wishlist">
+            <div class="heart-icon" title="Wishlist" onclick="toggleWishlistDropdown()" style="cursor: pointer; position: relative;">
                 <i class="fas fa-heart"></i>
+                <span class="wishlist-count">0</span>
+                
+                <!-- Wishlist Dropdown -->
+                <div class="wishlist-dropdown" id="wishlist-dropdown">
+                    <div class="wishlist-dropdown-header">
+                        <h3><i class="fas fa-heart"></i> My Wishlist</h3>
+                        <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                    </div>
+                    <div class="wishlist-dropdown-content" id="wishlist-dropdown-content">
+                        <!-- Wishlist items will be loaded here -->
+                    </div>
+                    <div class="wishlist-dropdown-empty" id="wishlist-dropdown-empty" style="display: none;">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                        <small>Start adding items you love!</small>
+                    </div>
+                </div>
             </div>
             <div class="shopping-cart" title="Cart" style="position: relative;">
-                <a href="../cart-unified.php" style="text-decoration: none; color: inherit;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
             </div>
         </div>
 
         <!-- Somalia Flag - Compact (Disabled) -->
         <div class="flag-container" title="Region Settings (Coming Soon)">
-            <img src="../img/flag.jpg" alt="Somalia Flag" class="flag" id="somalia-flag">
+            <img src="<?php echo getAssetPath('img/flag.jpg'); ?>" alt="Somalia Flag" class="flag" id="somalia-flag">
         </div>
     </div>
 </nav>
+
+<script>
+// Initialize cart functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const cartIcon = document.querySelector('.shopping-cart');
+    if (cartIcon) {
+        
+        // Add click event listener for cart functionality
+        cartIcon.addEventListener('click', function(e) {
+            // Show loading state
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            this.style.cursor = 'wait';
+            
+            // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
+            const currentPath = window.location.pathname;
+            const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                   currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                   currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
+            window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
+        });
+        
+        // Add a small tooltip to show cart is clickable
+        cartIcon.title = 'Click to view cart';
+        
+        // Add hover effects for better UX
+        cartIcon.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+        });
+        
+        cartIcon.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+        
+        // Update cart count from cart system
+        updateCartCount();
+        
+        // Refresh cart count when page becomes visible (user returns from cart)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                updateCartCount();
+            }
+        });
+        
+        // Also refresh cart count when page loads
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page was loaded from back-forward cache
+                updateCartCount();
+            }
+        });
+        
+        // Refresh cart count every 10 seconds to keep it updated (faster updates)
+        setInterval(updateCartCount, 10000);
+    }
+    
+        // Function to update cart count
+        function updateCartCount() {
+            const cartCountElement = document.querySelector('.cart-count');
+            if (cartCountElement) {
+                // Determine the correct path to cart API based on current URL
+                const currentPath = window.location.pathname;
+                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
+                const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
+                
+                // Fetch current cart count from cart API
+                fetch(cartApiPath, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=get_cart_count'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.count > 0) {
+                        cartCountElement.textContent = data.count;
+                        cartCountElement.style.display = 'flex';
+                    } else {
+                        cartCountElement.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.log('Cart count fetch error:', error);
+                    cartCountElement.style.display = 'none';
+                });
+            } else {
+                console.log('Cart count element not found!');
+            }
+        }
+    
+    // Cart notification function
+    function showCartNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `cart-notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Style the notification
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '100px',
+            right: '20px',
+            background: type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : type === 'info' ? '#17a2b8' : '#6c757d',
+            color: 'white',
+            padding: '15px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            zIndex: '10000',
+            transform: 'translateX(400px)',
+            transition: 'transform 0.3s ease',
+            maxWidth: '300px',
+            fontSize: '14px',
+            fontWeight: '500'
+        });
+        
+        // Style the notification content
+        const content = notification.querySelector('.notification-content');
+        Object.assign(content.style, {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
+        });
+        
+        document.body.appendChild(notification);
+        
+        // Show notification (instant)
+        notification.style.transform = 'translateX(0)';
+        
+        // Hide notification
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Simple cart count functions (like wishlist)
+    function updateCartCount() {
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            try {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const count = cart.length;
+                cartCountElement.textContent = count;
+                
+                if (count > 0) {
+                    cartCountElement.style.display = 'flex';
+                } else {
+                    cartCountElement.style.display = 'none';
+                }
+            } catch (error) {
+                cartCountElement.style.display = 'none';
+            }
+        }
+    }
+    
+    function addToCartCount() {
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            let currentCount = parseInt(cartCountElement.textContent) || 0;
+            currentCount++;
+            cartCountElement.textContent = currentCount;
+            cartCountElement.style.display = 'flex';
+        }
+    }
+    
+    function removeFromCartCount() {
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) {
+            let currentCount = parseInt(cartCountElement.textContent) || 0;
+            currentCount = Math.max(0, currentCount - 1);
+            cartCountElement.textContent = currentCount;
+            
+            if (currentCount > 0) {
+                cartCountElement.style.display = 'flex';
+            } else {
+                cartCountElement.style.display = 'none';
+            }
+        }
+    }
+
+    // Make functions available globally
+    window.updateCartCount = updateCartCount;
+    window.addToCartCount = addToCartCount;
+    window.removeFromCartCount = removeFromCartCount;
+    window.showCartNotification = showCartNotification;
+    
+    // Wishlist dropdown functionality
+    function toggleWishlistDropdown() {
+        const dropdown = document.getElementById('wishlist-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('show');
+            if (dropdown.classList.contains('show')) {
+                loadWishlistDropdown();
+            }
+        }
+    }
+    
+    function openWishlistPage() {
+        // Check if we're in a subfolder and adjust path accordingly
+        const currentPath = window.location.pathname;
+        const isInSubfolder = currentPath.includes('/kidsfolder/') || currentPath.includes('/beautyfolder/') || 
+                             currentPath.includes('/womenF/') || currentPath.includes('/menfolder/') || 
+                             currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                             currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                             currentPath.includes('/bagsfolder/');
+        
+        if (isInSubfolder) {
+            window.location.href = '../wishlist.php';
+        } else {
+            window.location.href = 'wishlist.php';
+        }
+    }
+    
+    function loadWishlistDropdown() {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const content = document.getElementById('wishlist-dropdown-content');
+        const empty = document.getElementById('wishlist-dropdown-empty');
+        
+        if (wishlist.length === 0) {
+            content.style.display = 'none';
+            empty.style.display = 'block';
+        } else {
+            content.style.display = 'block';
+            empty.style.display = 'none';
+            
+            // Show only first 3 items in dropdown
+            const displayItems = wishlist.slice(0, 3);
+            content.innerHTML = displayItems.map(item => `
+                <div class="wishlist-dropdown-item">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                    <div class="wishlist-dropdown-item-info">
+                        <div class="wishlist-dropdown-item-name">${item.name}</div>
+                        <div class="wishlist-dropdown-item-price">$${item.price}</div>
+                        <div class="wishlist-dropdown-item-category">${item.category}</div>
+                    </div>
+                    <div class="wishlist-dropdown-item-actions">
+                        <button class="btn-add-cart" onclick="addToCartFromDropdown('${item.id}')">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                        <button class="btn-remove" onclick="removeFromWishlistDropdown('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Show "View All" button if there are more than 3 items
+            if (wishlist.length > 3) {
+                content.innerHTML += `
+                    <div class="wishlist-dropdown-item" style="justify-content: center; border-top: 2px solid #eee;">
+                        <button onclick="openWishlistPage()" style="background: #f8f9fa; border: 1px solid #ddd; padding: 8px 20px; border-radius: 6px; cursor: pointer; color: #666;">
+                            View All ${wishlist.length} Items
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    function addToCartFromDropdown(productId) {
+        // Try to use existing cart functionality
+        if (typeof addToCart === 'function') {
+            addToCart(productId);
+        } else {
+            showNotification('Product added to cart!', 'success');
+        }
+    }
+    
+    function removeFromWishlistDropdown(productId) {
+        if (confirm('Remove from wishlist?')) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            wishlist = wishlist.filter(item => item.id !== productId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            
+            showNotification('Removed from wishlist', 'info');
+            loadWishlistDropdown();
+            updateWishlistCount();
+        }
+    }
+    
+    function showNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `wishlist-notification ${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '100px',
+            right: '20px',
+            background: type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8',
+            color: 'white',
+            padding: '15px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            zIndex: '1000',
+            transform: 'translateX(400px)',
+            transition: 'transform 0.3s ease',
+            fontSize: '14px',
+            fontWeight: '500'
+        });
+        
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Hide notification
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Update wishlist count from localStorage
+    function updateWishlistCount() {
+        const wishlistCountElement = document.querySelector('.wishlist-count');
+        if (wishlistCountElement) {
+            try {
+                const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                if (wishlist.length > 0) {
+                    wishlistCountElement.textContent = wishlist.length;
+                    wishlistCountElement.style.display = 'flex';
+                } else {
+                    wishlistCountElement.style.display = 'none';
+                }
+            } catch (error) {
+                wishlistCountElement.style.display = 'none';
+            }
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('wishlist-dropdown');
+        const heartIcon = document.querySelector('.heart-icon');
+        
+        if (dropdown && heartIcon && !heartIcon.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+    
+    // Load wishlist count on page load
+    updateWishlistCount();
+    
+    // Make functions available globally
+    window.toggleWishlistDropdown = toggleWishlistDropdown;
+    window.openWishlistPage = openWishlistPage;
+    window.updateWishlistCount = updateWishlistCount;
+});
+</script>
 
 <!-- Region Selection Modal -->
 <div class="modal" id="region-modal">
@@ -358,11 +620,11 @@ $regionOptions = [
             <div class="modal-body">
                 <form class="login-form">
                     <div class="form-group">
-                        <input type="text" id="login-username" class="form-input" placeholder="Username or Email *" required>
+                        <input type="text" id="login-username" class="form-input" placeholder="Username or Email *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <div class="password-container">
-                            <input type="password" id="login-password" class="form-input" placeholder="Password *" required>
+                            <input type="password" id="login-password" class="form-input" placeholder="Password *" autocomplete="off" required>
                             <span class="show-password">
                                 <i class="fas fa-eye"></i>
                             </span>
@@ -391,15 +653,15 @@ $regionOptions = [
             <div class="modal-body">
                 <form class="user-registration-form">
                     <div class="form-group">
-                        <input type="text" id="username" class="form-input" placeholder="Username *" required>
+                        <input type="text" id="username" class="form-input" placeholder="Username *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" class="form-input" placeholder="Email Address *" required>
+                        <input type="email" id="email" class="form-input" placeholder="Email Address *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <div class="contact-input-container">
                             <div class="flag-prefix">
-                                <img src="../img/flag.jpg" alt="Somali Flag" class="flag-icon">
+                                <img src="<?php echo getAssetPath('img/flag.jpg'); ?>" alt="Somali Flag" class="flag-icon">
                                 <span class="country-code">+252</span>
                             </div>
                             <input type="tel" id="contact-number" class="form-input contact-input" placeholder="XXX XXX XXX" maxlength="9" pattern="[0-9]{9}" required>
@@ -459,91 +721,51 @@ $regionOptions = [
     </div>
 </div>
 
-<!-- Chat Button -->
-<div class="chat-button">
-    <i class="fas fa-comments"></i>
-</div> 
 
 <!-- Cart Functionality Script -->
 <script>
-    // Load cart count on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadCartCount();
-    });
-
-    function loadCartCount() {
-        fetch('../cart-api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'action=get_cart_count'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateCartCount(data.cart_count);
-            }
-        })
-        .catch(error => {
-            // Silent error handling
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
         });
-    }
-
-    function updateCartCount(count) {
-        const cartCountElement = document.querySelector('.cart-count');
-        
-        if (cartCountElement) {
-            cartCountElement.textContent = count;
-            
-            // Add visual indicator if count > 0
-            if (count > 0) {
-                cartCountElement.style.cssText = `
-                    display: flex !important;
-                    background: #e53e3e;
-                    color: white;
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                    font-size: 12px;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                    position: absolute;
-                    top: -8px;
-                    right: -8px;
-                    z-index: 10;
-                `;
-            } else {
-                cartCountElement.style.display = 'none';
-            }
-        } else {
-            console.error('Cart count element not found!');
-        }
-    }
 
     // Function to be called from other pages when adding to cart
     function addToCart(productId) {
-        fetch('../cart-api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateCartCount(data.cart_count);
-                // Show success message
-                alert('Product added to cart successfully!');
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error adding product to cart');
+        // Show immediate feedback
+        showCartNotification('Adding to cart...', 'info');
+        
+        // Determine the correct path to cart API based on current URL
+        const currentPath = window.location.pathname;
+        const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                               currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                               currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                               currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                               currentPath.includes('/bagsfolder/');
+        const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
+        
+        // Use requestAnimationFrame for better performance
+        requestAnimationFrame(() => {
+            fetch(cartApiPath, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCartCount(data.cart_count);
+                    // Show success notification
+                    showCartNotification('Product added to cart successfully!', 'success');
+                } else {
+                    showCartNotification('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showCartNotification('Error adding product to cart', 'error');
+            });
         });
     }
 
@@ -616,6 +838,12 @@ $regionOptions = [
                     if (loginForm) {
                         loginForm.style.display = 'flex';
                         loginForm.classList.add('show');
+                        
+                        // Clear login form fields
+                        const loginUsername = document.getElementById('login-username');
+                        const loginPassword = document.getElementById('login-password');
+                        if (loginUsername) loginUsername.value = '';
+                        if (loginPassword) loginPassword.value = '';
                     }
                     if (registerForm) {
                         registerForm.style.display = 'none';
@@ -651,6 +879,29 @@ $regionOptions = [
                     if (registerForm) {
                         registerForm.style.display = 'flex';
                         registerForm.classList.add('show');
+                        
+                        // Clear registration form fields
+                        const username = document.getElementById('username');
+                        const email = document.getElementById('email');
+                        const contactNumber = document.getElementById('contact-number');
+                        const password = document.getElementById('password');
+                        const confirmPassword = document.getElementById('confirm-password');
+                        
+                        if (username) username.value = '';
+                        if (email) email.value = '';
+                        if (contactNumber) contactNumber.value = '';
+                        if (password) password.value = '';
+                        if (confirmPassword) confirmPassword.value = '';
+                        
+                        // Clear radio buttons
+                        const genderRadios = document.querySelectorAll('input[name="gender"]');
+                        genderRadios.forEach(radio => radio.checked = false);
+                        
+                        // Reset select fields
+                        const region = document.getElementById('region');
+                        const city = document.getElementById('city');
+                        if (region) region.value = '';
+                        if (city) city.value = '';
                     }
                 }
             });
@@ -707,6 +958,29 @@ $regionOptions = [
                 if (registerForm) {
                     registerForm.style.display = 'flex';
                     registerForm.classList.add('show');
+                    
+                    // Clear registration form fields
+                    const username = document.getElementById('username');
+                    const email = document.getElementById('email');
+                    const contactNumber = document.getElementById('contact-number');
+                    const password = document.getElementById('password');
+                    const confirmPassword = document.getElementById('confirm-password');
+                    
+                    if (username) username.value = '';
+                    if (email) email.value = '';
+                    if (contactNumber) contactNumber.value = '';
+                    if (password) password.value = '';
+                    if (confirmPassword) confirmPassword.value = '';
+                    
+                    // Clear radio buttons
+                    const genderRadios = document.querySelectorAll('input[name="gender"]');
+                    genderRadios.forEach(radio => radio.checked = false);
+                    
+                    // Reset select fields
+                    const region = document.getElementById('region');
+                    const city = document.getElementById('city');
+                    if (region) region.value = '';
+                    if (city) city.value = '';
                 }
             });
         }
@@ -721,6 +995,12 @@ $regionOptions = [
                 if (loginForm) {
                     loginForm.style.display = 'flex';
                     loginForm.classList.add('show');
+                    
+                    // Clear login form fields
+                    const loginUsername = document.getElementById('login-username');
+                    const loginPassword = document.getElementById('login-password');
+                    if (loginUsername) loginUsername.value = '';
+                    if (loginPassword) loginPassword.value = '';
                 }
             });
         }
@@ -1067,5 +1347,562 @@ $regionOptions = [
         }
 
 
+
     });
+</script>
+
+<!-- Global Search Functionality -->
+<script>
+// Global Search Functionality
+class GlobalSearch {
+    constructor() {
+        this.searchInput = document.querySelector('.search-input');
+        this.searchResults = null;
+        this.currentCategory = this.getCurrentCategory();
+        this.init();
+    }
+
+    getCurrentCategory() {
+        const path = window.location.pathname;
+        if (path.includes('/perfumes/')) return 'perfumes';
+        if (path.includes('/accessories/')) return 'accessories';
+        if (path.includes('/bagsfolder/')) return 'bags';
+        if (path.includes('/homedecor/')) return 'home-decor';
+        if (path.includes('/shoess/')) return 'shoes';
+        if (path.includes('/menfolder/')) return 'men';
+        if (path.includes('/womenF/')) return 'women';
+        if (path.includes('/kidsfolder/')) return 'children';
+        return 'all';
+    }
+
+    init() {
+        if (this.searchInput) {
+            this.createSearchResultsContainer();
+            this.bindEvents();
+        }
+    }
+
+    createSearchResultsContainer() {
+        // Create search results container
+        this.searchResults = document.createElement('div');
+        this.searchResults.className = 'search-results-container';
+        this.searchResults.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        `;
+        
+        // Insert after search container
+        const searchContainer = this.searchInput.closest('.search-container');
+        if (searchContainer) {
+            searchContainer.style.position = 'relative';
+            searchContainer.appendChild(this.searchResults);
+        }
+    }
+
+    bindEvents() {
+        // Search input events
+        this.searchInput.addEventListener('input', (e) => {
+            this.handleSearch(e.target.value);
+        });
+
+        this.searchInput.addEventListener('focus', () => {
+            if (this.searchInput.value.trim()) {
+                this.showResults();
+            }
+        });
+
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                this.hideResults();
+            }
+        });
+
+        // Handle search icon click
+        const searchIcon = document.querySelector('.search-icon');
+        if (searchIcon) {
+            searchIcon.addEventListener('click', () => {
+                this.performSearch();
+            });
+        }
+
+        // Handle Enter key
+        this.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.performSearch();
+            }
+        });
+    }
+
+    handleSearch(query) {
+        if (query.trim().length < 2) {
+            this.hideResults();
+            return;
+        }
+
+        const results = this.searchProducts(query);
+        this.displayResults(results, query);
+    }
+
+    searchProducts(query) {
+        const searchTerm = query.toLowerCase().trim();
+        const results = [];
+
+        // Search in current page products
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            const productName = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
+            const productPrice = card.querySelector('.product-price')?.textContent.toLowerCase() || '';
+            const productId = card.getAttribute('data-product-id');
+            const productGender = card.getAttribute('data-gender');
+            const productCategory = card.getAttribute('data-category');
+
+            if (productName.includes(searchTerm) || 
+                productPrice.includes(searchTerm) ||
+                productGender?.includes(searchTerm) ||
+                productCategory?.includes(searchTerm)) {
+                
+                results.push({
+                    id: productId,
+                    name: card.querySelector('.product-name')?.textContent || '',
+                    price: card.querySelector('.product-price')?.textContent || '',
+                    image: card.querySelector('.product-image img')?.src || '',
+                    gender: productGender,
+                    category: productCategory,
+                    type: 'current-page'
+                });
+            }
+        });
+
+        // Add suggestions for other categories
+        const suggestions = this.getSearchSuggestions(searchTerm);
+        results.push(...suggestions);
+
+        return results;
+    }
+
+    getSearchSuggestions(query) {
+        const suggestions = [];
+        const searchTerm = query.toLowerCase();
+
+        // Define product categories and their common terms
+        const categories = {
+            'perfumes': ['perfume', 'cologne', 'fragrance', 'scent', 'aroma', 'eau de toilette', 'parfum'],
+            'accessories': ['belt', 'watch', 'sunglasses', 'jewelry', 'necklace', 'bracelet', 'ring', 'earrings', 'socks', 'hat', 'cap', 'tie', 'cufflinks'],
+            'bags': ['bag', 'purse', 'handbag', 'tote', 'backpack', 'clutch', 'wallet', 'shoulder bag', 'crossbody'],
+            'shoes': ['shoes', 'boots', 'sneakers', 'heels', 'flats', 'sandals', 'loafers', 'pumps'],
+            'home-decor': ['decor', 'decoration', 'home', 'furniture', 'lamp', 'vase', 'cushion', 'curtain', 'rug'],
+            'clothing': ['dress', 'shirt', 'pants', 'jeans', 'skirt', 'blouse', 'jacket', 'coat', 'sweater']
+        };
+
+        // Check if search term matches any category
+        Object.entries(categories).forEach(([category, terms]) => {
+            if (terms.some(term => term.includes(searchTerm) || searchTerm.includes(term))) {
+                suggestions.push({
+                    id: `suggestion-${category}`,
+                    name: `Search ${category}`,
+                    price: '',
+                    image: '',
+                    gender: '',
+                    category: category,
+                    type: 'suggestion',
+                    url: this.getCategoryUrl(category)
+                });
+            }
+        });
+
+        return suggestions;
+    }
+
+    getCategoryUrl(category) {
+        const baseUrl = window.location.origin;
+        const categoryUrls = {
+            'perfumes': '/Glamour-system/perfumes/',
+            'accessories': '/Glamour-system/accessories/',
+            'bags': '/Glamour-system/bagsfolder/',
+            'shoes': '/Glamour-system/shoess/',
+            'home-decor': '/Glamour-system/homedecor/',
+            'men': '/Glamour-system/menfolder/',
+            'women': '/Glamour-system/womenF/',
+            'children': '/Glamour-system/kidsfolder/'
+        };
+        return baseUrl + (categoryUrls[category] || '/');
+    }
+
+    displayResults(results, query) {
+        if (results.length === 0) {
+            this.searchResults.innerHTML = `
+                <div class="search-no-results">
+                    <p>No results found for "${query}"</p>
+                    <p>Try searching for different keywords</p>
+                </div>
+            `;
+        } else {
+            let html = '';
+            
+            // Group results by type
+            const currentPageResults = results.filter(r => r.type === 'current-page');
+            const suggestions = results.filter(r => r.type === 'suggestion');
+
+            // Current page results
+            if (currentPageResults.length > 0) {
+                html += '<div class="search-section"><h4>Products on this page</h4>';
+                currentPageResults.forEach(result => {
+                    html += this.createResultItem(result);
+                });
+                html += '</div>';
+            }
+
+            // Suggestions
+            if (suggestions.length > 0) {
+                html += '<div class="search-section"><h4>Search other categories</h4>';
+                suggestions.forEach(result => {
+                    html += this.createResultItem(result);
+                });
+                html += '</div>';
+            }
+
+            this.searchResults.innerHTML = html;
+        }
+
+        this.showResults();
+        this.bindResultEvents();
+    }
+
+    createResultItem(result) {
+        if (result.type === 'suggestion') {
+            return `
+                <div class="search-result-item suggestion" data-url="${result.url}">
+                    <div class="result-content">
+                        <div class="result-info">
+                            <h5>${result.name}</h5>
+                            <p>Browse ${result.category} products</p>
+                        </div>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="search-result-item product" data-product-id="${result.id}">
+                <div class="result-image">
+                    <img src="${result.image}" alt="${result.name}" onerror="this.style.display='none'">
+                </div>
+                <div class="result-content">
+                    <div class="result-info">
+                        <h5>${result.name}</h5>
+                        <p class="result-price">${result.price}</p>
+                        <p class="result-category">${result.category} • ${result.gender}</p>
+                    </div>
+                    <button class="quick-view-btn" data-product-id="${result.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    bindResultEvents() {
+        // Handle suggestion clicks
+        this.searchResults.querySelectorAll('.search-result-item.suggestion').forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.getAttribute('data-url');
+                window.location.href = url;
+            });
+        });
+
+        // Handle product quick view
+        this.searchResults.querySelectorAll('.quick-view-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = btn.getAttribute('data-product-id');
+                this.openQuickView(productId);
+            });
+        });
+
+        // Handle product item clicks
+        this.searchResults.querySelectorAll('.search-result-item.product').forEach(item => {
+            item.addEventListener('click', () => {
+                const productId = item.getAttribute('data-product-id');
+                this.openQuickView(productId);
+            });
+        });
+    }
+
+    openQuickView(productId) {
+        // Trigger the existing quick view functionality
+        const quickViewBtn = document.querySelector(`[data-product-id="${productId}"] .quick-view`);
+        if (quickViewBtn) {
+            quickViewBtn.click();
+        }
+        this.hideResults();
+    }
+
+    performSearch() {
+        const query = this.searchInput.value.trim();
+        if (query) {
+            // If we're on a specific category page, search within that category
+            if (this.currentCategory !== 'all') {
+                this.searchInCategory(query);
+            } else {
+                // Global search - redirect to search results page
+                this.redirectToSearch(query);
+            }
+        }
+    }
+
+    searchInCategory(query) {
+        // Filter products on current page
+        const productCards = document.querySelectorAll('.product-card');
+        let hasResults = false;
+
+        productCards.forEach(card => {
+            const productName = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
+            const productPrice = card.querySelector('.product-price')?.textContent.toLowerCase() || '';
+            const productGender = card.getAttribute('data-gender')?.toLowerCase() || '';
+            const productCategory = card.getAttribute('data-category')?.toLowerCase() || '';
+
+            const searchTerm = query.toLowerCase();
+            const isMatch = productName.includes(searchTerm) || 
+                           productPrice.includes(searchTerm) ||
+                           productGender.includes(searchTerm) ||
+                           productCategory.includes(searchTerm);
+
+            if (isMatch) {
+                card.style.display = 'block';
+                hasResults = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        this.showNoResultsMessage(!hasResults, query);
+    }
+
+    showNoResultsMessage(show, query) {
+        let noResultsMsg = document.querySelector('.no-results-message');
+        
+        if (show) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.style.cssText = `
+                    text-align: center;
+                    padding: 40px 20px;
+                    color: #666;
+                    font-size: 16px;
+                `;
+                
+                const productGrid = document.querySelector('.product-grid');
+                if (productGrid) {
+                    productGrid.appendChild(noResultsMsg);
+                }
+            }
+            noResultsMsg.innerHTML = `
+                <h3>No results found for "${query}"</h3>
+                <p>Try adjusting your search terms or browse our categories</p>
+                <button onclick="window.location.reload()" style="
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">Show All Products</button>
+            `;
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+
+    redirectToSearch(query) {
+        // For global search, you could redirect to a search results page
+        // For now, we'll just show an alert
+        alert(`Global search for "${query}" - This would redirect to a search results page`);
+    }
+
+    showResults() {
+        this.searchResults.style.display = 'block';
+    }
+
+    hideResults() {
+        this.searchResults.style.display = 'none';
+    }
+}
+
+// Initialize search when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new GlobalSearch();
+});
+
+// Add CSS styles for search results
+const searchStyles = `
+<style>
+.search-results-container {
+    font-family: Arial, sans-serif;
+}
+
+.search-section {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.search-section:last-child {
+    border-bottom: none;
+}
+
+.search-section h4 {
+    margin: 0 15px 10px;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-item.suggestion {
+    justify-content: space-between;
+}
+
+.search-result-item.product {
+    gap: 12px;
+}
+
+.result-image {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+}
+
+.result-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.result-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.result-info h5 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.result-price {
+    margin: 0 0 2px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.result-category {
+    margin: 0;
+    font-size: 11px;
+    color: #666;
+    text-transform: capitalize;
+}
+
+.quick-view-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.quick-view-btn:hover {
+    background-color: #e3f2fd;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.search-no-results p {
+    margin: 5px 0;
+}
+
+.search-results-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.search-results-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.search-results-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+`;
+
+// Inject styles into head
+document.head.insertAdjacentHTML('beforeend', searchStyles);
+
+// Password toggle functionality
+function togglePasswordVisibility(element) {
+    const passwordInput = element.closest('.password-container').querySelector('input');
+    const eyeIcon = element.querySelector('i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye';
+    }
+}
+
+// Add click event listeners to all password toggle buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordToggles = document.querySelectorAll('.show-password');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            togglePasswordVisibility(this);
+        });
+    });
+});
 </script> 

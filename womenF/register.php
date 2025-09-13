@@ -15,7 +15,7 @@ ini_set('display_errors', 0);
     
     try {
         // Include required files
-        require_once '../config/mongodb.php';
+        require_once '../config1/mongodb.php';
         require_once '../models/User.php';
 
         // Get POST data
@@ -26,7 +26,6 @@ ini_set('display_errors', 0);
         }
         
 
-        error_log("Registration input: " . json_encode($input));
 
         // Validate required fields
         $requiredFields = ['username', 'email', 'contact_number', 'gender', 'region', 'city', 'password', 'confirm_password'];
@@ -94,7 +93,6 @@ ini_set('display_errors', 0);
         exit;
 
     } catch (Exception $e) {
-        error_log("Registration Exception: " . $e->getMessage());
         http_response_code(400);
         echo json_encode([
             'success' => false,
@@ -102,7 +100,6 @@ ini_set('display_errors', 0);
         ]);
         exit;
     } catch (Error $e) {
-        error_log("Registration Error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode([
             'success' => false,

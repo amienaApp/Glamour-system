@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Include required files
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 
 $productModel = new Product();
@@ -54,6 +54,7 @@ try {
                 if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
                     $filters['subcategory'] = ucfirst($subcategory);
                 }
+                
                 
                 // Size filter
                 if (!empty($input['sizes']) && is_array($input['sizes'])) {

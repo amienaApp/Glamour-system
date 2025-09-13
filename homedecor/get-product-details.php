@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../config/mongodb.php';
+require_once '../config1/mongodb.php';
 require_once '../models/Product.php';
 
 if (!isset($_GET['product_id'])) {

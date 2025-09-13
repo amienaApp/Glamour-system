@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/mongodb.php';
+require_once __DIR__ . '/../../config1/mongodb.php';
 require_once __DIR__ . '/../../models/Product.php';
 
 $productModel = new Product();
@@ -23,11 +23,11 @@ if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
 if ($brand) $filters['brand'] = $brand;
 if ($size) $filters['size'] = $size;
-if ($minPrice !== null && $maxPrice !== null) {
-    $filters['price'] = [
-        '$gte' => floatval($minPrice),
-        '$lte' => floatval($maxPrice)
-    ];
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
 }
 
 // Build sort options
@@ -110,7 +110,11 @@ foreach ($allPerfumes as $perfume) {
             <?php foreach ($perfumes as $index => $perfume): ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $perfume['_id']; ?>" 
-                     data-gender="<?php echo htmlspecialchars($perfume['gender'] ?? ''); ?>" 
+                     data-gender="<?php echo htmlspecialchars($perfume['gender'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($perfume['sizes'] ?? $perfume['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($perfume['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($perfume['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($perfume['options'] ?? [])); ?>" 
                      data-brand="<?php echo htmlspecialchars($perfume['brand'] ?? ''); ?>" 
                      data-size="<?php echo htmlspecialchars($perfume['size'] ?? ''); ?>" 
                      data-price="<?php echo $perfume['price']; ?>">
@@ -182,7 +186,7 @@ foreach ($allPerfumes as $perfume) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                 </div>
-                <button class="heart-button">
+                <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
                     <i class="fas fa-heart"></i>
                 </button>
                 <div class="product-actions">
@@ -378,7 +382,6 @@ function loadPerfumes() {
 
 // Function to add to cart from quick view
 function addToCartFromQuickView(productId, productName) {
-    console.log('Adding to cart from quick view:', productName);
     
     fetch('../cart-api.php', {
         method: 'POST',
@@ -414,7 +417,6 @@ function addToCartFromQuickView(productId, productName) {
 // Function to add to cart (legacy - now handled by script.js)
 function addToCart(productId) {
     // This function is kept for compatibility but the actual functionality is in script.js
-    console.log('Legacy addToCart called for product ID:', productId);
 }
 
 // Function to show notifications in quick view

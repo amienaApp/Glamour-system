@@ -1,37 +1,57 @@
+
 <?php
+// Suppress all output and errors to ensure clean JSON response
+error_reporting(0);
+ini_set('display_errors', 0);
+ob_start();
+
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../config/mongodb.php';
+require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/../models/Category.php';
 
-$categoryModel = new Category();
-
-if (isset($_GET['category'])) {
-    $categoryName = $_GET['category'];
-    
-    // Get all categories
-    $categories = $categoryModel->getAll();
-    
-    // Find the selected category and return its subcategories
-    foreach ($categories as $category) {
-        if ($category['name'] === $categoryName) {
-            echo json_encode([
-                'success' => true,
-                'subcategories' => $category['subcategories'] ?? []
-            ]);
-            exit;
-        }
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $categoryName = $_POST['category'] ?? '';
+    } else {
+        $categoryName = $_GET['category'] ?? '';
     }
     
-    // If category not found, return empty array
+    
+    if (empty($categoryName)) {
+        ob_clean();
+        echo json_encode([
+            'success' => false,
+            'message' => 'Category name is required. Received: ' . json_encode($_GET) . ' | ' . json_encode($_POST)
+        ]);
+        exit;
+    }
+    
+    $categoryModel = new Category();
+    
+    // Use the getSubcategories method directly
+    $subcategories = $categoryModel->getSubcategories($categoryName);
+    
+    if (empty($subcategories)) {
+        ob_clean();
+        echo json_encode([
+            'success' => false,
+            'message' => 'No subcategories found for: ' . $categoryName
+        ]);
+        exit;
+    }
+    
+    ob_clean();
     echo json_encode([
         'success' => true,
-        'subcategories' => []
+        'subcategories' => $subcategories
     ]);
-} else {
+    
+} catch (Exception $e) {
+    ob_clean();
     echo json_encode([
         'success' => false,
-        'error' => 'Category parameter is required'
+        'message' => 'Error loading subcategories: ' . $e->getMessage()
     ]);
 }
 ?>
