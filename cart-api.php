@@ -218,6 +218,8 @@ try {
             case 'place_order':
                 $cart = $cartModel->getCart($defaultUserId);
                 
+
+                
                 if (empty($cart['items'])) {
                     throw new Exception('Cart is empty');
                 }
@@ -231,25 +233,14 @@ try {
                 
                 $orderId = $orderModel->createOrder($defaultUserId, $cart, $orderDetails);
                 
+
+                
                 if ($orderId) {
-                    // For cash on delivery, clear cart immediately
-                    $paymentMethod = $input['payment_method'] ?? 'cash_on_delivery';
-                    if ($paymentMethod === 'cash_on_delivery') {
-                        $cartCleared = $cartModel->clearCart($defaultUserId);
-                        $response = [
-                            'success' => true,
-                            'message' => $cartCleared ? 'Order placed successfully! Your cart has been cleared.' : 'Order placed successfully!',
-                            'order_id' => $orderId,
-                            'cart_cleared' => $cartCleared
-                        ];
-                    } else {
-                        $response = [
-                            'success' => true,
-                            'message' => 'Order placed successfully! Please proceed to payment.',
-                            'order_id' => $orderId,
-                            'cart_cleared' => false
-                        ];
-                    }
+                    $response = [
+                        'success' => true,
+                        'message' => 'Order placed successfully!',
+                        'order_id' => $orderId
+                    ];
                 } else {
                     throw new Exception('Failed to place order');
                 }
@@ -300,29 +291,6 @@ try {
                     'cart_total' => $summary['total']
                 ];
                 break;
-                
-            case 'clear_cart_after_payment':
-                $orderId = $input['order_id'] ?? '';
-                $userId = $input['user_id'] ?? $defaultUserId;
-                
-                if (empty($orderId)) {
-                    throw new Exception('Order ID is required');
-                }
-                
-                // Clear the cart
-                $success = $cartModel->clearCart($userId);
-                
-                if ($success) {
-                    $response = [
-                        'success' => true,
-                        'message' => 'Cart cleared successfully',
-                        'cart_count' => 0
-                    ];
-                } else {
-                    throw new Exception('Failed to clear cart');
-                }
-                break;
-                
                 
             default:
                 throw new Exception('Invalid action');

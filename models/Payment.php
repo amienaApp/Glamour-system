@@ -89,11 +89,10 @@ class Payment {
         // Update order status if payment is successful
         if ($result && $result['success']) {
             $this->updateOrderStatus($payment['order_id'], 'confirmed');
-            
-            // Clear the user's cart after successful payment
-            $this->clearUserCart($payment['user_id'], $payment['order_id']);
-            
-            $result['message'] = "🎉 Congratulations! Your order is successful! Your cart has been cleared.";
+            $cartCleared = $this->clearUserCart($payment['user_id']);
+            if (!$cartCleared) {
+            }
+            $result['message'] = "🎉 Congratulations! Your order is successful!";
         }
 
         return $result;
@@ -395,29 +394,12 @@ class Payment {
     /**
      * Clear user's cart after successful payment
      */
-    private function clearUserCart($userId, $orderId) {
+    private function clearUserCart($userId) {
         try {
-            // Directly clear the cart using the Cart model
             require_once __DIR__ . '/Cart.php';
             $cartModel = new Cart();
-            
-            // Try different user ID formats to ensure we clear the right cart
-            $cleared = $cartModel->clearCart($userId);
-            
-            if (!$cleared && strpos($userId, 'session_') === 0) {
-                // Try without session_ prefix
-                $sessionId = str_replace('session_', '', $userId);
-                $cleared = $cartModel->clearCart($sessionId);
-            }
-            
-            if (!$cleared) {
-                // Try with session_ prefix
-                $cleared = $cartModel->clearCart('session_' . $userId);
-            }
-            
-            return $cleared;
+            return $cartModel->clearCart($userId);
         } catch (Exception $e) {
-            error_log("Cart clearing failed for user ID: $userId, Error: " . $e->getMessage());
             return false;
         }
     }
