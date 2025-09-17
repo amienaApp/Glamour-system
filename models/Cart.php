@@ -458,6 +458,17 @@ class Cart {
     }
 
     /**
+     * Get cart summary (item count and total)
+     */
+    public function getCartSummary($userId) {
+        $cart = $this->getCart($userId);
+        return [
+            'item_count' => $cart['item_count'],
+            'total' => $cart['total']
+        ];
+    }
+
+    /**
      * Transfer cart from one user ID to another
      */
     public function transferCart($fromUserId, $toUserId) {

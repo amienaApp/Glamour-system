@@ -81,9 +81,15 @@ try {
     $orderModel = new Order();
 } catch (Exception $e) {
     ob_end_clean();
+    error_log("Cart API Error: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection error: ' . $e->getMessage()
+        'message' => 'Database connection error: ' . $e->getMessage(),
+        'debug' => [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]
     ]);
     exit();
 }

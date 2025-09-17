@@ -1,0 +1,388 @@
+/**
+ * Sold Out Functionality CSS
+ * Comprehensive styling for sold out products across all pages
+ */
+
+/* ===== SOLD OUT PRODUCT CARD STYLES ===== */
+
+.product-card.sold-out {
+    opacity: 0.7;
+    position: relative;
+    transition: opacity 0.3s ease;
+}
+
+.product-card.sold-out::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    pointer-events: none;
+    border-radius: 8px;
+}
+
+.product-card.sold-out .product-image {
+    filter: grayscale(30%);
+    transition: filter 0.3s ease;
+}
+
+.product-card.sold-out .product-name {
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.product-card.sold-out .product-price {
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+/* ===== SOLD OUT BUTTON STYLES ===== */
+
+.sold-out-btn {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+    border: 1px solid #d1d5db !important;
+    transition: none !important;
+    pointer-events: none;
+}
+
+.sold-out-btn:hover {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+.sold-out-btn:active {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+.sold-out-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* ===== QUICK VIEW SOLD OUT STYLES ===== */
+
+#add-to-bag-quick.sold-out-btn {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+    border: 1px solid #d1d5db !important;
+    transition: none !important;
+    pointer-events: none;
+}
+
+#add-to-bag-quick.sold-out-btn:hover {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+#add-to-bag-quick.sold-out-btn:active {
+    background-color: #9ca3af !important;
+    color: #6b7280 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+#add-to-bag-quick.sold-out-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* ===== STOCK STATUS STYLES ===== */
+
+.quick-view-stock.sold-out {
+    color: #e53e3e !important;
+    font-weight: 600 !important;
+}
+
+.quick-view-stock.low-stock {
+    color: #f59e0b !important;
+    font-weight: 600 !important;
+}
+
+.quick-view-stock.in-stock {
+    color: #38a169 !important;
+    font-weight: 500 !important;
+}
+
+/* ===== SOLD OUT TEXT STYLES ===== */
+
+.sold-out-text {
+    color: #e53e3e !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin-top: 5px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.low-stock-text {
+    color: #f59e0b !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    margin-top: 5px !important;
+    text-align: center !important;
+}
+
+/* ===== PRODUCT AVAILABILITY STYLES ===== */
+
+.product-availability {
+    margin-top: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.product-availability.sold-out-text {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+.product-availability.low-stock-text {
+    background-color: #fffbeb;
+    border: 1px solid #fed7aa;
+    color: #d97706;
+}
+
+/* ===== HEART BUTTON DISABLED STATE ===== */
+
+.product-card.sold-out .heart-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.product-card.sold-out .heart-button:hover {
+    transform: none;
+    background-color: #fff;
+    color: #ccc;
+}
+
+.product-card.sold-out .heart-button i {
+    color: #ccc;
+}
+
+/* ===== QUICK VIEW BUTTON STILL WORKS ===== */
+
+.product-card.sold-out .quick-view {
+    opacity: 1;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.product-card.sold-out .quick-view:hover {
+    background-color: #000;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ===== SIZE SELECTION SOLD OUT STYLES ===== */
+
+.quick-view-size-btn.sold-out {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    border: 1px solid #e5e5e5;
+    opacity: 0.6;
+}
+
+.quick-view-size-btn.sold-out:hover {
+    background-color: #f5f5f5;
+    color: #999;
+    border-color: #e5e5e5;
+    transform: none;
+}
+
+/* ===== COLOR SELECTION SOLD OUT STYLES ===== */
+
+.color-circle.sold-out {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.color-circle.sold-out::after {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #e53e3e;
+    font-weight: bold;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== SOLD OUT NOTIFICATION STYLES ===== */
+
+.sold-out-notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: #e53e3e;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 300px;
+}
+
+.sold-out-notification .notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sold-out-notification i {
+    font-size: 16px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+    .sold-out-notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
+    }
+    
+    .sold-out-notification.show {
+        transform: translateY(0);
+    }
+    
+    .product-availability {
+        font-size: 0.8rem;
+        padding: 3px 6px;
+    }
+    
+    .sold-out-text {
+        font-size: 0.8rem;
+    }
+    
+    .low-stock-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-card.sold-out {
+        opacity: 0.6;
+    }
+    
+    .product-card.sold-out::before {
+        background: rgba(0, 0, 0, 0.15);
+    }
+    
+    .sold-out-btn {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+}
+
+/* ===== ANIMATION STYLES ===== */
+
+@keyframes soldOutPulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.5; }
+    100% { opacity: 0.7; }
+}
+
+.product-card.sold-out.animate {
+    animation: soldOutPulse 2s infinite;
+}
+
+/* ===== ACCESSIBILITY STYLES ===== */
+
+.product-card.sold-out:focus-within {
+    outline: 2px solid #e53e3e;
+    outline-offset: 2px;
+}
+
+.sold-out-btn:focus {
+    outline: 2px solid #e53e3e;
+    outline-offset: 2px;
+}
+
+/* ===== PRINT STYLES ===== */
+
+@media print {
+    .product-card.sold-out {
+        opacity: 1;
+        filter: grayscale(100%);
+    }
+    
+    .product-card.sold-out::before {
+        display: none;
+    }
+    
+    .sold-out-text {
+        color: #000 !important;
+        font-weight: bold !important;
+    }
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+
+@media (prefers-color-scheme: dark) {
+    .product-card.sold-out .product-name {
+        color: #666;
+    }
+    
+    .product-card.sold-out .product-price {
+        color: #666;
+    }
+    
+    .sold-out-btn {
+        background-color: #4a5568 !important;
+        color: #a0aec0 !important;
+        border-color: #718096 !important;
+    }
+    
+    .product-availability.sold-out-text {
+        background-color: #2d1b1b;
+        border-color: #742a2a;
+        color: #fc8181;
+    }
+    
+    .product-availability.low-stock-text {
+        background-color: #2d2419;
+        border-color: #744210;
+        color: #f6ad55;
+    }
+}
+

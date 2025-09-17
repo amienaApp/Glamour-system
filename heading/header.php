@@ -176,6 +176,42 @@ $regionOptions = [
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">0</span>
             </div>
+            
+            <!-- Fallback cart functions -->
+            <script>
+            // Fallback functions in case cart notification manager doesn't load
+            if (typeof window.toggleCartDropdown === 'undefined') {
+                window.toggleCartDropdown = function() {
+                    console.log('Cart dropdown clicked - using fallback');
+                    // Check if we're in a subdirectory
+                    const currentPath = window.location.pathname;
+                    const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                           currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                           currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                           currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                           currentPath.includes('/bagsfolder/');
+                    
+                    if (isInSubdirectory) {
+                        window.location.href = '../cart-unified.php';
+                    } else {
+                        window.location.href = 'cart-unified.php';
+                    }
+                };
+            }
+            
+            if (typeof window.addToCart === 'undefined') {
+                window.addToCart = function(productId, quantity, color, size, price) {
+                    console.log('Add to cart called - using fallback');
+                    // Try to use cart notification manager if available
+                    if (window.cartNotificationManager) {
+                        return window.cartNotificationManager.addToCart(productId, quantity, color, size, price);
+                    }
+                    // Fallback: just show notification
+                    alert('Product added to cart! (Fallback mode)');
+                    return false;
+                };
+            }
+            </script>
         </div>
 
         <!-- Somalia Flag - Compact (Disabled) -->

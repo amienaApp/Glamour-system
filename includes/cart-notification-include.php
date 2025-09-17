@@ -36,14 +36,29 @@ function getCartAssetPath($path) {
     const scriptPath = isInSubdirectory ? '../scripts/cart-notification-manager.js' : 'scripts/cart-notification-manager.js';
     
     const script = document.createElement('script');
-    script.src = scriptPath;
+    script.src = scriptPath + '?v=' + Date.now(); // Add cache busting
+    script.onload = function() {
+        console.log('Cart notification manager loaded successfully from:', scriptPath);
+    };
     script.onerror = function() {
         console.error('Failed to load cart notification manager from:', scriptPath);
         // Try alternative path
         const altScript = document.createElement('script');
-        altScript.src = '../scripts/cart-notification-manager.js';
+        altScript.src = '../scripts/cart-notification-manager.js?v=' + Date.now();
+        altScript.onload = function() {
+            console.log('Cart notification manager loaded from alternative path');
+        };
         altScript.onerror = function() {
             console.error('Failed to load cart notification manager from alternative path');
+            // Create fallback functions
+            window.toggleCartDropdown = function() {
+                console.warn('Cart notification manager not available - using fallback');
+                window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
+            };
+            window.addToCart = function() {
+                console.warn('Cart notification manager not available - add to cart disabled');
+                return false;
+            };
         };
         document.head.appendChild(altScript);
     };

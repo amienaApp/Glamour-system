@@ -14,6 +14,7 @@ session_start();
     <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/sold-out.css?v=<?php echo time(); ?>">
    
 </head>
 <body>
