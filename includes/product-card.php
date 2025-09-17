@@ -9,8 +9,8 @@ function renderProductCard($product) {
     $salePrice = $product['salePrice'] ?? null;
     $isOnSale = $product['sale'] ?? false;
     $isFeatured = $product['featured'] ?? false;
-    $stock = $product['stock'] ?? 0;
-    $isAvailable = $product['available'] ?? true;
+    $stock = isset($product['stock']) ? (int)$product['stock'] : 0;
+    $isAvailable = isset($product['available']) ? $product['available'] : true;
     $isSoldOut = $stock <= 0 || !$isAvailable;
     
     // Determine display price
@@ -84,11 +84,11 @@ function renderProductCard($product) {
             </div>
             
             <!-- Product Availability Status -->
-            <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut ? '' : 'display: none;'; ?>">
+            <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ''; ?>" style="<?php echo $isSoldOut || ($stock > 0 && $stock <= 2) ? '' : 'display: none;'; ?>">
                 <?php if ($isSoldOut): ?>
-                    SOLD OUT
-                <?php elseif ($stock <= 2): ?>
-                    ⚠️ Only <?php echo $stock; ?> left in stock!
+                    <span style="color: #dc3545; font-weight: bold;">SOLD OUT</span>
+                <?php elseif ($stock > 0 && $stock <= 2): ?>
+                    <span style="color: #ffc107; font-weight: bold;">⚠️ Only <?php echo $stock; ?> left in stock!</span>
                 <?php endif; ?>
             </div>
             

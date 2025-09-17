@@ -9,6 +9,7 @@ session_start();
 require_once 'models/Order.php';
 require_once 'models/Payment.php';
 require_once 'models/Product.php';
+require_once 'models/Cart.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -21,11 +22,28 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $orderModel = new Order();
 $paymentModel = new Payment();
+$cartModel = new Cart();
 
 $orders = $orderModel->getUserOrders($userId);
 
-// Check if user was redirected after payment
-$paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] === 'true';
+// Check if user was redirected after payment (using session variable)
+$paymentSuccess = isset($_SESSION['payment_success']) && $_SESSION['payment_success'] === true;
+
+// Clear cart if payment was successful
+if ($paymentSuccess) {
+    $cartCleared = $cartModel->clearCart($userId);
+    if ($cartCleared) {
+        // Log successful cart clearing
+        error_log("Cart cleared successfully for user: {$userId} after payment success on orders page");
+    } else {
+        // Log failed cart clearing
+        error_log("Failed to clear cart for user: {$userId} after payment success on orders page");
+    }
+    
+    // Clear the payment success flag from session after processing
+    unset($_SESSION['payment_success']);
+    unset($_SESSION['payment_success_time']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -348,12 +366,6 @@ $paymentSuccess = isset($_GET['payment_success']) && $_GET['payment_success'] ==
             <p>Track your order status and history</p>
         </div>
 
-        <?php if ($paymentSuccess): ?>
-        <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #388E3C; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-            <i class="fas fa-check-circle"></i>
-            <strong>Payment Successful!</strong> Your order has been placed successfully. You can track its status here.
-        </div>
-        <?php endif; ?>
 
         <div class="orders-container">
             <?php if (empty($orders)): ?>

@@ -27,6 +27,9 @@ $orderModel = new Order();
 $cartUserId = $userId ?: 'session_' . session_id();
 $cart = $cartModel->getCart($cartUserId);
 
+// Force refresh cart data to prevent caching issues
+$cart = $cartModel->getCart($cartUserId);
+
 // Get return URL from session or default to main page
 $returnUrl = $_SESSION['return_url'] ?? 'index.php';
 
@@ -47,6 +50,8 @@ unset($_SESSION['return_url']);
 // Get current page mode
 $mode = $_GET['mode'] ?? 'view'; // view, add, checkout
 $productId = $_GET['product_id'] ?? null;
+
+// Note: Payment success handling is now done on orders.php page
 
 // Get product details if in add mode
 $product = null;
@@ -696,15 +701,6 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
 </head>
 <body>
     <div class="container">
-        <?php
-        // Handle messages from URL parameters
-        $message = $_GET['message'] ?? '';
-        if ($message === 'empty_cart'): ?>
-        <div class="alert alert-warning" style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeaa7;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <strong>Empty Cart:</strong> You need to add items to your cart before proceeding to payment.
-        </div>
-        <?php endif; ?>
         <!-- Header -->
         <div class="header">
             <h1>
@@ -718,6 +714,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 ?>
             </h1>
         </div>
+
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">

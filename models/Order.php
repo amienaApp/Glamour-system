@@ -67,6 +67,7 @@ class Order {
             'billing_address' => $orderDetails['billing_address'] ?? '',
             'payment_method' => $orderDetails['payment_method'] ?? 'cash_on_delivery',
             'notes' => $orderDetails['notes'] ?? '',
+            'expires_at' => date('Y-m-d H:i:s', strtotime('+2 hours')), // 2 hours expiry
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -76,8 +77,8 @@ class Order {
         $result = $this->collection->insertOne($orderData);
         
         if ($result->getInsertedId()) {
-            // Reduce stock for all items in the order (payment successful)
-            $this->reduceOrderStock($result->getInsertedId());
+            // DON'T reduce stock here - wait for payment confirmation
+            // Stock will be reduced only after successful payment
             return $result->getInsertedId();
         }
         
@@ -85,10 +86,64 @@ class Order {
     }
 
     /**
+     * Validate order items before creation
+     */
+    public function validateOrderItems($cartData) {
+        $productModel = new Product();
+        $cartItems = $this->toArray($cartData['items']);
+        
+        foreach ($cartItems as $item) {
+            $productId = $item['product_id'];
+            
+            // Convert string ID to ObjectId if needed
+            if (is_string($productId)) {
+                try {
+                    if (preg_match('/^[a-f\d]{24}$/i', $productId)) {
+                        $productId = new MongoDB\BSON\ObjectId($productId);
+                    }
+                } catch (Exception $e) {
+                    // Keep as string if conversion fails
+                }
+            }
+            
+            $product = $productModel->getById($productId);
+            
+            // Skip validation for test products (string IDs)
+            if (is_string($item['product_id']) && !preg_match('/^[a-f\d]{24}$/i', $item['product_id'])) {
+                continue; // Skip validation for test products
+            }
+            
+            if (!$product) {
+                throw new Exception("Product {$item['product_id']} no longer exists");
+            }
+            
+            // Check if product is available using your system's logic
+            $stock = (int)($product['stock'] ?? 0);
+            $available = $product['available'] ?? true;
+            
+            // Check if product is explicitly marked as unavailable
+            if ($available === false) {
+                throw new Exception("Product '{$product['name']}' is sold out");
+            }
+            
+            // Check if product is out of stock
+            if ($stock <= 0) {
+                throw new Exception("Product '{$product['name']}' is sold out");
+            }
+            
+            if (isset($product['stock']) && $product['stock'] < $item['quantity']) {
+                throw new Exception("Insufficient stock for '{$product['name']}'. Available: {$product['stock']}, Requested: {$item['quantity']}");
+            }
+        }
+        
+        return true;
+    }
+
+    /**
      * Reduce product stock when order is successfully placed
      */
     private function reduceOrderStock($orderId) {
-        $order = $this->collection->findOne(['_id' => $orderId]);
+        $order = $this->getById($orderId);
         
         if (!$order || empty($order['items'])) {
             return false;
@@ -104,20 +159,34 @@ class Order {
                 $productId = $item['product_id'];
                 if (is_string($productId)) {
                     try {
-                        $productId = new MongoDB\BSON\ObjectId($productId);
+                        if (preg_match('/^[a-f\d]{24}$/i', $productId)) {
+                            $productId = new MongoDB\BSON\ObjectId($productId);
+                        }
                     } catch (Exception $e) {
                         // If conversion fails, try with string
                     }
                 }
                 
-                // Reduce stock
-                $productCollection->updateOne(
-                    ['_id' => $productId],
-                    [
-                        '$inc' => ['stock' => -$quantity],
-                        '$set' => ['updated_at' => date('Y-m-d H:i:s')]
-                    ]
-                );
+                // First check current stock to ensure we don't go below zero
+                $product = $productCollection->findOne(['_id' => $productId]);
+                if ($product) {
+                    $currentStock = (int)($product['stock'] ?? 0);
+                    $newStock = max(0, $currentStock - $quantity); // Ensure stock doesn't go below 0
+                    
+                    // Update stock
+                    $productCollection->updateOne(
+                        ['_id' => $productId],
+                        [
+                            '$set' => [
+                                'stock' => $newStock,
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ]
+                        ]
+                    );
+                    
+                    // Log the stock reduction for debugging
+                    error_log("Stock reduced for product {$item['product_id']}: {$currentStock} -> {$newStock} (reduced by {$quantity})");
+                }
             }
         }
         
@@ -144,20 +213,34 @@ class Order {
                 $productId = $item['product_id'];
                 if (is_string($productId)) {
                     try {
-                        $productId = new MongoDB\BSON\ObjectId($productId);
+                        if (preg_match('/^[a-f\d]{24}$/i', $productId)) {
+                            $productId = new MongoDB\BSON\ObjectId($productId);
+                        }
                     } catch (Exception $e) {
                         // If conversion fails, try with string
                     }
                 }
                 
-                // Restore stock
-                $productCollection->updateOne(
-                    ['_id' => $productId],
-                    [
-                        '$inc' => ['stock' => $quantity],
-                        '$set' => ['updated_at' => date('Y-m-d H:i:s')]
-                    ]
-                );
+                // Get current stock and restore
+                $product = $productCollection->findOne(['_id' => $productId]);
+                if ($product) {
+                    $currentStock = (int)($product['stock'] ?? 0);
+                    $newStock = $currentStock + $quantity;
+                    
+                    // Update stock
+                    $productCollection->updateOne(
+                        ['_id' => $productId],
+                        [
+                            '$set' => [
+                                'stock' => $newStock,
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ]
+                        ]
+                    );
+                    
+                    // Log the stock restoration for debugging
+                    error_log("Stock restored for product {$item['product_id']}: {$currentStock} -> {$newStock} (restored {$quantity})");
+                }
             }
         }
         
@@ -480,6 +563,70 @@ class Order {
         
         $result = $this->collection->deleteOne(['_id' => $orderId]);
         return $result->getDeletedCount() > 0;
+    }
+
+    /**
+     * Check and expire old pending orders
+     */
+    public function expireOldOrders() {
+        $expiredOrders = $this->collection->find([
+            'status' => 'pending',
+            'expires_at' => ['$lt' => date('Y-m-d H:i:s')]
+        ]);
+        
+        $expiredCount = 0;
+        foreach ($expiredOrders as $order) {
+            $this->updateOrderStatus($order['_id'], 'expired');
+            $expiredCount++;
+        }
+        
+        return $expiredCount;
+    }
+
+    /**
+     * Check if order is expired
+     */
+    public function isOrderExpired($orderId) {
+        $order = $this->getById($orderId);
+        if (!$order) {
+            return true;
+        }
+        
+        if ($order['status'] !== 'pending') {
+            return false; // Only pending orders can be expired
+        }
+        
+        return isset($order['expires_at']) && $order['expires_at'] < date('Y-m-d H:i:s');
+    }
+
+    /**
+     * Confirm order and reduce stock (called after successful payment)
+     */
+    public function confirmOrderAndReduceStock($orderId) {
+        try {
+            // Check if order is expired
+            if ($this->isOrderExpired($orderId)) {
+                throw new Exception('Order has expired. Please place a new order.');
+            }
+            
+            // Update order status to confirmed
+            $statusUpdated = $this->updateOrderStatus($orderId, 'confirmed');
+            if (!$statusUpdated) {
+                return false;
+            }
+            
+            // Now reduce stock
+            $stockReduced = $this->reduceOrderStock($orderId);
+            if (!$stockReduced) {
+                return false;
+            }
+            
+            return true;
+            
+        } catch (Exception $e) {
+            error_log("Error in confirmOrderAndReduceStock for order {$orderId}: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
