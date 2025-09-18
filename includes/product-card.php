@@ -6,6 +6,37 @@ function renderProductCard($product) {
     $color = $product['color'] ?? '#000000';
     $frontImage = $product['images']['front'] ?? '';
     $backImage = $product['images']['back'] ?? '';
+    
+    // Add fallback images if the specified images don't exist
+    $fallbackImage = '../img/placeholder.jpg'; // Default placeholder image
+    
+    // Check for specific problematic image patterns and replace them
+    if (strpos($frontImage, '1757680016') !== false || strpos($frontImage, 'uploads/products/') !== false) {
+        $frontImage = $fallbackImage;
+    }
+    if (strpos($backImage, '1757680016') !== false || strpos($backImage, 'uploads/products/') !== false) {
+        $backImage = $fallbackImage;
+    }
+    
+    // Check if front image exists, use fallback if not
+    if ($frontImage && $frontImage !== $fallbackImage) {
+        $frontImagePath = str_replace('../', '', $frontImage);
+        if (!file_exists($frontImagePath) || !is_file($frontImagePath)) {
+            $frontImage = $fallbackImage;
+        }
+    } elseif (!$frontImage) {
+        $frontImage = $fallbackImage;
+    }
+    
+    // Check if back image exists, use fallback if not
+    if ($backImage && $backImage !== $fallbackImage) {
+        $backImagePath = str_replace('../', '', $backImage);
+        if (!file_exists($backImagePath) || !is_file($backImagePath)) {
+            $backImage = $fallbackImage;
+        }
+    } elseif (!$backImage) {
+        $backImage = $fallbackImage;
+    }
     $salePrice = $product['salePrice'] ?? null;
     $isOnSale = $product['sale'] ?? false;
     $isFeatured = $product['featured'] ?? false;

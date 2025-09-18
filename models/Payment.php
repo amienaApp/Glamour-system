@@ -88,10 +88,10 @@ class Payment {
 
         // Update order status if payment is successful
         if ($result && $result['success']) {
-            // Confirm order and reduce stock (new professional method)
-            $orderConfirmed = $this->confirmOrderAndReduceStock($payment['order_id']);
+            // Confirm order (stock already reduced when items were added to cart)
+            $orderConfirmed = $this->confirmOrder($payment['order_id']);
             if (!$orderConfirmed) {
-                error_log("Warning: Failed to confirm order and reduce stock for order {$payment['order_id']}");
+                error_log("Warning: Failed to confirm order for order {$payment['order_id']}");
             }
             
             // Cart will be cleared on orders.php page after redirect
@@ -467,6 +467,19 @@ class Payment {
             
         } catch (Exception $e) {
             error_log("Force clear cart failed for user {$userId}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Confirm order (stock already reduced when items were added to cart)
+     */
+    private function confirmOrder($orderId) {
+        try {
+            $orderModel = new Order();
+            return $orderModel->updateOrderStatus($orderId, 'confirmed');
+        } catch (Exception $e) {
+            error_log("Error confirming order {$orderId}: " . $e->getMessage());
             return false;
         }
     }

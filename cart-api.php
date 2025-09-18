@@ -81,15 +81,9 @@ try {
     $orderModel = new Order();
 } catch (Exception $e) {
     ob_end_clean();
-    error_log("Cart API Error: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => 'Database connection error: ' . $e->getMessage(),
-        'debug' => [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString()
-        ]
+        'message' => 'Database connection error: ' . $e->getMessage()
     ]);
     exit();
 }
@@ -304,13 +298,23 @@ try {
                 break;
                 
             case 'get_cart_summary':
-                // OPTIMIZATION: Fast cart summary for header display
-                $summary = $cartModel->getCartSummary($defaultUserId);
-                $response = [
-                    'success' => true,
-                    'cart_count' => $summary['item_count'],
-                    'cart_total' => $summary['total']
-                ];
+                // OPTIMIZATION: Ultra-fast cart summary for header display
+                try {
+                    $summary = $cartModel->getCartSummary($defaultUserId);
+                    $response = [
+                        'success' => true,
+                        'cart_count' => $summary['item_count'],
+                        'cart_total' => $summary['total']
+                    ];
+                } catch (Exception $e) {
+                    // Fallback to basic count if summary fails
+                    $count = $cartModel->getCartItemCount($defaultUserId);
+                    $response = [
+                        'success' => true,
+                        'cart_count' => $count,
+                        'cart_total' => 0
+                    ];
+                }
                 break;
                 
             default:

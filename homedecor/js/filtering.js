@@ -79,13 +79,13 @@ class HomeDecorFilter {
         // Debug: Log product data
         if (this.allProducts.length > 0) {
             // console.log('Sample product data:', {
-                id: this.allProducts[0].dataset.productId,
-                category: this.allProducts[0].dataset.category,
-                price: this.allProducts[0].dataset.price,
-                color: this.allProducts[0].dataset.color,
-                material: this.allProducts[0].dataset.material,
-                availability: this.allProducts[0].dataset.availability
-            });
+            //     id: this.allProducts[0].dataset.productId,
+            //     category: this.allProducts[0].dataset.category,
+            //     price: this.allProducts[0].dataset.price,
+            //     color: this.allProducts[0].dataset.color,
+            //     material: this.allProducts[0].dataset.material,
+            //     availability: this.allProducts[0].dataset.availability
+            // });
         }
     }
     

@@ -60,6 +60,9 @@ $regionOptions = [
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+<!-- INSTANT Cart Preloader - Loads first for zero delay -->
+<script src="<?php echo getAssetPath('scripts/cart-preloader.js'); ?>"></script>
+
 <!-- Top Navigation Bar -->
 <nav class="top-nav">
     <!-- Logo Container - Left Side -->
@@ -172,46 +175,10 @@ $regionOptions = [
                     </div>
                 </div>
             </div>
-            <div class="shopping-cart" title="Cart" style="position: relative; text-decoration: none; color: inherit; cursor: pointer;" onclick="toggleCartDropdown()">
+            <div class="shopping-cart" title="Cart" style="position: relative; text-decoration: none; color: inherit; cursor: pointer;" onclick="window.location.href='<?php echo getAssetPath('cart-unified.php'); ?>'; return false;">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">0</span>
             </div>
-            
-            <!-- Fallback cart functions -->
-            <script>
-            // Fallback functions in case cart notification manager doesn't load
-            if (typeof window.toggleCartDropdown === 'undefined') {
-                window.toggleCartDropdown = function() {
-                    console.log('Cart dropdown clicked - using fallback');
-                    // Check if we're in a subdirectory
-                    const currentPath = window.location.pathname;
-                    const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                                           currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                                           currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                           currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
-                                           currentPath.includes('/bagsfolder/');
-                    
-                    if (isInSubdirectory) {
-                        window.location.href = '../cart-unified.php';
-                    } else {
-                        window.location.href = 'cart-unified.php';
-                    }
-                };
-            }
-            
-            if (typeof window.addToCart === 'undefined') {
-                window.addToCart = function(productId, quantity, color, size, price) {
-                    console.log('Add to cart called - using fallback');
-                    // Try to use cart notification manager if available
-                    if (window.cartNotificationManager) {
-                        return window.cartNotificationManager.addToCart(productId, quantity, color, size, price);
-                    }
-                    // Fallback: just show notification
-                    alert('Product added to cart! (Fallback mode)');
-                    return false;
-                };
-            }
-            </script>
         </div>
 
         <!-- Somalia Flag - Compact (Disabled) -->
@@ -221,7 +188,7 @@ $regionOptions = [
     </div>
 </nav>
 
-<!-- Cart Notification Manager will be loaded by cart-notification-include.php -->
+    <!-- Cart Notification Manager will be loaded by cart-notification-include.php -->
 
 <script>
 // Initialize cart functionality
@@ -229,32 +196,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartIcon = document.querySelector('.shopping-cart');
     if (cartIcon) {
         
-        // Add click event listener for cart functionality (OPTIMIZED)
+        // Add click event listener for cart functionality (INSTANT)
         cartIcon.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // OPTIMIZATION: Use cart notification manager for instant loading
-            if (window.cartNotificationManager) {
-                window.cartNotificationManager.openCartPage();
-            } else {
-                // Fallback: Show loading state and redirect
-                const originalHTML = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                this.style.cursor = 'wait';
-                
-                // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
-                const currentPath = window.location.pathname;
-                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
-                                       currentPath.includes('/bagsfolder/');
-                
-                // Small delay to show loading state
-                setTimeout(() => {
-                    window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
-                }, 100);
-            }
+            // Get cart path
+            const currentPath = window.location.pathname;
+            const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                   currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                   currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                   currentPath.includes('/bagsfolder/');
+            
+            // INSTANT redirect - no visual changes, no delays, no waiting
+            window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
         });
         
         // Add a small tooltip to show cart is clickable

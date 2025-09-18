@@ -24,11 +24,9 @@ if ($subcategory) {
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="../styles/sold-out.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
@@ -37,27 +35,27 @@ if ($subcategory) {
                 <!-- Image Bar Section -->
                 <div class="image-bar" >
                     <a href="men.php" class="image-item">
-                        <img src="../img/menn/men.jpg" alt="Men's Fashion">
+                        <img src="../img/men/shirts/14.jpg" alt="Men's Fashion">
                         <h3>Shop All</h3>
                     </a>
                     <a href="men.php?subcategory=shirts" class="image-item">
-                        <img src="../img//men/shirts/14.jpg" alt="men Fashion 13">
+                        <img src="../img/men/shirts/14.jpg" alt="men Fashion 13">
                         <h3>Shirts</h3>
                     </a>
                     <a href="men.php?subcategory=tshirts" class="image-item">
-                        <img src="../img/men/t-shirts/6.2.png" alt="men Fashion 14">
+                        <img src="../img/men/t-shirts/6.png" alt="men Fashion 14">
                         <h3>T-Shirts</h3>
                     </a>
                     <a href="men.php?subcategory=suits" class="image-item">
-                        <img src="../img/men/suits/5.6.jpg" alt="suit formal">
+                        <img src="../img/men/suits/5.avif" alt="suit formal">
                         <h3>Suits</h3>
                     </a>
                     <a href="men.php?subcategory=pants" class="image-item">
-                        <img src="../img/men/pants/9.1.jpg" alt=" pants">
+                        <img src="../img/men/pants/9.jpg" alt=" pants">
                         <h3>Pants</h3>
                     </a>
                     <a href="men.php?subcategory=shorts" class="image-item">
-                        <img src="../img/men/shorts/5.jpg" alt=" shorts">
+                        <img src="../img/men/shorts/1.jpg" alt=" shorts">
                         <h3>Shorts & Underwear</h3>
                     </a>
                   
@@ -69,7 +67,7 @@ if ($subcategory) {
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
-        <script src="scripts/simple-notification.js"></script>\n<script src="../reviews-manager.js"></script>
+        <script src="../reviews-manager.js"></script>
         <script src="../related-products.js"></script>
         
         <script>

@@ -23,12 +23,20 @@ $cartModel = new Cart();
 $productModel = new Product();
 $orderModel = new Order();
 
+// Get current page mode FIRST
+$mode = $_GET['mode'] ?? 'view'; // view, add, checkout
+
 // Get current cart (use session-based cart for unauthenticated users)
 $cartUserId = $userId ?: 'session_' . session_id();
-$cart = $cartModel->getCart($cartUserId);
 
-// Force refresh cart data to prevent caching issues
-$cart = $cartModel->getCart($cartUserId);
+// OPTIMIZATION: Load cart data only when needed
+$cart = null;
+if ($mode === 'view' || $mode === 'checkout') {
+    $cart = $cartModel->getCart($cartUserId);
+} else {
+    // For add mode, use minimal cart data
+    $cart = ['items' => [], 'total' => 0, 'item_count' => 0];
+}
 
 // Get return URL from session or default to main page
 $returnUrl = $_SESSION['return_url'] ?? 'index.php';
@@ -47,8 +55,7 @@ if (empty($returnUrl) || strpos($returnUrl, '..') !== false || strpos($returnUrl
 // Clear the return URL from session after using it
 unset($_SESSION['return_url']);
 
-// Get current page mode
-$mode = $_GET['mode'] ?? 'view'; // view, add, checkout
+// Get product ID for add mode
 $productId = $_GET['product_id'] ?? null;
 
 // Note: Payment success handling is now done on orders.php page
@@ -171,6 +178,32 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
             background: linear-gradient(135deg, #f8fbff 0%, #e6f3ff 100%);
             min-height: 100vh;
             color: #333;
+            /* OPTIMIZATION: Enable hardware acceleration */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        
+        /* OPTIMIZATION: Preload critical styles */
+        .shopping-cart {
+            transition: transform 0.1s ease, opacity 0.1s ease;
+        }
+        
+        .shopping-cart:hover {
+            transform: scale(1.05);
+        }
+        
+        .cart-count {
+            transition: all 0.2s ease;
+        }
+        
+        .cart-count-updated {
+            animation: cartPulse 0.3s ease;
+        }
+        
+        @keyframes cartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
         .container {
@@ -714,6 +747,11 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 ?>
             </h1>
         </div>
+        
+        <!-- OPTIMIZATION: Loading indicator for better UX -->
+        <div id="cart-loading" style="display: none; text-align: center; padding: 20px; color: #666;">
+            <i class="fas fa-spinner fa-spin"></i> Loading cart...
+        </div>
 
 
         <!-- Navigation Tabs -->
@@ -1082,8 +1120,26 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
     </div>
 
     <script>
+        // OPTIMIZATION: Progressive loading for better performance
         let currentAction = null;
         let currentCallback = null;
+        
+        // Preload critical functions
+        function preloadCriticalFunctions() {
+            // Preload modal functions
+            window.showModal = showModal;
+            window.closeModal = closeModal;
+            window.confirmAction = confirmAction;
+            
+            // Preload cart functions
+            window.removeItem = removeItem;
+            window.updateQuantity = updateQuantity;
+            window.clearCart = clearCart;
+            window.proceedToCheckout = proceedToCheckout;
+        }
+        
+        // Initialize preloading
+        preloadCriticalFunctions();
 
         // Modal functions
         function showModal(title, message, callback) {

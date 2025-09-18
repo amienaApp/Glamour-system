@@ -26,11 +26,9 @@ if ($subcategory) {
             <link rel="stylesheet" href="styles/featured-products.css?v=<?php echo time(); ?>">
         <link rel="stylesheet" href="styles/quick-view.css?v=<?php echo time(); ?>">
         <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="../styles/sold-out.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
@@ -63,10 +61,8 @@ if ($subcategory) {
                         <img src="../img/home-decor/artwork/21.jpg" alt="Artwork">
                         <h3>Artwork</h3>
                     </a>
-                    <a href="homedecor.php?subcategory=livingroom" class="image-item">
-                        <img src="../img/home-decor/livingroom/8.jpg" alt="Living Room">
-                        <h3>Living Room</h3>
-                    </a>
+                 
+                    
                 </div>
 
                 <div class="page-layout">
@@ -75,7 +71,7 @@ if ($subcategory) {
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
-        <script src="scripts/simple-notification.js"></script>\n<script src="../reviews-manager.js"></script>
+        <script src="../reviews-manager.js"></script>
         <script src="../related-products.js"></script>
         
         <script>
@@ -141,11 +137,11 @@ if ($subcategory) {
         }
         </script>
 
+
         <!-- Scripts -->
-        <script src="script.js?v=<?php echo time(); ?>"></script>
+        <script src="script.js?v=<?php echo time(); ?>" defer></script>
         <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
-        <script src="js/filtering.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html> 

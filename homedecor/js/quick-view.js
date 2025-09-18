@@ -3,6 +3,8 @@
  * Handles dynamic product loading and sidebar display
  */
 
+console.log('Homedecor quick view script loading...');
+
 class QuickViewSidebar {
     constructor() {
         this.sidebar = document.getElementById('quick-view-sidebar');
@@ -568,8 +570,11 @@ document.addEventListener('DOMContentLoaded', function() {
     window.quickViewSidebar = new QuickViewSidebar();
 });
 
+console.log('addToCartFromCard function defined');
+
 // Global function for adding to cart from product cards
 async function addToCartFromCard(buttonElement) {
+    console.log('addToCartFromCard function called', buttonElement);
     try {
         // Get product data from button attributes
         const productId = buttonElement.getAttribute('data-product-id');

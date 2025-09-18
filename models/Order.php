@@ -77,8 +77,8 @@ class Order {
         $result = $this->collection->insertOne($orderData);
         
         if ($result->getInsertedId()) {
-            // DON'T reduce stock here - wait for payment confirmation
-            // Stock will be reduced only after successful payment
+            // Stock is already reduced when items were added to cart
+            // No need to reduce stock again here
             return $result->getInsertedId();
         }
         
@@ -87,6 +87,9 @@ class Order {
 
     /**
      * Validate order items before creation
+     * Note: Since stock is reduced immediately when items are added to cart,
+     * we only need to validate that products exist and are available.
+     * Stock validation is already done at cart level.
      */
     public function validateOrderItems($cartData) {
         $productModel = new Product();
@@ -106,34 +109,26 @@ class Order {
                 }
             }
             
-            $product = $productModel->getById($productId);
-            
             // Skip validation for test products (string IDs)
             if (is_string($item['product_id']) && !preg_match('/^[a-f\d]{24}$/i', $item['product_id'])) {
                 continue; // Skip validation for test products
             }
             
+            $product = $productModel->getById($productId);
+            
             if (!$product) {
                 throw new Exception("Product {$item['product_id']} no longer exists");
             }
             
-            // Check if product is available using your system's logic
-            $stock = (int)($product['stock'] ?? 0);
-            $available = $product['available'] ?? true;
-            
             // Check if product is explicitly marked as unavailable
+            $available = $product['available'] ?? true;
             if ($available === false) {
-                throw new Exception("Product '{$product['name']}' is sold out");
+                throw new Exception("Product '{$product['name']}' is no longer available");
             }
             
-            // Check if product is out of stock
-            if ($stock <= 0) {
-                throw new Exception("Product '{$product['name']}' is sold out");
-            }
-            
-            if (isset($product['stock']) && $product['stock'] < $item['quantity']) {
-                throw new Exception("Insufficient stock for '{$product['name']}'. Available: {$product['stock']}, Requested: {$item['quantity']}");
-            }
+            // Since stock is already reduced when items were added to cart,
+            // we don't need to validate stock levels here.
+            // The cart system already ensures sufficient stock.
         }
         
         return true;
@@ -142,7 +137,7 @@ class Order {
     /**
      * Reduce product stock when order is successfully placed
      */
-    private function reduceOrderStock($orderId) {
+    public function reduceOrderStock($orderId) {
         $order = $this->getById($orderId);
         
         if (!$order || empty($order['items'])) {

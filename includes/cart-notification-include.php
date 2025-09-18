@@ -36,29 +36,14 @@ function getCartAssetPath($path) {
     const scriptPath = isInSubdirectory ? '../scripts/cart-notification-manager.js' : 'scripts/cart-notification-manager.js';
     
     const script = document.createElement('script');
-    script.src = scriptPath + '?v=' + Date.now(); // Add cache busting
-    script.onload = function() {
-        console.log('Cart notification manager loaded successfully from:', scriptPath);
-    };
+    script.src = scriptPath;
     script.onerror = function() {
         console.error('Failed to load cart notification manager from:', scriptPath);
         // Try alternative path
         const altScript = document.createElement('script');
-        altScript.src = '../scripts/cart-notification-manager.js?v=' + Date.now();
-        altScript.onload = function() {
-            console.log('Cart notification manager loaded from alternative path');
-        };
+        altScript.src = '../scripts/cart-notification-manager.js';
         altScript.onerror = function() {
             console.error('Failed to load cart notification manager from alternative path');
-            // Create fallback functions
-            window.toggleCartDropdown = function() {
-                console.warn('Cart notification manager not available - using fallback');
-                window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
-            };
-            window.addToCart = function() {
-                console.warn('Cart notification manager not available - add to cart disabled');
-                return false;
-            };
         };
         document.head.appendChild(altScript);
     };
@@ -137,6 +122,19 @@ window.getCartCountGlobal = function() {
         return window.cartNotificationManager.getCartCount();
     }
     return 0;
+};
+
+// Provide toggleCartDropdown function for compatibility
+window.toggleCartDropdown = function() {
+    if (window.cartNotificationManager && window.cartNotificationManager.toggleCartDropdown) {
+        return window.cartNotificationManager.toggleCartDropdown();
+    } else {
+        // Fallback: just trigger a click on the cart icon
+        const cartIcon = document.querySelector('.shopping-cart');
+        if (cartIcon) {
+            cartIcon.click();
+        }
+    }
 };
 </script>
 

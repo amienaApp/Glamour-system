@@ -1,13 +1,11 @@
-// Unified Home Decor Script
+// Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Homedecor script loaded successfully');
+    console.log('WomenF script loaded successfully');
     
     // Initialize all functionality
     initializeCategoryModals();
     initializeHeaderModals();
     initializeFilters();
-    initializeColorSwitching();
-    initializeCartFunctionality();
     initializeQuickView();
     
     // Global variables to track selected variants in quick view
@@ -2788,141 +2786,5 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateSizeCount();
         };
-    }
-    
-    // Color Switching Functionality
-    function initializeColorSwitching() {
-        console.log('Initializing color switching...');
-        
-        // Color circle functionality
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('color-circle')) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const selectedColor = e.target.getAttribute('data-color');
-                const productCard = e.target.closest('.product-card');
-                
-                if (productCard) {
-                    const imageSlider = productCard.querySelector('.image-slider');
-                    const colorCircles = productCard.querySelectorAll('.color-circle');
-                    
-                    // Remove active class from all color circles
-                    colorCircles.forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked circle
-                    e.target.classList.add('active');
-                    
-                    // Show media for this color
-                    if (imageSlider) {
-                        const mediaForColor = imageSlider.querySelectorAll(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
-                        
-                        if (mediaForColor.length > 0) {
-                            // Hide all media first
-                            imageSlider.querySelectorAll('img, video').forEach(media => {
-                                media.classList.remove('active');
-                                media.style.opacity = '0';
-                            });
-                            
-                            // Show first media for this color (front view)
-                            const firstMedia = mediaForColor[0];
-                            firstMedia.classList.add('active');
-                            firstMedia.style.opacity = '1';
-                            
-                            // Auto-play video if it's a video
-                            if (firstMedia.tagName.toLowerCase() === 'video') {
-                                firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Media click to switch between front/back
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.image-slider') && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO')) {
-                const clickedMedia = e.target;
-                const imageSlider = clickedMedia.closest('.image-slider');
-                const productCard = imageSlider.closest('.product-card');
-                
-                if (imageSlider && productCard) {
-                    const activeColorCircle = productCard.querySelector('.color-circle.active');
-                    if (!activeColorCircle) return;
-                    
-                    const activeColor = activeColorCircle.getAttribute('data-color');
-                    const allMedia = imageSlider.querySelectorAll('img, video');
-                    const mediaForColor = Array.from(allMedia).filter(media => {
-                        return media.getAttribute('data-color') === activeColor;
-                    });
-                    
-                    if (mediaForColor.length > 1) {
-                        const currentIndex = mediaForColor.indexOf(clickedMedia);
-                        const nextIndex = (currentIndex + 1) % mediaForColor.length;
-                        const nextMedia = mediaForColor[nextIndex];
-                        
-                        // Hide all media
-                        allMedia.forEach(media => {
-                            media.classList.remove('active');
-                            media.style.opacity = '0';
-                        });
-                        
-                        // Show the next media
-                        nextMedia.classList.add('active');
-                        nextMedia.style.opacity = '1';
-                        
-                        // Auto-play video if it's a video
-                        if (nextMedia.tagName.toLowerCase() === 'video') {
-                            nextMedia.play().catch(e => console.log('Video autoplay prevented:', e));
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    // Cart Functionality
-    function initializeCartFunctionality() {
-        console.log('Initializing cart functionality...');
-        
-        // Add to cart functionality
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('add-to-bag') || e.target.closest('.add-to-bag')) {
-                e.preventDefault();
-                const button = e.target.classList.contains('add-to-bag') ? e.target : e.target.closest('.add-to-bag');
-                
-                if (button.disabled) return;
-                
-                if (button) {
-                    addToCartFromCard(button);
-                }
-            }
-            
-            // Quick view add to bag functionality
-            if (e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' || 
-                e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
-                e.preventDefault();
-                const button = e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' ? 
-                              e.target : (e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick'));
-                
-                if (button.disabled) return;
-                
-                const productId = button.getAttribute('data-product-id');
-                const productName = document.getElementById('quick-view-title')?.textContent || 'Product';
-                
-                if (productId) {
-                    // Get selected color and size from quick view
-                    const selectedQuickViewColor = document.querySelector('#quick-view-color-selection .quick-view-color-circle.active')?.getAttribute('data-color') || '';
-                    const selectedQuickViewSize = document.querySelector('#quick-view-size-selection .size-option.active')?.textContent || '';
-                    
-                    // If no size selected, use fallback
-                    if (!selectedQuickViewSize) {
-                        selectedQuickViewSize = 'M';
-                    }
-                    
-                    addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
-                }
-            }
-        });
     }
 });

@@ -3,7 +3,8 @@
  * Provides seamless wishlist functionality across all pages
  */
 
-class WishlistIntegration {
+if (typeof WishlistIntegration === 'undefined') {
+    class WishlistIntegration {
     constructor() {
         this.isInitialized = false;
         this.init();
@@ -651,3 +652,4 @@ const integrationStyles = `
 
 // Inject styles
 document.head.insertAdjacentHTML('beforeend', integrationStyles);
+}

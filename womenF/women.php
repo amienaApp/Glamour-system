@@ -42,9 +42,9 @@ if ($womenCategory && isset($womenCategory['subcategories'])) {
 $subcategoryImages = [
     'Dresses' => '../img/women/13.webp',
     'Tops' => '../img/women/tops/1.webp',
-    'Activewear' => '../img/women/activewear/1.webp',
+    'Activewear' => '../img/women/tops/1.webp', // Use tops image since activewear doesn't exist
     'Wedding Dress' => '../img/women/wedding/1.webp',
-    'Bridesmaid Wear' => '../img/women/bridesmaid/1.webp',
+    'Bridesmaid Wear' => '../img/women/brides maid/1.jpg', // Fixed: brides maid (with space)
     'Wedding Guest' => '../img/women/14.avif',
     'Summer Dresses' => '../img/women/dresses/20.1.webp'
 ];
@@ -65,11 +65,9 @@ $defaultImage = '../img/women/dresses/12.webp';
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="../styles/sold-out.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
@@ -118,7 +116,7 @@ $defaultImage = '../img/women/dresses/12.webp';
                             <h3>Tops</h3>
                         </a>
                         <a href="women.php?subcategory=bottoms" class="image-item">
-                            <img src="../img/women/bottoms/1.webp" alt="Bottoms">
+                            <img src="../img/women/jeans/1.webp" alt="Bottoms">
                             <h3>Bottoms</h3>
                         </a>
                     <?php endif; ?>

@@ -2,7 +2,8 @@
  * Enhanced Client-Side Wishlist Manager
  * Uses localStorage to store user's favorite products with full integration
  */
-class WishlistManager {
+if (typeof WishlistManager === 'undefined') {
+    class WishlistManager {
     constructor() {
         this.storageKey = 'wishlist';
         this.maxItems = 100; // Maximum items in wishlist
@@ -1277,3 +1278,4 @@ const wishlistStyles = `
 
 // Inject styles
 document.head.insertAdjacentHTML('beforeend', wishlistStyles);
+}
