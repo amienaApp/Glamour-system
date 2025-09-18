@@ -8,6 +8,56 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
     initializeQuickView();
     
+    // Store original products for clear filters functionality
+    let originalProducts = [];
+    let isFiltered = false;
+    
+    // Store original products on page load
+    function storeOriginalProducts() {
+        const productGrid = document.getElementById('all-products-grid') || 
+                           document.getElementById('filtered-products-grid') ||
+                           document.querySelector('.product-grid');
+        
+        if (productGrid) {
+            const productCards = productGrid.querySelectorAll('.product-card');
+            originalProducts = Array.from(productCards).map(card => {
+                return {
+                    id: card.getAttribute('data-product-id'),
+                    name: card.getAttribute('data-product-name'),
+                    price: parseFloat(card.getAttribute('data-product-price')),
+                    salePrice: card.getAttribute('data-product-sale-price'),
+                    description: card.getAttribute('data-product-description'),
+                    category: card.getAttribute('data-product-category'),
+                    subcategory: card.getAttribute('data-product-subcategory'),
+                    featured: card.getAttribute('data-product-featured') === 'true',
+                    onSale: card.getAttribute('data-product-on-sale') === 'true',
+                    stock: parseInt(card.getAttribute('data-product-stock')),
+                    rating: parseFloat(card.getAttribute('data-product-rating')),
+                    review_count: parseInt(card.getAttribute('data-product-review-count')),
+                    front_image: card.getAttribute('data-product-front-image'),
+                    back_image: card.getAttribute('data-product-back-image'),
+                    color: card.getAttribute('data-product-color'),
+                    images: JSON.parse(card.getAttribute('data-product-images') || '[]'),
+                    color_variants: JSON.parse(card.getAttribute('data-product-color-variants') || '[]'),
+                    sizes: JSON.parse(card.getAttribute('data-product-sizes') || '[]'),
+                    size_category: card.getAttribute('data-product-size-category'),
+                    selected_sizes: JSON.parse(card.getAttribute('data-product-selected-sizes') || '[]'),
+                    variants: JSON.parse(card.getAttribute('data-product-variants') || '[]'),
+                    product_variants: JSON.parse(card.getAttribute('data-product-product-variants') || '[]'),
+                    options: JSON.parse(card.getAttribute('data-product-options') || '[]'),
+                    product_options: JSON.parse(card.getAttribute('data-product-product-options') || '[]'),
+                    image_front: card.getAttribute('data-product-image-front'),
+                    image_back: card.getAttribute('data-product-image-back'),
+                    available: card.querySelector('.add-to-bag:not([disabled])') ? true : false
+                };
+            });
+            console.log('Stored original products:', originalProducts.length);
+        }
+    }
+    
+    // Call this after page loads
+    setTimeout(storeOriginalProducts, 100);
+    
     // Global variables to track selected variants in quick view
     let selectedQuickViewColor = '';
     let selectedQuickViewSize = '';
@@ -2171,7 +2221,8 @@ document.addEventListener('DOMContentLoaded', function() {
             colors: [],
             price_ranges: [],
             categories: [],
-            lengths: []
+            lengths: [],
+            availabilities: []
         };
         
         // Add event listeners to all filter checkboxes
@@ -2183,15 +2234,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
-                // Update filter state
+                // Update filter state with proper mapping
+                let filterArrayKey = filterType + 's';
+                
+                // Handle special cases for filter type mapping
+                if (filterType === 'price_range') {
+                    filterArrayKey = 'price_ranges';
+                } else if (filterType === 'category') {
+                    filterArrayKey = 'categories';
+                } else if (filterType === 'availability') {
+                    filterArrayKey = 'availabilities';
+                }
+                
                 if (isChecked) {
-                    if (!filterState[filterType + 's'].includes(filterValue)) {
-                        filterState[filterType + 's'].push(filterValue);
+                    if (!filterState[filterArrayKey].includes(filterValue)) {
+                        filterState[filterArrayKey].push(filterValue);
                     }
                 } else {
-                    const index = filterState[filterType + 's'].indexOf(filterValue);
+                    const index = filterState[filterArrayKey].indexOf(filterValue);
                     if (index > -1) {
-                        filterState[filterType + 's'].splice(index, 1);
+                        filterState[filterArrayKey].splice(index, 1);
                     }
                 }
                 
@@ -2224,10 +2286,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
                 categories: filterState.categories,
-                lengths: filterState.lengths
+                category: filterState.categories, // Also send as 'category' for compatibility
+                lengths: filterState.lengths,
+                availabilities: filterState.availabilities
             };
             
-            // console.log('Sending filter data:', filterData);
+            console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -2239,9 +2303,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                // console.log('Filter response:', data);
+                console.log('Filter response:', data);
                 
                 if (data.success) {
+                    console.log('Products returned:', data.data.products.length);
+                    console.log('Product subcategories:', data.data.products.map(p => p.subcategory));
                     updateProductGrid(data.data.products);
                     updateStyleCount(data.data.total_count);
                     hideFilterLoading();
@@ -2259,7 +2325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function clearAllFilters() {
-            // console.log('Clearing all filters...');
+            console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
@@ -2272,18 +2338,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors: [],
                 price_ranges: [],
                 categories: [],
-                lengths: []
+                lengths: [],
+                availabilities: []
             };
             
-            // Apply filters (will show all products)
-            applyFilters();
+            // Restore original products instead of making API call
+            if (originalProducts.length > 0) {
+                console.log('Restoring original products:', originalProducts.length);
+                updateProductGrid(originalProducts);
+                updateStyleCount(originalProducts.length);
+                isFiltered = false;
+            } else {
+                // Fallback: reload page if no original products stored
+                console.log('No original products stored, reloading page...');
+                window.location.reload();
+            }
         }
         
         // Make clearAllFilters globally accessible
         window.clearAllFilters = clearAllFilters;
         
         function updateProductGrid(products) {
-            // console.log(`Updating product grid with ${products.length} products`);
+            console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -2291,15 +2367,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 productGrid = document.getElementById('filtered-products-grid');
             } else {
                 // Try different grid IDs for main page
-                productGrid = document.getElementById('dresses-grid') || 
+                productGrid = document.getElementById('all-products-grid') || 
                              document.getElementById('filtered-products-grid') ||
                              document.querySelector('.product-grid');
             }
             
+            // Mark as filtered if we're updating with filtered results
+            if (products !== originalProducts) {
+                isFiltered = true;
+            }
+            
             if (!productGrid) {
                 console.error('Product grid not found');
+                console.log('Available grids:', {
+                    'all-products-grid': !!document.getElementById('all-products-grid'),
+                    'filtered-products-grid': !!document.getElementById('filtered-products-grid'),
+                    'product-grids': document.querySelectorAll('.product-grid').length
+                });
                 return;
             }
+            
+            console.log('Found product grid:', productGrid.id);
             
             // Clear existing products
             productGrid.innerHTML = '';
@@ -2314,10 +2402,107 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Products will be loaded from the main page, no need to create ugly product cards
+            // Generate product cards for filtered results
+            products.forEach(product => {
+                const productCard = generateProductCard(product);
+                productGrid.appendChild(productCard);
+            });
         }
         
-        
+        function generateProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', product.id);
+            card.setAttribute('data-product-name', product.name);
+            card.setAttribute('data-product-price', product.price);
+            card.setAttribute('data-product-sale-price', product.salePrice || '');
+            card.setAttribute('data-product-description', product.description || '');
+            card.setAttribute('data-product-category', product.category || '');
+            card.setAttribute('data-product-subcategory', product.subcategory || '');
+            card.setAttribute('data-product-featured', product.featured ? 'true' : 'false');
+            card.setAttribute('data-product-on-sale', product.sale ? 'true' : 'false');
+            card.setAttribute('data-product-stock', product.stock || 0);
+            card.setAttribute('data-product-rating', product.rating || 0);
+            card.setAttribute('data-product-review-count', product.review_count || 0);
+            card.setAttribute('data-product-front-image', product.front_image || '');
+            card.setAttribute('data-product-back-image', product.back_image || '');
+            card.setAttribute('data-product-color', product.color || '');
+            card.setAttribute('data-product-images', JSON.stringify(product.images || []));
+            card.setAttribute('data-product-color-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
+            card.setAttribute('data-product-size-category', product.size_category || '');
+            card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
+            card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-product-variants', JSON.stringify(product.product_variants || []));
+            card.setAttribute('data-product-options', JSON.stringify(product.options || []));
+            card.setAttribute('data-product-product-options', JSON.stringify(product.product_options || []));
+            card.setAttribute('data-product-image-front', product.image_front || '');
+            card.setAttribute('data-product-image-back', product.image_back || '');
+            
+            // Generate the product card HTML
+            const frontImage = product.front_image || product.image_front || '';
+            const backImage = product.back_image || product.image_back || frontImage;
+            const isVideo = frontImage && (frontImage.includes('.mp4') || frontImage.includes('.webm') || frontImage.includes('.mov'));
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <div class="image-slider">
+                        ${frontImage ? (isVideo ? 
+                            `<video src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${backImage && backImage !== frontImage ? (backImage.includes('.mp4') || backImage.includes('.webm') || backImage.includes('.mov') ? 
+                            `<video src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => {
+                            const variantFrontImage = variant.front_image || '';
+                            const variantBackImage = variant.back_image || variantFrontImage;
+                            const isVariantVideo = variantFrontImage && (variantFrontImage.includes('.mp4') || variantFrontImage.includes('.webm') || variantFrontImage.includes('.mov'));
+                            
+                            return `
+                                ${variantFrontImage ? (isVariantVideo ? 
+                                    `<video src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}">`
+                                ) : ''}
+                                ${variantBackImage && variantBackImage !== variantFrontImage ? (variantBackImage.includes('.mp4') || variantBackImage.includes('.webm') || variantBackImage.includes('.mov') ? 
+                                    `<video src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}">`
+                                ) : ''}
+                            `;
+                        }).join('') : ''}
+                    </div>
+                    <button class="heart-button" data-product-id="${product.id}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
+                        ${product.available === false ? 
+                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
+                            '<button class="add-to-bag">Add To Bag</button>'
+                        }
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="color-options">
+                        ${product.color ? `<span class="color-circle active" style="background-color: ${product.color};" title="${product.color}" data-color="${product.color}"></span>` : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => 
+                            variant.color ? `<span class="color-circle" style="background-color: ${variant.color};" title="${variant.name}" data-color="${variant.color}"></span>` : ''
+                        ).join('') : ''}
+                    </div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${Math.round(product.price)}</div>
+                    ${product.available === false ? 
+                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
+                        (product.stock && product.stock <= 5 && product.stock > 0 ? 
+                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : ''
+                        )
+                    }
+                </div>
+            `;
+            
+            return card;
+        }
         
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
@@ -2329,7 +2514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function showFilterLoading() {
             // Add loading overlay to product grid
             const productGrid = document.getElementById('filtered-products-grid') || 
-                               document.getElementById('dresses-grid') ||
+                               document.getElementById('all-products-grid') ||
                                document.querySelector('.product-grid');
             if (productGrid) {
                 const loadingOverlay = document.createElement('div');

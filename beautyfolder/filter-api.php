@@ -67,7 +67,7 @@ try {
                                 $beautyCategoryFilters[] = ['subcategory' => 'Skincare'];
                                 break;
                             case 'hair':
-                                $beautyCategoryFilters[] = ['subcategory' => 'Hair'];
+                                $beautyCategoryFilters[] = ['subcategory' => 'Hair Care'];
                                 break;
                             case 'bath-body':
                                 $beautyCategoryFilters[] = ['subcategory' => 'Bath & Body'];
@@ -82,30 +82,22 @@ try {
                     }
                 }
                 
-                // Makeup type filter
-                if (!empty($input['makeup_types']) && is_array($input['makeup_types'])) {
-                    $makeupTypeFilters = [];
-                    foreach ($input['makeup_types'] as $type) {
-                        $makeupTypeFilters[] = new MongoDB\BSON\Regex($type, 'i');
+                // Beauty type filter (replaces makeup_types)
+                if (!empty($input['beauty_types']) && is_array($input['beauty_types'])) {
+                    $beautyTypeFilters = [];
+                    foreach ($input['beauty_types'] as $type) {
+                        $beautyTypeFilters[] = new MongoDB\BSON\Regex($type, 'i');
                     }
                     $andConditions[] = [
                         '$or' => [
-                            ['sub_subcategory' => ['$in' => $makeupTypeFilters]],
-                            ['description' => ['$in' => $makeupTypeFilters]],
-                            ['name' => ['$in' => $makeupTypeFilters]]
+                            ['sub_subcategory' => ['$in' => $beautyTypeFilters]],
+                            ['deeper_sub_subcategory' => ['$in' => $beautyTypeFilters]],
+                            ['description' => ['$in' => $beautyTypeFilters]],
+                            ['name' => ['$in' => $beautyTypeFilters]]
                         ]
                     ];
                 }
                 
-                // Color filter
-                if (!empty($input['colors']) && is_array($input['colors'])) {
-                    $andConditions[] = [
-                        '$or' => [
-                            ['color' => ['$in' => $input['colors']]],
-                            ['color_variants.color' => ['$in' => $input['colors']]]
-                        ]
-                    ];
-                }
                 
                 // Price filter
                 if (!empty($input['price_ranges']) && is_array($input['price_ranges'])) {

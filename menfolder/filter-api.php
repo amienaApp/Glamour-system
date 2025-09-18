@@ -65,18 +65,57 @@ try {
                         $sizeFilters[] = ['selected_sizes' => new MongoDB\BSON\Regex('"' . preg_quote($size, '/') . '"', 'i')];
                         // Also check size_category field
                         $sizeFilters[] = ['size_category' => $size];
+                        // Check if product has no size data (assume all sizes available)
+                        $sizeFilters[] = [
+                            '$and' => [
+                                ['sizes' => ['$exists' => false]],
+                                ['selected_sizes' => ['$exists' => false]],
+                                ['size_category' => ['$exists' => false]]
+                            ]
+                        ];
                     }
                     $andConditions[] = ['$or' => $sizeFilters];
                 }
                 
                 // Color filter
                 if (!empty($input['colors']) && is_array($input['colors'])) {
-                    $andConditions[] = [
-                        '$or' => [
-                            ['color' => ['$in' => $input['colors']]],
-                            ['color_variants.color' => ['$in' => $input['colors']]]
-                        ]
-                    ];
+                    $colorFilters = [];
+                    foreach ($input['colors'] as $color) {
+                        // Handle both text color names and hex codes
+                        $colorFilters[] = ['color' => $color];
+                        $colorFilters[] = ['color_variants.color' => $color];
+                        // Case-insensitive matching for text colors
+                        $colorFilters[] = ['color' => new MongoDB\BSON\Regex('^' . preg_quote($color, '/') . '$', 'i')];
+                        $colorFilters[] = ['color_variants.color' => new MongoDB\BSON\Regex('^' . preg_quote($color, '/') . '$', 'i')];
+                        
+                        // For grouped colors like "Black", also match the original hex values
+                        if ($color === 'Black') {
+                            $blackHexes = ['#000000', '#292526', '#242424', '#2d2e35', '#0b0b0b', '#1a1a19', '#2f292e']; // Includes charcoal
+                            foreach ($blackHexes as $hex) {
+                                $colorFilters[] = ['color' => $hex];
+                                $colorFilters[] = ['color_variants.color' => $hex];
+                            }
+                        }
+                        
+                        // For grouped colors like "White", also match the original hex values
+                        if ($color === 'White') {
+                            $whiteHexes = ['#ffffff', '#e6e5e9', '#eff0ee']; // Pure white, light grey, off white
+                            foreach ($whiteHexes as $hex) {
+                                $colorFilters[] = ['color' => $hex];
+                                $colorFilters[] = ['color_variants.color' => $hex];
+                            }
+                        }
+                        
+                        // For grouped colors like "Blue", also match the original hex values
+                        if ($color === 'Blue') {
+                            $blueHexes = ['#0066cc', '#748dc1', '#4b5d8b', '#3c5876']; // Blue, blue grey, and other blues
+                            foreach ($blueHexes as $hex) {
+                                $colorFilters[] = ['color' => $hex];
+                                $colorFilters[] = ['color_variants.color' => $hex];
+                            }
+                        }
+                    }
+                    $andConditions[] = ['$or' => $colorFilters];
                 }
                 
                 // Price filter
@@ -92,10 +131,16 @@ try {
                                 break;
                             case '50-100':
                                 $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 100]];
+                            case '50-100':
+                                $priceFilters[] = ['price' => ['$gte' => 50, '$lte' => 100]];
                                 break;
                             case '100-200':
                                 $priceFilters[] = ['price' => ['$gte' => 100, '$lte' => 200]];
+                            case '100-200':
+                                $priceFilters[] = ['price' => ['$gte' => 100, '$lte' => 200]];
                                 break;
+                            case '200+':
+                                $priceFilters[] = ['price' => ['$gte' => 200]];
                             case '200+':
                                 $priceFilters[] = ['price' => ['$gte' => 200]];
                                 break;
@@ -106,7 +151,8 @@ try {
                     }
                 }
                 
-                // Category filter (subcategories)
+                // Category filter (subcategories) - handle both 'categories' and 'category' input
+                $categoryFilters = [];
                 if (!empty($input['categories']) && is_array($input['categories'])) {
                     // Map URL-friendly category values back to proper subcategory names
                     $categoryMapping = [
@@ -134,6 +180,30 @@ try {
                 // Brand filter
                 if (!empty($input['brands']) && is_array($input['brands'])) {
                     $andConditions[] = ['brand' => ['$in' => $input['brands']]];
+                }
+                
+                
+                // Availability filter
+                if (!empty($input['availabilities']) && is_array($input['availabilities'])) {
+                    $availabilityFilters = [];
+                    foreach ($input['availabilities'] as $availability) {
+                        switch ($availability) {
+                            case 'in-stock':
+                                $availabilityFilters[] = ['available' => true];
+                                break;
+                            case 'on-sale':
+                                $availabilityFilters[] = ['sale' => true];
+                                break;
+                            case 'new-arrival':
+                                // Assuming new arrivals are products created in the last 30 days
+                                $thirtyDaysAgo = new DateTime('-30 days');
+                                $availabilityFilters[] = ['createdAt' => ['$gte' => new MongoDB\BSON\UTCDateTime($thirtyDaysAgo->getTimestamp() * 1000)]];
+                                break;
+                        }
+                    }
+                    if (!empty($availabilityFilters)) {
+                        $andConditions[] = ['$or' => $availabilityFilters];
+                    }
                 }
                 
                 // Combine all conditions
@@ -197,6 +267,9 @@ try {
                         '50-100' => 0,
                         '100-200' => 0,
                         '200+' => 0
+                        '50-100' => 0,
+                        '100-200' => 0,
+                        '200+' => 0
                     ]
                 ];
                 
@@ -245,6 +318,12 @@ try {
                         $filterOptions['price_ranges']['0-25']++;
                     } elseif ($price > 25 && $price <= 50) {
                         $filterOptions['price_ranges']['25-50']++;
+                    } elseif ($price > 50 && $price <= 100) {
+                        $filterOptions['price_ranges']['50-100']++;
+                    } elseif ($price > 100 && $price <= 200) {
+                        $filterOptions['price_ranges']['100-200']++;
+                    } elseif ($price > 200) {
+                        $filterOptions['price_ranges']['200+']++;
                     } elseif ($price > 50 && $price <= 100) {
                         $filterOptions['price_ranges']['50-100']++;
                     } elseif ($price > 100 && $price <= 200) {

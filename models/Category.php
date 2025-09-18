@@ -176,6 +176,81 @@ class Category {
         return $result->getModifiedCount() > 0;
     }
 
+    // Deeper Sub-subcategory Operations (for Makeup items)
+    public function getDeeperSubSubcategories($categoryName, $subcategoryName, $subSubcategoryName) {
+        $category = $this->getByName($categoryName);
+        if (!$category || !isset($category['subcategories'])) {
+            return [];
+        }
+        
+        // Find the subcategory and return its deeper sub-subcategories
+        foreach ($category['subcategories'] as $sub) {
+            // Handle both arrays and BSONDocument objects
+            $subName = null;
+            $deeperSubSubcategories = null;
+            
+            if (is_array($sub)) {
+                $subName = $sub['name'] ?? null;
+                $deeperSubSubcategories = $sub['deeper_sub_subcategories'] ?? null;
+            } elseif (is_object($sub)) {
+                $subName = $sub['name'] ?? null;
+                $deeperSubSubcategories = $sub['deeper_sub_subcategories'] ?? null;
+            }
+            
+            if ($subName === $subcategoryName && $deeperSubSubcategories) {
+                // Convert BSONDocument/BSONArray to array if needed
+                if (is_object($deeperSubSubcategories)) {
+                    $deeperSubSubcategories = iterator_to_array($deeperSubSubcategories);
+                }
+                
+                // Get the specific deeper sub-subcategories for the given sub-subcategory
+                if (is_array($deeperSubSubcategories) && isset($deeperSubSubcategories[$subSubcategoryName])) {
+                    $specificDeeper = $deeperSubSubcategories[$subSubcategoryName];
+                    
+                    // Convert BSONArray to regular array if needed
+                    if (is_object($specificDeeper)) {
+                        $specificDeeper = iterator_to_array($specificDeeper);
+                    }
+                    
+                    // Convert BSONString to regular string if needed
+                    $result = [];
+                    foreach ($specificDeeper as $item) {
+                        if (is_object($item)) {
+                            $item = (string) $item;
+                        }
+                        $result[] = $item;
+                    }
+                    
+                    return $result;
+                }
+            }
+        }
+        
+        return [];
+    }
+
+    public function addDeeperSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName, $deeperSubSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$push' => ["subcategories.$.deeper_sub_subcategories.$subSubcategoryName" => $deeperSubSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
+    public function removeDeeperSubSubcategory($categoryName, $subcategoryName, $subSubcategoryName, $deeperSubSubcategoryName) {
+        $result = $this->collection->updateOne(
+            [
+                'name' => $categoryName,
+                'subcategories.name' => $subcategoryName
+            ],
+            ['$pull' => ["subcategories.$.deeper_sub_subcategories.$subSubcategoryName" => $deeperSubSubcategoryName]]
+        );
+        return $result->getModifiedCount() > 0;
+    }
+
     // Statistics and Analytics
     public function getCount() {
         return $this->collection->countDocuments();
@@ -232,7 +307,7 @@ class Category {
             ],
             [
                 'name' => "Men's Clothing",
-                'subcategories' => ['Shirts', 'Pants', 'Jackets', 'Activewear', 'Underwear', 'Swimwear'],
+                'subcategories' => ['Shirts', 'T-Shirts', 'Pants', 'Jackets', 'Activewear', 'Underwear', 'Swimwear'],
                 'description' => 'Stylish clothing for men',
                 'icon' => 'fa-male'
             ],
@@ -295,37 +370,36 @@ class Category {
                     [
                         'name' => 'Makeup',
                         'sub_subcategories' => [
-                            'Face' => ['Foundation', 'Concealer', 'Powder', 'Blush', 'Highlighter', 'Bronzer & Contour', 'Face Primer', 'Setting Spray'],
-                            'Eye' => ['Mascara', 'Eyeliner', 'Eyeshadow', 'Eyebrow Pencils/Gels', 'False Lashes', 'Eye Primer'],
-                            'Lip' => ['Lipstick', 'Lip Gloss', 'Lip Liner', 'Lip Stain', 'Lip Balm'],
-                            'Nails' => ['Nail Polish', 'Nail Care & Treatments', 'Nail Tools'],
-                            'Tools' => ['Brushes (Face, Eye, Lip)', 'Makeup Removers']
+                            'Face',
+                            'Eye',
+                            'Lip',
+                            'Nail'
                         ]
                     ],
                     [
                         'name' => 'Skincare',
                         'sub_subcategories' => [
-                            'Moisturizers' => ['Face Moisturizer', 'Body Lotion', 'Eye Cream', 'Night Cream'],
-                            'Cleansers' => ['Face Wash', 'Cleansing Oil', 'Micellar Water', 'Exfoliating Scrub'],
-                            'Masks' => ['Face Masks', 'Sheet Masks', 'Clay Masks', 'Peel-off Masks'],
-                            'Call Who' => ['Serums', 'Toners', 'Essences', 'Spot Treatments'],
-                            'cream' => ['Day Cream', 'Night Cream', 'Eye Cream', 'Hand Cream']
+                            'Moisturizers',
+                            'Cleansers',
+                            'Masks',
+                            'Sun Care',
+                            'cream'
                         ]
                     ],
                     [
                         'name' => 'Hair',
                         'sub_subcategories' => [
-                            'Shampoo' => ['Daily Shampoo', 'Clarifying Shampoo', 'Color-Safe Shampoo', 'Anti-Dandruff'],
-                            'Conditioner' => ['Daily Conditioner', 'Deep Conditioner', 'Leave-in Conditioner', 'Hair Mask'],
-                            'Tools' => ['Hair Dryer', 'Straightener', 'Curling Iron', 'Hair Brush']
+                            'Shampoo',
+                            'Conditioner',
+                            'Tools'
                         ]
                     ],
                     [
                         'name' => 'Bath & Body',
                         'sub_subcategories' => [
-                            'Shower gel' => ['Body Wash', 'Shower Gel', 'Shower Oil', 'Body Scrub'],
-                            'Scrubs' => ['Body Scrub', 'Face Scrub', 'Foot Scrub', 'Hand Scrub'],
-                            'soap' => ['Bar Soap', 'Liquid Soap', 'Antibacterial Soap', 'Natural Soap']
+                            'Shower gel',
+                            'Scrubs',
+                            'soap'
                         ]
                     ]
                 ],

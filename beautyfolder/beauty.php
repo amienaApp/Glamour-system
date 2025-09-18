@@ -54,7 +54,7 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                         <img src="../img/beauty/skincare/mostruiser/1.webp" alt="Skincare">
                         <h3>Skincare</h3>
                     </a>
-                    <a href="beauty.php?subcategory=Hair" class="image-item">
+                    <a href="beauty.php?subcategory=Hair Care" class="image-item">
                         <img src="../img/beauty/hair/shampoo/1.webp" alt="Hair Care">
                         <h3>Hair Care</h3>
                     </a>

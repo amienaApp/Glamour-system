@@ -14,12 +14,37 @@
                 <div class="filter-header">
                     <h4>Category</h4>
                 </div>
-                <div class="filter-options" id="category-filter-options">
-                    <!-- Categories will be loaded dynamically -->
-                    <div class="loading-categories" style="text-align: center; padding: 10px; color: #666;">
-                        <div style="width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 5px;"></div>
-                        Loading categories...
-                    </div>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="shirts" data-filter="category">
+                        <span class="checkmark"></span>
+                        Shirts
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="T-Shirts" data-filter="category">
+                        <span class="checkmark"></span>
+                        T-Shirts
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="suits" data-filter="category">
+                        <span class="checkmark"></span>
+                        Suits
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="pants" data-filter="category">
+                        <span class="checkmark"></span>
+                        Pants
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="shorts" data-filter="category">
+                        <span class="checkmark"></span>
+                        Shorts & Underwear
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category[]" value="hoodies" data-filter="category">
+                        <span class="checkmark"></span>
+                        Hoodies & Sweatshirts
+                    </label>
                 </div>
             </div>
         </div>
@@ -88,41 +113,12 @@
                     <h4>Color</h4>
                 </div>
                 <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#000000" data-filter="color">
-                        <span class="checkmark"></span>
-                        Black
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#ffffff" data-filter="color">
-                        <span class="checkmark"></span>
-                        White
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#0066cc" data-filter="color">
-                        <span class="checkmark"></span>
-                        Blue
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#812d2d" data-filter="color">
-                        <span class="checkmark"></span>
-                        Maroon
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#808080" data-filter="color">
-                        <span class="checkmark"></span>
-                        Gray
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#333333" data-filter="color">
-                        <span class="checkmark"></span>
-                        Dark Gray
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="color[]" value="#667eea" data-filter="color">
-                        <span class="checkmark"></span>
-                        Light Blue
-                    </label>
+                    <div class="color-grid" id="color-filter-options">
+                        <!-- Colors will be loaded dynamically from database -->
+                        <div class="loading-colors" style="text-align: center; padding: 20px; color: #666;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading colors...
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,154 +159,6 @@
             </div>
         </div>
 
-        <!-- Brand Filter -->
-        <div class="filter-section">
-            <div class="filter-group">
-                <div class="filter-header">
-                    <h4>Brand</h4>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="nike" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Nike
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="adidas" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Adidas
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="puma" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Puma
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="under-armour" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Under Armour
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="levis" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Levi's
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="brand[]" value="calvin-klein" data-filter="brand">
-                        <span class="checkmark"></span>
-                        Calvin Klein
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Style Filter -->
-        <div class="filter-section">
-            <div class="filter-group">
-                <div class="filter-header">
-                    <h4>Style</h4>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="casual">
-                        <span class="checkmark"></span>
-                        Casual
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="formal">
-                        <span class="checkmark"></span>
-                        Formal
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="sporty">
-                        <span class="checkmark"></span>
-                        Sporty
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="streetwear">
-                        <span class="checkmark"></span>
-                        Streetwear
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="style[]" value="business">
-                        <span class="checkmark"></span>
-                        Business
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Material Filter -->
-        <div class="filter-section">
-            <div class="filter-group">
-                <div class="filter-header">
-                    <h4>Material</h4>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="cotton">
-                        <span class="checkmark"></span>
-                        Cotton
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="polyester">
-                        <span class="checkmark"></span>
-                        Polyester
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="wool">
-                        <span class="checkmark"></span>
-                        Wool
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="linen">
-                        <span class="checkmark"></span>
-                        Linen
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="denim">
-                        <span class="checkmark"></span>
-                        Denim
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="material[]" value="silk">
-                        <span class="checkmark"></span>
-                        Silk
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Fit Filter -->
-        <div class="filter-section">
-            <div class="filter-group">
-                <div class="filter-header">
-                    <h4>Fit</h4>
-                </div>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="slim">
-                        <span class="checkmark"></span>
-                        Slim
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="regular">
-                        <span class="checkmark"></span>
-                        Regular
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="loose">
-                        <span class="checkmark"></span>
-                        Loose
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="fit[]" value="relaxed">
-                        <span class="checkmark"></span>
-                        Relaxed
-                    </label>
-                </div>
-            </div>
-        </div>
 
         <!-- Availability Filter -->
         <div class="filter-section">

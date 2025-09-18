@@ -52,6 +52,9 @@ $pants = $productModel->getBySubcategory('Pants');
 // Get all shorts from the database
 $shorts = $productModel->getBySubcategory('Shorts');
 
+// Get all T-Shirts from the database
+$tshirts = $productModel->getBySubcategory('T-Shirts');
+
 ?>
 
 <!-- Main Content Section -->
@@ -84,8 +87,8 @@ $shorts = $productModel->getBySubcategory('Shorts');
                 ?>
                 <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? $productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
@@ -251,8 +254,8 @@ $shorts = $productModel->getBySubcategory('Shorts');
                 ?>
                 <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? $productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">

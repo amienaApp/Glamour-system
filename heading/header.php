@@ -593,11 +593,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-body">
                 <form class="login-form">
                     <div class="form-group">
-                        <input type="text" id="login-username" class="form-input" placeholder="Username or Email *" required>
+                        <input type="text" id="login-username" class="form-input" placeholder="Username or Email *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <div class="password-container">
-                            <input type="password" id="login-password" class="form-input" placeholder="Password *" required>
+                            <input type="password" id="login-password" class="form-input" placeholder="Password *" autocomplete="off" required>
                             <span class="show-password">
                                 <i class="fas fa-eye"></i>
                             </span>
@@ -626,10 +626,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-body">
                 <form class="user-registration-form">
                     <div class="form-group">
-                        <input type="text" id="username" class="form-input" placeholder="Username *" required>
+                        <input type="text" id="username" class="form-input" placeholder="Username *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" class="form-input" placeholder="Email Address *" required>
+                        <input type="email" id="email" class="form-input" placeholder="Email Address *" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <div class="contact-input-container">
@@ -780,6 +780,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (loginForm) {
                         loginForm.style.display = 'flex';
                         loginForm.classList.add('show');
+                        
+                        // Clear login form fields
+                        const loginUsername = document.getElementById('login-username');
+                        const loginPassword = document.getElementById('login-password');
+                        if (loginUsername) loginUsername.value = '';
+                        if (loginPassword) loginPassword.value = '';
                     }
                     if (registerForm) {
                         registerForm.style.display = 'none';
@@ -815,6 +821,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (registerForm) {
                         registerForm.style.display = 'flex';
                         registerForm.classList.add('show');
+                        
+                        // Clear registration form fields
+                        const username = document.getElementById('username');
+                        const email = document.getElementById('email');
+                        const contactNumber = document.getElementById('contact-number');
+                        const password = document.getElementById('password');
+                        const confirmPassword = document.getElementById('confirm-password');
+                        
+                        if (username) username.value = '';
+                        if (email) email.value = '';
+                        if (contactNumber) contactNumber.value = '';
+                        if (password) password.value = '';
+                        if (confirmPassword) confirmPassword.value = '';
+                        
+                        // Clear radio buttons
+                        const genderRadios = document.querySelectorAll('input[name="gender"]');
+                        genderRadios.forEach(radio => radio.checked = false);
+                        
+                        // Reset select fields
+                        const region = document.getElementById('region');
+                        const city = document.getElementById('city');
+                        if (region) region.value = '';
+                        if (city) city.value = '';
                     }
                 }
             });
@@ -871,6 +900,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (registerForm) {
                     registerForm.style.display = 'flex';
                     registerForm.classList.add('show');
+                    
+                    // Clear registration form fields
+                    const username = document.getElementById('username');
+                    const email = document.getElementById('email');
+                    const contactNumber = document.getElementById('contact-number');
+                    const password = document.getElementById('password');
+                    const confirmPassword = document.getElementById('confirm-password');
+                    
+                    if (username) username.value = '';
+                    if (email) email.value = '';
+                    if (contactNumber) contactNumber.value = '';
+                    if (password) password.value = '';
+                    if (confirmPassword) confirmPassword.value = '';
+                    
+                    // Clear radio buttons
+                    const genderRadios = document.querySelectorAll('input[name="gender"]');
+                    genderRadios.forEach(radio => radio.checked = false);
+                    
+                    // Reset select fields
+                    const region = document.getElementById('region');
+                    const city = document.getElementById('city');
+                    if (region) region.value = '';
+                    if (city) city.value = '';
                 }
             });
         }
@@ -885,6 +937,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loginForm) {
                     loginForm.style.display = 'flex';
                     loginForm.classList.add('show');
+                    
+                    // Clear login form fields
+                    const loginUsername = document.getElementById('login-username');
+                    const loginPassword = document.getElementById('login-password');
+                    if (loginUsername) loginUsername.value = '';
+                    if (loginPassword) loginPassword.value = '';
                 }
             });
         }
@@ -1764,4 +1822,29 @@ const searchStyles = `
 
 // Inject styles into head
 document.head.insertAdjacentHTML('beforeend', searchStyles);
+
+// Password toggle functionality
+function togglePasswordVisibility(element) {
+    const passwordInput = element.closest('.password-container').querySelector('input');
+    const eyeIcon = element.querySelector('i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye';
+    }
+}
+
+// Add click event listeners to all password toggle buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordToggles = document.querySelectorAll('.show-password');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            togglePasswordVisibility(this);
+        });
+    });
+});
 </script> 
