@@ -1,9 +1,6 @@
-/* Main Content */
+/* Main Content - Base styles moved to responsive-layout.css */
 .main-content {
-    flex: 1;
-    padding: 20px 40px;
-    background-color: #ffffff;
-    min-width: 0;
+    /* Base styles are now in responsive-layout.css */
 }
 
 .content-header {
@@ -611,6 +608,7 @@
 }
 
 /* Responsive Design */
+/* Responsive styles moved to responsive-layout.css */
 @media (max-width: 1200px) {
     .page-layout {
         max-width: 100%;

@@ -75,6 +75,13 @@ $regionOptions = [
         </div>
     </div>
 
+    <!-- Hamburger Menu Button - Mobile Only -->
+    <div class="hamburger-menu" id="hamburger-menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+
     <!-- Navigation Menu - Center -->
     <div class="nav-menu-container">
         <ul class="nav-menu">
@@ -98,6 +105,44 @@ $regionOptions = [
                 <li><a href="<?php echo getAssetPath('perfumes/index.php'); ?>" class="nav-link">Perfumes</a></li>
             <?php endif; ?>
         </ul>
+    </div>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <div class="mobile-nav-logo">
+                    <span class="logo-main">Glamour</span>
+                    <span class="logo-accent">Palace</span>
+                </div>
+                <button class="mobile-nav-close" id="mobile-nav-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <ul class="mobile-nav-list">
+                    <?php if (!empty($categories)): ?>
+                        <?php foreach ($categories as $category): ?>
+                            <li>
+                                <a href="<?php echo getCategoryUrl($category['name']); ?>" class="mobile-nav-link">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback static menu if no categories found -->
+                        <li><a href="<?php echo getAssetPath('womenF/women.php'); ?>" class="mobile-nav-link">Women's Clothing</a></li>
+                        <li><a href="<?php echo getAssetPath('menfolder/men.php'); ?>" class="mobile-nav-link">Men's Clothing</a></li>
+                        <li><a href="<?php echo getAssetPath('beautyfolder/beauty.php'); ?>" class="mobile-nav-link">Beauty & Cosmetics</a></li>
+                        <li><a href="<?php echo getAssetPath('shoess/shoes.php'); ?>" class="mobile-nav-link">Shoes</a></li>
+                        <li><a href="<?php echo getAssetPath('bagsfolder/bags.php'); ?>" class="mobile-nav-link">Bags</a></li>
+                        <li><a href="<?php echo getAssetPath('accessories/accessories.php'); ?>" class="mobile-nav-link">Accessories</a></li>
+                        <li><a href="<?php echo getAssetPath('homedecor/homedecor.php'); ?>" class="mobile-nav-link">Home & Living</a></li>
+                        <li><a href="<?php echo getAssetPath('perfumes/index.php'); ?>" class="mobile-nav-link">Perfumes</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Wishlist Scripts will be loaded by individual pages -->
@@ -1846,5 +1891,99 @@ document.addEventListener('DOMContentLoaded', function() {
             togglePasswordVisibility(this);
         });
     });
+});
+
+// Mobile Navigation Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    const body = document.body;
+
+    // Function to open mobile navigation
+    function openMobileNav() {
+        mobileNavOverlay.classList.add('active');
+        body.classList.add('mobile-nav-open');
+        hamburgerMenu.classList.add('active'); // This will hide the hamburger menu
+        
+        // Hide user actions
+        const navRightContainer = document.querySelector('.nav-right-container');
+        if (navRightContainer) navRightContainer.classList.add('active');
+    }
+
+    // Function to close mobile navigation
+    function closeMobileNav() {
+        mobileNavOverlay.classList.remove('active');
+        body.classList.remove('mobile-nav-open');
+        hamburgerMenu.classList.remove('active'); // This will show the hamburger menu again
+        
+        // Show user actions
+        const navRightContainer = document.querySelector('.nav-right-container');
+        if (navRightContainer) navRightContainer.classList.remove('active');
+    }
+
+    // Open mobile navigation when hamburger is clicked
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMobileNav();
+        });
+    }
+
+    // Close mobile navigation when close button is clicked
+    if (mobileNavClose) {
+        mobileNavClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMobileNav();
+        });
+    }
+
+    // Close mobile navigation when clicking on overlay (not content)
+    if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', function(e) {
+            if (e.target === mobileNavOverlay) {
+                closeMobileNav();
+            }
+        });
+    }
+
+    // Close mobile navigation when clicking on navigation links
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            closeMobileNav();
+        });
+    });
+
+    // Close mobile navigation on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNavOverlay.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+
+    // Close mobile navigation on window resize if screen becomes large
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileNavOverlay.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+
+    // Prevent body scroll when mobile nav is open
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (body.classList.contains('mobile-nav-open')) {
+                    body.style.overflow = 'hidden';
+                } else {
+                    body.style.overflow = '';
+                }
+            }
+        });
+    });
+
+    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 });
 </script> 

@@ -16,8 +16,10 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/responsive-layout.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
 </head>
@@ -93,7 +95,36 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Bags - ' . $page_title : 
 
 
         <!-- Scripts -->
+        <script src="../scripts/mobile-sidebar.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/filters-hamburger.js?v=<?php echo time(); ?>"></script>
         <script src="script.js?v=<?php echo time(); ?>"></script>
+        
+        <!-- Simple Mobile Filters Toggle -->
+        <script>
+        function toggleMobileFilters() {
+            const panel = document.getElementById('mobile-filters-panel');
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                panel.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Close filters when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('mobile-filters-panel');
+            const btn = document.querySelector('.mobile-filters-btn');
+            
+            if (panel && panel.classList.contains('active') && 
+                !btn.contains(e.target) && 
+                !panel.contains(e.target)) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        </script>
         <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>

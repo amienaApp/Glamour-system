@@ -17,8 +17,10 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/responsive-layout.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
@@ -211,6 +213,101 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
         
         <!-- Overlay -->
         <div id="quick-view-overlay" class="quickview-overlay"></div>
+
+        <!-- Simple Mobile Filters Toggle -->
+        <script>
+        function toggleMobileFilters() {
+            try {
+                console.log('toggleMobileFilters called');
+                const panel = document.getElementById('mobile-filters-panel');
+                const btn = document.querySelector('.mobile-filters-btn');
+                
+                console.log('Panel found:', !!panel);
+                console.log('Button found:', !!btn);
+                
+                if (panel) {
+                    // Debug panel content
+                    const content = panel.querySelector('.mobile-filters-content');
+                    console.log('Content found:', !!content);
+                    if (content) {
+                        console.log('Content HTML length:', content.innerHTML.length);
+                        console.log('Content children count:', content.children.length);
+                        console.log('Content visible:', content.offsetWidth > 0 && content.offsetHeight > 0);
+                    }
+                    
+                    if (panel.classList.contains('active')) {
+                        console.log('Closing panel');
+                        panel.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        console.log('Opening panel');
+                        panel.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        
+                        // Force content to be visible for debugging
+                        if (content) {
+                            content.style.display = 'block';
+                            content.style.visibility = 'visible';
+                            content.style.opacity = '1';
+                        }
+                    }
+                } else {
+                    console.error('Panel not found!');
+                }
+            } catch (error) {
+                console.error('Error in toggleMobileFilters:', error);
+            }
+        }
+        
+        // Close filters when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('mobile-filters-panel');
+            const btn = document.querySelector('.mobile-filters-btn');
+            
+            if (panel && panel.classList.contains('active') && 
+                !btn.contains(e.target) && 
+                !panel.contains(e.target)) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Debug on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking elements:');
+            console.log('Panel:', document.getElementById('mobile-filters-panel'));
+            console.log('Button:', document.querySelector('.mobile-filters-btn'));
+            
+            // Initialize mobile filters panel
+            const panel = document.getElementById('mobile-filters-panel');
+            if (panel) {
+                console.log('Mobile filters panel initialized');
+                // Remove any debugging styles
+                panel.style.display = '';
+                panel.style.opacity = '';
+                panel.style.visibility = '';
+                panel.style.background = '';
+                panel.style.zIndex = '';
+                
+                // Check content panel
+                const content = panel.querySelector('.mobile-filters-content');
+                if (content) {
+                    console.log('Content panel found and ready');
+                    // Remove debugging styles
+                    content.style.display = '';
+                    content.style.transform = '';
+                    content.style.background = '';
+                    content.style.border = '';
+                    content.style.width = '';
+                    content.style.height = '';
+                    content.style.position = '';
+                    content.style.top = '';
+                    content.style.right = '';
+                    content.style.zIndex = '';
+                }
+            }
+        });
+        </script>
 
 </body>
 </html>

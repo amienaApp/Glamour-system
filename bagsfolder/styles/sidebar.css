@@ -1,14 +1,6 @@
-/* Sidebar Styles */
+/* Sidebar Styles - Base styles moved to responsive-layout.css */
 .sidebar {
-    width: 280px;
-    background-color: #ffffff;
-    border-right: 1px solid #e8e8e8;
-    padding: 20px 0;
-    height: calc(100vh - 200px);
-    overflow-y: auto;
-    position: sticky;
-    top: 80px;
-    flex-shrink: 0;
+    /* Base styles are now in responsive-layout.css */
 }
 
 /* Clear All Filters Button */
@@ -258,7 +250,7 @@
     transform: scale(1.1);
 }
 
-/* Page Layout */
+/* Page Layout - MOVED TO responsive-layout.css */
 .page-layout {
     display: flex;
     align-items: flex-start;

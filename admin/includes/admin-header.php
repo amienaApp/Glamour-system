@@ -127,3 +127,4 @@ window.addEventListener('load', checkFontAwesomeLoaded);
 // Also check after a delay
 setTimeout(checkFontAwesomeLoaded, 2000);
 </script>
+

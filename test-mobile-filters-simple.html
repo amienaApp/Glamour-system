@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Mobile Filters Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/responsive-layout.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .test-header {
+            height: 80px;
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .main-content {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .content-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .sort-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1>Mobile Filters Test</h1>
+    </div>
+    
+    <div class="main-content">
+        <div class="content-header">
+            <h1 class="page-title">Test Products</h1>
+            <div class="content-controls">
+                <div class="sort-control">
+                    <label for="sort-select">Sort:</label>
+                    <select id="sort-select" class="sort-select">
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+                
+                <!-- Mobile Filters Hamburger -->
+                <div class="mobile-filters-btn" onclick="toggleMobileFilters()">
+                    <div class="hamburger-bars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span class="filters-text">Refine By</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Filters Panel -->
+        <div class="mobile-filters-panel" id="mobile-filters-panel">
+            <div class="mobile-filters-header">
+                <h3>Refine By</h3>
+                <button class="close-filters" onclick="toggleMobileFilters()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-filters-content">
+                <div class="sidebar-header">
+                    <h3>Refine By</h3>
+                    <span class="style-count">24 Styles</span>
+                    <button type="button" class="clear-all-filters-btn">
+                        <i class="fas fa-times"></i>
+                        Clear All Filters
+                    </button>
+                </div>
+                <div class="side">
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <div class="filter-header">
+                                <h4>Category</h4>
+                            </div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="category[]" value="makeup">
+                                    <span>Makeup</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="category[]" value="skincare">
+                                    <span>Skincare</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="category[]" value="fragrance">
+                                    <span>Fragrance</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <div class="filter-header">
+                                <h4>Price</h4>
+                            </div>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="price[]" value="0-25">
+                                    <span>$0 - $25</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="price[]" value="25-50">
+                                    <span>$25 - $50</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="price[]" value="50-100">
+                                    <span>$50 - $100</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; background: #e9ecef; border-radius: 8px; margin-top: 20px;">
+            <h3>Test Instructions:</h3>
+            <ol>
+                <li>You should see a <strong>red-bordered "Refine By" button</strong> next to the Sort dropdown</li>
+                <li>Click the button to open the filters panel</li>
+                <li>The panel should slide in from the right with a red border</li>
+                <li>Check the browser console for debug messages</li>
+            </ol>
+            
+            <p><strong>Current screen width:</strong> <span id="screen-width"></span>px</p>
+            <p><strong>Button visible:</strong> <span id="button-status"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        function toggleMobileFilters() {
+            console.log('toggleMobileFilters called');
+            const panel = document.getElementById('mobile-filters-panel');
+            const btn = document.querySelector('.mobile-filters-btn');
+            
+            console.log('Panel found:', !!panel);
+            console.log('Button found:', !!btn);
+            
+            if (panel) {
+                if (panel.classList.contains('active')) {
+                    console.log('Closing panel');
+                    panel.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    console.log('Opening panel');
+                    panel.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            } else {
+                console.error('Panel not found!');
+            }
+        }
+        
+        // Close filters when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('mobile-filters-panel');
+            const btn = document.querySelector('.mobile-filters-btn');
+            
+            if (panel && panel.classList.contains('active') && 
+                !btn.contains(e.target) && 
+                !panel.contains(e.target)) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Update debug info
+        function updateDebugInfo() {
+            document.getElementById('screen-width').textContent = window.innerWidth;
+            document.getElementById('button-status').textContent = document.querySelector('.mobile-filters-btn') ? 'Yes' : 'No';
+        }
+        
+        window.addEventListener('resize', updateDebugInfo);
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking elements:');
+            console.log('Panel:', document.getElementById('mobile-filters-panel'));
+            console.log('Button:', document.querySelector('.mobile-filters-btn'));
+            updateDebugInfo();
+        });
+    </script>
+</body>
+</html>
+

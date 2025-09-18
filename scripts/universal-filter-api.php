@@ -1,4 +1,7 @@
 <?php
+// Universal Filter API for All Category Pages
+// This API handles filtering for all product categories
+
 // Disable error reporting to prevent HTML output
 error_reporting(0);
 ini_set('display_errors', 0);
@@ -44,11 +47,14 @@ try {
                 $filters = [];
                 $andConditions = [];
                 
+                // Determine category from the calling page
+                $category = $this->detectCategory();
+                
+                // Base filter - set category
+                $filters['category'] = $category;
+                
                 // Get subcategory from URL or input
                 $subcategory = $input['subcategory'] ?? '';
-                
-                // Base filter - only bag products
-                $filters['category'] = "Bags";
                 
                 // Apply subcategory filter if provided (but only if no category filters are selected)
                 if (!empty($subcategory) && (empty($input['categories']) || !is_array($input['categories']))) {
@@ -145,7 +151,7 @@ try {
                     $andConditions[] = ['subcategory' => ['$in' => array_map('ucfirst', $input['categories'])]];
                 }
                 
-                // Dress length filter
+                // Dress length filter (for clothing categories)
                 if (!empty($input['lengths']) && is_array($input['lengths'])) {
                     $lengthFilters = [];
                     foreach ($input['lengths'] as $length) {
@@ -205,8 +211,9 @@ try {
                 break;
                 
             case 'get_filter_options':
-                // Get all bag products to extract filter options
-                $allProducts = $productModel->getByCategory("Bags");
+                // Get all products for the current category to extract filter options
+                $category = $this->detectCategory();
+                $allProducts = $productModel->getByCategory($category);
                 
                 $filterOptions = [
                     'sizes' => [],
@@ -214,11 +221,10 @@ try {
                     'categories' => [],
                     'price_ranges' => [
                         'on-sale' => 0,
-                        '0-25' => 0,
-                        '25-50' => 0,
-                        '50-75' => 0,
-                        '75-100' => 0,
-                        '100+' => 0
+                        '0-100' => 0,
+                        '100-200' => 0,
+                        '200-400' => 0,
+                        '400+' => 0
                     ]
                 ];
                 
@@ -259,16 +265,14 @@ try {
                     if ($product['sale'] ?? false) {
                         $filterOptions['price_ranges']['on-sale']++;
                     }
-                    if ($price >= 0 && $price <= 25) {
-                        $filterOptions['price_ranges']['0-25']++;
-                    } elseif ($price > 25 && $price <= 50) {
-                        $filterOptions['price_ranges']['25-50']++;
-                    } elseif ($price > 50 && $price <= 75) {
-                        $filterOptions['price_ranges']['50-75']++;
-                    } elseif ($price > 75 && $price <= 100) {
-                        $filterOptions['price_ranges']['75-100']++;
-                    } elseif ($price > 100) {
-                        $filterOptions['price_ranges']['100+']++;
+                    if ($price >= 0 && $price <= 100) {
+                        $filterOptions['price_ranges']['0-100']++;
+                    } elseif ($price > 100 && $price <= 200) {
+                        $filterOptions['price_ranges']['100-200']++;
+                    } elseif ($price > 200 && $price <= 400) {
+                        $filterOptions['price_ranges']['200-400']++;
+                    } elseif ($price > 400) {
+                        $filterOptions['price_ranges']['400+']++;
                     }
                 }
                 
@@ -292,7 +296,36 @@ try {
     ];
 }
 
+// Function to detect category from the calling page
+function detectCategory() {
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    $path = $_SERVER['REQUEST_URI'] ?? '';
+    
+    if (strpos($referer, '/bagsfolder/') !== false || strpos($path, '/bagsfolder/') !== false) {
+        return 'Bags';
+    } elseif (strpos($referer, '/beautyfolder/') !== false || strpos($path, '/beautyfolder/') !== false) {
+        return 'Beauty & Cosmetics';
+    } elseif (strpos($referer, '/shoess/') !== false || strpos($path, '/shoess/') !== false) {
+        return 'Shoes';
+    } elseif (strpos($referer, '/menfolder/') !== false || strpos($path, '/menfolder/') !== false) {
+        return 'Men';
+    } elseif (strpos($referer, '/kidsfolder/') !== false || strpos($path, '/kidsfolder/') !== false) {
+        return 'Kids';
+    } elseif (strpos($referer, '/womenF/') !== false || strpos($path, '/womenF/') !== false) {
+        return 'Women';
+    } elseif (strpos($referer, '/perfumes/') !== false || strpos($path, '/perfumes/') !== false) {
+        return 'Perfumes';
+    } elseif (strpos($referer, '/homedecor/') !== false || strpos($path, '/homedecor/') !== false) {
+        return 'Home Decoration';
+    } elseif (strpos($referer, '/accessories/') !== false || strpos($path, '/accessories/') !== false) {
+        return 'Accessories';
+    } else {
+        return 'Products'; // Default fallback
+    }
+}
+
 // Send JSON response
 echo json_encode($response);
 exit();
 ?>
+
