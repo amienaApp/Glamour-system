@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear All Filters Test - Working Version</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <style>
+        body { 
+            font-family: 'Poppins', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .test-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        .test-sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .test-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .url-display { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            margin: 10px 0; 
+            word-break: break-all;
+        }
+        .filter-status { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin: 15px 0; 
+        }
+        .status-item { 
+            padding: 10px; 
+            background: #f8f9fa; 
+            border-radius: 4px; 
+            border: 1px solid #e9ecef;
+        }
+        .test-instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .simulated-url {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Simulated Sidebar -->
+        <div class="test-sidebar">
+            <div class="sidebar-header">
+                <h3>Refine By</h3>
+                <span class="style-count" id="style-count">25 Styles</span>
+                <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
+                    Clear All Filters
+                </button>
+            </div>
+            
+            <!-- Gender Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Gender</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="women" id="gender-women" checked>
+                            <span class="checkmark"></span>
+                            Women (15)
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="men" id="gender-men">
+                            <span class="checkmark"></span>
+                            Men (8)
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="gender[]" value="children" id="gender-children">
+                            <span class="checkmark"></span>
+                            Children (2)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Size Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Size</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="36" id="size-36" checked>
+                            <span class="checkmark"></span>
+                            36
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="38" id="size-38" checked>
+                            <span class="checkmark"></span>
+                            38
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="40" id="size-40">
+                            <span class="checkmark"></span>
+                            40
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Price</h4>
+                    </div>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="0-25" id="price-0-25" checked>
+                            <span class="checkmark"></span>
+                            $0 - $25
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="25-50" id="price-25-50" checked>
+                            <span class="checkmark"></span>
+                            $25 - $50
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="50-75" id="price-50-75">
+                            <span class="checkmark"></span>
+                            $50 - $75
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shoe Type Filter -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <h4>Shoe Type</h4>
+                    </div>
+                    <div class="filter-options">
+                        <div class="dropdown-filter">
+                            <select id="shoe-type-dropdown" name="shoe_type" class="shoe-type-select">
+                                <option value="">All Shoe Types</option>
+                                <option value="boots" selected>Boots</option>
+                                <option value="sneakers">Sneakers</option>
+                                <option value="heels">Heels</option>
+                                <option value="flats">Flats</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Content -->
+        <div class="test-content">
+            <h1>🧪 Clear All Filters Test</h1>
+            
+            <div class="test-instructions">
+                <h3>📋 Test Instructions</h3>
+                <p><strong>Current State:</strong> Some filters are pre-selected to simulate a filtered state</p>
+                <p><strong>Test Steps:</strong></p>
+                <ol>
+                    <li>Observe the current filtered state (checkboxes checked, dropdown selected)</li>
+                    <li>Click the "Clear All Filters" button in the sidebar</li>
+                    <li>Verify all filters are cleared and URL is cleaned</li>
+                </ol>
+            </div>
+
+            <div class="simulated-url">
+                <strong>🔗 Simulated URL:</strong> 
+                <span id="simulated-url">shoes.php?gender=women&size=36&size=38&price_range=0-25&price_range=25-50&shoe_type=boots</span>
+            </div>
+
+            <div class="filter-status" id="filter-status">
+                <div class="status-item">
+                    <strong>Checkboxes Status:</strong>
+                    <div id="checkbox-status">Loading...</div>
+                </div>
+                <div class="status-item">
+                    <strong>Dropdown Status:</strong>
+                    <div id="dropdown-status">Loading...</div>
+                </div>
+            </div>
+
+            <div class="test-results" id="test-results">
+                <h3>📊 Test Results</h3>
+                <p>Click "Clear All Filters" to run the test...</p>
+            </div>
+
+            <div class="url-display">
+                <strong>Expected URL after clearing:</strong> 
+                <span id="expected-url">shoes.php</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate the exact clearAllFilters function from shoes sidebar
+        function clearAllFilters() {
+            console.log('Shoes: Clearing all filters...');
+            
+            // Reset filter state
+            const currentFilters = {
+                gender: '',
+                size: '',
+                color: '',
+                priceRange: ''
+            };
+            
+            // Uncheck all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset shoe type dropdown
+            const shoeTypeDropdown = document.getElementById('shoe-type-dropdown');
+            if (shoeTypeDropdown) {
+                shoeTypeDropdown.value = '';
+            }
+            
+            // Get current subcategory to preserve it
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSubcategory = urlParams.get('subcategory') || '';
+            
+            // Build new URL with only subcategory if it exists (removing all other filters)
+            let newUrl = window.location.pathname;
+            if (currentSubcategory) {
+                newUrl += '?subcategory=' + currentSubcategory;
+            }
+            
+            // Update test results
+            updateTestResults(newUrl);
+            
+            // In a real scenario, this would redirect:
+            // window.location.href = newUrl;
+            console.log('Would redirect to:', newUrl);
+        }
+        
+        function updateTestResults(newUrl) {
+            const results = document.getElementById('test-results');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const dropdown = document.getElementById('shoe-type-dropdown');
+            const checkboxStatus = document.getElementById('checkbox-status');
+            const dropdownStatus = document.getElementById('dropdown-status');
+            const simulatedUrl = document.getElementById('simulated-url');
+            const expectedUrl = document.getElementById('expected-url');
+            
+            // Count checked checkboxes
+            let checkedCount = 0;
+            const checkedBoxes = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedCount++;
+                    checkedBoxes.push(checkbox.value);
+                }
+            });
+            
+            // Update status displays
+            checkboxStatus.innerHTML = checkedCount === 0 ? 
+                '<span class="success">✅ All unchecked</span>' : 
+                `<span class="error">❌ ${checkedCount} still checked: ${checkedBoxes.join(', ')}</span>`;
+                
+            dropdownStatus.innerHTML = dropdown.value === '' ? 
+                '<span class="success">✅ Reset to default</span>' : 
+                `<span class="error">❌ Value: "${dropdown.value}"</span>`;
+            
+            // Update URLs
+            expectedUrl.textContent = newUrl;
+            simulatedUrl.textContent = newUrl;
+            
+            // Overall test result
+            const testPassed = checkedCount === 0 && dropdown.value === '';
+            
+            results.innerHTML = `
+                <h3>${testPassed ? '✅ TEST PASSED' : '❌ TEST FAILED'}</h3>
+                <p><strong>Function executed successfully!</strong></p>
+                <ul>
+                    <li><strong>Checkboxes cleared:</strong> ${checkedCount === 0 ? 'Yes' : 'No'} (${checkedCount} still checked)</li>
+                    <li><strong>Dropdown reset:</strong> ${dropdown.value === '' ? 'Yes' : 'No'}</li>
+                    <li><strong>URL cleaned:</strong> ${newUrl}</li>
+                </ul>
+                <p><strong>Expected behavior:</strong> All filters should be cleared and URL should only contain subcategory (if any)</p>
+                ${testPassed ? '<p class="success">🎉 The clearAllFilters function is working correctly!</p>' : '<p class="error">⚠️ Some issues detected. Check the details above.</p>'}
+            `;
+        }
+        
+        function updateFilterStatus() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const dropdown = document.getElementById('shoe-type-dropdown');
+            
+            let checkedCount = 0;
+            const checkedBoxes = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkedCount++;
+                    checkedBoxes.push(checkbox.value);
+                }
+            });
+            
+            document.getElementById('checkbox-status').innerHTML = 
+                `${checkedCount} checked: ${checkedBoxes.join(', ') || 'none'}`;
+            document.getElementById('dropdown-status').innerHTML = 
+                `Value: "${dropdown.value}"`;
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Working test page loaded. Ready to test clearAllFilters function.');
+            updateFilterStatus();
+            
+            // Add event listeners to update status in real-time
+            document.querySelectorAll('input[type="checkbox"], select').forEach(element => {
+                element.addEventListener('change', updateFilterStatus);
+            });
+        });
+    </script>
+</body>
+</html>
+

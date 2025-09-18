@@ -21,8 +21,15 @@ foreach ($products as $product) {
     // Color variants
     if (!empty($product['color_variants']) && is_array($product['color_variants'])) {
         foreach ($product['color_variants'] as $variant) {
-            if (!empty($variant['color'])) {
-                $allColors[] = $variant['color'];
+            // Handle different variant structures
+            if (is_array($variant)) {
+                // Standard array structure
+                if (!empty($variant['color'])) {
+                    $allColors[] = $variant['color'];
+                }
+            } elseif (is_string($variant)) {
+                // Direct string color
+                $allColors[] = $variant;
             }
         }
     }
@@ -95,8 +102,21 @@ function getColorGroup($color) {
     return 'other';
 }
 
-// Group colors dynamically
+// Group colors dynamically and count products for each color
+$colorCounts = [];
 foreach ($allColors as $color) {
+    if (!isset($colorCounts[$color])) {
+        $colorCounts[$color] = 0;
+    }
+    $colorCounts[$color]++;
+}
+
+// Only include colors that have at least one product
+$colorsWithProducts = array_filter($colorCounts, function($count) {
+    return $count > 0;
+});
+
+foreach ($colorsWithProducts as $color => $count) {
     $group = getColorGroup($color);
     
     if (!isset($colorGroups[$group])) {

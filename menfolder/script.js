@@ -1891,4 +1891,876 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+<<<<<<< HEAD
+=======
+    
+    // Filter Functionality
+    function initializeFilters() {
+        // console.log('Initializing filters...');
+        
+        // Get current subcategory from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSubcategory = urlParams.get('subcategory') || '';
+        
+        // Filter state
+        let filterState = {
+            sizes: [],
+            colors: [],
+            price_ranges: [],
+            categories: [],
+            lengths: [],
+            availabilities: []
+        };
+        
+        // Add event listeners to all filter checkboxes
+        document.addEventListener('change', function(e) {
+            if (e.target.hasAttribute('data-filter')) {
+                const filterType = e.target.getAttribute('data-filter');
+                const filterValue = e.target.value;
+                const isChecked = e.target.checked;
+                
+                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                
+                // Update filter state - handle different filter types
+                let filterArrayKey = filterType + 's';
+                
+                // Handle special cases for filter type mapping
+                if (filterType === 'price_range') {
+                    filterArrayKey = 'price_ranges';
+                } else if (filterType === 'category') {
+                    filterArrayKey = 'categories';
+                } else if (filterType === 'availability') {
+                    filterArrayKey = 'availabilities';
+                }
+                
+                if (isChecked) {
+                    if (!filterState[filterArrayKey].includes(filterValue)) {
+                        filterState[filterArrayKey].push(filterValue);
+                    }
+                } else {
+                    const index = filterState[filterArrayKey].indexOf(filterValue);
+                    if (index > -1) {
+                        filterState[filterArrayKey].splice(index, 1);
+                    }
+                }
+                
+                console.log('Current filter state:', filterState);
+                
+                // Apply filters
+                applyFilters();
+            }
+        });
+        
+        // Clear filters button
+        const clearFiltersBtn = document.getElementById('clear-filters');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function() {
+                clearAllFilters();
+            });
+        }
+        
+        function applyFilters() {
+            // console.log('Applying filters...');
+            
+            // Show loading state
+            showFilterLoading();
+            
+            // Prepare filter data
+            const filterData = {
+                action: 'filter_products',
+                subcategory: currentSubcategory,
+                sizes: filterState.sizes,
+                colors: filterState.colors,
+                price_ranges: filterState.price_ranges,
+                categories: filterState.categories,
+                category: filterState.categories, // Also send as 'category' for compatibility
+                lengths: filterState.lengths,
+                availabilities: filterState.availabilities
+            };
+            
+            console.log('Sending filter data:', filterData);
+            
+            // Send filter request
+            fetch('filter-api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filterData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Filter response:', data);
+                
+                if (data.success) {
+                    updateProductGrid(data.data.products);
+                    updateStyleCount(data.data.total_count);
+                    hideFilterLoading();
+                } else {
+                    console.error('Filter error:', data.message);
+                    hideFilterLoading();
+                    showFilterError(data.message);
+                    
+                    // Show error message in product grid
+                    const productGrid = document.getElementById('filtered-products-grid') || 
+                                       document.getElementById('all-mens-clothing-grid') ||
+                                       document.querySelector('.product-grid');
+                    if (productGrid) {
+                        productGrid.innerHTML = `
+                            <div class="filter-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8d7da; border-radius: 8px; margin: 20px 0;">
+                                <div style="font-size: 48px; color: #721c24; margin-bottom: 16px;">⚠️</div>
+                                <h3 style="color: #721c24; margin-bottom: 8px;">Filter Error</h3>
+                                <p style="color: #721c24; margin-bottom: 20px;">${data.message}</p>
+                                <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                            </div>
+                        `;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Filter request error:', error);
+                hideFilterLoading();
+                showFilterError('Network error occurred');
+                
+                // Show network error message in product grid
+                const productGrid = document.getElementById('filtered-products-grid') || 
+                                   document.getElementById('all-mens-clothing-grid') ||
+                                   document.querySelector('.product-grid');
+                if (productGrid) {
+                    productGrid.innerHTML = `
+                        <div class="network-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff3cd; border-radius: 8px; margin: 20px 0;">
+                            <div style="font-size: 48px; color: #856404; margin-bottom: 16px;">🌐</div>
+                            <h3 style="color: #856404; margin-bottom: 8px;">Connection Error</h3>
+                            <p style="color: #856404; margin-bottom: 20px;">Unable to load products. Please check your connection and try again.</p>
+                            <button onclick="applyFilters()" class="retry-btn" style="background: #ffc107; color: #212529; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500; margin-right: 10px;">Retry</button>
+                            <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        function clearAllFilters() {
+            // console.log('Clearing all filters...');
+            
+            // Uncheck all filter checkboxes
+            document.querySelectorAll('input[data-filter]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset filter state
+            filterState = {
+                sizes: [],
+                colors: [],
+                price_ranges: [],
+                categories: [],
+                lengths: [],
+                availabilities: []
+            };
+            
+            // Apply filters (will show all products)
+            applyFilters();
+        }
+        
+        // Make functions globally accessible
+        window.clearAllFilters = clearAllFilters;
+        window.applyFilters = applyFilters;
+        
+        function updateProductGrid(products) {
+            console.log(`Updating product grid with ${products.length} products`);
+            
+            // Get the appropriate product grid based on current subcategory
+            let productGrid;
+            if (currentSubcategory) {
+                productGrid = document.getElementById('filtered-products-grid');
+            } else {
+                // Try different grid IDs for main page
+                productGrid = document.getElementById('all-mens-clothing-grid') || 
+                             document.getElementById('filtered-products-grid') ||
+                             document.querySelector('.product-grid');
+            }
+            
+            if (!productGrid) {
+                console.error('Product grid not found');
+                return;
+            }
+            
+            // Clear existing products
+            productGrid.innerHTML = '';
+            
+            if (products.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                        <div style="font-size: 48px; color: #6c757d; margin-bottom: 16px;">🔍</div>
+                        <h3 style="color: #495057; margin-bottom: 8px;">No products found</h3>
+                        <p style="color: #6c757d; margin-bottom: 20px;">No products match your current filter selection.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create product cards for filtered results
+            products.forEach(product => {
+                const productCard = createProductCard(product);
+                productGrid.appendChild(productCard);
+            });
+            
+            // Initialize product cards after adding them
+            const newProductCards = productGrid.querySelectorAll('.product-card');
+            newProductCards.forEach(card => {
+                initializeProductCard(card);
+            });
+        }
+        
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-product-id', product.id);
+            card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
+            card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
+            card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-options', JSON.stringify(product.options || []));
+            
+            // Get front and back images
+            const frontImage = product.front_image || '';
+            const backImage = product.back_image || frontImage;
+            const productColor = product.color || '#000000';
+            
+            card.innerHTML = `
+                <div class="product-image">
+                    <div class="image-slider">
+                        ${frontImage ? `
+                            <img src="../${frontImage}" 
+                                 alt="${product.name} - Front" 
+                                 class="active" 
+                                 data-color="${productColor}">
+                        ` : ''}
+                        ${backImage && backImage !== frontImage ? `
+                            <img src="../${backImage}" 
+                                 alt="${product.name} - Back" 
+                                 data-color="${productColor}">
+                        ` : ''}
+                    </div>
+                    <button class="heart-button" data-product-id="${product.id}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
+                        ${product.available !== false ? `
+                            <button class="add-to-bag">Add To Bag</button>
+                        ` : `
+                            <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                        `}
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="color-options">
+                        <span class="color-circle active" 
+                              style="background-color: ${productColor};" 
+                              title="${productColor}" 
+                              data-color="${productColor}"></span>
+                    </div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${product.price.toFixed(0)}</div>
+                    ${product.available === false ? `
+                        <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                    ` : product.stock <= 5 && product.stock > 0 ? `
+                        <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        
+        
+        function updateStyleCount(count) {
+            const styleCountElement = document.getElementById('style-count');
+            if (styleCountElement) {
+                styleCountElement.textContent = `${count} Styles`;
+            }
+        }
+        
+        function showFilterLoading() {
+            // Add loading overlay to product grid
+            const productGrid = document.getElementById('filtered-products-grid') || 
+                               document.getElementById('dresses-grid') ||
+                               document.querySelector('.product-grid');
+            if (productGrid) {
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'filter-loading';
+                loadingOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(255, 255, 255, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                `;
+                loadingOverlay.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+                        <p>Filtering products...</p>
+                    </div>
+                `;
+                productGrid.style.position = 'relative';
+                productGrid.appendChild(loadingOverlay);
+                
+                // Also add loading state to sidebar
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.classList.add('filter-loading');
+                }
+            }
+        }
+        
+        function hideFilterLoading() {
+            const loadingOverlay = document.getElementById('filter-loading');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+            
+            // Remove loading state from sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.remove('filter-loading');
+            }
+        }
+        
+        function showFilterError(message) {
+            // Show error notification
+            showNotification(`Filter error: ${message}`, 'error');
+        }
+        
+        // Add CSS for loading animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            /* Enhanced Size Selection Styles */
+            .size-selection-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                padding: 5px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .size-actions {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .size-action-btn {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            }
+            
+            .size-action-btn:hover {
+                background: #e9ecef;
+                border-color: #dee2e6;
+            }
+            
+            .size-options-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                margin-top: 5px;
+            }
+            
+            .size-option {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 2px;
+                border: 2px solid #ddd;
+                border-radius: 4px;
+                cursor: pointer;
+                background-color: transparent;
+                color: #333;
+                transition: all 0.3s ease;
+                font-size: 14px;
+                font-weight: 500;
+                min-width: 40px;
+                text-align: center;
+                user-select: none;
+                white-space: nowrap;
+            }
+            
+            .size-option:hover {
+                border-color: #999;
+                background-color: #f8f9fa;
+            }
+            
+            .size-option.selected {
+                border: 2px solid #333;
+                background-color: #333;
+                color: white;
+            }
+            
+            .size-option.selected:hover {
+                background-color: #555;
+            }
+            
+            /* Quick View Size Count */
+            #quick-view-size-count {
+                font-size: 12px;
+                color: #666;
+                font-weight: 400;
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .size-option {
+                    min-width: 35px;
+                    padding: 6px 10px;
+                    font-size: 13px;
+                }
+                
+                .size-action-btn {
+                    padding: 5px 10px;
+                    font-size: 10px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .size-option {
+                    min-width: 32px;
+                    padding: 5px 8px;
+                    font-size: 12px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Enhanced Size Filter Functions - Works with Multiple Forms
+    function selectAllSizes() {
+        // console.log('Selecting all sizes...');
+        
+        // Handle sidebar filter sizes
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
+        sidebarSizeCheckboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            }
+        });
+        
+        // Handle quickview size selections for all open quickviews
+        const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizeSelections.forEach(sizeOption => {
+            if (!sizeOption.classList.contains('selected')) {
+                sizeOption.classList.add('selected');
+                sizeOption.style.border = '2px solid #333';
+                sizeOption.style.backgroundColor = '#333';
+                sizeOption.style.color = 'white';
+            }
+        });
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            // console.log('Size selection changed, updating filters...');
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
+    }
+    
+    function clearSizeFilters() {
+        // console.log('Clearing size filters...');
+        
+        // Handle sidebar filter sizes
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        let hasChanges = false;
+        
+        sidebarSizeCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                hasChanges = true;
+                // Trigger change event to update filters
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            }
+        });
+        
+        // Handle quickview size selections for all open quickviews
+        const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizeSelections.forEach(sizeOption => {
+            if (sizeOption.classList.contains('selected')) {
+                sizeOption.classList.remove('selected');
+                sizeOption.style.border = '2px solid #ddd';
+                sizeOption.style.backgroundColor = 'transparent';
+                sizeOption.style.color = '#333';
+            }
+        });
+        
+        // Update count display
+        updateSizeCount();
+        
+        // If changes were made, trigger filter update
+        if (hasChanges) {
+            // console.log('Size selection cleared, updating filters...');
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
+    }
+    
+    function updateSizeCount() {
+        // Update sidebar size count
+        const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        const sidebarSizeCountElement = document.getElementById('size-count');
+        if (sidebarSizeCountElement) {
+            const count = sidebarSizeCheckboxes.length;
+            sidebarSizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
+        }
+        
+        // Update quickview size count if available
+        const quickviewSizeCountElement = document.getElementById('quick-view-size-count');
+        if (quickviewSizeCountElement) {
+            const quickviewSelectedSizes = document.querySelectorAll('#quick-view-size-selection .size-option.selected');
+            const quickviewCount = quickviewSelectedSizes.length;
+            quickviewSizeCountElement.textContent = quickviewCount > 0 ? `(${quickviewCount} selected)` : '';
+        }
+    }
+    
+    // Enhanced global functions for multiple form handling
+    window.selectAllSizes = selectAllSizes;
+    window.clearSizeFilters = clearSizeFilters;
+    window.updateSizeCount = updateSizeCount;
+    
+    // Global function to handle size selection across all forms
+    window.handleSizeSelection = function(sizeElement, isSelected) {
+        if (isSelected) {
+            sizeElement.classList.add('selected');
+            sizeElement.style.border = '2px solid #333';
+            sizeElement.style.backgroundColor = '#333';
+            sizeElement.style.color = 'white';
+        } else {
+            sizeElement.classList.remove('selected');
+            sizeElement.style.border = '2px solid #ddd';
+            sizeElement.style.backgroundColor = 'transparent';
+            sizeElement.style.color = '#333';
+        }
+        updateSizeCount();
+    };
+    
+    // Global function to get all selected sizes from all forms
+    window.getAllSelectedSizes = function() {
+        const selectedSizes = [];
+        
+        // Get from sidebar filters
+        const sidebarSelected = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
+        sidebarSelected.forEach(checkbox => {
+            selectedSizes.push(checkbox.value);
+        });
+        
+        // Get from quickview
+        const quickviewSelected = document.querySelectorAll('#quick-view-size-selection .size-option.selected');
+        quickviewSelected.forEach(sizeOption => {
+            selectedSizes.push(sizeOption.getAttribute('data-size'));
+        });
+        
+        return [...new Set(selectedSizes)]; // Remove duplicates
+    };
+    
+    // Global function to reset all size selections
+    window.resetAllSizeSelections = function() {
+        // Reset sidebar filters
+        const sidebarCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+        sidebarCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            const changeEvent = new Event('change', { bubbles: true });
+            checkbox.dispatchEvent(changeEvent);
+        });
+        
+        // Reset quickview selections
+        const quickviewSizes = document.querySelectorAll('#quick-view-size-selection .size-option');
+        quickviewSizes.forEach(sizeOption => {
+            sizeOption.classList.remove('selected');
+            sizeOption.style.border = '2px solid #ddd';
+            sizeOption.style.backgroundColor = 'transparent';
+            sizeOption.style.color = '#333';
+        });
+        
+        updateSizeCount();
+    };
+    
+    // Global function to convert size codes to full names
+    window.getSizeName = function(sizeCode) {
+        const sizeMap = {
+            'XXS': 'Extra Extra Small',
+            'XS': 'Extra Small', 
+            'S': 'Small',
+            'M': 'Medium',
+            'L': 'Large',
+            'XL': 'Extra Large',
+            'XXL': 'Extra Extra Large',
+            'XXXL': 'Extra Extra Extra Large',
+            '0': 'Size 0',
+            '2': 'Size 2',
+            '4': 'Size 4',
+            '6': 'Size 6',
+            '8': 'Size 8',
+            '10': 'Size 10',
+            '12': 'Size 12',
+            '14': 'Size 14',
+            '16': 'Size 16',
+            '18': 'Size 18',
+            '20': 'Size 20',
+            '22': 'Size 22',
+            '24': 'Size 24',
+            '26': 'Size 26',
+            '28': 'Size 28',
+            '30': 'Size 30',
+            '32': 'Size 32',
+            '34': 'Size 34',
+            '36': 'Size 36',
+            '38': 'Size 38',
+            '40': 'Size 40',
+            '42': 'Size 42',
+            '44': 'Size 44',
+            '46': 'Size 46',
+            '48': 'Size 48',
+            '50': 'Size 50',
+            '52': 'Size 52',
+            '54': 'Size 54',
+            '56': 'Size 56',
+            '58': 'Size 58',
+            '60': 'Size 60',
+            '62': 'Size 62',
+            '64': 'Size 64',
+            '66': 'Size 66',
+            '68': 'Size 68',
+            '70': 'Size 70',
+            '72': 'Size 72',
+            '74': 'Size 74',
+            '76': 'Size 76',
+            '78': 'Size 78',
+            '80': 'Size 80',
+            '82': 'Size 82',
+            '84': 'Size 84',
+            '86': 'Size 86',
+            '88': 'Size 88',
+            '90': 'Size 90',
+            '92': 'Size 92',
+            '94': 'Size 94',
+            '96': 'Size 96',
+            '98': 'Size 98',
+            '100': 'Size 100'
+        };
+        
+        // Return full name if found, otherwise return the original code
+        return sizeMap[sizeCode] || sizeCode;
+    };
+    
+    // Add event listener for size count updates
+    document.addEventListener('change', function(e) {
+        if (e.target.closest('#size-filter')) {
+            updateSizeCount();
+        }
+    });
+    
+    // Initialize size count on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSizeCount();
+    });
+    
+    // Enhanced fallback functions for multiple forms
+    if (!window.selectAllSizes) {
+        window.selectAllSizes = function() {
+            // console.log('Fallback selectAllSizes called...');
+            
+            // Handle sidebar filter sizes
+            const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sidebarSizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            
+            // Handle quickview size selections
+            const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+            quickviewSizeSelections.forEach(sizeOption => {
+                sizeOption.classList.add('selected');
+                sizeOption.style.border = '2px solid #333';
+                sizeOption.style.backgroundColor = '#333';
+                sizeOption.style.color = 'white';
+            });
+            
+            updateSizeCount();
+        };
+    }
+    
+    if (!window.clearSizeFilters) {
+        window.clearSizeFilters = function() {
+            // console.log('Fallback clearSizeFilters called...');
+            
+            // Handle sidebar filter sizes
+            const sidebarSizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+            sidebarSizeCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            });
+            
+            // Handle quickview size selections
+            const quickviewSizeSelections = document.querySelectorAll('#quick-view-size-selection .size-option');
+            quickviewSizeSelections.forEach(sizeOption => {
+                sizeOption.classList.remove('selected');
+                sizeOption.style.border = '2px solid #ddd';
+                sizeOption.style.backgroundColor = 'transparent';
+                sizeOption.style.color = '#333';
+            });
+            
+            updateSizeCount();
+        };
+    }
+    
+    // Function to load colors from database
+    function loadColorsFromDatabase() {
+        console.log('Loading colors from database...');
+        fetch('get-colors-api.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('API response:', data);
+                if (data.success && data.data && data.data.colors) {
+                    console.log('Colors loaded successfully:', data.data.colors);
+                    populateColorFilter(data.data.colors);
+                } else {
+                    console.error('Error loading colors:', data.message || 'Unknown error');
+                    showColorLoadError();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching colors:', error);
+                showColorLoadError();
+            });
+    }
+    
+    // Function to populate color filter with database colors
+    function populateColorFilter(colors) {
+        const colorContainer = document.getElementById('color-filter-options');
+        if (!colorContainer) {
+            console.error('Color container not found');
+            return;
+        }
+        
+        colorContainer.innerHTML = '';
+        
+        console.log('Populating color filter with colors:', colors);
+        
+        colors.forEach((color, index) => {
+            const label = document.createElement('label');
+            label.className = 'color-option';
+            
+            // Use the hex value from the API response
+            const hexValue = color.hex;
+            const colorValue = color.value;
+            
+            // Add border for white/light colors
+            const borderStyle = (hexValue.toLowerCase() === '#ffffff' || hexValue.toLowerCase() === '#fff') ? 'border: 1px solid #ddd;' : '';
+            
+            label.innerHTML = `
+                <input type="checkbox" name="color[]" value="${colorValue}" data-filter="color">
+                <span class="color-swatch" style="background-color: ${hexValue}; ${borderStyle}"></span>
+            `;
+            
+            colorContainer.appendChild(label);
+            
+            // Log each color for debugging
+            console.log(`Color ${index + 1}:`, {
+                value: colorValue,
+                hex: hexValue,
+                count: color.count
+            });
+        });
+        
+        console.log('Color filter populated with', colors.length, 'colors');
+    }
+    
+    // Function to get color name from hex value
+    function getColorNameFromHex(hex) {
+        // Return empty string since we're not displaying color names anymore
+        return '';
+    }
+    
+    // Function to get hex value from color name
+    function getHexFromColorName(colorName) {
+        const colorMap = {
+            'black': '#000000',
+            'white': '#ffffff',
+            'red': '#ff0000',
+            'green': '#228b22',
+            'blue': '#0066cc',
+            'yellow': '#ffff00',
+            'magenta': '#ff00ff',
+            'cyan': '#00ffff',
+            'grey': '#808080',
+            'silver': '#c0c0c0',
+            'gold': '#ffd700',
+            'orange': '#ffa500',
+            'purple': '#800080',
+            'pink': '#ffc0cb',
+            'brown': '#8b4513',
+            'beige': '#f5f5dc',
+            'taupe': '#483c32'
+        };
+        return colorMap[colorName.toLowerCase()] || '#cccccc';
+    }
+    
+    // Function to show color load error
+    function showColorLoadError() {
+        const colorContainer = document.getElementById('color-filter-options');
+        if (colorContainer) {
+            // Show fallback colors instead of error message
+            const fallbackColors = [
+                { value: '#000000', hex: '#000000', count: 0 },
+                { value: '#ffffff', hex: '#ffffff', count: 0 },
+                { value: '#0066cc', hex: '#0066cc', count: 0 },
+                { value: '#808080', hex: '#808080', count: 0 },
+                { value: '#8b4513', hex: '#8b4513', count: 0 },
+                { value: '#ff0000', hex: '#ff0000', count: 0 },
+                { value: '#228b22', hex: '#228b22', count: 0 },
+                { value: '#ffa500', hex: '#ffa500', count: 0 }
+            ];
+            
+            console.log('Using fallback colors due to API error');
+            populateColorFilter(fallbackColors);
+        }
+    }
+>>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 });

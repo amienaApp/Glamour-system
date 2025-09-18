@@ -74,7 +74,6 @@ foreach ($allShoes as $shoe) {
         <h3>Refine By</h3>
         <span class="style-count" id="style-count"><?php echo count($allShoes); ?> Styles</span>
         <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
-            <i class="fas fa-times"></i>
             Clear All Filters
         </button>
     </div>
@@ -716,7 +715,6 @@ function displayColors(colors) {
                    ${isChecked}
                    onchange="updateColorFilter('${color.value}', this.checked)">
             <span class="color-swatch" style="background-color: ${color.hex}; ${borderStyle}"></span>
-            ${color.name}
         `;
         
         container.appendChild(colorOption);
@@ -729,56 +727,56 @@ function displayFallbackColors() {
     if (!container) return;
     
     const fallbackColors = [
-        { value: 'black', name: 'Black', hex: '#000000' },
-        { value: 'white', name: 'White', hex: '#ffffff' },
-        { value: 'red', name: 'Red', hex: '#ff0000' },
-        { value: 'blue', name: 'Blue', hex: '#0066cc' },
-        { value: 'green', name: 'Green', hex: '#228b22' },
-        { value: 'yellow', name: 'Yellow', hex: '#ffff00' },
-        { value: 'orange', name: 'Orange', hex: '#ffa500' },
-        { value: 'purple', name: 'Purple', hex: '#800080' },
-        { value: 'pink', name: 'Pink', hex: '#ffc0cb' },
-        { value: 'brown', name: 'Brown', hex: '#8b4513' },
-        { value: 'grey', name: 'Grey', hex: '#808080' },
-        { value: 'gray', name: 'Gray', hex: '#808080' },
-        { value: 'beige', name: 'Beige', hex: '#f5f5dc' },
-        { value: 'navy', name: 'Navy', hex: '#000080' },
-        { value: 'maroon', name: 'Maroon', hex: '#800000' },
-        { value: 'teal', name: 'Teal', hex: '#008080' },
-        { value: 'lime', name: 'Lime', hex: '#00ff00' },
-        { value: 'cyan', name: 'Cyan', hex: '#00ffff' },
-        { value: 'magenta', name: 'Magenta', hex: '#ff00ff' },
-        { value: 'silver', name: 'Silver', hex: '#c0c0c0' },
-        { value: 'gold', name: 'Gold', hex: '#ffd700' },
-        { value: 'taupe', name: 'Taupe', hex: '#483c32' },
-        { value: 'olive', name: 'Olive', hex: '#808000' },
-        { value: 'aqua', name: 'Aqua', hex: '#00ffff' },
-        { value: 'fuchsia', name: 'Fuchsia', hex: '#ff00ff' },
-        { value: 'coral', name: 'Coral', hex: '#ff7f50' },
-        { value: 'salmon', name: 'Salmon', hex: '#fa8072' },
-        { value: 'tan', name: 'Tan', hex: '#d2b48c' },
-        { value: 'ivory', name: 'Ivory', hex: '#fffff0' },
-        { value: 'cream', name: 'Cream', hex: '#fff8dc' },
-        { value: 'mint', name: 'Mint', hex: '#f5fffa' },
-        { value: 'lavender', name: 'Lavender', hex: '#e6e6fa' },
-        { value: 'peach', name: 'Peach', hex: '#ffdab9' },
-        { value: 'rose', name: 'Rose', hex: '#ff69b4' },
-        { value: 'turquoise', name: 'Turquoise', hex: '#40e0d0' },
-        { value: 'indigo', name: 'Indigo', hex: '#4b0082' },
-        { value: 'violet', name: 'Violet', hex: '#8a2be2' },
-        { value: 'amber', name: 'Amber', hex: '#ffbf00' },
-        { value: 'bronze', name: 'Bronze', hex: '#cd7f32' },
-        { value: 'copper', name: 'Copper', hex: '#b87333' },
-        { value: 'charcoal', name: 'Charcoal', hex: '#36454f' },
-        { value: 'slate', name: 'Slate', hex: '#708090' },
-        { value: 'steel', name: 'Steel', hex: '#4682b4' },
-        { value: 'denim', name: 'Denim', hex: '#1560bd' },
-        { value: 'khaki', name: 'Khaki', hex: '#f0e68c' },
-        { value: 'burgundy', name: 'Burgundy', hex: '#800020' },
-        { value: 'wine', name: 'Wine', hex: '#722f37' },
-        { value: 'plum', name: 'Plum', hex: '#8e4585' },
-        { value: 'mauve', name: 'Mauve', hex: '#e0b0ff' },
-        { value: 'sage', name: 'Sage', hex: '#9caf88' }
+        { value: 'black', name: '', hex: '#000000' },
+        { value: 'white', name: '', hex: '#ffffff' },
+        { value: 'red', name: '', hex: '#ff0000' },
+        { value: 'blue', name: '', hex: '#0066cc' },
+        { value: 'green', name: '', hex: '#228b22' },
+        { value: 'yellow', name: '', hex: '#ffff00' },
+        { value: 'orange', name: '', hex: '#ffa500' },
+        { value: 'purple', name: '', hex: '#800080' },
+        { value: 'pink', name: '', hex: '#ffc0cb' },
+        { value: 'brown', name: '', hex: '#8b4513' },
+        { value: 'grey', name: '', hex: '#808080' },
+        { value: 'gray', name: '', hex: '#808080' },
+        { value: 'beige', name: '', hex: '#f5f5dc' },
+        { value: 'navy', name: '', hex: '#000080' },
+        { value: 'maroon', name: '', hex: '#800000' },
+        { value: 'teal', name: '', hex: '#008080' },
+        { value: 'lime', name: '', hex: '#00ff00' },
+        { value: 'cyan', name: '', hex: '#00ffff' },
+        { value: 'magenta', name: '', hex: '#ff00ff' },
+        { value: 'silver', name: '', hex: '#c0c0c0' },
+        { value: 'gold', name: '', hex: '#ffd700' },
+        { value: 'taupe', name: '', hex: '#483c32' },
+        { value: 'olive', name: '', hex: '#808000' },
+        { value: 'aqua', name: '', hex: '#00ffff' },
+        { value: 'fuchsia', name: '', hex: '#ff00ff' },
+        { value: 'coral', name: '', hex: '#ff7f50' },
+        { value: 'salmon', name: '', hex: '#fa8072' },
+        { value: 'tan', name: '', hex: '#d2b48c' },
+        { value: 'ivory', name: '', hex: '#fffff0' },
+        { value: 'cream', name: '', hex: '#fff8dc' },
+        { value: 'mint', name: '', hex: '#f5fffa' },
+        { value: 'lavender', name: '', hex: '#e6e6fa' },
+        { value: 'peach', name: '', hex: '#ffdab9' },
+        { value: 'rose', name: '', hex: '#ff69b4' },
+        { value: 'turquoise', name: '', hex: '#40e0d0' },
+        { value: 'indigo', name: '', hex: '#4b0082' },
+        { value: 'violet', name: '', hex: '#8a2be2' },
+        { value: 'amber', name: '', hex: '#ffbf00' },
+        { value: 'bronze', name: '', hex: '#cd7f32' },
+        { value: 'copper', name: '', hex: '#b87333' },
+        { value: 'charcoal', name: '', hex: '#36454f' },
+        { value: 'slate', name: '', hex: '#708090' },
+        { value: 'steel', name: '', hex: '#4682b4' },
+        { value: 'denim', name: '', hex: '#1560bd' },
+        { value: 'khaki', name: '', hex: '#f0e68c' },
+        { value: 'burgundy', name: '', hex: '#800020' },
+        { value: 'wine', name: '', hex: '#722f37' },
+        { value: 'plum', name: '', hex: '#8e4585' },
+        { value: 'mauve', name: '', hex: '#e0b0ff' },
+        { value: 'sage', name: '', hex: '#9caf88' }
     ];
     
     displayColors(fallbackColors);
@@ -795,20 +793,23 @@ function displayFallbackColors() {
 
 .color-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 8px;
     margin-top: 10px;
+    justify-items: center;
 }
 
 .color-option {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 6px 4px;
+    padding: 4px;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     font-size: 13px;
+    width: 100%;
 }
 
 .color-option:hover {
@@ -820,11 +821,20 @@ function displayFallbackColors() {
 }
 
 .color-swatch {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    border: 1px solid #ddd;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #ddd;
     flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.color-option input[type="checkbox"]:checked + .color-swatch {
+    box-shadow: 0 0 0 2px #000;
+    transform: scale(1.1);
 }
 
 .color-option label {

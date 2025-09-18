@@ -80,61 +80,13 @@ $skincare = $productModel->getBySubcategory('Skincare');
         <div class="mobile-filters-panel" id="mobile-filters-panel">
             <div class="mobile-filters-header">
                 <h3>Refine By</h3>
-                <button class="close-filters" onclick="toggleMobileFilters()">
+                <button class="close-filters" onclick="closeMobileFilters()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="mobile-filters-content" style="display: block !important; visibility: visible !important; opacity: 1 !important; background: white !important; padding: 20px !important; height: auto !important; min-height: 300px !important;">
-                <!-- Simple test content -->
-                <h3 style="color: #333; margin-bottom: 20px;">Refine By - Beauty</h3>
-                
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #666; margin-bottom: 10px;">Beauty Category</h4>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="beauty_categories[]" value="makeup" style="margin-right: 8px;">
-                        Makeup
-                    </label>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="beauty_categories[]" value="skincare" style="margin-right: 8px;">
-                        Skincare
-                    </label>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="beauty_categories[]" value="hair" style="margin-right: 8px;">
-                        Hair Care
-                    </label>
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #666; margin-bottom: 10px;">Price Range</h4>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="price[]" value="0-25" style="margin-right: 8px;">
-                        $0 - $25
-                    </label>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="price[]" value="25-50" style="margin-right: 8px;">
-                        $25 - $50
-                    </label>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="price[]" value="50-100" style="margin-right: 8px;">
-                        $50 - $100
-                    </label>
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #666; margin-bottom: 10px;">Brand</h4>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="brand[]" value="luxury" style="margin-right: 8px;">
-                        Luxury
-                    </label>
-                    <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                        <input type="checkbox" name="brand[]" value="drugstore" style="margin-right: 8px;">
-                        Drugstore
-                    </label>
-                </div>
-                
-                <button style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%;">
-                    Apply Filters
-                </button>
+            <div class="mobile-filters-content">
+                <!-- Include the actual sidebar content -->
+                <?php include 'includes/sidebar.php'; ?>
             </div>
         </div>
     </div>

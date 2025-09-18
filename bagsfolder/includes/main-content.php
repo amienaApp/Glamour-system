@@ -136,7 +136,7 @@ $clutches = $productModel->getBySubcategory('Clutches');
                 </button>
             </div>
             <div class="mobile-filters-content">
-                <!-- Copy sidebar content here -->
+                <!-- Include the actual sidebar content -->
                 <?php include 'includes/sidebar.php'; ?>
             </div>
         </div>

@@ -188,46 +188,46 @@
             </div>
             <div class="filter-options">
                 <div class="color-grid" id="color-filter">
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="blue" data-filter="color" id="color-blue">
-                        <label for="color-blue" class="color-swatch" style="background-color: #4A90E2;" title="Blue"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="red" data-filter="color" id="color-red">
-                        <label for="color-red" class="color-swatch" style="background-color: #E74C3C;" title="Red"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="green" data-filter="color" id="color-green">
-                        <label for="color-green" class="color-swatch" style="background-color: #2ECC71;" title="Green"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="yellow" data-filter="color" id="color-yellow">
-                        <label for="color-yellow" class="color-swatch" style="background-color: #F1C40F;" title="Yellow"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="pink" data-filter="color" id="color-pink">
-                        <label for="color-pink" class="color-swatch" style="background-color: #E91E63;" title="Pink"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="purple" data-filter="color" id="color-purple">
-                        <label for="color-purple" class="color-swatch" style="background-color: #9B59B6;" title="Purple"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="orange" data-filter="color" id="color-orange">
-                        <label for="color-orange" class="color-swatch" style="background-color: #FF9800;" title="Orange"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="black" data-filter="color" id="color-black">
-                        <label for="color-black" class="color-swatch" style="background-color: #2C3E50;" title="Black"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="white" data-filter="color" id="color-white">
-                        <label for="color-white" class="color-swatch" style="background-color: #ECF0F1; border: 1px solid #BDC3C7;" title="White"></label>
-                    </div>
-                    <div class="color-option">
-                        <input type="checkbox" name="color[]" value="gray" data-filter="color" id="color-gray">
-                        <label for="color-gray" class="color-swatch" style="background-color: #95A5A6;" title="Gray"></label>
-                    </div>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="blue" data-filter="color">
+                        <span class="color-swatch" style="background-color: #4A90E2;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="red" data-filter="color">
+                        <span class="color-swatch" style="background-color: #E74C3C;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="green" data-filter="color">
+                        <span class="color-swatch" style="background-color: #2ECC71;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="yellow" data-filter="color">
+                        <span class="color-swatch" style="background-color: #F1C40F;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="pink" data-filter="color">
+                        <span class="color-swatch" style="background-color: #E91E63;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="purple" data-filter="color">
+                        <span class="color-swatch" style="background-color: #9B59B6;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="orange" data-filter="color">
+                        <span class="color-swatch" style="background-color: #FF9800;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="black" data-filter="color">
+                        <span class="color-swatch" style="background-color: #2C3E50;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="white" data-filter="color">
+                        <span class="color-swatch" style="background-color: #ECF0F1; border: 1px solid #BDC3C7;"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="checkbox" name="color[]" value="gray" data-filter="color">
+                        <span class="color-swatch" style="background-color: #95A5A6;"></span>
+                    </label>
                 </div>
             </div>
         </div>

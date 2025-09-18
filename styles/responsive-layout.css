@@ -46,6 +46,13 @@
     border-color: #adb5bd;
 }
 
+/* Show mobile filters only on tablet and mobile */
+@media (max-width: 1023px) {
+    .mobile-filters-btn {
+        display: flex;
+    }
+}
+
 .hamburger-bars {
     display: flex;
     flex-direction: column;
@@ -80,6 +87,19 @@
     transition: all 0.3s ease;
 }
 
+/* Ensure mobile panel is completely hidden on desktop */
+@media (min-width: 1024px) {
+    .mobile-filters-panel,
+    .mobile-filters-panel * {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        top: -9999px !important;
+    }
+}
+
 .mobile-filters-panel.active {
     display: block !important;
     opacity: 1 !important;
@@ -91,8 +111,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 85%;
-    max-width: 400px;
+    width: 430px;
     height: 100%;
     background: #ffffff;
     overflow-y: auto;
@@ -107,24 +126,154 @@
     transform: translateX(0);
 }
 
+/* Responsive mobile filters width */
+@media (max-width: 480px) {
+    .mobile-filters-content {
+        width: 80%;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mobile-filters-content {
+        width: 85%;
+        max-width: 260px;
+    }
+}
+
 /* Mobile filters content - simple and clean */
 .mobile-filters-content {
     background: white;
-    padding: 20px;
+    padding: 15px;
     height: 100%;
     overflow-y: auto;
+}
+
+/* Optimize spacing for smaller width */
+.mobile-filters-content h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.mobile-filters-content h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.mobile-filters-content h5 {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.mobile-filters-content label {
+    font-size: 14px;
+    padding: 6px 0;
+}
+
+.mobile-filters-content button {
+    font-size: 14px;
+    padding: 12px 16px;
+}
+
+/* Size option styling - all same size, no red borders */
+.size-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f8f9fa;
+    min-height: 40px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.size-option:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.size-option input[type="checkbox"] {
+    margin-right: 6px;
+    width: 14px;
+    height: 14px;
+}
+
+.size-option span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Hide mobile filters on desktop */
+@media (min-width: 1024px) {
+    .mobile-filters-btn {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    
+    .mobile-filters-panel {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    
+    .mobile-filters-content {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    
+    .mobile-filters-header {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    
+    .close-filters {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+}
+
+/* Hide image bars on mobile and tablet */
+@media (max-width: 1023px) {
+    .image-bar {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .banner-swiper-section {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 }
 
 .mobile-filters-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 15px 20px;
     background: #ffffff;
     border-bottom: 1px solid #e8e8e8;
     position: sticky;
     top: 0;
     z-index: 1001;
+    width: 430px;
+    box-sizing: border-box;
+    min-height: 60px;
 }
 
 .mobile-filters-header h3 {
@@ -132,6 +281,8 @@
     font-weight: 600;
     color: #333;
     margin: 0;
+    flex: 1;
+    text-align: left;
 }
 
 .close-filters {
@@ -140,9 +291,16 @@
     color: #666;
     font-size: 20px;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
 }
 
 .close-filters:hover {

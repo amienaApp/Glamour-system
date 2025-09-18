@@ -82,8 +82,20 @@ try {
         // Color variants
         if (!empty($product['color_variants']) && is_array($product['color_variants'])) {
             foreach ($product['color_variants'] as $variant) {
-                if (!empty($variant['color'])) {
-                    $color = trim($variant['color']);
+                // Handle different variant structures
+                if (is_array($variant)) {
+                    // Standard array structure
+                    if (!empty($variant['color'])) {
+                        $color = trim($variant['color']);
+                        $normalizedColor = strtolower($color);
+                        $colorCounts[$normalizedColor] = [
+                            'original' => $color,
+                            'count' => ($colorCounts[$normalizedColor]['count'] ?? 0) + 1
+                        ];
+                    }
+                } elseif (is_string($variant)) {
+                    // Direct string color
+                    $color = trim($variant);
                     $normalizedColor = strtolower($color);
                     $colorCounts[$normalizedColor] = [
                         'original' => $color,
@@ -95,8 +107,14 @@ try {
     }
     
     // Convert to array format and sort
+    // Only include colors that have at least one product
     $colors = [];
     foreach ($colorCounts as $normalizedColor => $data) {
+        // Skip colors with no products
+        if ($data['count'] <= 0) {
+            continue;
+        }
+        
         $colors[] = [
             'name' => $data['original'], // Keep original case
             'normalized' => $normalizedColor, // For comparison

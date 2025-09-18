@@ -258,8 +258,8 @@
 /* Color Filter Grid */
 .color-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    gap: 12px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
     width: 100%;
     justify-items: center;
     padding: 10px 0;
@@ -274,8 +274,7 @@
     margin: 0;
     border-radius: 50%;
     transition: all 0.3s ease;
-    width: 40px;
-    height: 40px;
+    width: 100%;
 }
 
 .color-option:hover {
@@ -288,8 +287,8 @@
 }
 
 .color-swatch {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     border: 2px solid #fff;
     box-shadow: 0 0 0 1px #ddd;
@@ -297,12 +296,12 @@
     transition: all 0.3s ease;
     flex-shrink: 0;
     display: block;
+    position: relative;
 }
 
 .color-option input[type="checkbox"]:checked + .color-swatch {
-    box-shadow: 0 0 0 3px #007bff;
-    transform: scale(1.15);
-    border-color: #007bff;
+    box-shadow: 0 0 0 2px #000;
+    transform: scale(1.1);
 }
 
 .color-name {

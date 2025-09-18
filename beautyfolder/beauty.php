@@ -249,6 +249,12 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                             content.style.display = 'block';
                             content.style.visibility = 'visible';
                             content.style.opacity = '1';
+                            content.style.zIndex = '99999';
+                            content.style.position = 'relative';
+                            content.style.background = 'white';
+                            content.style.border = '3px solid red';
+                            content.style.padding = '20px';
+                            content.style.minHeight = '300px';
                         }
                     }
                 } else {
@@ -256,6 +262,17 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                 }
             } catch (error) {
                 console.error('Error in toggleMobileFilters:', error);
+            }
+        }
+        
+        // Close mobile filters function
+        function closeMobileFilters() {
+            console.log('closeMobileFilters called');
+            const panel = document.getElementById('mobile-filters-panel');
+            if (panel) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+                console.log('Panel closed');
             }
         }
         
@@ -267,8 +284,7 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
             if (panel && panel.classList.contains('active') && 
                 !btn.contains(e.target) && 
                 !panel.contains(e.target)) {
-                panel.classList.remove('active');
-                document.body.style.overflow = '';
+                closeMobileFilters();
             }
         });
         
@@ -282,28 +298,11 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
             const panel = document.getElementById('mobile-filters-panel');
             if (panel) {
                 console.log('Mobile filters panel initialized');
-                // Remove any debugging styles
-                panel.style.display = '';
-                panel.style.opacity = '';
-                panel.style.visibility = '';
-                panel.style.background = '';
-                panel.style.zIndex = '';
                 
                 // Check content panel
                 const content = panel.querySelector('.mobile-filters-content');
                 if (content) {
                     console.log('Content panel found and ready');
-                    // Remove debugging styles
-                    content.style.display = '';
-                    content.style.transform = '';
-                    content.style.background = '';
-                    content.style.border = '';
-                    content.style.width = '';
-                    content.style.height = '';
-                    content.style.position = '';
-                    content.style.top = '';
-                    content.style.right = '';
-                    content.style.zIndex = '';
                 }
             }
         });

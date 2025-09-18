@@ -7,13 +7,343 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glamor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
     <!-- Include the home header CSS -->
     <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    
+    <!-- Custom Animation Styles -->
+    <style>
+        /* Enhanced hover effects for cards */
+        .card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        }
+        
+        .card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            background: linear-gradient(145deg, #ffffff, #f0f8ff);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .card:hover::before {
+            left: 100%;
+        }
+        
+        .card img {
+            transition: all 0.4s ease;
+            filter: brightness(1) contrast(1);
+        }
+        
+        .card:hover img {
+            transform: scale(1.1) rotate(2deg);
+            filter: brightness(1.1) contrast(1.1) saturate(1.2);
+        }
+        
+        /* Beautiful hover effects for media items */
+        .category5 {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 15px;
+        }
+        
+        .category5:hover {
+            transform: scale(1.08) rotate(1deg);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(255,255,255,0.1);
+        }
+        
+        .category5::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,182,193,0.1), 
+                rgba(173,216,230,0.1), 
+                rgba(255,218,185,0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+        
+        .category5:hover::before {
+            opacity: 1;
+        }
+        
+        .category5 video,
+        .category5 img {
+            transition: all 0.4s ease;
+            filter: brightness(1) contrast(1);
+        }
+        
+        .category5:hover video,
+        .category5:hover img {
+            transform: scale(1.15);
+            filter: brightness(1.2) contrast(1.1) saturate(1.3);
+        }
+        
+        .overlay5 {
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .category5:hover .overlay5 {
+            transform: translateY(-5px);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        /* Stunning button hover effects */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(102, 126, 234, 0.4),
+                0 5px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Enhanced swiper slide animations */
+        .swiper-slide {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swiper-slide img {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            filter: brightness(1) contrast(1);
+        }
+        
+        .swiper-slide:hover img {
+            transform: scale(1.15) rotate(1deg);
+            filter: brightness(1.1) contrast(1.1) saturate(1.2);
+        }
+        
+        .swiper-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,182,193,0.1), 
+                rgba(173,216,230,0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+        
+        .swiper-slide:hover::before {
+            opacity: 1;
+        }
+        
+        /* Beautiful navigation button effects */
+        .swiper-button-next,
+        .swiper-button-prev {
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: rgba(102, 126, 234, 0.9);
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            color: #333;
+            font-size: 20px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        
+        .swiper-button-next:hover:after,
+        .swiper-button-prev:hover:after {
+            color: white;
+        }
+        
+        /* Glowing pagination dots */
+        .swiper-pagination-bullet {
+            background: rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scale(1.2);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Fade in on scroll effect */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Pulse animation for special elements */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+        
+        /* Enhanced bounce animation for buttons */
+        .bounce-hover:hover {
+            animation: bounce 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { 
+                transform: translateY(0) scale(1);
+            }
+            40% { 
+                transform: translateY(-10px) scale(1.05);
+            }
+            80% { 
+                transform: translateY(-5px) scale(1.02);
+            }
+        }
+        
+        /* Beautiful section title hover effect */
+        .title h2 {
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .title h2:hover {
+            transform: scale(1.05);
+            text-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .title h2:hover::after {
+            width: 100%;
+        }
+        
+        /* Glowing effect for special elements */
+        .glow-on-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .glow-on-hover:hover {
+            box-shadow: 
+                0 0 20px rgba(102, 126, 234, 0.6),
+                0 0 40px rgba(102, 126, 234, 0.4),
+                0 0 60px rgba(102, 126, 234, 0.2);
+        }
+    </style>
    
 </head>
 <body>
@@ -29,36 +359,36 @@ session_start();
         <div class="swiper banner-swiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="img/banner9.webp" alt="Banner 3">
+                    <img src="img/banner9.webp" alt="Banner 3" class="animate__animated animate__fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner14.webp" alt="Banner 4">
+                    <img src="img/banner14.webp" alt="Banner 4" class="animate__animated animate__fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner5.png" alt="Banner 5">
+                    <img src="img/banner5.png" alt="Banner 5" class="animate__animated animate__fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner6.jpg" alt="Banner 6">
-                </div>
-                1
-                <div class="swiper-slide">
-                    <img src="img/banner7.jpg" alt="Banner 7">
+                    <img src="img/banner6.jpg" alt="Banner 6" class="animate__animated animate__fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner8.jpg" alt="Banner 8">
+                    <img src="img/banner7.jpg" alt="Banner 7" class="animate__animated animate__fadeIn">
+                </div>
+                
+                <div class="swiper-slide">
+                    <img src="img/banner8.jpg" alt="Banner 8" class="animate__animated animate__fadeIn">
                 </div>
             </div>
             
             <!-- Navigation arrows -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next animate__animated animate__bounceInRight"></div>
+            <div class="swiper-button-prev animate__animated animate__bounceInLeft"></div>
             
             <!-- Pagination dots -->
-            <div class="swiper-pagination"></div>
+            <div class="swiper-pagination animate__animated animate__fadeInUp"></div>
         </div>
     </section>
     
@@ -69,8 +399,8 @@ session_start();
 
          <!-- Shop by category -->
     <section  class="product container spacing">
-      <div class="title"> 
-         <h2>Shop by category</h2>
+      <div class="title animate__animated animate__fadeInDown"> 
+         <h2 class="glow-on-hover">Shop by category</h2>
         <P>Explore our curated collections designed for every style and occasion</P>
     </div>
      
@@ -79,12 +409,12 @@ session_start();
 
         <div class="pro-container container">
 
-        <div class="card">
+        <div class="card animate__animated animate__fadeInUp animate__delay-1s glow-on-hover">
                  <img src="img/menn/men.jpg" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Men's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="menfolder/men.php"><button class="btn">Shop Now</button></a>
+                                             <a href="menfolder/men.php"><button class="btn bounce-hover">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -92,12 +422,12 @@ session_start();
 
 
 
-                             <div class="card">
+                             <div class="card animate__animated animate__fadeInUp animate__delay-2s">
                  <img src="img/women/1.jpg" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Women's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php"><button class="btn">Shop Now</button></a>
+                                             <a href="womenF/women.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -106,12 +436,12 @@ session_start();
            
 
 
-                               <div class="card">
+                               <div class="card animate__animated animate__fadeInUp animate__delay-3s">
                  <img src="img/child/1.webp" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Children's Collection</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="childrenfolder/children.php"><button class="btn">Shop Now</button></a>
+                                             <a href="kidsfolder/kids.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -132,7 +462,7 @@ session_start();
                  <div class="card-content">
                     <h3>Beauty</h3>
                      <P>Trending style & Timeless Classic</P>   
-                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
+                      <a href="beautyfolder/beauty.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -142,7 +472,7 @@ session_start();
                  <div class="card-content">
                     <h3>Cosmatics</h3>
                      <P>Trending style & Timeless Classic</P>   
-                      <a href="womenF/index.php?category=beauty"><button class="btn">Shop Now</button></a>
+                      <a href="beautyfolder/beauty.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -166,7 +496,7 @@ session_start();
                  <div class="card-content">
                     <h3>Home Decoration</h3>
                      <P>Trending style & Timeless Classic</P>   
-                                             <a href="womenF/index.php?category=home-decor"><button class="btn">Shop Now</button></a>
+                                             <a href="homedecor/homedecor.php"><button class="btn">Shop Now</button></a>
                  </div>
                 </div>
 
@@ -213,7 +543,7 @@ session_start();
      <!-- Left: Large Feature Image with Text Overlay -->
      <div class="laci-left">
            <div class="category4">
-             <a href="womenF/index.php?category=dresses">
+             <a href="womenF/women.php?subcategory=dresses">
                <video src="./img/sawiro/dressvideo.mp4" autoplay loop muted controls> </video>
                <div class="overlay4">Wedding Dresses</div>
              </a>
@@ -225,20 +555,20 @@ session_start();
        <div class="gallery">
          <div class="container4">
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?subcategory=dresses">
                    <img src="./img/sawiro/9.jpg" alt="Photo 1">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?subcategory=dresses">
                    <img src="./img/sawiro/8.jpg" alt="Photo 2">
                 </a>
              </div>
              
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?subcategory=dresses">
                    <img src="./img/sawiro/10.jpg" alt="Photo 3">
                 </a>
              </div>
@@ -250,13 +580,13 @@ session_start();
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?subcategory=dresses">
                    <img src="./img/sawiro/7.jpg" alt="Photo 5">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/index.php?category=dresses">
+                <a href="womenF/women.php?subcategory=dresses">
                    <img src="./img/sawiro/21.webp" alt="Photo 6">
                 </a>
              </div>
@@ -268,13 +598,13 @@ session_start();
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?subcategory=dresses">
                   <img src="./img/sawiro/12.jpg" alt="Photo 8">
                </a>
              </div>
 
              <div class="polaroid">
-               <a href="womenF/index.php?category=dresses">
+               <a href="womenF/women.php?subcategory=dresses">
                   <img src="./img/sawiro/13.jpg" alt="Photo 9">
                </a>
              </div>
@@ -304,29 +634,29 @@ session_start();
            <!-- section contains only pictures and some videos -->
    <section>
    <div class="container5" >
-       <div class="category5">
+       <div class="category5 animate__animated animate__zoomIn">
          <a href="menfolder/men.php?category=suits">
            <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
            <div class="overlay5">suit Dresses</div>
          </a>
        </div>
       
-       <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+       <div class="category5 animate__animated animate__zoomIn animate__delay-1s">
+         <a href="womenF/women.php?subcategory=dresses">
            <img src="./img/sawiro/22.webp" alt="Formal Dresses">
            <div class="overlay5">Formal Dresses</div>
          </a>
        </div>
 
          <div class="category5">
-       <a href="womenF/index.php?category=dresses">
+       <a href="womenF/women.php?subcategory=dresses">
          <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
          <div class="overlay5">Bride Dresses</div>
        </a>
        </div>
        
        <div class="category5">
-         <a href="womenF/index.php?category=beauty">
+         <a href="beautyfolder/beauty.php">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">makeup</div>
          </a>
@@ -340,7 +670,7 @@ session_start();
        </div>
 
        <div class="category5">
-         <a href="womenF/index.php?category=dresses">
+         <a href="womenF/women.php?subcategory=dresses">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
            <div class="overlay5">Formal Dresses</div>
          </a>
@@ -348,7 +678,7 @@ session_start();
   
 
        <div class="category5">
-        <a href="shoess/men.php">
+        <a href="shoess/shoes.php">
          <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
          <div class="overlay5">Casual Shoes</div>
         </a>
@@ -365,6 +695,106 @@ session_start();
          <a href="accessories/accessories.php?category=jewelry">
            <img src="./img/sawiro/jwel2.jpg" alt="Formal Dresses">
            <div class="overlay5">Jewelry</div>
+         </a>
+       </div>
+
+       <!-- Additional Videos -->
+       <div class="category5">
+         <a href="kidsfolder/kids.php">
+           <video src="./img/sawiro/kidsvideo.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Kids Collection</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="homedecor/homedecor.php">
+           <video src="./img/sawiro/homedecorvideo.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Home Decor</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="perfumes/index.php">
+           <video src="./img/sawiro/perfumevideo.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Perfumes</div>
+         </a>
+       </div>
+
+       <!-- Additional Images -->
+       <div class="category5">
+         <a href="menfolder/men.php?subcategory=shirts">
+           <img src="./img/sawiro/menshirt1.jpg" alt="Men's Shirts">
+           <div class="overlay5">Men's Shirts</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="womenF/women.php?subcategory=tops">
+           <img src="./img/sawiro/womentop1.jpg" alt="Women's Tops">
+           <div class="overlay5">Women's Tops</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="bagsfolder/bags.php?category=handbags">
+           <img src="./img/sawiro/handbag3.jpg" alt="Designer Handbags">
+           <div class="overlay5">Designer Handbags</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="shoess/shoes.php?category=heels">
+           <img src="./img/sawiro/heels1.jpg" alt="High Heels">
+           <div class="overlay5">High Heels</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="beautyfolder/beauty.php?subcategory=skincare">
+           <img src="./img/sawiro/skincare1.jpg" alt="Skincare Products">
+           <div class="overlay5">Skincare</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="accessories/accessories.php?category=belts">
+           <img src="./img/sawiro/belt1.jpg" alt="Fashion Belts">
+           <div class="overlay5">Fashion Belts</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="homedecor/homedecor.php?category=decor">
+           <img src="./img/sawiro/homedecor1.jpg" alt="Home Decor Items">
+           <div class="overlay5">Home Decor</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="kidsfolder/kids.php?subcategory=boys">
+           <img src="./img/sawiro/kidsboy1.jpg" alt="Boys Clothing">
+           <div class="overlay5">Boys Collection</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="kidsfolder/kids.php?subcategory=girls">
+           <img src="./img/sawiro/kidsgirl1.jpg" alt="Girls Clothing">
+           <div class="overlay5">Girls Collection</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="womenF/women.php?subcategory=accessories">
+           <video src="./img/sawiro/womenaccessories.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Women's Accessories</div>
+         </a>
+       </div>
+
+       <div class="category5">
+         <a href="menfolder/men.php?subcategory=accessories">
+           <video src="./img/sawiro/menaccessories.mp4" autoplay loop muted controls ></video>
+           <div class="overlay5">Men's Accessories</div>
          </a>
        </div>
 
@@ -839,9 +1269,11 @@ session_start();
          });
      </script>
 
+     <!-- Product Interaction JavaScript -->
+     <script>
+         document.addEventListener('DOMContentLoaded', function() {
              // Heart button functionality
              const heartButtons = document.querySelectorAll('.heart-button');
-             
              heartButtons.forEach(button => {
                  button.addEventListener('click', function() {
                      const icon = this.querySelector('i');
@@ -857,7 +1289,6 @@ session_start();
 
              // Color circle selection functionality
              const colorCircles = document.querySelectorAll('.color-circle');
-             
              colorCircles.forEach(circle => {
                  circle.addEventListener('click', function() {
                      const productCard = this.closest('.product-card');
@@ -873,11 +1304,10 @@ session_start();
 
              // Add to cart functionality
              const addToCartButtons = document.querySelectorAll('.add-to-bag');
-             
              addToCartButtons.forEach(button => {
                  button.addEventListener('click', function() {
                      // Add your cart functionality here
-    
+                     console.log('Add to cart clicked for product:', this.getAttribute('data-product-id'));
                  });
              });
          });
@@ -980,6 +1410,157 @@ session_start();
          }
      </script>
 
+     <!-- Bootstrap JavaScript -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+     
+     <!-- Animation JavaScript -->
+     <script>
+         // Scroll animations
+         function animateOnScroll() {
+             const elements = document.querySelectorAll('.animate-on-scroll');
+             elements.forEach(element => {
+                 const elementTop = element.getBoundingClientRect().top;
+                 const elementVisible = 150;
+                 
+                 if (elementTop < window.innerHeight - elementVisible) {
+                     element.classList.add('animated');
+                 }
+             });
+         }
+         
+         // Add scroll event listener
+         window.addEventListener('scroll', animateOnScroll);
+         
+         // Initialize animations on page load
+         document.addEventListener('DOMContentLoaded', function() {
+             animateOnScroll();
+             
+             // Add staggered animations to cards
+             const cards = document.querySelectorAll('.card');
+             cards.forEach((card, index) => {
+                 card.style.animationDelay = `${index * 0.1}s`;
+             });
+             
+             // Add enhanced hover effects to category items
+             const categoryItems = document.querySelectorAll('.category5');
+             categoryItems.forEach(item => {
+                 item.addEventListener('mouseenter', function() {
+                     this.style.transform = 'scale(1.08) rotate(1deg)';
+                     this.style.filter = 'brightness(1.1) saturate(1.2)';
+                 });
+                 
+                 item.addEventListener('mouseleave', function() {
+                     this.style.transform = 'scale(1) rotate(0deg)';
+                     this.style.filter = 'brightness(1) saturate(1)';
+                 });
+             });
+             
+             // Add beautiful hover effects to cards
+             const cards = document.querySelectorAll('.card');
+             cards.forEach(card => {
+                 card.addEventListener('mouseenter', function() {
+                     this.style.transform = 'translateY(-15px) scale(1.03)';
+                     this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1)';
+                 });
+                 
+                 card.addEventListener('mouseleave', function() {
+                     this.style.transform = 'translateY(0) scale(1)';
+                     this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                 });
+             });
+             
+             // Add floating animation to buttons
+             const buttons = document.querySelectorAll('.btn');
+             buttons.forEach(button => {
+                 button.addEventListener('mouseenter', function() {
+                     this.style.transform = 'translateY(-3px) scale(1.05)';
+                     this.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.4), 0 5px 15px rgba(0,0,0,0.1)';
+                 });
+                 
+                 button.addEventListener('mouseleave', function() {
+                     this.style.transform = 'translateY(0) scale(1)';
+                     this.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+                 });
+             });
+             
+             // Add click animations to buttons
+             buttons.forEach(button => {
+                 button.addEventListener('click', function(e) {
+                     // Create ripple effect
+                     const ripple = document.createElement('span');
+                     const rect = this.getBoundingClientRect();
+                     const size = Math.max(rect.width, rect.height);
+                     const x = e.clientX - rect.left - size / 2;
+                     const y = e.clientY - rect.top - size / 2;
+                     
+                     ripple.style.width = ripple.style.height = size + 'px';
+                     ripple.style.left = x + 'px';
+                     ripple.style.top = y + 'px';
+                     ripple.classList.add('ripple');
+                     
+                     this.appendChild(ripple);
+                     
+                     setTimeout(() => {
+                         ripple.remove();
+                     }, 600);
+                 });
+             });
+             
+             // Add beautiful text hover effects
+             const headings = document.querySelectorAll('h2, h3');
+             headings.forEach(heading => {
+                 heading.addEventListener('mouseenter', function() {
+                     this.style.textShadow = '0 5px 15px rgba(102, 126, 234, 0.3)';
+                     this.style.transform = 'scale(1.02)';
+                 });
+                 
+                 heading.addEventListener('mouseleave', function() {
+                     this.style.textShadow = 'none';
+                     this.style.transform = 'scale(1)';
+                 });
+             });
+             
+             // Add floating effect to images
+             const images = document.querySelectorAll('img');
+             images.forEach(img => {
+                 img.addEventListener('mouseenter', function() {
+                     this.style.transform = 'scale(1.05) rotate(1deg)';
+                     this.style.filter = 'brightness(1.1) contrast(1.1) saturate(1.2)';
+                 });
+                 
+                 img.addEventListener('mouseleave', function() {
+                     this.style.transform = 'scale(1) rotate(0deg)';
+                     this.style.filter = 'brightness(1) contrast(1) saturate(1)';
+                 });
+             });
+         });
+         
+         // Add CSS for ripple effect
+         const style = document.createElement('style');
+         style.textContent = `
+             .btn {
+                 position: relative;
+                 overflow: hidden;
+             }
+             
+             .ripple {
+                 position: absolute;
+                 border-radius: 50%;
+                 background: rgba(255, 255, 255, 0.6);
+                 transform: scale(0);
+                 animation: ripple 0.6s linear;
+                 pointer-events: none;
+             }
+             
+             @keyframes ripple {
+                 to {
+                     transform: scale(4);
+                     opacity: 0;
+                 }
+             }
+         `;
+         document.head.appendChild(style);
+     </script>
      
  </body>
- </html> bn
+ </html>
