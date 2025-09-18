@@ -147,57 +147,46 @@
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="beige">
                         <span class="color-swatch" style="background-color: #f5f5dc;"></span>
-                        Beige
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="black">
                         <span class="color-swatch" style="background-color: #000;"></span>
-                        Black
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="blue">
                         <span class="color-swatch" style="background-color: #0066cc;"></span>
-                        Blue
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="brown">
                         <span class="color-swatch" style="background-color: #8b4513;"></span>
-                        Brown
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="gold">
                         <span class="color-swatch" style="background-color: #ffd700;"></span>
-                        Gold
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="green">
                         <span class="color-swatch" style="background-color: #228b22;"></span>
-                        Green
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="grey">
                         <span class="color-swatch" style="background-color: #808080;"></span>
-                        Grey
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="pink">
                         <span class="color-swatch" style="background-color: #ffc0cb;"></span>
-                        Pink
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="purple">
                         <span class="color-swatch" style="background-color: #800080;"></span>
-                        Purple
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="red">
                         <span class="color-swatch" style="background-color: #ff0000;"></span>
-                        Red
                     </label>
                     <label class="color-option">
                         <input type="checkbox" name="color[]" value="white">
                         <span class="color-swatch" style="background-color: #fff; border: 1px solid #ddd;"></span>
-                        White
                     </label>
                 </div>
             </div>

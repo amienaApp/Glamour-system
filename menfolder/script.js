@@ -2422,21 +2422,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         colorContainer.innerHTML = '';
         
-        colors.forEach(color => {
+        console.log('Populating color filter with colors:', colors);
+        
+        colors.forEach((color, index) => {
             const label = document.createElement('label');
             label.className = 'color-option';
             
-            // Use the color name and hex from the API response
-            const displayName = color.name;
+            // Use the hex value from the API response
             const hexValue = color.hex;
+            const colorValue = color.value;
+            
+            // Add border for white/light colors
+            const borderStyle = (hexValue.toLowerCase() === '#ffffff' || hexValue.toLowerCase() === '#fff') ? 'border: 1px solid #ddd;' : '';
             
             label.innerHTML = `
-                <input type="checkbox" name="color[]" value="${color.value}" data-filter="color">
-                <span class="color-swatch" style="background-color: ${hexValue};"></span>
-                ${displayName}
+                <input type="checkbox" name="color[]" value="${colorValue}" data-filter="color">
+                <span class="color-swatch" style="background-color: ${hexValue}; ${borderStyle}"></span>
             `;
             
             colorContainer.appendChild(label);
+            
+            // Log each color for debugging
+            console.log(`Color ${index + 1}:`, {
+                value: colorValue,
+                hex: hexValue,
+                count: color.count
+            });
         });
         
         console.log('Color filter populated with', colors.length, 'colors');
@@ -2444,29 +2455,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to get color name from hex value
     function getColorNameFromHex(hex) {
-        const colorMap = {
-            '#000000': 'Black',
-            '#ffffff': 'White',
-            '#ff0000': 'Red',
-            '#00ff00': 'Green',
-            '#0000ff': 'Blue',
-            '#ffff00': 'Yellow',
-            '#ff00ff': 'Magenta',
-            '#00ffff': 'Cyan',
-            '#808080': 'Grey',
-            '#c0c0c0': 'Silver',
-            '#ffd700': 'Gold',
-            '#ffa500': 'Orange',
-            '#800080': 'Purple',
-            '#ffc0cb': 'Pink',
-            '#8b4513': 'Brown',
-            '#f5f5dc': 'Beige',
-            '#483c32': 'Taupe',
-            '#0066cc': 'Blue',
-            '#228b22': 'Green',
-            '#ffa500': 'Orange'
-        };
-        return colorMap[hex.toLowerCase()] || hex;
+        // Return empty string since we're not displaying color names anymore
+        return '';
     }
     
     // Function to get hex value from color name
@@ -2497,12 +2487,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function showColorLoadError() {
         const colorContainer = document.getElementById('color-filter-options');
         if (colorContainer) {
-            colorContainer.innerHTML = `
-                <div class="color-load-error" style="text-align: center; padding: 20px; color: #e53e3e;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Error loading colors. Please refresh the page.</p>
-                </div>
-            `;
+            // Show fallback colors instead of error message
+            const fallbackColors = [
+                { value: '#000000', hex: '#000000', count: 0 },
+                { value: '#ffffff', hex: '#ffffff', count: 0 },
+                { value: '#0066cc', hex: '#0066cc', count: 0 },
+                { value: '#808080', hex: '#808080', count: 0 },
+                { value: '#8b4513', hex: '#8b4513', count: 0 },
+                { value: '#ff0000', hex: '#ff0000', count: 0 },
+                { value: '#228b22', hex: '#228b22', count: 0 },
+                { value: '#ffa500', hex: '#ffa500', count: 0 }
+            ];
+            
+            console.log('Using fallback colors due to API error');
+            populateColorFilter(fallbackColors);
         }
     }
 });

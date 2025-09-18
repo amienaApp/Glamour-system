@@ -23,13 +23,7 @@ $dresses = $productModel->getBySubcategory('Dresses');
 // Get all tops from the database
 $tops = $productModel->getBySubcategory('Tops');
 
-// Debug: Show what's in the database
-if (!empty($products)) {
-    echo "<!-- DEBUG: First product from database -->\n";
-    echo "<!-- Product: " . htmlspecialchars(json_encode($products[0])) . " -->\n";
-    echo "<!-- Color field: " . htmlspecialchars($products[0]['color'] ?? 'NULL') . " -->\n";
-    echo "<!-- Color variants: " . htmlspecialchars(json_encode($products[0]['color_variants'] ?? [])) . " -->\n";
-}
+// Products loaded successfully
 
 
 
@@ -69,33 +63,10 @@ if (!empty($products)) {
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
-                     data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
-                     data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
-                     data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
-                     data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
-                     data-product-back-image="<?php echo htmlspecialchars($product['back_image'] ?? $product['image_back'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
-                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     
-                     <!-- DEBUG: Raw color data -->
-                     <!-- Color: <?php echo htmlspecialchars($product['color'] ?? 'NULL'); ?> -->
-                     <!-- Color Variants: <?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?> -->
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
-                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
-                     data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
-                     data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -255,29 +226,10 @@ if (!empty($products)) {
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
-                     data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
-                     data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
-                     data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
-                     data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
-                     data-product-back-image="<?php echo htmlspecialchars($product['back_image'] ?? $product['image_back'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
-                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
-                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
-                     data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
-                     data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 

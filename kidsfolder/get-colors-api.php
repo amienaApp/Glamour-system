@@ -37,18 +37,24 @@ try {
         // Get colors from color variants
         if (!empty($product['color_variants']) && is_array($product['color_variants'])) {
             foreach ($product['color_variants'] as $variant) {
-                if (is_array($variant) && isset($variant['color'])) {
-                    $color = $variant['color'];
+                // Handle different variant structures
+                if (is_array($variant)) {
+                    // Standard array structure
+                    if (!empty($variant['color'])) {
+                        $color = trim($variant['color']);
+                        if (!isset($colorCounts[$color])) {
+                            $colorCounts[$color] = 0;
+                        }
+                        $colorCounts[$color]++;
+                    }
                 } elseif (is_string($variant)) {
-                    $color = $variant;
-                } else {
-                    continue;
+                    // Direct string color
+                    $color = trim($variant);
+                    if (!isset($colorCounts[$color])) {
+                        $colorCounts[$color] = 0;
+                    }
+                    $colorCounts[$color]++;
                 }
-                
-                if (!isset($colorCounts[$color])) {
-                    $colorCounts[$color] = 0;
-                }
-                $colorCounts[$color]++;
             }
         }
     }
@@ -57,7 +63,13 @@ try {
     arsort($colorCounts);
     
     // Create color objects with name and count
+    // Only include colors that have at least one product
     foreach ($colorCounts as $color => $count) {
+        // Skip colors with no products
+        if ($count <= 0) {
+            continue;
+        }
+        
         $colors[] = [
             'color' => $color,
             'count' => $count,

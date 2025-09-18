@@ -268,22 +268,8 @@ class HomeDecorFilter {
         const saturation = hsl[1];
         const lightness = hsl[2];
         
-        // Determine color name based on hue and saturation
-        if (saturation < 0.1) {
-            if (lightness > 0.9) return 'White';
-            if (lightness < 0.1) return 'Black';
-            return 'Gray';
-        }
-        
-        if (hue < 15) return 'Red';
-        if (hue < 45) return 'Orange';
-        if (hue < 75) return 'Yellow';
-        if (hue < 150) return 'Green';
-        if (hue < 195) return 'Cyan';
-        if (hue < 255) return 'Blue';
-        if (hue < 285) return 'Purple';
-        if (hue < 315) return 'Magenta';
-        return 'Red';
+        // Return empty string since we're not displaying color names anymore
+        return '';
     }
     
     rgbToHsl(r, g, b) {

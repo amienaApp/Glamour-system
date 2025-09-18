@@ -46,7 +46,6 @@ foreach ($allPerfumes as $perfume) {
         <h3>Refine By</h3>
         <span class="style-count" id="style-count"><?php echo $stats['total_perfumes']; ?> Styles</span>
         <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
-            <i class="fas fa-times"></i>
             Clear All Filters
         </button>
     </div>

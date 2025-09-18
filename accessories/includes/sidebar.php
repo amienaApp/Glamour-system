@@ -47,7 +47,6 @@ sort($categories);
         <h3>Refine By</h3>
         <span class="style-count"><?php echo $stats['total_accessories']; ?> Styles</span>
         <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFiltersSimple()">
-                    <i class="fas fa-times"></i>
                     Clear All Filters
                 </button>
             </div>
@@ -111,91 +110,78 @@ sort($categories);
                                    <?php echo $currentColor === 'black' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('black', this.checked)">
                             <span class="color-swatch" style="background-color: #000000;"></span>
-                            Black
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="beige" 
                                    <?php echo $currentColor === 'beige' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('beige', this.checked)">
                             <span class="color-swatch" style="background-color: #dac0b4;"></span>
-                            Beige
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="blue" 
                                    <?php echo $currentColor === 'blue' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('blue', this.checked)">
                             <span class="color-swatch" style="background-color: #0a1e3b;"></span>
-                            Blue
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="brown" 
                                    <?php echo $currentColor === 'brown' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('brown', this.checked)">
                             <span class="color-swatch" style="background-color: #966345;"></span>
-                            Brown
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="gold" 
                                    <?php echo $currentColor === 'gold' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('gold', this.checked)">
                             <span class="color-swatch" style="background-color: #f9d07f;"></span>
-                            Gold
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="green" 
                                    <?php echo $currentColor === 'green' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('green', this.checked)">
                             <span class="color-swatch" style="background-color: #04613f;"></span>
-                            Green
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="grey" 
                                    <?php echo $currentColor === 'grey' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('grey', this.checked)">
                             <span class="color-swatch" style="background-color: #676b6e;"></span>
-                            Grey
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="orange" 
                                    <?php echo $currentColor === 'orange' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('orange', this.checked)">
                             <span class="color-swatch" style="background-color: #ffa500;"></span>
-                            Orange
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="pink" 
                                    <?php echo $currentColor === 'pink' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('pink', this.checked)">
                             <span class="color-swatch" style="background-color: #ffc0cb;"></span>
-                            Pink
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="purple" 
                                    <?php echo $currentColor === 'purple' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('purple', this.checked)">
                             <span class="color-swatch" style="background-color: #63678f;"></span>
-                            Purple
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="red" 
                                    <?php echo $currentColor === 'red' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('red', this.checked)">
                             <span class="color-swatch" style="background-color: #ff0000;"></span>
-                            Red
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="silver" 
                                    <?php echo $currentColor === 'silver' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('silver', this.checked)">
                             <span class="color-swatch" style="background-color: #c0c0c0;"></span>
-                            Silver
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="white" 
                                    <?php echo $currentColor === 'white' ? 'checked' : ''; ?>
                                    onchange="updateColorFilter('white', this.checked)">
                             <span class="color-swatch" style="background-color: #ffffff; border: 1px solid #ddd;"></span>
-                            White
                         </label>
                     </div>
                 </div>
