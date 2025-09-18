@@ -1,0 +1,13 @@
+Starting color test...
+MongoDB config loaded
+MongoDB instance created
+MongoDB connection successful
+Database: glamour_system
+Total products in database: 212
+Retrieved 212 products
+Products with variants: 0
+Total unique colors found: 174
+Colors: #1b6435, #5f627f, #ffb8e1, #d1f5ef, #121212, #fe6ca6, #000000, #d6efff, #782121, #b4e5fe, #faf3f8, #eed3d3, #5e331c, #e9e0de, #4b1924, #473c3f, #754640, #0d0d0d, #b9ba95, #f67fbc, #ea6695, #917e7e, #1f1e21, #65705a, #cec07c, #2e2d30, #ba2416, #d24c75, #ebecf0, #6b654b, #eff4f3, #b1939b, #f69bc4, #292526, #667eea, #748dc1, #e6e5e9, #47aeab, #eff0ee, #cfb89e, #2f2a2c, #2e425d, #193129, #242424, #fe484a, #2d2e35, #303351, #3c2d27, #4b5d8b, #3b5575, #0b0b0b, #361d4d, #4d4a31, #3c5876, #52365a, #5b5871, #857e78, #d7bc9d, #131615, #855099, #51565b, #ebe9e6, #5571dc, #01a3e7, #b992a7, #d0b365, #e5d5b8, #97989e, #e3ceac, #123145, #ededed, #82ff4d, #181a1a, #8b4f33, #5a2b34, #5d3c3c, #4a4142, #0a0a0a, #414c61, #575759, #373645, #b38f65, #966345, #0a1e3b, #676b6e, #382d29, #e6e8c0, #78624c, #212a40, #597783, #04613f, #63678f, #0d0f0d, #dac0b4, #8c5738, #29566b, #6f725f, #394647, #1b1b1e, #222222, #ffffff, #2f4558, #e6e7eb, #dddddb, #927962, #5c7a7a, #202020, #f9d07f, #1e1e1e, #62352b, #2b2a2d, #d3d4d9, #bf8768, #c89b4c, #0b0706, #c2c2c6, #0f0f10, #0c0c0e, #080a11, #050505, #422d58, #ecbcaf, #952828, #701820, #1f4b65, #1d2944, #ce938d, #c6325c, #e17bad, #ce8688, #111218, #cba9a8, #100c0b, #7f6862, #1a1a19, #cbc9c9, #723b1b, #956857, #e0d7de, #d8c7a8, #f593c4, #282929, #ef7676, #2f292e, #fd0f36ff, #8b4513, #eb9abcff, #ffc0cb, #050505ff, #f7a7c2ff, #ff0000ff, #474eb9ff, #e5dcdf, #FF0000, #00FF00, #a57543, #e2c0c0, #efcea2, #fc96b2, #e4e2de, #e1a7ba, #dbd6c9, #9eafd9, #e4b7b2, #d9c4a3, #b58059, #af7f5e, #f0d0d4, #bc9c94, #d69cae, #e8e8e8, #c59595, #e3bfcf, #2b231f
+Men's Clothing products: 23
+Men's unique colors: 23
+Men's colors: #292526, #667eea, #748dc1, #e6e5e9, #47aeab, #eff0ee, #cfb89e, #2e425d, #193129, #242424, #fe484a, #2d2e35, #303351, #3c2d27, #4b5d8b, #3b5575, #0b0b0b, #361d4d, #4d4a31, #3c5876, #7f6862, #1a1a19, #2f292e

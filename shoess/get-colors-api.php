@@ -1,5 +1,5 @@
 <?php
-// API to get actual colors from men's products database
+// API to get actual colors from shoes products database
 require_once __DIR__ . '/../config1/mongodb.php';
 require_once __DIR__ . '/../models/Product.php';
 
@@ -29,7 +29,36 @@ function getHexFromColorName($colorName) {
         'pink' => '#ffc0cb',
         'brown' => '#8b4513',
         'beige' => '#f5f5dc',
-        'taupe' => '#483c32'
+        'taupe' => '#483c32',
+        'navy' => '#000080',
+        'maroon' => '#800000',
+        'teal' => '#008080',
+        'lime' => '#00ff00',
+        'coral' => '#ff7f50',
+        'salmon' => '#fa8072',
+        'tan' => '#d2b48c',
+        'ivory' => '#fffff0',
+        'cream' => '#fff8dc',
+        'mint' => '#f5fffa',
+        'lavender' => '#e6e6fa',
+        'peach' => '#ffdab9',
+        'rose' => '#ff69b4',
+        'turquoise' => '#40e0d0',
+        'indigo' => '#4b0082',
+        'violet' => '#8a2be2',
+        'amber' => '#ffbf00',
+        'bronze' => '#cd7f32',
+        'copper' => '#b87333',
+        'charcoal' => '#36454f',
+        'slate' => '#708090',
+        'steel' => '#4682b4',
+        'denim' => '#1560bd',
+        'khaki' => '#f0e68c',
+        'burgundy' => '#800020',
+        'wine' => '#722f37',
+        'plum' => '#8e4585',
+        'mauve' => '#e0b0ff',
+        'sage' => '#9caf88'
     ];
     return $colorMap[strtolower($colorName)] ?? '#cccccc';
 }
@@ -39,8 +68,8 @@ $productModel = new Product();
 $response = ['success' => false, 'message' => '', 'data' => []];
 
 try {
-    // Get all men's clothing products
-    $products = $productModel->getByCategory("Men's Clothing");
+    // Get all shoes products
+    $products = $productModel->getByCategory("Shoes");
     
     $colors = [];
     $colorCounts = [];
