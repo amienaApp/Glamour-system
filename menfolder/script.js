@@ -1891,8 +1891,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
-<<<<<<< HEAD
-=======
     
     // Filter Functionality
     function initializeFilters() {
@@ -2762,5 +2760,4 @@ document.addEventListener('DOMContentLoaded', function() {
             populateColorFilter(fallbackColors);
         }
     }
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 });

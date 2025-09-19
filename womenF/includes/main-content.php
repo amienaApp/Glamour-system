@@ -55,8 +55,6 @@ if ($subcategoryForQuery) {
     $pageTitle = "Women's Clothing";
 }
 
-<<<<<<< HEAD
-=======
 // Get all dresses from the database
 $dresses = $productModel->getBySubcategory('Dresses');
 
@@ -67,7 +65,6 @@ $tops = $productModel->getBySubcategory('Tops');
 
 
 
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 ?>
 
 <!-- Main Content Section -->
@@ -285,8 +282,6 @@ $tops = $productModel->getBySubcategory('Tops');
             </div>
         <?php endif; ?>
     </div>
-<<<<<<< HEAD
-=======
     <?php else: ?>
     <!-- All Products Grid (filterable by sidebar) -->
     <div class="product-grid" id="all-products-grid">
@@ -459,7 +454,6 @@ $tops = $productModel->getBySubcategory('Tops');
         <?php endif; ?>
     </div>
     <?php endif; ?>
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 </main>
 
 <!-- Quick View Sidebar -->
