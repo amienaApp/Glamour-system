@@ -17,9 +17,9 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="../styles/responsive-layout.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
@@ -80,6 +80,141 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
+            <script>
+                // Mobile Filter Functionality
+                document.addEventListener('DOMContentLoaded', function() {
+                    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+                    const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+                    const mobileFilterClose = document.getElementById('mobile-filter-close');
+                    const mobileClearFilters = document.getElementById('mobile-clear-filters');
+                    const mobileApplyFilters = document.getElementById('mobile-apply-filters');
+                    const body = document.body;
+
+                    // Open mobile filter menu
+                    if (mobileFilterBtn) {
+                        mobileFilterBtn.addEventListener('click', function() {
+                            mobileFilterOverlay.classList.add('active');
+                            body.classList.add('mobile-filter-open');
+                        });
+                    }
+
+                    // Close mobile filter menu
+                    if (mobileFilterClose) {
+                        mobileFilterClose.addEventListener('click', function() {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        });
+                    }
+
+                    // Close mobile filter when clicking overlay
+                    if (mobileFilterOverlay) {
+                        mobileFilterOverlay.addEventListener('click', function(e) {
+                            if (e.target === mobileFilterOverlay) {
+                                mobileFilterOverlay.classList.remove('active');
+                                body.classList.remove('mobile-filter-open');
+                            }
+                        });
+                    }
+
+                    // Clear all filters
+                    if (mobileClearFilters) {
+                        mobileClearFilters.addEventListener('click', function() {
+                            const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]');
+                            checkboxes.forEach(checkbox => {
+                                checkbox.checked = false;
+                            });
+                        });
+                    }
+
+                    // Apply filters
+                    if (mobileApplyFilters) {
+                        mobileApplyFilters.addEventListener('click', function() {
+                            // Get selected filters
+                            const selectedFilters = {};
+                            const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]:checked');
+                            
+                            checkboxes.forEach(checkbox => {
+                                const filterType = checkbox.getAttribute('data-filter');
+                                if (!selectedFilters[filterType]) {
+                                    selectedFilters[filterType] = [];
+                                }
+                                selectedFilters[filterType].push(checkbox.value);
+                            });
+
+                            // Apply filters to products
+                            applyFilters(selectedFilters);
+                            
+                            // Close filter menu
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        });
+                    }
+
+                    // Function to apply filters
+                    function applyFilters(filters) {
+                        const productCards = document.querySelectorAll('.product-card');
+                        
+                        productCards.forEach(card => {
+                            let shouldShow = true;
+                            
+                            // Check category filters
+                            if (filters.category && filters.category.length > 0) {
+                                const productCategory = card.getAttribute('data-product-subcategory');
+                                const categoryMatch = filters.category.some(filter => {
+                                    return productCategory && productCategory.toLowerCase().includes(filter.toLowerCase());
+                                });
+                                if (!categoryMatch) shouldShow = false;
+                            }
+                            
+                            // Check color filters
+                            if (filters.color && filters.color.length > 0) {
+                                const productColor = card.getAttribute('data-product-color');
+                                const colorMatch = filters.color.some(filter => {
+                                    return productColor && productColor.toLowerCase() === filter.toLowerCase();
+                                });
+                                if (!colorMatch) shouldShow = false;
+                            }
+                            
+                            // Check price filters
+                            if (filters.price_range && filters.price_range.length > 0) {
+                                const productPrice = parseFloat(card.getAttribute('data-product-price'));
+                                const priceMatch = filters.price_range.some(filter => {
+                                    switch(filter) {
+                                        case '0-25':
+                                            return productPrice >= 0 && productPrice <= 25;
+                                        case '25-50':
+                                            return productPrice > 25 && productPrice <= 50;
+                                        case '50-100':
+                                            return productPrice > 50 && productPrice <= 100;
+                                        case '100-200':
+                                            return productPrice > 100 && productPrice <= 200;
+                                        case '200+':
+                                            return productPrice > 200;
+                                        default:
+                                            return true;
+                                    }
+                                });
+                                if (!priceMatch) shouldShow = false;
+                            }
+                            
+                            // Show or hide product card
+                            if (shouldShow) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // Handle window resize
+                    window.addEventListener('resize', function() {
+                        if (window.innerWidth > 1024) {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        }
+                    });
+                });
+            </script>
         
         <script>
             // Initialize enhanced features when page loads
@@ -305,6 +440,14 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                     console.log('Content panel found and ready');
                 }
             }
+        });
+        
+        // Initialize style count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Count the initial products displayed
+            const productCards = document.querySelectorAll('.product-card');
+            const initialCount = productCards.length;
+            updateStyleCount(initialCount);
         });
         </script>
 

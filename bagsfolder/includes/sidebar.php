@@ -6,62 +6,64 @@
         <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
     <div class="side">
+        <div class="filter-section">
         
         <!-- Category Filter -->
         <div class="filter-section">
             <div class="filter-group">
                 <div class="filter-header">
-                    <h4>Category</h4>
+                <h4>Category</h4>
                 </div>
-                <div class="filter-options">
+            <div class="filter-options" id="category-filter">
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="shoulder-bags" data-filter="category">
+                    <input type="checkbox" name="category[]" value="shoulder-bags" data-filter="category">
                         <span class="checkmark"></span>
                         Shoulder Bags
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="clutches" data-filter="category">
+                    <input type="checkbox" name="category[]" value="clutches" data-filter="category">
                         <span class="checkmark"></span>
-                        Clutches
+                    Clutches
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="tote-bags" data-filter="category">
+                    <input type="checkbox" name="category[]" value="tote-bags" data-filter="category">
                         <span class="checkmark"></span>
                         Tote Bags
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="crossbody-bags" data-filter="category">
+                    <input type="checkbox" name="category[]" value="crossbody-bags" data-filter="category">
                         <span class="checkmark"></span>
                         Crossbody Bags
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="backpacks" data-filter="category">
+                    <input type="checkbox" name="category[]" value="backpacks" data-filter="category">
                         <span class="checkmark"></span>
                         Backpacks
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="briefcases" data-filter="category">
+                    <input type="checkbox" name="category[]" value="briefcases" data-filter="category">
                         <span class="checkmark"></span>
                         Briefcases
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="laptop-bags" data-filter="category">
+                    <input type="checkbox" name="category[]" value="laptop-bags" data-filter="category">
                         <span class="checkmark"></span>
                         Laptop Bags
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="waist-bags" data-filter="category">
+                    <input type="checkbox" name="category[]" value="waist-bags" data-filter="category">
                         <span class="checkmark"></span>
                         Waist Bags
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category[]" value="wallets" data-filter="category">
+                    <input type="checkbox" name="category[]" value="wallets" data-filter="category">
                         <span class="checkmark"></span>
                         Wallets
                     </label>
                 </div>
             </div>
-        </div>
+        </div>  
+
         <!-- Color Filter -->
         <div class="filter-section">
             <div class="filter-group">
@@ -127,6 +129,7 @@
                             <span class="color-swatch" style="background-color: #ffffff; border: 1px solid #ddd;"></span>
                         </label>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -137,29 +140,38 @@
                 <div class="filter-header">
                     <h4>Price</h4>
                 </div>
-                <div class="filter-options" id="price-filter">
+            <div class="filter-options" id="price-filter">
+                <label class="filter-option">
+                    <input type="checkbox" name="price[]" value="on-sale" data-filter="price_range">
+                    <span class="checkmark"></span>
+                    On Sale
+                </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="price[]" value="0-100" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="0-100" data-filter="price_range">
                         <span class="checkmark"></span>
                         $0 - $100
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="price[]" value="100-200" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="100-200" data-filter="price_range">
                         <span class="checkmark"></span>
                         $100 - $200
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="price[]" value="200-400" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="200-400" data-filter="price_range">
                         <span class="checkmark"></span>
                         $200 - $400
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="price[]" value="400+" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="400+" data-filter="price_range">
                         <span class="checkmark"></span>
                         $400+
                     </label>
                 </div>
             </div>
         </div>
-    </div>
+
+    
+
+    
+            </div>
 </aside>

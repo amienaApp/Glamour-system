@@ -18,6 +18,7 @@ session_start();
     <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
     
     <!-- Custom Animation Styles -->
     <style>
@@ -350,6 +351,35 @@ session_start();
     
     <!-- Include the home header -->
     <?php include 'heading/home-header.php'; ?>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <div class="mobile-nav-logo">
+                    <div class="logo-main">Glamour Palace</div>
+                    <div class="logo-accent">FASHION & LIFESTYLE</div>
+                </div>
+                <button class="mobile-nav-close" id="mobile-nav-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <ul class="mobile-nav-list">
+                    <li><a href="index.php" class="mobile-nav-link">Home</a></li>
+                    <li><a href="womenF/women.php" class="mobile-nav-link">Women</a></li>
+                    <li><a href="menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                    <li><a href="kidsfolder/kids.php" class="mobile-nav-link">Kids</a></li>
+                    <li><a href="beautyfolder/beauty.php" class="mobile-nav-link">Beauty</a></li>
+                    <li><a href="bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                    <li><a href="shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                    <li><a href="accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                    <li><a href="perfumes/perfumes.php" class="mobile-nav-link">Perfumes</a></li>
+                    <li><a href="homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
      
    
 
@@ -1246,6 +1276,72 @@ session_start();
          window.history.pushState({}, '', newUrl);
          window.location.reload();
      }
+     </script>
+
+     <!-- Mobile Navigation JavaScript -->
+     <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const hamburgerMenu = document.querySelector('.hamburger-menu');
+         const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+         const mobileNavClose = document.getElementById('mobile-nav-close');
+         const body = document.body;
+
+         // Open mobile navigation
+         if (hamburgerMenu) {
+             hamburgerMenu.addEventListener('click', function() {
+                 mobileNavOverlay.classList.add('active');
+                 body.classList.add('mobile-nav-open');
+                 hamburgerMenu.classList.add('active');
+             });
+         }
+
+         // Close mobile navigation
+         if (mobileNavClose) {
+             mobileNavClose.addEventListener('click', function() {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             });
+         }
+
+         // Close mobile navigation when clicking overlay
+         if (mobileNavOverlay) {
+             mobileNavOverlay.addEventListener('click', function(e) {
+                 if (e.target === mobileNavOverlay) {
+                     mobileNavOverlay.classList.remove('active');
+                     body.classList.remove('mobile-nav-open');
+                     if (hamburgerMenu) {
+                         hamburgerMenu.classList.remove('active');
+                     }
+                 }
+             });
+         }
+
+         // Close mobile navigation when clicking on a link
+         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+         mobileNavLinks.forEach(link => {
+             link.addEventListener('click', function() {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             });
+         });
+
+         // Handle window resize
+         window.addEventListener('resize', function() {
+             if (window.innerWidth > 768) {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             }
+         });
+     });
      </script>
      
      <!-- Quick View Functionality -->

@@ -1,35 +1,14 @@
-/* Sidebar Styles - Base styles moved to responsive-layout.css */
+/* Sidebar Styles */
 .sidebar {
-    /* Base styles are now in responsive-layout.css */
-    /* Ensure sidebar follows responsive-layout.css positioning */
-}
-
-/* Clear All Filters Button */
-.clear-all-filters-btn {
-    width: 100%;
-    padding: 12px 16px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    color: #6c757d;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.clear-all-filters-btn:hover {
-    background-color: #e9ecef;
-    border-color: #adb5bd;
-    color: #495057;
-}
-
-.clear-all-filters-btn i {
-    font-size: 12px;
+    width: 280px;
+    background-color: #ffffff;
+    border-right: 1px solid #e8e8e8;
+    padding: 20px 0;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+    flex-shrink: 0;
 }
 
 /* Side class - aligns items to the left like the logo */
@@ -45,23 +24,104 @@
 
 /* Sidebar Header */
 .sidebar-header {
-    padding: 0 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
     border-bottom: 1px solid #e8e8e8;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #ffffff;
 }
 
 .sidebar-header h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333333;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d3748;
     margin: 0 0 8px 0;
     font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.025em;
 }
 
 .style-count {
     font-size: 14px;
-    color: #666666;
+    color: #718096;
     font-weight: 400;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.clear-filters-btn {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    color: #2d3748;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.clear-filters-btn:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+    color: #1a202c;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.clear-filters-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Filter loading states */
+.filter-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.filter-loading .filter-option {
+    cursor: not-allowed;
+}
+
+/* No products message */
+.no-products {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-products p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Filter active states */
+.filter-option input[type="checkbox"]:checked + .checkmark {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+.filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Color option active states */
+.color-option input[type="checkbox"]:checked + .color-swatch {
+    box-shadow: 0 0 0 2px #000;
+    transform: scale(1.1);
 }
 
 /* Filter Sections */
@@ -102,6 +162,44 @@
     align-items: flex-start;
 }
 
+/* Size Filter Specific Styles */
+.size-count {
+    font-size: 12px;
+    color: #666666;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.size-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.size-action-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    flex: 1;
+}
+
+.size-action-btn:hover {
+    background: #e9ecef;
+    color: #000000;
+    border-color: #dee2e6;
+}
+
+.size-action-btn:active {
+    transform: translateY(1px);
+}
+
 .filter-option {
     display: flex;
     align-items: center;
@@ -117,51 +215,6 @@
 
 .filter-option:hover {
     color: #333333;
-}
-
-/* Clear All Filters Button */
-.clear-all-filters-btn {
-    width: 100%;
-    padding: 10px 16px;
-    background-color: #f5f5f5;
-    border: 1px solid #999999;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333333;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 0;
-}
-
-.clear-all-filters-btn:hover {
-    background-color: #e8e8e8;
-    color: #000000;
-    border-color: #777777;
-}
-
-.clear-all-filters-btn:active {
-    transform: translateY(1px);
-}
-
-.clear-all-filters-btn i {
-    font-size: 12px;
-}
-
-/* Loading state for sidebar */
-.sidebar.filter-loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.sidebar.filter-loading .clear-all-filters-btn {
-    background-color: #e8e8e8;
-    cursor: not-allowed;
 }
 
 /* Custom Checkbox Styling */
@@ -215,21 +268,23 @@
 /* Color Filter Grid */
 .color-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
     width: 100%;
-    justify-items: start;
+    justify-items: center;
 }
 
 .color-option {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     font-size: 14px;
     color: #333;
     cursor: pointer;
-    padding: 4px 0;
+    padding: 4px;
     margin: 0;
+    width: 100%;
 }
 
 .color-option input[type="checkbox"] {
@@ -237,13 +292,14 @@
 }
 
 .color-swatch {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     border: 2px solid #fff;
-    box-shadow: 0 0 0 1px #ccc;
+    box-shadow: 0 0 0 1px #ddd;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .color-option input[type="checkbox"]:checked + .color-swatch {
@@ -251,11 +307,224 @@
     transform: scale(1.1);
 }
 
-/* Page Layout - MOVED TO responsive-layout.css */
-/* These styles are now handled by responsive-layout.css */
+/* Page Layout */
+.page-layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
 
-/* Responsive Design - MOVED TO responsive-layout.css */
-/* These responsive styles are now handled by responsive-layout.css */
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 20px 40px 20px 40px;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Responsive Design - Enhanced */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 250px;
+    }
+    
+    .page-layout {
+        padding: 0 15px;
+    }
+    
+    .main-content {
+        padding-left: 30px;
+    }
+    
+    .sidebar-header {
+        padding: 18px;
+    }
+    
+    .sidebar-header h3 {
+        font-size: 19px;
+    }
+    
+    .style-count {
+        font-size: 13px;
+    }
+    
+    .clear-filters-btn {
+        padding: 11px 18px;
+        font-size: 13px;
+    }
+    
+    .filter-section {
+        padding: 0 18px;
+        margin-bottom: 25px;
+    }
+    
+    .filter-header h4 {
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+    
+    .filter-options {
+        gap: 10px;
+    }
+    
+    .filter-option {
+        font-size: 13px;
+        padding: 4px 0;
+    }
+    
+    .checkmark {
+        width: 15px;
+        height: 15px;
+        margin-right: 7px;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+    }
+    
+    .color-swatch {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-layout {
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        order: 2;
+        border-right: none;
+        border-bottom: 1px solid #e8e8e8;
+        padding: 15px 0;
+    }
+    
+    .main-content {
+        order: 1;
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .sidebar-header {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .sidebar-header h3 {
+        font-size: 18px;
+    }
+    
+    .style-count {
+        font-size: 12px;
+    }
+    
+    .clear-filters-btn {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    
+    .filter-section {
+        padding: 0 15px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-header h4 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .filter-options {
+        gap: 8px;
+    }
+    
+    .filter-option {
+        font-size: 13px;
+        padding: 3px 0;
+    }
+    
+    .checkmark {
+        width: 14px;
+        height: 14px;
+        margin-right: 6px;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+    
+    .color-option {
+        padding: 2px;
+    }
+    
+    .color-swatch {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-header {
+        padding: 12px;
+    }
+    
+    .sidebar-header h3 {
+        font-size: 16px;
+    }
+    
+    .style-count {
+        font-size: 11px;
+    }
+    
+    .clear-filters-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+    
+    .filter-section {
+        padding: 0 12px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-header h4 {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    
+    .filter-options {
+        gap: 6px;
+    }
+    
+    .filter-option {
+        font-size: 12px;
+        padding: 2px 0;
+    }
+    
+    .checkmark {
+        width: 13px;
+        height: 13px;
+        margin-right: 5px;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+    
+    .color-swatch {
+        width: 14px;
+        height: 14px;
+    }
+}
 
 /* Scrollbar Styling */
 .sidebar::-webkit-scrollbar {
@@ -292,4 +561,4 @@
 
 .size-grid::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
-} 
+}

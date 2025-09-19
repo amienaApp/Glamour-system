@@ -131,6 +131,12 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
     <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
+            <!-- Mobile Filter Button -->
+            <button class="mobile-filter-btn" id="mobile-filter-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            
             <div class="sort-control">
                 <label for="sort-select-accessories">Sort:</label>
                 <select id="sort-select-accessories" class="sort-select" onchange="updateSort(this.value)">
@@ -621,4 +627,83 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script> 
+</script>
+
+<!-- Mobile Filter Overlay -->
+<div class="mobile-filter-overlay" id="mobile-filter-overlay">
+    <div class="mobile-filter-content">
+        <div class="mobile-filter-header">
+            <h3>Filters</h3>
+            <button class="mobile-filter-close" id="mobile-filter-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-filter-body">
+            <!-- Category Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Category</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-category-filter">
+                        <!-- Category filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Color Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Color</h4>
+                    </div>
+                    <div class="mobile-color-grid" id="mobile-color-filter">
+                        <!-- Color filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Price Range</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-price-filter">
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="mobile-price-0-50" value="0-50" data-filter="price_range">
+                            <label for="mobile-price-0-50">$0 - $50</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="mobile-price-50-100" value="50-100" data-filter="price_range">
+                            <label for="mobile-price-50-100">$50 - $100</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="mobile-price-100-200" value="100-200" data-filter="price_range">
+                            <label for="mobile-price-100-200">$100 - $200</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="mobile-price-200-500" value="200-500" data-filter="price_range">
+                            <label for="mobile-price-200-500">$200 - $500</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="mobile-price-500+" value="500+" data-filter="price_range">
+                            <label for="mobile-price-500+">$500+</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mobile-filter-footer">
+            <button class="mobile-clear-filters-btn" id="mobile-clear-filters">Clear All</button>
+            <button class="mobile-apply-filters-btn" id="mobile-apply-filters">Apply Filters</button>
+        </div>
+    </div>
+</div> 

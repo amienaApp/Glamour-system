@@ -45,7 +45,7 @@ if ($subcategory) {
                         <img src="../img/home-decor/bedroom/7.jpg" alt="Bedding">
                         <h3>Bedding</h3>
                     </a>
-                    <a href="homedecor.php?subcategory=dinning room" class="image-item">
+                    <a href="homedecor.php?subcategory=dinningroom" class="image-item">
                         <img src="../img/home-decor/diningarea/4.jpg" alt="Dining Room">
                         <h3>Dining Room</h3>
                     </a>
@@ -53,7 +53,7 @@ if ($subcategory) {
                         <img src="../img/home-decor/kitchen/8.jpg" alt="Kitchen">
                         <h3>Kitchen</h3>
                     </a>
-                    <a href="homedecor.php?subcategory=lightinning" class="image-item">
+                    <a href="homedecor.php?subcategory=lightinnig" class="image-item">
                         <img src="../img/home-decor/light/3.webp" alt="Lighting">
                         <h3>Lighting</h3>
                     </a>

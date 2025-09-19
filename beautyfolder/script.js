@@ -2451,11 +2451,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3>No products found</h3>
                         <p>No products match your current filter selection.</p>
                         <button onclick="clearAllFilters()" class="clear-filters-btn" style="
-                            background: #ff6b9d;
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
-                            border-radius: 5px;
+                            background: #f7fafc;
+                            color: #2d3748;
+                            border: 1px solid #e2e8f0;
+                            padding: 12px 20px;
+                            border-radius: 8px;
                             cursor: pointer;
                             margin-top: 10px;
                         ">Clear All Filters</button>
@@ -2740,11 +2740,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             /* Clear Filters Button */
             .clear-filters-btn {
-                background: #ff6b9d;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
+                background: #f7fafc;
+                color: #2d3748;
+                border: 1px solid #e2e8f0;
+                padding: 12px 20px;
+                border-radius: 8px;
                 cursor: pointer;
                 font-size: 12px;
                 font-weight: 500;

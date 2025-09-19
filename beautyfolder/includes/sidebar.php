@@ -2,7 +2,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Refine By</h3>
-        <span class="style-count" id="style-count">2500+ Beauty Products</span>
+        <span class="style-count" id="style-count">Beauty Products</span>
         <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
      <div class="side">
