@@ -336,25 +336,37 @@ body {
     z-index: 10;
 }
 
-/* Wishlist Dropdown */
+/* Wishlist Dropdown - Desktop */
 .wishlist-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 350px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+    background: white !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    z-index: 1000 !important;
     display: none;
-    margin-top: 10px;
-    max-height: 500px;
-    overflow: hidden;
+    margin-top: 10px !important;
+    max-height: 700px !important;
+    overflow: hidden !important;
+}
+
+/* Hide desktop version on mobile */
+@media (max-width: 768px) {
+    .wishlist-dropdown {
+        display: none !important;
+    }
 }
 
 .wishlist-dropdown.show {
-    display: block;
+    display: block !important;
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
     animation: wishlistSlideDown 0.3s ease;
 }
 
@@ -376,6 +388,32 @@ body {
     justify-content: space-between;
     align-items: center;
     background: #f8f9fa;
+}
+
+.wishlist-dropdown-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wishlist-dropdown-close {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.wishlist-dropdown-close:hover {
+    background: #c82333;
 }
 
 .wishlist-dropdown-header h3 {
@@ -407,7 +445,7 @@ body {
 }
 
 .wishlist-dropdown-content {
-    max-height: 300px;
+    max-height: 600px !important;
     overflow-y: auto;
     padding: 10px 0;
 }
@@ -565,11 +603,45 @@ body {
     font-size: 0.85rem;
 }
 
+/* Wishlist Dropdown - Mobile */
+.wishlist-dropdown-mobile {
+    position: fixed;
+    top: 1px;
+    right: 30%;
+    left: auto;
+    width: 50vw;
+    max-width: 50vw;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: none;
+    margin-top: 10px;
+    max-height: 700px;
+    overflow: hidden;
+}
+
+.wishlist-dropdown-mobile.show {
+    display: block;
+    animation: wishlistSlideDown 0.3s ease;
+}
+
+/* Hide mobile version on desktop */
+@media (min-width: 769px) {
+    .wishlist-dropdown-mobile {
+        display: none !important;
+    }
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    .wishlist-dropdown {
-        width: 300px;
-        right: -50px;
+    .wishlist-dropdown-mobile {
+        display: none;
+    }
+    
+    .wishlist-dropdown-mobile.show {
+        display: block !important;
     }
     
     .wishlist-dropdown-item {
@@ -579,6 +651,48 @@ body {
     .wishlist-dropdown-item img {
         width: 50px;
         height: 50px;
+    }
+    
+    .wishlist-dropdown-close {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    
+    .wishlist-dropdown-actions {
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wishlist-dropdown {
+        width: 50vw;
+        max-width: 50vw;
+        position: fixed !important;
+        top: 1px !important;
+        right: 30% !important;
+        left: auto !important;
+        transform: none !important;
+        z-index: 10000 !important;
+    }
+    
+    .wishlist-dropdown-item {
+        padding: 10px 12px;
+    }
+    
+    .wishlist-dropdown-item img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .wishlist-dropdown-close {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .wishlist-dropdown-actions {
+        gap: 8px;
     }
 }
 

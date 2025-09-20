@@ -519,7 +519,12 @@ class CartNotificationManager {
             dropdown.innerHTML = `
                 <div class="cart-dropdown-header">
                     <h3><i class="fas fa-shopping-cart"></i> My Cart</h3>
-                    <button onclick="window.cartNotificationManager.openCartPage()" class="view-cart-btn">View Cart</button>
+                    <div class="cart-dropdown-actions">
+                        <button onclick="window.cartNotificationManager.openCartPage()" class="view-cart-btn">View Cart</button>
+                        <button class="cart-dropdown-close" onclick="window.cartNotificationManager.closeCartDropdown()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="cart-dropdown-content" id="cart-dropdown-content">
                     <!-- Cart items will be loaded here -->
@@ -621,6 +626,13 @@ class CartNotificationManager {
         }, 50); // Minimal delay for visual feedback
     }
     
+    closeCartDropdown() {
+        const dropdown = document.getElementById('cart-dropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+    
     // Public methods for external use
     getCartCount() {
         return this.cartCount;
@@ -664,6 +676,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         window.openCartPage = () => {
             return window.cartNotificationManager.openCartPage();
+        };
+        
+        window.closeCartDropdown = () => {
+            return window.cartNotificationManager.closeCartDropdown();
         };
         
         window.refreshCart = () => {

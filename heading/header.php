@@ -204,16 +204,39 @@ $regionOptions = [
                 <i class="fas fa-heart"></i>
                 <span class="wishlist-count">0</span>
                 
-                <!-- Wishlist Dropdown -->
+                <!-- Wishlist Dropdown - Desktop -->
                 <div class="wishlist-dropdown" id="wishlist-dropdown">
                     <div class="wishlist-dropdown-header">
                         <h3><i class="fas fa-heart"></i> My Wishlist</h3>
-                        <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                        <div class="wishlist-dropdown-actions">
+                            <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                        </div>
                     </div>
                     <div class="wishlist-dropdown-content" id="wishlist-dropdown-content">
                         <!-- Wishlist items will be loaded here -->
                     </div>
                     <div class="wishlist-dropdown-empty" id="wishlist-dropdown-empty" style="display: none;">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                        <small>Start adding items you love!</small>
+                    </div>
+                </div>
+                
+                <!-- Wishlist Dropdown - Mobile -->
+                <div class="wishlist-dropdown-mobile" id="wishlist-dropdown-mobile">
+                    <div class="wishlist-dropdown-header">
+                        <h3><i class="fas fa-heart"></i> My Wishlist</h3>
+                        <div class="wishlist-dropdown-actions">
+                            <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                            <button class="wishlist-dropdown-close" onclick="closeWishlistDropdown()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="wishlist-dropdown-content" id="wishlist-dropdown-content-mobile">
+                        <!-- Wishlist items will be loaded here -->
+                    </div>
+                    <div class="wishlist-dropdown-empty" id="wishlist-dropdown-empty-mobile" style="display: none;">
                         <i class="fas fa-heart"></i>
                         <p>Your wishlist is empty</p>
                         <small>Start adding items you love!</small>
@@ -369,12 +392,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Wishlist dropdown functionality
     function toggleWishlistDropdown() {
-        const dropdown = document.getElementById('wishlist-dropdown');
+        const isMobile = window.innerWidth <= 768;
+        const dropdownId = isMobile ? 'wishlist-dropdown-mobile' : 'wishlist-dropdown';
+        const dropdown = document.getElementById(dropdownId);
+        
         if (dropdown) {
             dropdown.classList.toggle('show');
             if (dropdown.classList.contains('show')) {
-                loadWishlistDropdown();
+                loadWishlistDropdown(isMobile);
             }
+        }
+    }
+    
+    function closeWishlistDropdown() {
+        const isMobile = window.innerWidth <= 768;
+        const dropdownId = isMobile ? 'wishlist-dropdown-mobile' : 'wishlist-dropdown';
+        const dropdown = document.getElementById(dropdownId);
+        
+        if (dropdown) {
+            dropdown.classList.remove('show');
         }
     }
     
@@ -394,10 +430,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function loadWishlistDropdown() {
+    function loadWishlistDropdown(isMobile = false) {
         const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        const content = document.getElementById('wishlist-dropdown-content');
-        const empty = document.getElementById('wishlist-dropdown-empty');
+        const contentId = isMobile ? 'wishlist-dropdown-content-mobile' : 'wishlist-dropdown-content';
+        const emptyId = isMobile ? 'wishlist-dropdown-empty-mobile' : 'wishlist-dropdown-empty';
+        const content = document.getElementById(contentId);
+        const empty = document.getElementById(emptyId);
         
         if (wishlist.length === 0) {
             content.style.display = 'none';
@@ -406,8 +444,8 @@ document.addEventListener('DOMContentLoaded', function() {
             content.style.display = 'block';
             empty.style.display = 'none';
             
-            // Show only first 3 items in dropdown
-            const displayItems = wishlist.slice(0, 3);
+            // Show all items in dropdown
+            const displayItems = wishlist;
             content.innerHTML = displayItems.map(item => `
                 <div class="wishlist-dropdown-item">
                     <div class="wishlist-dropdown-item-image-container">

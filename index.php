@@ -20,6 +20,169 @@ session_start();
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
     
+    <!-- Hide mobile elements on desktop for index page -->
+    <style>
+        @media (min-width: 769px) {
+            .hamburger-menu,
+            .mobile-filter-btn,
+            .mobile-filter-overlay,
+            .mobile-filter-content,
+            .mobile-filter-close,
+            .mobile-filter-close *,
+            .mobile-filter-close:before,
+            .mobile-filter-close:after,
+            .mobile-filter-close::before,
+            .mobile-filter-close::after,
+            .mobile-nav-close,
+            #mobile-nav-close,
+            .mobile-header,
+            .mobile-nav,
+            .mobile-menu,
+            .mobile-menu-toggle,
+            .mobile-menu-button,
+            .mobile-navigation,
+            .mobile-nav-container,
+            .mobile-nav-menu,
+            .mobile-nav-links,
+            .mobile-nav-item,
+            .mobile-nav-link,
+            .mobile-logo,
+            .mobile-close,
+            .mobile-close-btn,
+            .mobile-close-button,
+            .close-btn,
+            .close-button,
+            .menu-close,
+            .nav-close,
+            .mobile-menu-close,
+            .hamburger-close,
+            .mobile-toggle,
+            .mobile-toggle-btn,
+            .logo-main,
+            .logo-accent,
+            .logo-text,
+            .close,
+            .close-icon,
+            .close-x,
+            .x-close,
+            .btn-close,
+            .close-button,
+            .close-btn,
+            .menu-close-btn,
+            .nav-close-btn,
+            .header-close,
+            .content-close,
+            .modal-close,
+            .overlay-close,
+            .sidebar-close,
+            .filter-close,
+            .mobile-close-btn,
+            .mobile-close-button,
+            .mobile-menu-close,
+            .hamburger-close,
+            .close-icon-btn,
+            .close-icon-button,
+            .close-btn-icon,
+            .close-button-icon,
+            .close-x-btn,
+            .close-x-button,
+            .x-close-btn,
+            .x-close-button,
+            .close-icon,
+            .close-symbol,
+            .close-mark,
+            .close-sign,
+            .close-symbol-icon,
+            .close-mark-icon,
+            .close-sign-icon,
+            .close-symbol-btn,
+            .close-mark-btn,
+            .close-sign-btn,
+            .close-symbol-button,
+            .close-mark-button,
+            .close-sign-button,
+            .close-icon-symbol,
+            .close-icon-mark,
+            .close-icon-sign,
+            .close-btn-symbol,
+            .close-btn-mark,
+            .close-btn-sign,
+            .close-button-symbol,
+            .close-button-mark,
+            .close-button-sign,
+            .close-x-symbol,
+            .close-x-mark,
+            .close-x-sign,
+            .x-close-symbol,
+            .x-close-mark,
+            .x-close-sign,
+            .close-symbol-x,
+            .close-mark-x,
+            .close-sign-x,
+            .close-symbol-icon-x,
+            .close-mark-icon-x,
+            .close-sign-icon-x,
+            .close-symbol-btn-x,
+            .close-mark-btn-x,
+            .close-sign-btn-x,
+            .close-symbol-button-x,
+            .close-mark-button-x,
+            .close-sign-button-x,
+            .close-icon-symbol-x,
+            .close-icon-mark-x,
+            .close-icon-sign-x,
+            .close-btn-symbol-x,
+            .close-btn-mark-x,
+            .close-btn-sign-x,
+            .close-button-symbol-x,
+            .close-button-mark-x,
+            .close-button-sign-x,
+            .close-x-symbol-x,
+            .close-x-mark-x,
+            .close-x-sign-x,
+            .x-close-symbol-x,
+            .x-close-mark-x,
+            .x-close-sign-x {
+                display: none !important;
+            }
+            
+            /* Ensure desktop header is visible */
+            .top-nav {
+                display: flex !important;
+            }
+            
+            .logo-container {
+                display: flex !important;
+            }
+            
+            .nav-menu-container {
+                display: flex !important;
+            }
+            
+            .nav-right-container {
+                display: flex !important;
+            }
+        }
+        
+        /* Force hide mobile filter close button on desktop */
+        @media (min-width: 769px) {
+            .mobile-filter-close,
+            .mobile-nav-close,
+            #mobile-nav-close {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                position: absolute !important;
+                left: -9999px !important;
+                top: -9999px !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+        }
+    </style>
+    
     <!-- Custom Animation Styles -->
     <style>
         /* Enhanced hover effects for cards */

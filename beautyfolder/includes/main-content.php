@@ -71,30 +71,8 @@ $skincare = $productModel->getBySubcategory('Skincare');
                 </select>
             </div>
             
-            <!-- Mobile Filters Hamburger -->
-            <div class="mobile-filters-btn" onclick="toggleMobileFilters()">
-                <div class="hamburger-bars">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <span class="filters-text">Refine By</span>
-            </div>
         </div>
         
-        <!-- Mobile Filters Panel -->
-        <div class="mobile-filters-panel" id="mobile-filters-panel">
-            <div class="mobile-filters-header">
-                <h3>Refine By</h3>
-                <button class="close-filters" onclick="closeMobileFilters()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mobile-filters-content">
-                <!-- Include the actual sidebar content -->
-                <?php include 'includes/sidebar.php'; ?>
-            </div>
-        </div>
     </div>
 
     <?php if ($subcategory): ?>
@@ -571,7 +549,6 @@ $skincare = $productModel->getBySubcategory('Skincare');
 <div class="mobile-filter-overlay" id="mobile-filter-overlay">
     <div class="mobile-filter-content">
         <div class="mobile-filter-header">
-            <h3>Filters</h3>
             <button class="mobile-filter-close" id="mobile-filter-close">
                 <i class="fas fa-times"></i>
             </button>

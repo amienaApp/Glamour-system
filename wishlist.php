@@ -12,6 +12,7 @@ $page_title = 'My Wishlist - Glamour Palace';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <script src="scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <?php include 'includes/cart-notification-include.php'; ?>
@@ -467,6 +468,29 @@ $page_title = 'My Wishlist - Glamour Palace';
             max-height: 90vh;
             overflow: hidden;
             animation: modalSlideIn 0.3s ease;
+        }
+        
+        /* Mobile responsive styles for modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                height: 100vh;
+                max-height: 100vh;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .modal-content {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                height: 100vh;
+                max-height: 100vh;
+            }
         }
         
         @keyframes modalSlideIn {

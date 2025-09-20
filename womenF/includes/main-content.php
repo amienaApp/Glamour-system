@@ -54,20 +54,6 @@ if ($subcategoryForQuery) {
     $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
     $pageTitle = "Women's Clothing";
 }
-
-<<<<<<< HEAD
-=======
-// Get all dresses from the database
-$dresses = $productModel->getBySubcategory('Dresses');
-
-// Get all tops from the database
-$tops = $productModel->getBySubcategory('Tops');
-
-// Products loaded successfully
-
-
-
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 ?>
 
 <!-- Main Content Section -->
@@ -76,6 +62,12 @@ $tops = $productModel->getBySubcategory('Tops');
     <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
+            <!-- Mobile Filter Button -->
+            <button class="mobile-filter-btn" id="mobile-filter-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            
             <div class="sort-control">
                 <label for="sort-select-women">Sort:</label>
                 <select id="sort-select-women" class="sort-select" onchange="updateSort(this.value)">
@@ -88,7 +80,8 @@ $tops = $productModel->getBySubcategory('Tops');
         </div>
     </div>
 
-    <!-- Unified Products Grid (No Sectioning) -->
+    <?php if ($subcategoryForQuery): ?>
+    <!-- Specific Subcategory Products Grid -->
     <div class="product-grid" id="women-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
@@ -123,11 +116,9 @@ $tops = $productModel->getBySubcategory('Tops');
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
                      data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
-=======
+                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -285,8 +276,6 @@ $tops = $productModel->getBySubcategory('Tops');
             </div>
         <?php endif; ?>
     </div>
-<<<<<<< HEAD
-=======
     <?php else: ?>
     <!-- All Products Grid (filterable by sidebar) -->
     <div class="product-grid" id="all-products-grid">
@@ -459,7 +448,6 @@ $tops = $productModel->getBySubcategory('Tops');
         <?php endif; ?>
     </div>
     <?php endif; ?>
->>>>>>> 21429c30cebb503f1d6db36d3bbd09557d1b547a
 </main>
 
 <!-- Quick View Sidebar -->
@@ -528,6 +516,84 @@ $tops = $productModel->getBySubcategory('Tops');
             <div class="quick-view-description">
                 <p id="quick-view-description"></p>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Filter Overlay -->
+<div class="mobile-filter-overlay" id="mobile-filter-overlay">
+    <div class="mobile-filter-content">
+        <div class="mobile-filter-header">
+            <button class="mobile-filter-close" id="mobile-filter-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-filter-body">
+            <!-- Category Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Category</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-category-filter">
+                        <!-- Category filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Color Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Color</h4>
+                    </div>
+                    <div class="mobile-color-grid" id="mobile-color-filter">
+                        <!-- Color filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Price Range</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-price-filter">
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-0-100" value="0-100" data-filter="price_range">
+                            <label for="price-0-100">$0 - $100</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-100-200" value="100-200" data-filter="price_range">
+                            <label for="price-100-200">$100 - $200</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-200-400" value="200-400" data-filter="price_range">
+                            <label for="price-200-400">$200 - $400</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-400-plus" value="400+" data-filter="price_range">
+                            <label for="price-400-plus">$400+</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-on-sale" value="on-sale" data-filter="price_range">
+                            <label for="price-on-sale">On Sale</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mobile-filter-footer">
+            <button class="mobile-clear-filters-btn" id="mobile-clear-filters">Clear All</button>
+            <button class="mobile-apply-filters-btn" id="mobile-apply-filters">Apply Filters</button>
         </div>
     </div>
 </div>
