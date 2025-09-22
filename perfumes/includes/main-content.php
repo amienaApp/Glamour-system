@@ -7,7 +7,12 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
-// Get sort parameter
+// Get query parameters for filtering
+$gender = $_GET['gender'] ?? null;
+$brand = $_GET['brand'] ?? null;
+$size = $_GET['size'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
 $sort = $_GET['sort'] ?? 'newest';
 
 // Build sort options
@@ -30,10 +35,27 @@ switch ($sort) {
         break;
 }
 
-// Get products based on subcategory or all perfumes
-if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
-    $pageTitle = ucfirst($subcategory);
+// Build filters
+$filters = [];
+$filters['category'] = "Perfumes"; // Always filter for perfumes
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
+if ($gender) $filters['gender'] = $gender;
+if ($brand) $filters['brand'] = $brand;
+if ($size) $filters['size'] = $size;
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
+}
+
+// Get products based on filters
+if (!empty($filters)) {
+    $products = $productModel->getAll($filters, $sortOptions);
+    $pageTitle = "Perfumes";
+    if ($subcategory) {
+        $pageTitle = ucfirst($subcategory);
+    }
 } else {
     // Get all perfume products
     $products = $productModel->getByCategory("Perfumes", $sortOptions);

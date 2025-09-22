@@ -3,7 +3,7 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count">4146 Styles</span>
-        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
+        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">
@@ -16,37 +16,37 @@
             </div>
             <div class="filter-options" id="category-filter">
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="dresses" data-filter="category">
+                    <input type="checkbox" name="category[]" value="dresses" data-filter="category" onchange="updateCategoryFilter('dresses', this.checked)">
                     <span class="checkmark"></span>
                     Dresses
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="tops" data-filter="category">
+                    <input type="checkbox" name="category[]" value="tops" data-filter="category" onchange="updateCategoryFilter('tops', this.checked)">
                     <span class="checkmark"></span>
                     Tops
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="bottoms" data-filter="category">
+                    <input type="checkbox" name="category[]" value="bottoms" data-filter="category" onchange="updateCategoryFilter('bottoms', this.checked)">
                     <span class="checkmark"></span>
                     Bottoms
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="outerwear" data-filter="category">
+                    <input type="checkbox" name="category[]" value="outerwear" data-filter="category" onchange="updateCategoryFilter('outerwear', this.checked)">
                     <span class="checkmark"></span>
                     Outerwear
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="activewear" data-filter="category">
+                    <input type="checkbox" name="category[]" value="activewear" data-filter="category" onchange="updateCategoryFilter('activewear', this.checked)">
                     <span class="checkmark"></span>
                     Activewear
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="lingerie" data-filter="category">
+                    <input type="checkbox" name="category[]" value="lingerie" data-filter="category" onchange="updateCategoryFilter('lingerie', this.checked)">
                     <span class="checkmark"></span>
                     Lingerie
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="swimwear" data-filter="category">
+                    <input type="checkbox" name="category[]" value="swimwear" data-filter="category" onchange="updateCategoryFilter('swimwear', this.checked)">
                     <span class="checkmark"></span>
                     Swimwear
                 </label>
@@ -282,4 +282,6 @@
 
     
     </div>
-</aside> 
+</aside>
+
+<script src="../../instant-filters.js"></script> 

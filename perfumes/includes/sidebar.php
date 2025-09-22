@@ -45,7 +45,7 @@ foreach ($allPerfumes as $perfume) {
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count"><?php echo $stats['total_perfumes']; ?> Styles</span>
-        <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
+        <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFiltersSimple()">
             Clear All Filters
         </button>
     </div>
@@ -480,4 +480,6 @@ document.addEventListener('DOMContentLoaded', function() {
     currentFilters.minPrice = urlParams.get('min_price') || '';
     currentFilters.maxPrice = urlParams.get('max_price') || '';
 });
-</script> 
+</script>
+
+<script src="../../instant-filters.js"></script> 

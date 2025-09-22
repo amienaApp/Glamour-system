@@ -3,7 +3,7 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count">1000+ Kids Styles</span>
-        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
+        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">
@@ -317,3 +317,5 @@
 
     </div>
 </aside>
+
+<script src="../../instant-filters.js"></script>

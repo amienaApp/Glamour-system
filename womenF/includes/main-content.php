@@ -7,7 +7,12 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
-// Get sort parameter
+// Get query parameters for filtering
+$gender = $_GET['gender'] ?? null;
+$category = $_GET['category'] ?? null;
+$color = $_GET['color'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
 $sort = $_GET['sort'] ?? 'newest';
 
 // Build sort options
@@ -30,6 +35,45 @@ switch ($sort) {
         break;
 }
 
+// Build filters
+$filters = [];
+$filters['category'] = "Women's Clothing"; // Always filter for women's clothing
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
+if ($gender) $filters['gender'] = $gender;
+if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($color) {
+    // Define color groups - map color names to hex codes
+    $colorGroups = [
+        'black' => ['#000000', '#181a1a', '#0a0a0a', '#111218', '#1a1a1a', '#333333', '#2c2c2c'],
+        'beige' => ['#e1c9c9', '#f5f5dc', '#f0e68c', '#d2b48c', '#deb887', '#f4a460', '#b38f65'],
+        'blue' => ['#414c61', '#0066cc', '#0000ff', '#4169e1', '#1e90ff', '#00bfff', '#87ceeb', '#4682b4', '#5f9ea0'],
+        'brown' => ['#8b4f33', '#5d3c3c', '#a52a2a', '#d2691e', '#cd853f', '#bc8f8f', '#d2b48c', '#deb887', '#f4a460'],
+        'gold' => ['#ffd700', '#ffb347', '#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500'],
+        'green' => ['#82ff4d', '#228b22', '#32cd32', '#00ff00', '#008000', '#00ff7f', '#7fff00', '#adff2f', '#9acd32'],
+        'grey' => ['#575759', '#4a4142', '#808080', '#a9a9a9', '#c0c0c0', '#d3d3d3', '#dcdcdc', '#f5f5f5', '#696969', '#778899'],
+        'orange' => ['#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#ffd700', '#ffb347'],
+        'pink' => ['#ffc0cb', '#ff69b4', '#ff1493', '#dc143c', '#ffb6c1', '#ffa0b4', '#ff91a4'],
+        'purple' => ['#373645', '#800080', '#4b0082', '#6a5acd', '#8a2be2', '#9932cc', '#ba55d3', '#da70d6'],
+        'red' => ['#5a2b34', '#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff6347', '#ff4500', '#ff1493', '#c71585'],
+        'silver' => ['#c0c0c0', '#d3d3d3', '#a9a9a9', '#dcdcdc', '#f5f5f5', '#e6e6fa', '#f0f8ff'],
+        'taupe' => ['#b38f65', '#483c32', '#8b7355', '#a0956b', '#d2b48c', '#deb887', '#f4a460', '#cd853f'],
+        'white' => ['#ffffff', '#fff', '#f5f5f5', '#fafafa', '#f8f8ff', '#f0f8ff', '#e6e6fa', '#fff8dc'],
+        'yellow' => ['#ffff00', '#ffd700', '#ffeb3b', '#ffc107', '#ffa000', '#ff8f00', '#ff6f00', '#ffea00']
+    ];
+    
+    // Get the hex codes for the selected color group
+    $hexCodes = $colorGroups[$color] ?? [$color];
+    
+    // Use $in operator to match any of the hex codes in the group
+    $filters['color'] = ['$in' => $hexCodes];
+}
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
+}
+
 // Convert URL-friendly subcategory back to database format
 $subcategoryForQuery = '';
 if ($subcategory) {
@@ -45,10 +89,13 @@ if ($subcategory) {
     }
 }
 
-// Get products based on subcategory or all women's clothing
-if ($subcategoryForQuery) {
-    $products = $productModel->getBySubcategory($subcategoryForQuery, $sortOptions);
-    $pageTitle = $subcategoryForQuery;
+// Get products based on filters
+if (!empty($filters)) {
+    $products = $productModel->getAll($filters, $sortOptions);
+    $pageTitle = "Women's Clothing";
+    if ($subcategoryForQuery) {
+        $pageTitle = $subcategoryForQuery;
+    }
 } else {
     // Get all women's clothing products (including sold out ones)
     $products = $productModel->getByCategory("Women's Clothing", $sortOptions);

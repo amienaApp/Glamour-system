@@ -3,7 +3,7 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count">0 Styles</span>
-        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
+        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
 
     <!-- Category Filter -->
@@ -241,3 +241,5 @@
         </div>
     </div>
 </aside>
+
+<script src="../../instant-filters.js"></script>
