@@ -19,13 +19,13 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-    <script src="../reviews-manager.js?v=<?php echo time(); ?>"></script>
-    <script src="../related-products.js?v=<?php echo time(); ?>"></script>
-    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
-    <script src="quickview-manager.js?v=<?php echo time(); ?>"></script>
-    <script src="cart-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php 
@@ -80,6 +80,141 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                 </div>
 
             <!-- Enhanced Features Scripts (Reviews & Related Products Only) -->
+            <script>
+                // Mobile Filter Functionality
+                document.addEventListener('DOMContentLoaded', function() {
+                    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+                    const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+                    const mobileFilterClose = document.getElementById('mobile-filter-close');
+                    const mobileClearFilters = document.getElementById('mobile-clear-filters');
+                    const mobileApplyFilters = document.getElementById('mobile-apply-filters');
+                    const body = document.body;
+
+                    // Open mobile filter menu
+                    if (mobileFilterBtn) {
+                        mobileFilterBtn.addEventListener('click', function() {
+                            mobileFilterOverlay.classList.add('active');
+                            body.classList.add('mobile-filter-open');
+                        });
+                    }
+
+                    // Close mobile filter menu
+                    if (mobileFilterClose) {
+                        mobileFilterClose.addEventListener('click', function() {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        });
+                    }
+
+                    // Close mobile filter when clicking overlay
+                    if (mobileFilterOverlay) {
+                        mobileFilterOverlay.addEventListener('click', function(e) {
+                            if (e.target === mobileFilterOverlay) {
+                                mobileFilterOverlay.classList.remove('active');
+                                body.classList.remove('mobile-filter-open');
+                            }
+                        });
+                    }
+
+                    // Clear all filters
+                    if (mobileClearFilters) {
+                        mobileClearFilters.addEventListener('click', function() {
+                            const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]');
+                            checkboxes.forEach(checkbox => {
+                                checkbox.checked = false;
+                            });
+                        });
+                    }
+
+                    // Apply filters
+                    if (mobileApplyFilters) {
+                        mobileApplyFilters.addEventListener('click', function() {
+                            // Get selected filters
+                            const selectedFilters = {};
+                            const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]:checked');
+                            
+                            checkboxes.forEach(checkbox => {
+                                const filterType = checkbox.getAttribute('data-filter');
+                                if (!selectedFilters[filterType]) {
+                                    selectedFilters[filterType] = [];
+                                }
+                                selectedFilters[filterType].push(checkbox.value);
+                            });
+
+                            // Apply filters to products
+                            applyFilters(selectedFilters);
+                            
+                            // Close filter menu
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        });
+                    }
+
+                    // Function to apply filters
+                    function applyFilters(filters) {
+                        const productCards = document.querySelectorAll('.product-card');
+                        
+                        productCards.forEach(card => {
+                            let shouldShow = true;
+                            
+                            // Check category filters
+                            if (filters.category && filters.category.length > 0) {
+                                const productCategory = card.getAttribute('data-product-subcategory');
+                                const categoryMatch = filters.category.some(filter => {
+                                    return productCategory && productCategory.toLowerCase().includes(filter.toLowerCase());
+                                });
+                                if (!categoryMatch) shouldShow = false;
+                            }
+                            
+                            // Check color filters
+                            if (filters.color && filters.color.length > 0) {
+                                const productColor = card.getAttribute('data-product-color');
+                                const colorMatch = filters.color.some(filter => {
+                                    return productColor && productColor.toLowerCase() === filter.toLowerCase();
+                                });
+                                if (!colorMatch) shouldShow = false;
+                            }
+                            
+                            // Check price filters
+                            if (filters.price_range && filters.price_range.length > 0) {
+                                const productPrice = parseFloat(card.getAttribute('data-product-price'));
+                                const priceMatch = filters.price_range.some(filter => {
+                                    switch(filter) {
+                                        case '0-25':
+                                            return productPrice >= 0 && productPrice <= 25;
+                                        case '25-50':
+                                            return productPrice > 25 && productPrice <= 50;
+                                        case '50-100':
+                                            return productPrice > 50 && productPrice <= 100;
+                                        case '100-200':
+                                            return productPrice > 100 && productPrice <= 200;
+                                        case '200+':
+                                            return productPrice > 200;
+                                        default:
+                                            return true;
+                                    }
+                                });
+                                if (!priceMatch) shouldShow = false;
+                            }
+                            
+                            // Show or hide product card
+                            if (shouldShow) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    // Handle window resize
+                    window.addEventListener('resize', function() {
+                        if (window.innerWidth > 1024) {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        }
+                    });
+                });
+            </script>
         
         <script>
             // Initialize enhanced features when page loads
@@ -143,6 +278,18 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
             }
         </script>
 
+        <!-- Simple Sorting Function -->
+        <script>
+        function updateSort(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortValue);
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+            window.location.reload();
+        }
+        </script>
+
         <!-- Quick View Sidebar -->
         <div id="quick-view-sidebar" class="quickview-sidebar">
             <button class="close-btn" onclick="closeQuickView()">×</button>
@@ -201,6 +348,108 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
         
         <!-- Overlay -->
         <div id="quick-view-overlay" class="quickview-overlay"></div>
+
+        <!-- Simple Mobile Filters Toggle -->
+        <script>
+        function toggleMobileFilters() {
+            try {
+                console.log('toggleMobileFilters called');
+                const panel = document.getElementById('mobile-filters-panel');
+                const btn = document.querySelector('.mobile-filters-btn');
+                
+                console.log('Panel found:', !!panel);
+                console.log('Button found:', !!btn);
+                
+                if (panel) {
+                    // Debug panel content
+                    const content = panel.querySelector('.mobile-filters-content');
+                    console.log('Content found:', !!content);
+                    if (content) {
+                        console.log('Content HTML length:', content.innerHTML.length);
+                        console.log('Content children count:', content.children.length);
+                        console.log('Content visible:', content.offsetWidth > 0 && content.offsetHeight > 0);
+                    }
+                    
+                    if (panel.classList.contains('active')) {
+                        console.log('Closing panel');
+                        panel.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        console.log('Opening panel');
+                        panel.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        
+                        // Force content to be visible for debugging
+                        if (content) {
+                            content.style.display = 'block';
+                            content.style.visibility = 'visible';
+                            content.style.opacity = '1';
+                            content.style.zIndex = '99999';
+                            content.style.position = 'relative';
+                            content.style.background = 'white';
+                            content.style.border = '3px solid red';
+                            content.style.padding = '20px';
+                            content.style.minHeight = '300px';
+                        }
+                    }
+                } else {
+                    console.error('Panel not found!');
+                }
+            } catch (error) {
+                console.error('Error in toggleMobileFilters:', error);
+            }
+        }
+        
+        // Close mobile filters function
+        function closeMobileFilters() {
+            console.log('closeMobileFilters called');
+            const panel = document.getElementById('mobile-filters-panel');
+            if (panel) {
+                panel.classList.remove('active');
+                document.body.style.overflow = '';
+                console.log('Panel closed');
+            }
+        }
+        
+        // Close filters when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('mobile-filters-panel');
+            const btn = document.querySelector('.mobile-filters-btn');
+            
+            if (panel && panel.classList.contains('active') && 
+                !btn.contains(e.target) && 
+                !panel.contains(e.target)) {
+                closeMobileFilters();
+            }
+        });
+        
+        // Debug on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking elements:');
+            console.log('Panel:', document.getElementById('mobile-filters-panel'));
+            console.log('Button:', document.querySelector('.mobile-filters-btn'));
+            
+            // Initialize mobile filters panel
+            const panel = document.getElementById('mobile-filters-panel');
+            if (panel) {
+                console.log('Mobile filters panel initialized');
+                
+                // Check content panel
+                const content = panel.querySelector('.mobile-filters-content');
+                if (content) {
+                    console.log('Content panel found and ready');
+                }
+            }
+        });
+        
+        // Initialize style count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Count the initial products displayed
+            const productCards = document.querySelectorAll('.product-card');
+            const initialCount = productCards.length;
+            updateStyleCount(initialCount);
+        });
+        </script>
 
 </body>
 </html>

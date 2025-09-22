@@ -43,6 +43,34 @@ class Product {
         }
     }
 
+    /**
+     * Get multiple products by IDs (OPTIMIZED for cart loading)
+     */
+    public function getByIds($ids) {
+        try {
+            // Convert string IDs to ObjectIds if needed
+            $objectIds = [];
+            foreach ($ids as $id) {
+                if (is_string($id) && strlen($id) === 24) {
+                    try {
+                        $objectIds[] = new MongoDB\BSON\ObjectId($id);
+                    } catch (Exception $e) {
+                        // If conversion fails, keep as string
+                        $objectIds[] = $id;
+                    }
+                } else {
+                    $objectIds[] = $id;
+                }
+            }
+            
+            // Single query to get all products
+            $cursor = $this->collection->find(['_id' => ['$in' => $objectIds]]);
+            return iterator_to_array($cursor);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public function create($productData) {
         // Convert color_variants to MongoDB BSONArray if it's a regular array
         if (isset($productData['color_variants']) && is_array($productData['color_variants'])) {
@@ -92,26 +120,37 @@ class Product {
     }
 
     // Category Operations
-    public function getByCategory($category) {
-        return $this->getAll(['category' => $category]);
+    public function getByCategory($category, $sort = ['_id' => -1]) {
+        return $this->getAll(['category' => $category], $sort);
     }
 
-    public function getBySubcategory($subcategory) {
-        // Use case-insensitive search for subcategory
-        return $this->getAll(['subcategory' => new MongoDB\BSON\Regex('^' . preg_quote($subcategory, '/') . '$', 'i')]);
+    public function getBySubcategory($subcategory, $sort = ['_id' => -1]) {
+        return $this->getAll(['subcategory' => $subcategory], $sort);
     }
 
     // Special Types
-    public function getFeatured() {
-        return $this->getAll(['featured' => true]);
+    public function getFeatured($sort = ['_id' => -1]) {
+        return $this->getAll(['featured' => true], $sort);
     }
 
-    public function getByCategoryAndFeatured($category, $featured = true) {
-        return $this->getAll(['category' => $category, 'featured' => $featured]);
+    public function getByCategoryAndFeatured($category, $featured = true, $sort = ['_id' => -1]) {
+        return $this->getAll(['category' => $category, 'featured' => $featured], $sort);
     }
 
-    public function getOnSale() {
-        return $this->getAll(['sale' => true]);
+    public function getOnSale($sort = ['_id' => -1]) {
+        return $this->getAll(['sale' => true], $sort);
+    }
+
+    public function getAvailable($sort = ['_id' => -1]) {
+        return $this->getAll(['available' => true], $sort);
+    }
+
+    public function getByCategoryAvailable($category, $sort = ['_id' => -1]) {
+        return $this->getAll(['category' => $category, 'available' => true], $sort);
+    }
+
+    public function getFeaturedAvailable($sort = ['_id' => -1]) {
+        return $this->getAll(['featured' => true, 'available' => true], $sort);
     }
 
     public function getNewArrivals($limit = 8) {
@@ -258,6 +297,14 @@ class Product {
         if (empty($data['name'])) $errors[] = 'Product name is required';
         if (!isset($data['price']) || $data['price'] <= 0) $errors[] = 'Valid price is required';
         if (empty($data['category'])) $errors[] = 'Category is required';
+        
+        // Validate stock and availability
+        if (isset($data['stock']) && $data['stock'] < 0) {
+            $errors[] = 'Stock quantity cannot be negative';
+        }
+        if (isset($data['available']) && !is_bool($data['available'])) {
+            $errors[] = 'Availability must be a boolean value';
+        }
         
         // Validate color variants if present
         if (isset($data['color_variants']) && is_array($data['color_variants'])) {

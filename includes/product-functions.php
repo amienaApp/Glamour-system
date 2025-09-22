@@ -25,6 +25,7 @@ function formatProductForQuickView($product) {
     if (!empty($product['front_image'])) {
         $formatted['images'][] = [
             'src' => $product['front_image'],
+            'alt' => $product['name'] ?? 'Product Image',
             'type' => 'front',
             'color' => 'main'
         ];
@@ -33,6 +34,7 @@ function formatProductForQuickView($product) {
     if (!empty($product['back_image'])) {
         $formatted['images'][] = [
             'src' => $product['back_image'],
+            'alt' => $product['name'] ?? 'Product Image',
             'type' => 'back',
             'color' => 'main'
         ];
@@ -61,10 +63,12 @@ function formatProductForQuickView($product) {
             if (!empty($variant['front_image'])) {
                 $variantData['images'][] = [
                     'src' => $variant['front_image'],
+                    'alt' => $variant['name'] ?? 'Product Image',
                     'type' => 'front'
                 ];
                 $formatted['images'][] = [
                     'src' => $variant['front_image'],
+                    'alt' => $variant['name'] ?? 'Product Image',
                     'type' => 'front',
                     'color' => $variant['color']
                 ];
@@ -73,10 +77,12 @@ function formatProductForQuickView($product) {
             if (!empty($variant['back_image'])) {
                 $variantData['images'][] = [
                     'src' => $variant['back_image'],
+                    'alt' => $variant['name'] ?? 'Product Image',
                     'type' => 'back'
                 ];
                 $formatted['images'][] = [
                     'src' => $variant['back_image'],
+                    'alt' => $variant['name'] ?? 'Product Image',
                     'type' => 'back',
                     'color' => $variant['color']
                 ];
@@ -95,29 +101,47 @@ function formatProductForQuickView($product) {
         }
     }
     
-    // Handle sizes
+    // Handle sizes - convert to objects with name, available, stock properties
+    $sizeArray = [];
     if (!empty($product['selected_sizes'])) {
         if (is_string($product['selected_sizes'])) {
             $sizes = json_decode($product['selected_sizes'], true);
             if (is_array($sizes)) {
-                $formatted['sizes'] = $sizes;
+                $sizeArray = $sizes;
             }
         } elseif (is_array($product['selected_sizes'])) {
-            $formatted['sizes'] = $product['selected_sizes'];
+            $sizeArray = $product['selected_sizes'];
         }
     }
     
     // If no sizes specified, add default sizes based on category
-    if (empty($formatted['sizes'])) {
+    if (empty($sizeArray)) {
         $category = strtolower($product['category'] ?? '');
         if (strpos($category, 'shoes') !== false) {
-            $formatted['sizes'] = ['One Size'];
+            $sizeArray = ['One Size'];
         } elseif (strpos($category, 'perfumes') !== false) {
-            $formatted['sizes'] = ['30ml', '50ml', '100ml', '200ml'];
+            $sizeArray = ['30ml', '50ml', '100ml', '200ml'];
         } elseif (strpos($category, 'accessories') !== false || strpos($category, 'bags') !== false) {
-            $formatted['sizes'] = ['One Size'];
+            $sizeArray = ['One Size'];
         } else {
-            $formatted['sizes'] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+            $sizeArray = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+        }
+    }
+    
+    // Convert size strings to objects
+    foreach ($sizeArray as $size) {
+        if (is_string($size)) {
+            $formatted['sizes'][] = [
+                'name' => $size,
+                'available' => true,
+                'stock' => $product['stock'] ?? 0
+            ];
+        } elseif (is_array($size) && isset($size['name'])) {
+            $formatted['sizes'][] = [
+                'name' => $size['name'],
+                'available' => $size['available'] ?? true,
+                'stock' => $size['stock'] ?? ($product['stock'] ?? 0)
+            ];
         }
     }
     

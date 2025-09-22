@@ -23,10 +23,12 @@ if ($subcategory) {
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
-            <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
-        <script src="../simple-quickview-script.js"></script>
+    <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
@@ -34,27 +36,27 @@ if ($subcategory) {
                 <!-- Image Bar Section -->
                 <div class="image-bar" >
                     <a href="men.php" class="image-item">
-                        <img src="../img/menn/men.jpg" alt="Men's Fashion">
+                        <img src="../img/men/shirts/14.jpg" alt="Men's Fashion">
                         <h3>Shop All</h3>
                     </a>
                     <a href="men.php?subcategory=shirts" class="image-item">
-                        <img src="../img//men/shirts/14.jpg" alt="men Fashion 13">
+                        <img src="../img/men/shirts/14.jpg" alt="men Fashion 13">
                         <h3>Shirts</h3>
                     </a>
-                    <a href="men.php?subcategory=T-Shirts" class="image-item">
-                        <img src="../img/men/t-shirts/6.2.png" alt="men Fashion 14">
+                    <a href="men.php?subcategory=tshirts" class="image-item">
+                        <img src="../img/men/t-shirts/6.png" alt="men Fashion 14">
                         <h3>T-Shirts</h3>
                     </a>
                     <a href="men.php?subcategory=suits" class="image-item">
-                        <img src="../img/men/suits/5.6.jpg" alt="suit formal">
+                        <img src="../img/men/suits/5.avif" alt="suit formal">
                         <h3>Suits</h3>
                     </a>
                     <a href="men.php?subcategory=pants" class="image-item">
-                        <img src="../img/men/pants/9.1.jpg" alt=" pants">
+                        <img src="../img/men/pants/9.jpg" alt=" pants">
                         <h3>Pants</h3>
                     </a>
                     <a href="men.php?subcategory=shorts" class="image-item">
-                        <img src="../img/men/shorts/5.jpg" alt=" shorts">
+                        <img src="../img/men/shorts/1.jpg" alt=" shorts">
                         <h3>Shorts & Underwear</h3>
                     </a>
                   
@@ -118,6 +120,217 @@ if ($subcategory) {
                     });
                 }
             }
+        </script>
+
+        <!-- Simple Sorting Function -->
+        <script>
+        function updateSort(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortValue);
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+            window.location.reload();
+        }
+        </script>
+
+        <!-- Quick View Sidebar -->
+        <div id="quick-view-sidebar" class="quickview-sidebar">
+            <button class="close-btn" onclick="closeQuickView()">×</button>
+            <div class="quickview-content">
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="quick-view-main-image" src="" alt="">
+                    </div>
+                    <div class="image-thumbnails" id="quick-view-thumbnails"></div>
+                </div>
+                
+                <div class="product-info">
+                    <h2 id="quick-view-title"></h2>
+                    <div class="price-section">
+                        <span id="quick-view-price" class="price"></span>
+                        <span id="quick-view-sale-price" class="sale-price" style="display: none;"></span>
+                    </div>
+                    
+                    <div class="rating-section">
+                        <div class="stars" id="quick-view-stars"></div>
+                        <span id="quick-view-review-count"></span>
+                    </div>
+                    
+                    <p id="quick-view-description"></p>
+                    
+                    <div class="color-section">
+                        <h4>Color:</h4>
+                        <div class="color-selection" id="quick-view-color-selection"></div>
+                    </div>
+                    
+                    <div class="size-section">
+                        <h4>Size:</h4>
+                        <div class="size-selection" id="quick-view-size-selection"></div>
+                    </div>
+                    
+                    <div class="quantity-section">
+                        <label for="quick-view-quantity">Quantity:</label>
+                        <input type="number" id="quick-view-quantity" value="1" min="1" max="99">
+                    </div>
+                    
+                    <div class="quick-view-actions">
+                        <button class="add-to-bag-quick" id="add-to-bag-quick">
+                            <i class="fas fa-shopping-bag"></i>
+                            Add to Bag
+                        </button>
+                        <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
+                            <i class="far fa-heart"></i>
+                            Add to Wishlist
+                        </button>
+                    </div>
+                    
+                    <!-- Availability Status -->
+                    <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
+                        <!-- Availability will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overlay -->
+        <div id="quick-view-overlay" class="quickview-overlay"></div>
+
+        <script>
+            // Mobile Filter Functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+                const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+                const mobileFilterClose = document.getElementById('mobile-filter-close');
+                const mobileClearFilters = document.getElementById('mobile-clear-filters');
+                const mobileApplyFilters = document.getElementById('mobile-apply-filters');
+                const body = document.body;
+
+                // Open mobile filter menu
+                if (mobileFilterBtn) {
+                    mobileFilterBtn.addEventListener('click', function() {
+                        mobileFilterOverlay.classList.add('active');
+                        body.classList.add('mobile-filter-open');
+                    });
+                }
+
+                // Close mobile filter menu
+                if (mobileFilterClose) {
+                    mobileFilterClose.addEventListener('click', function() {
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    });
+                }
+
+                // Close mobile filter when clicking overlay
+                if (mobileFilterOverlay) {
+                    mobileFilterOverlay.addEventListener('click', function(e) {
+                        if (e.target === mobileFilterOverlay) {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        }
+                    });
+                }
+
+                // Clear all filters
+                if (mobileClearFilters) {
+                    mobileClearFilters.addEventListener('click', function() {
+                        const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                    });
+                }
+
+                // Apply filters
+                if (mobileApplyFilters) {
+                    mobileApplyFilters.addEventListener('click', function() {
+                        // Get selected filters
+                        const selectedFilters = {};
+                        const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]:checked');
+                        
+                        checkboxes.forEach(checkbox => {
+                            const filterType = checkbox.getAttribute('data-filter');
+                            if (!selectedFilters[filterType]) {
+                                selectedFilters[filterType] = [];
+                            }
+                            selectedFilters[filterType].push(checkbox.value);
+                        });
+
+                        // Apply filters to products
+                        applyFilters(selectedFilters);
+                        
+                        // Close filter menu
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    });
+                }
+
+                // Function to apply filters
+                function applyFilters(filters) {
+                    const productCards = document.querySelectorAll('.product-card');
+                    
+                    productCards.forEach(card => {
+                        let shouldShow = true;
+                        
+                        // Check category filters
+                        if (filters.category && filters.category.length > 0) {
+                            const productCategory = card.getAttribute('data-product-subcategory');
+                            const categoryMatch = filters.category.some(filter => {
+                                return productCategory && productCategory.toLowerCase().includes(filter.toLowerCase());
+                            });
+                            if (!categoryMatch) shouldShow = false;
+                        }
+                        
+                        // Check color filters
+                        if (filters.color && filters.color.length > 0) {
+                            const productColor = card.getAttribute('data-product-color');
+                            const colorMatch = filters.color.some(filter => {
+                                return productColor && productColor.toLowerCase() === filter.toLowerCase();
+                            });
+                            if (!colorMatch) shouldShow = false;
+                        }
+                        
+                        // Check price filters
+                        if (filters.price_range && filters.price_range.length > 0) {
+                            const productPrice = parseFloat(card.getAttribute('data-product-price'));
+                            const priceMatch = filters.price_range.some(filter => {
+                                switch(filter) {
+                                    case '0-100':
+                                        return productPrice >= 0 && productPrice <= 100;
+                                    case '100-200':
+                                        return productPrice > 100 && productPrice <= 200;
+                                    case '200-400':
+                                        return productPrice > 200 && productPrice <= 400;
+                                    case '400+':
+                                        return productPrice > 400;
+                                    case 'on-sale':
+                                        // You can add sale logic here
+                                        return false;
+                                    default:
+                                        return true;
+                                }
+                            });
+                            if (!priceMatch) shouldShow = false;
+                        }
+                        
+                        // Show or hide product card
+                        if (shouldShow) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Handle window resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 1024) {
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    }
+                });
+            });
         </script>
 
 </body>

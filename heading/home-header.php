@@ -414,11 +414,19 @@ $regionOptions = [
 </div>
 
 
+<!-- Include Cart Notification Manager -->
+<script src="scripts/cart-notification-manager.js"></script>
+
 <!-- Cart Functionality Script -->
 <script>
     // Load cart count on page load
     document.addEventListener('DOMContentLoaded', function() {
-        loadCartCount();
+        // Use the unified cart notification manager if available
+        if (window.cartNotificationManager) {
+            window.cartNotificationManager.loadCartCount();
+        } else {
+            loadCartCount();
+        }
     });
 
     function loadCartCount() {
@@ -436,7 +444,7 @@ $regionOptions = [
             }
         })
         .catch(error => {
-            // Silent error handling
+            console.error('Error loading cart count:', error);
         });
     }
 

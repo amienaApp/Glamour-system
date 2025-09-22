@@ -1989,6 +1989,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group">
                             <label for="stock">Stock Quantity</label>
                         <input type="number" id="stock" name="stock" min="0" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" placeholder="Enter stock quantity">
+                        <small style="color: #666; font-size: 0.9em;">Set to 0 or uncheck "Available" to mark as sold out</small>
                         </div>
 
                         <div class="checkbox-group">

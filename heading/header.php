@@ -60,6 +60,9 @@ $regionOptions = [
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+<!-- INSTANT Cart Preloader - Loads first for zero delay -->
+<script src="<?php echo getAssetPath('scripts/cart-preloader.js'); ?>"></script>
+
 <!-- Top Navigation Bar -->
 <nav class="top-nav">
     <!-- Logo Container - Left Side -->
@@ -70,6 +73,13 @@ $regionOptions = [
                 <span class="logo-accent">Palace</span>
             </a>
         </div>
+    </div>
+
+    <!-- Hamburger Menu Button - Mobile Only -->
+    <div class="hamburger-menu" id="hamburger-menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
     </div>
 
     <!-- Navigation Menu - Center -->
@@ -96,6 +106,46 @@ $regionOptions = [
             <?php endif; ?>
         </ul>
     </div>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <div class="mobile-nav-logo">
+                    <span class="logo-main">Glamour</span>
+                    <span class="logo-accent">Palace</span>
+                </div>
+                <button class="mobile-nav-close" id="mobile-nav-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <ul class="mobile-nav-list">
+                    <?php if (!empty($categories)): ?>
+                        <?php foreach ($categories as $category): ?>
+                            <li>
+                                <a href="<?php echo getCategoryUrl($category['name']); ?>" class="mobile-nav-link">
+                                    <?php echo htmlspecialchars($category['name']); ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback static menu if no categories found -->
+                        <li><a href="<?php echo getAssetPath('womenF/women.php'); ?>" class="mobile-nav-link">Women's Clothing</a></li>
+                        <li><a href="<?php echo getAssetPath('menfolder/men.php'); ?>" class="mobile-nav-link">Men's Clothing</a></li>
+                        <li><a href="<?php echo getAssetPath('beautyfolder/beauty.php'); ?>" class="mobile-nav-link">Beauty & Cosmetics</a></li>
+                        <li><a href="<?php echo getAssetPath('shoess/shoes.php'); ?>" class="mobile-nav-link">Shoes</a></li>
+                        <li><a href="<?php echo getAssetPath('bagsfolder/bags.php'); ?>" class="mobile-nav-link">Bags</a></li>
+                        <li><a href="<?php echo getAssetPath('accessories/accessories.php'); ?>" class="mobile-nav-link">Accessories</a></li>
+                        <li><a href="<?php echo getAssetPath('homedecor/homedecor.php'); ?>" class="mobile-nav-link">Home & Living</a></li>
+                        <li><a href="<?php echo getAssetPath('perfumes/index.php'); ?>" class="mobile-nav-link">Perfumes</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Scripts will be loaded by individual pages -->
 
     <!-- Right Side Elements - Compressed -->
     <div class="nav-right-container">
@@ -154,11 +204,13 @@ $regionOptions = [
                 <i class="fas fa-heart"></i>
                 <span class="wishlist-count">0</span>
                 
-                <!-- Wishlist Dropdown -->
+                <!-- Wishlist Dropdown - Desktop -->
                 <div class="wishlist-dropdown" id="wishlist-dropdown">
                     <div class="wishlist-dropdown-header">
                         <h3><i class="fas fa-heart"></i> My Wishlist</h3>
-                        <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                        <div class="wishlist-dropdown-actions">
+                            <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                        </div>
                     </div>
                     <div class="wishlist-dropdown-content" id="wishlist-dropdown-content">
                         <!-- Wishlist items will be loaded here -->
@@ -169,8 +221,29 @@ $regionOptions = [
                         <small>Start adding items you love!</small>
                     </div>
                 </div>
+                
+                <!-- Wishlist Dropdown - Mobile -->
+                <div class="wishlist-dropdown-mobile" id="wishlist-dropdown-mobile">
+                    <div class="wishlist-dropdown-header">
+                        <h3><i class="fas fa-heart"></i> My Wishlist</h3>
+                        <div class="wishlist-dropdown-actions">
+                            <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
+                            <button class="wishlist-dropdown-close" onclick="closeWishlistDropdown()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="wishlist-dropdown-content" id="wishlist-dropdown-content-mobile">
+                        <!-- Wishlist items will be loaded here -->
+                    </div>
+                    <div class="wishlist-dropdown-empty" id="wishlist-dropdown-empty-mobile" style="display: none;">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                        <small>Start adding items you love!</small>
+                    </div>
+                </div>
             </div>
-            <div class="shopping-cart" title="Cart" style="position: relative;">
+            <div class="shopping-cart" title="Cart" style="position: relative; text-decoration: none; color: inherit; cursor: pointer;" onclick="window.location.href='<?php echo getAssetPath('cart-unified.php'); ?>'; return false;">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">0</span>
             </div>
@@ -183,20 +256,19 @@ $regionOptions = [
     </div>
 </nav>
 
+    <!-- Cart Notification Manager will be loaded by cart-notification-include.php -->
+
 <script>
 // Initialize cart functionality
 document.addEventListener('DOMContentLoaded', function() {
     const cartIcon = document.querySelector('.shopping-cart');
     if (cartIcon) {
         
-        // Add click event listener for cart functionality
+        // Add click event listener for cart functionality (INSTANT)
         cartIcon.addEventListener('click', function(e) {
-            // Show loading state
-            const originalHTML = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            this.style.cursor = 'wait';
+            e.preventDefault();
             
-            // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
+            // Get cart path
             const currentPath = window.location.pathname;
             const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
                                    currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
@@ -218,29 +290,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.backgroundColor = '';
         });
         
-        // Update cart count from cart system
-        updateCartCount();
+        // Cart count updates are now handled by cart notification manager
+        // The manager will automatically load and update cart count
         
-        // Refresh cart count when page becomes visible (user returns from cart)
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateCartCount();
-            }
-        });
-        
-        // Also refresh cart count when page loads
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                // Page was loaded from back-forward cache
-                updateCartCount();
-            }
-        });
-        
-        // Refresh cart count every 10 seconds to keep it updated (faster updates)
-        setInterval(updateCartCount, 10000);
+        // Cart count updates are now handled by cart notification manager
+        // No need for periodic updates as the manager handles real-time updates
     }
     
-        // Function to update cart count
+        // Legacy updateCartCount function - now handled by cart notification manager
         function updateCartCount() {
             const cartCountElement = document.querySelector('.cart-count');
             console.log('Cart count element found:', !!cartCountElement); // Debug log
@@ -340,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Simple cart count functions (like wishlist)
     // Note: updateCartCount is defined above and uses API-based cart count
     
+    // Legacy cart count functions - now handled by cart notification manager
     function addToCartCount() {
         // Refresh cart count from API instead of just incrementing
         updateCartCount();
@@ -358,12 +416,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Wishlist dropdown functionality
     function toggleWishlistDropdown() {
-        const dropdown = document.getElementById('wishlist-dropdown');
+        const isMobile = window.innerWidth <= 768;
+        const dropdownId = isMobile ? 'wishlist-dropdown-mobile' : 'wishlist-dropdown';
+        const dropdown = document.getElementById(dropdownId);
+        
         if (dropdown) {
             dropdown.classList.toggle('show');
             if (dropdown.classList.contains('show')) {
-                loadWishlistDropdown();
+                loadWishlistDropdown(isMobile);
             }
+        }
+    }
+    
+    function closeWishlistDropdown() {
+        const isMobile = window.innerWidth <= 768;
+        const dropdownId = isMobile ? 'wishlist-dropdown-mobile' : 'wishlist-dropdown';
+        const dropdown = document.getElementById(dropdownId);
+        
+        if (dropdown) {
+            dropdown.classList.remove('show');
         }
     }
     
@@ -383,10 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function loadWishlistDropdown() {
+    function loadWishlistDropdown(isMobile = false) {
         const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        const content = document.getElementById('wishlist-dropdown-content');
-        const empty = document.getElementById('wishlist-dropdown-empty');
+        const contentId = isMobile ? 'wishlist-dropdown-content-mobile' : 'wishlist-dropdown-content';
+        const emptyId = isMobile ? 'wishlist-dropdown-empty-mobile' : 'wishlist-dropdown-empty';
+        const content = document.getElementById(contentId);
+        const empty = document.getElementById(emptyId);
         
         if (wishlist.length === 0) {
             content.style.display = 'none';
@@ -395,11 +468,16 @@ document.addEventListener('DOMContentLoaded', function() {
             content.style.display = 'block';
             empty.style.display = 'none';
             
-            // Show only first 3 items in dropdown
-            const displayItems = wishlist.slice(0, 3);
+            // Show all items in dropdown
+            const displayItems = wishlist;
             content.innerHTML = displayItems.map(item => `
                 <div class="wishlist-dropdown-item">
-                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                    <div class="wishlist-dropdown-item-image-container">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                        <button class="heart-button-dropdown" data-product-id="${item.id}" onclick="toggleWishlistFromDropdown('${item.id}')">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
                     <div class="wishlist-dropdown-item-info">
                         <div class="wishlist-dropdown-item-name">${item.name}</div>
                         <div class="wishlist-dropdown-item-price">$${item.price}</div>
@@ -430,10 +508,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function addToCartFromDropdown(productId) {
-        // Try to use existing cart functionality
-        if (typeof addToCart === 'function') {
-            addToCart(productId);
+        console.log('addToCartFromDropdown called with productId:', productId);
+        
+        // Use cart notification manager if available
+        if (window.cartNotificationManager) {
+            console.log('Using cartNotificationManager to add to cart from dropdown');
+            const success = window.cartNotificationManager.addToCart(productId);
+            
+            if (success) {
+                // Remove from wishlist after successfully adding to cart
+                if (window.wishlistManager) {
+                    window.wishlistManager.removeFromWishlist(productId);
+                    showNotification('Product added to cart and removed from wishlist!', 'success');
+                    // Reload wishlist dropdown to update display
+                    loadWishlistDropdown();
+                    updateWishlistCount();
+                } else {
+                    showNotification('Product added to cart!', 'success');
+                }
+            } else {
+                showNotification('Failed to add product to cart', 'error');
+            }
         } else {
+            console.log('cartNotificationManager not available, using fallback');
+            // Fallback - just show notification
             showNotification('Product added to cart!', 'success');
         }
     }
@@ -445,6 +543,14 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
             
             showNotification('Removed from wishlist', 'info');
+            loadWishlistDropdown();
+            updateWishlistCount();
+        }
+    }
+    
+    function toggleWishlistFromDropdown(productId) {
+        if (window.wishlistManager) {
+            window.wishlistManager.toggleWishlist(productId);
             loadWishlistDropdown();
             updateWishlistCount();
         }
@@ -698,49 +804,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Cart Functionality Script -->
 <script>
-        // Load cart count on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCount();
-        });
+        // Cart count loading is now handled by cart notification manager
 
-    // Function to be called from other pages when adding to cart
+    // Legacy addToCart function - now handled by cart notification manager
     function addToCart(productId) {
-        // Show immediate feedback
-        showCartNotification('Adding to cart...', 'info');
-        
-        // Determine the correct path to cart API based on current URL
-        const currentPath = window.location.pathname;
-        const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
-                               currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
-                               currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                               currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
-                               currentPath.includes('/bagsfolder/');
-        const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
-        
-        // Use requestAnimationFrame for better performance
-        requestAnimationFrame(() => {
-            fetch(cartApiPath, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=add_to_cart&product_id=${productId}&quantity=1&return_url=${encodeURIComponent(window.location.href)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateCartCount(data.cart_count);
-                    // Show success notification
-                    showCartNotification('Product added to cart successfully!', 'success');
-                } else {
-                    showCartNotification('Error: ' + data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showCartNotification('Error adding product to cart', 'error');
-            });
-        });
+        // Delegate to the cart notification manager if available
+        if (window.cartNotificationManager) {
+            return window.cartNotificationManager.addToCart(productId);
+        } else {
+            console.warn('Cart notification manager not available, using fallback');
+            // Fallback to simple notification
+            showCartNotification('Adding to cart...', 'info');
+        }
     }
 
             // User Dropdown Functionality
@@ -1878,5 +1953,99 @@ document.addEventListener('DOMContentLoaded', function() {
             togglePasswordVisibility(this);
         });
     });
+});
+
+// Mobile Navigation Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    const body = document.body;
+
+    // Function to open mobile navigation
+    function openMobileNav() {
+        mobileNavOverlay.classList.add('active');
+        body.classList.add('mobile-nav-open');
+        hamburgerMenu.classList.add('active'); // This will hide the hamburger menu
+        
+        // Hide user actions
+        const navRightContainer = document.querySelector('.nav-right-container');
+        if (navRightContainer) navRightContainer.classList.add('active');
+    }
+
+    // Function to close mobile navigation
+    function closeMobileNav() {
+        mobileNavOverlay.classList.remove('active');
+        body.classList.remove('mobile-nav-open');
+        hamburgerMenu.classList.remove('active'); // This will show the hamburger menu again
+        
+        // Show user actions
+        const navRightContainer = document.querySelector('.nav-right-container');
+        if (navRightContainer) navRightContainer.classList.remove('active');
+    }
+
+    // Open mobile navigation when hamburger is clicked
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMobileNav();
+        });
+    }
+
+    // Close mobile navigation when close button is clicked
+    if (mobileNavClose) {
+        mobileNavClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMobileNav();
+        });
+    }
+
+    // Close mobile navigation when clicking on overlay (not content)
+    if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', function(e) {
+            if (e.target === mobileNavOverlay) {
+                closeMobileNav();
+            }
+        });
+    }
+
+    // Close mobile navigation when clicking on navigation links
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            closeMobileNav();
+        });
+    });
+
+    // Close mobile navigation on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNavOverlay.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+
+    // Close mobile navigation on window resize if screen becomes large
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileNavOverlay.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+
+    // Prevent body scroll when mobile nav is open
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (body.classList.contains('mobile-nav-open')) {
+                    body.style.overflow = 'hidden';
+                } else {
+                    body.style.overflow = '';
+                }
+            }
+        });
+    });
+
+    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 });
 </script> 

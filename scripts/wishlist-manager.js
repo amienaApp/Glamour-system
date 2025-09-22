@@ -1,37 +1,67 @@
 /**
- * Simple Client-Side Wishlist Manager
- * Uses localStorage to store user's favorite products
+ * Enhanced Client-Side Wishlist Manager
+ * Uses localStorage to store user's favorite products with full integration
  */
-class WishlistManager {
+if (typeof WishlistManager === 'undefined') {
+    class WishlistManager {
     constructor() {
         this.storageKey = 'wishlist';
+        this.maxItems = 100; // Maximum items in wishlist
+        this.selectedProducts = new Set(); // Track selected products for bulk operations
+        this.bulkMode = false; // Whether we're in bulk selection mode
         this.init();
     }
     
     init() {
         this.bindEvents();
         this.updateWishlistCount();
+        this.initializeButtonStates();
+        this.setupStorageListener();
     }
     
     bindEvents() {
-        // Bind heart button clicks
+        // Bind heart button clicks with improved event handling
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.heart-button') || e.target.closest('.wishlist-btn')) {
+            const heartButton = e.target.closest('.heart-button');
+            const wishlistBtn = e.target.closest('.wishlist-btn');
+            const quickViewBtn = e.target.closest('#add-to-wishlist-quick') || e.target.id === 'add-to-wishlist-quick';
+            
+            if (heartButton || wishlistBtn) {
                 e.preventDefault();
+                e.stopPropagation();
                 const productId = this.getProductId(e.target);
                 if (productId) {
                     this.toggleWishlist(productId, e.target);
                 }
-            }
-        });
-        
-        // Bind quick view wishlist buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
+            } else if (quickViewBtn) {
                 e.preventDefault();
+                e.stopPropagation();
                 const productId = this.getQuickViewProductId();
                 if (productId) {
                     this.toggleQuickViewWishlist(productId, e.target);
+                }
+            }
+        });
+        
+        // Bind keyboard events for accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const heartButton = e.target.closest('.heart-button');
+                const wishlistBtn = e.target.closest('.wishlist-btn');
+                const quickViewBtn = e.target.closest('#add-to-wishlist-quick') || e.target.id === 'add-to-wishlist-quick';
+                
+                if (heartButton || wishlistBtn) {
+                    e.preventDefault();
+                    const productId = this.getProductId(e.target);
+                    if (productId) {
+                        this.toggleWishlist(productId, e.target);
+                    }
+                } else if (quickViewBtn) {
+                    e.preventDefault();
+                    const productId = this.getQuickViewProductId();
+                    if (productId) {
+                        this.toggleQuickViewWishlist(productId, e.target);
+                    }
                 }
             }
         });
@@ -153,7 +183,7 @@ class WishlistManager {
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse variants data:', e);
+                    // Could not parse variants data
                 }
             }
         }
@@ -181,23 +211,42 @@ class WishlistManager {
         if (existingIndex > -1) {
             // Remove from wishlist
             wishlist.splice(existingIndex, 1);
+            this.saveWishlist(wishlist);
             this.updateButtonState(button, false);
             this.showNotification('Removed from wishlist', 'info');
+            this.triggerWishlistEvent('removed', { productId, wishlist });
         } else {
+            // Check if wishlist is full
+            if (wishlist.length >= this.maxItems) {
+                this.showNotification(`Wishlist is full (max ${this.maxItems} items). Remove some items first.`, 'warning');
+                return;
+            }
+            
             // Add to wishlist
             const productDetails = this.getProductDetails(productId);
             if (productDetails) {
+                // Check for duplicates by ID and selected color
+                const duplicateIndex = wishlist.findIndex(item => 
+                    item.id === productId && item.selectedColor === productDetails.selectedColor
+                );
+                
+                if (duplicateIndex > -1) {
+                    this.showNotification('This item is already in your wishlist', 'info');
+                    return;
+                }
+                
                 wishlist.push(productDetails);
+                this.saveWishlist(wishlist);
                 this.updateButtonState(button, true);
                 const colorInfo = productDetails.selectedColor ? ` (${productDetails.selectedColor})` : '';
                 this.showNotification(`Added to wishlist${colorInfo}`, 'success');
+                this.triggerWishlistEvent('added', { productId, product: productDetails, wishlist });
             } else {
                 this.showNotification('Could not add to wishlist', 'error');
                 return;
             }
         }
         
-        this.saveWishlist(wishlist);
         this.updateWishlistCount();
         
         // Update dropdown if it's open
@@ -213,6 +262,7 @@ class WishlistManager {
         if (existingIndex > -1) {
             // Remove from wishlist
             wishlist.splice(existingIndex, 1);
+            this.saveWishlist(wishlist);
             this.updateButtonState(button, false);
             this.showNotification('Removed from wishlist', 'info');
         } else {
@@ -220,6 +270,7 @@ class WishlistManager {
             const productDetails = this.getQuickViewProductDetails(productId);
             if (productDetails) {
                 wishlist.push(productDetails);
+                this.saveWishlist(wishlist);
                 this.updateButtonState(button, true);
                 const colorInfo = productDetails.selectedColor ? ` (${productDetails.selectedColor})` : '';
                 this.showNotification(`Added to wishlist${colorInfo}`, 'success');
@@ -229,7 +280,6 @@ class WishlistManager {
             }
         }
         
-        this.saveWishlist(wishlist);
         this.updateWishlistCount();
         
         // Update dropdown if it's open
@@ -275,65 +325,39 @@ class WishlistManager {
     }
     
     updateButtonState(button, isInWishlist) {
-        const icon = button.querySelector('i');
-        if (!icon) return;
+        if (!button) return;
+        
+        // Force a clean state - remove all classes and clear content
+        button.className = button.className.replace(/active/g, '').trim();
+        button.innerHTML = '';
         
         if (isInWishlist) {
             button.classList.add('active');
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            if (button.textContent.includes('Add')) {
-                button.textContent = button.textContent.replace('Add', 'Remove');
+            // For quickview buttons, show text with filled red heart
+            if (button.classList.contains('add-to-wishlist-quick') || button.id === 'add-to-wishlist-quick') {
+                button.innerHTML = '<i class="fas fa-heart" style="color: #e74c3c !important;"></i> Remove from Wishlist';
+            } else {
+                // For product card buttons, show only filled red heart icon
+                button.innerHTML = '<i class="fas fa-heart" style="color: #e74c3c !important;"></i>';
             }
         } else {
-            button.classList.remove('active');
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            if (button.textContent.includes('Remove')) {
-                button.textContent = button.textContent.replace('Remove', 'Add');
+            // For quickview buttons, show text with outline gray heart
+            if (button.classList.contains('add-to-wishlist-quick') || button.id === 'add-to-wishlist-quick') {
+                button.innerHTML = '<i class="far fa-heart" style="color: #666 !important;"></i> Add to Wishlist';
+            } else {
+                // For product card buttons, show only outline gray heart icon
+                button.innerHTML = '<i class="far fa-heart" style="color: #666 !important;"></i>';
             }
         }
     }
     
     showNotification(message, type = 'success') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `wishlist-notification ${type}`;
-        notification.textContent = message;
-        
-        // Style the notification
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '100px',
-            right: '20px',
-            background: type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8',
-            color: 'white',
-            padding: '15px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-            zIndex: '1000',
-            transform: 'translateX(400px)',
-            transition: 'transform 0.3s ease',
-            fontSize: '14px',
-            fontWeight: '500'
-        });
-        
-        document.body.appendChild(notification);
-        
-        // Show notification
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Hide notification
-        setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
+        // Use simple notification if available
+        if (window.showNotification) {
+            window.showNotification(message, type);
+        } else {
+            // Show notification
+        }
     }
     
     // Public method to open wishlist page
@@ -359,11 +383,391 @@ class WishlistManager {
         const productIds = wishlist.map(item => item.id);
         
         // Update all heart buttons
-        document.querySelectorAll('.heart-button, .wishlist-btn').forEach(button => {
+        const heartButtons = document.querySelectorAll('.heart-button, .wishlist-btn, #add-to-wishlist-quick');
+        
+        heartButtons.forEach(button => {
             const productId = this.getProductId(button);
             if (productId) {
-                this.updateButtonState(button, productIds.includes(productId));
+                const isInWishlist = productIds.includes(productId);
+                this.updateButtonState(button, isInWishlist);
             }
+        });
+    }
+    
+    // Setup storage listener for cross-tab synchronization
+    setupStorageListener() {
+        window.addEventListener('storage', (e) => {
+            if (e.key === this.storageKey) {
+                this.updateWishlistCount();
+                this.initializeButtonStates();
+                if (typeof loadWishlistDropdown === 'function') {
+                    loadWishlistDropdown();
+                }
+            }
+        });
+    }
+    
+    // Trigger custom events for wishlist changes
+    triggerWishlistEvent(eventType, data) {
+        const event = new CustomEvent('wishlistChange', {
+            detail: {
+                type: eventType,
+                productId: data.productId,
+                product: data.product,
+                wishlist: data.wishlist,
+                count: data.wishlist ? data.wishlist.length : this.getWishlist().length
+            }
+        });
+        document.dispatchEvent(event);
+    }
+    
+    // Get wishlist statistics
+    getWishlistStats() {
+        const wishlist = this.getWishlist();
+        const categories = {};
+        let totalValue = 0;
+        
+        wishlist.forEach(item => {
+            // Count by category
+            categories[item.category] = (categories[item.category] || 0) + 1;
+            
+            // Calculate total value
+            const price = parseFloat(item.price) || 0;
+            totalValue += price;
+        });
+        
+        return {
+            totalItems: wishlist.length,
+            totalValue: totalValue,
+            categories: categories,
+            isEmpty: wishlist.length === 0,
+            isFull: wishlist.length >= this.maxItems
+        };
+    }
+    
+    // Clear wishlist
+    clearWishlist() {
+        localStorage.removeItem(this.storageKey);
+        this.updateWishlistCount();
+        this.initializeButtonStates();
+        this.showNotification('Wishlist cleared', 'info');
+        this.triggerWishlistEvent('cleared', { wishlist: [] });
+        
+        if (typeof loadWishlistDropdown === 'function') {
+            loadWishlistDropdown();
+        }
+    }
+    
+    // Toggle bulk selection mode
+    toggleBulkMode() {
+        this.bulkMode = !this.bulkMode;
+        this.selectedProducts.clear();
+        
+        if (this.bulkMode) {
+            this.showBulkControls();
+            this.addBulkSelectionHandlers();
+        } else {
+            this.hideBulkControls();
+            this.removeBulkSelectionHandlers();
+        }
+        
+        this.updateBulkSelectionUI();
+    }
+    
+    // Show bulk selection controls
+    showBulkControls() {
+        // Create bulk controls if they don't exist
+        if (!document.getElementById('bulk-wishlist-controls')) {
+            const controlsHTML = `
+                <div id="bulk-wishlist-controls" class="bulk-wishlist-controls">
+                    <div class="bulk-controls-header">
+                        <h3>Bulk Wishlist Selection</h3>
+                        <button id="close-bulk-mode" class="close-bulk-btn">×</button>
+                    </div>
+                    <div class="bulk-controls-content">
+                        <div class="bulk-stats">
+                            <span id="selected-count">0 products selected</span>
+                        </div>
+                        <div class="bulk-actions">
+                            <button id="add-selected-to-wishlist" class="bulk-btn add-btn" disabled>
+                                <i class="fas fa-heart"></i> Add Selected to Wishlist
+                            </button>
+                            <button id="remove-selected-from-wishlist" class="bulk-btn remove-btn" disabled>
+                                <i class="far fa-heart"></i> Remove Selected from Wishlist
+                            </button>
+                            <button id="select-all-visible" class="bulk-btn select-all-btn">
+                                <i class="fas fa-check-square"></i> Select All Visible
+                            </button>
+                            <button id="clear-selection" class="bulk-btn clear-btn" disabled>
+                                <i class="fas fa-times"></i> Clear Selection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', controlsHTML);
+        }
+        
+        document.getElementById('bulk-wishlist-controls').style.display = 'block';
+    }
+    
+    // Hide bulk selection controls
+    hideBulkControls() {
+        const controls = document.getElementById('bulk-wishlist-controls');
+        if (controls) {
+            controls.style.display = 'none';
+        }
+    }
+    
+    // Add bulk selection event handlers
+    addBulkSelectionHandlers() {
+        // Close bulk mode
+        document.getElementById('close-bulk-mode').onclick = () => this.toggleBulkMode();
+        
+        // Add selected to wishlist
+        document.getElementById('add-selected-to-wishlist').onclick = () => this.addSelectedToWishlist();
+        
+        // Remove selected from wishlist
+        document.getElementById('remove-selected-from-wishlist').onclick = () => this.removeSelectedFromWishlist();
+        
+        // Select all visible
+        document.getElementById('select-all-visible').onclick = () => this.selectAllVisible();
+        
+        // Clear selection
+        document.getElementById('clear-selection').onclick = () => this.clearSelection();
+        
+        // Add click handlers to product cards
+        document.addEventListener('click', this.handleBulkSelectionClick.bind(this));
+    }
+    
+    // Remove bulk selection event handlers
+    removeBulkSelectionHandlers() {
+        document.removeEventListener('click', this.handleBulkSelectionClick.bind(this));
+    }
+    
+    // Handle bulk selection clicks
+    handleBulkSelectionClick(e) {
+        if (!this.bulkMode) return;
+        
+        const productCard = e.target.closest('.product-card');
+        if (productCard) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const productId = productCard.getAttribute('data-product-id');
+            if (productId) {
+                this.toggleProductSelection(productId, productCard);
+            }
+        }
+    }
+    
+    // Toggle individual product selection
+    toggleProductSelection(productId, productCard) {
+        if (this.selectedProducts.has(productId)) {
+            this.selectedProducts.delete(productId);
+            productCard.classList.remove('bulk-selected');
+        } else {
+            this.selectedProducts.add(productId);
+            productCard.classList.add('bulk-selected');
+        }
+        
+        this.updateBulkSelectionUI();
+    }
+    
+    // Update bulk selection UI
+    updateBulkSelectionUI() {
+        const selectedCount = this.selectedProducts.size;
+        const countElement = document.getElementById('selected-count');
+        const addBtn = document.getElementById('add-selected-to-wishlist');
+        const removeBtn = document.getElementById('remove-selected-from-wishlist');
+        const clearBtn = document.getElementById('clear-selection');
+        
+        if (countElement) {
+            countElement.textContent = `${selectedCount} product${selectedCount !== 1 ? 's' : ''} selected`;
+        }
+        
+        if (addBtn) addBtn.disabled = selectedCount === 0;
+        if (removeBtn) removeBtn.disabled = selectedCount === 0;
+        if (clearBtn) clearBtn.disabled = selectedCount === 0;
+    }
+    
+    // Add selected products to wishlist
+    addSelectedToWishlist() {
+        const wishlist = this.getWishlist();
+        const selectedIds = Array.from(this.selectedProducts);
+        let addedCount = 0;
+        let skippedCount = 0;
+        
+        selectedIds.forEach(productId => {
+            // Check if already in wishlist
+            const existingIndex = wishlist.findIndex(item => item.id === productId);
+            if (existingIndex === -1) {
+                // Check if wishlist is full
+                if (wishlist.length >= this.maxItems) {
+                    this.showNotification(`Wishlist is full (max ${this.maxItems} items). Cannot add more.`, 'warning');
+                    return;
+                }
+                
+                const productDetails = this.getProductDetails(productId);
+                if (productDetails) {
+                    wishlist.push(productDetails);
+                    addedCount++;
+                }
+            } else {
+                skippedCount++;
+            }
+        });
+        
+        if (addedCount > 0) {
+            this.saveWishlist(wishlist);
+            this.updateWishlistCount();
+            this.initializeButtonStates();
+            this.showNotification(`${addedCount} product${addedCount !== 1 ? 's' : ''} added to wishlist${skippedCount > 0 ? ` (${skippedCount} already in wishlist)` : ''}`, 'success');
+            this.triggerWishlistEvent('bulk-added', { addedCount, skippedCount, wishlist });
+        } else {
+            this.showNotification('No new products added to wishlist', 'info');
+        }
+        
+        this.clearSelection();
+    }
+    
+    // Remove selected products from wishlist
+    removeSelectedFromWishlist() {
+        const wishlist = this.getWishlist();
+        const selectedIds = Array.from(this.selectedProducts);
+        let removedCount = 0;
+        
+        selectedIds.forEach(productId => {
+            const existingIndex = wishlist.findIndex(item => item.id === productId);
+            if (existingIndex > -1) {
+                wishlist.splice(existingIndex, 1);
+                removedCount++;
+            }
+        });
+        
+        if (removedCount > 0) {
+            this.saveWishlist(wishlist);
+            this.updateWishlistCount();
+            this.initializeButtonStates();
+            this.showNotification(`${removedCount} product${removedCount !== 1 ? 's' : ''} removed from wishlist`, 'success');
+            this.triggerWishlistEvent('bulk-removed', { removedCount, wishlist });
+        } else {
+            this.showNotification('No products were removed from wishlist', 'info');
+        }
+        
+        this.clearSelection();
+    }
+    
+    // Select all visible products
+    selectAllVisible() {
+        const productCards = document.querySelectorAll('.product-card');
+        this.selectedProducts.clear();
+        
+        productCards.forEach(card => {
+            const productId = card.getAttribute('data-product-id');
+            if (productId) {
+                this.selectedProducts.add(productId);
+                card.classList.add('bulk-selected');
+            }
+        });
+        
+        this.updateBulkSelectionUI();
+        this.showNotification(`${this.selectedProducts.size} products selected`, 'info');
+    }
+    
+    // Clear current selection
+    clearSelection() {
+        this.selectedProducts.clear();
+        document.querySelectorAll('.product-card.bulk-selected').forEach(card => {
+            card.classList.remove('bulk-selected');
+        });
+        this.updateBulkSelectionUI();
+    }
+    
+    // Remove specific item from wishlist
+    removeFromWishlist(productId) {
+        const wishlist = this.getWishlist();
+        const filteredWishlist = wishlist.filter(item => item.id !== productId);
+        
+        if (filteredWishlist.length !== wishlist.length) {
+            this.saveWishlist(filteredWishlist);
+            this.updateWishlistCount();
+            this.initializeButtonStates();
+            this.showNotification('Item removed from wishlist', 'info');
+            this.triggerWishlistEvent('removed', { productId, wishlist: filteredWishlist });
+            
+            if (typeof loadWishlistDropdown === 'function') {
+                loadWishlistDropdown();
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    // Check if product is in wishlist
+    isInWishlist(productId, selectedColor = '') {
+        const wishlist = this.getWishlist();
+        return wishlist.some(item => 
+            item.id === productId && 
+            (selectedColor === '' || item.selectedColor === selectedColor)
+        );
+    }
+    
+    // Get wishlist items by category
+    getWishlistByCategory(category) {
+        const wishlist = this.getWishlist();
+        return wishlist.filter(item => item.category === category);
+    }
+    
+    // Export wishlist data
+    exportWishlist() {
+        const wishlist = this.getWishlist();
+        const dataStr = JSON.stringify(wishlist, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `wishlist-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Import wishlist data
+    importWishlist(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        // Validate imported data
+                        const validData = importedData.filter(item => 
+                            item.id && item.name && item.price !== undefined
+                        );
+                        
+                        if (validData.length > 0) {
+                            this.saveWishlist(validData);
+                            this.updateWishlistCount();
+                            this.initializeButtonStates();
+                            this.showNotification(`${validData.length} items imported to wishlist`, 'success');
+                            this.triggerWishlistEvent('imported', { wishlist: validData });
+                            resolve(validData);
+                        } else {
+                            reject(new Error('No valid items found in imported data'));
+                        }
+                    } else {
+                        reject(new Error('Invalid file format'));
+                    }
+                } catch (error) {
+                    reject(new Error('Failed to parse imported file'));
+                }
+            };
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsText(file);
         });
     }
 }
@@ -377,29 +781,498 @@ document.addEventListener('DOMContentLoaded', function() {
         window.wishlistManager.initializeButtonStates();
     }, 500);
     
-    // Make openWishlist available globally
+    // Make functions available globally
     window.openWishlist = () => window.wishlistManager.openWishlist();
+    window.clearWishlist = () => window.wishlistManager.clearWishlist();
+    window.removeFromWishlist = (productId) => window.wishlistManager.removeFromWishlist(productId);
+    window.isInWishlist = (productId, color) => window.wishlistManager.isInWishlist(productId, color);
+    window.getWishlistStats = () => window.wishlistManager.getWishlistStats();
+    window.exportWishlist = () => window.wishlistManager.exportWishlist();
+    window.importWishlist = (file) => window.wishlistManager.importWishlist(file);
+    window.toggleBulkMode = () => window.wishlistManager.toggleBulkMode();
+    
+    // Listen for wishlist change events
+    document.addEventListener('wishlistChange', (e) => {
+        // Wishlist changed
+        
+        // Update any analytics or tracking
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'wishlist_' + e.detail.type, {
+                'event_category': 'engagement',
+                'event_label': e.detail.productId,
+                'value': e.detail.count
+            });
+        }
+    });
 });
 
-// CSS for wishlist buttons
+// Enhanced CSS for wishlist integration
 const wishlistStyles = `
 <style>
-.heart-button.active,
+/* Heart button active state (when in wishlist) - Only for product cards */
+.heart-button.active {
+    background-color: #ffffff !important;
+    border-color: #e74c3c !important;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
+    animation: heartPulse 0.3s ease-in-out;
+}
+
+.heart-button.active i {
+    color: #e74c3c !important;
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* Bulk Selection Styles */
+.bulk-wishlist-controls {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 10000;
+    min-width: 400px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow: hidden;
+    animation: bulkControlsSlideIn 0.3s ease-out;
+}
+
+.bulk-controls-header {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-controls-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-bulk-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.close-bulk-btn:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.bulk-controls-content {
+    padding: 20px;
+}
+
+.bulk-stats {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.bulk-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.bulk-btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.bulk-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bulk-btn.add-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.bulk-btn.add-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.bulk-btn.remove-btn {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+}
+
+.bulk-btn.remove-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 140, 141, 0.4);
+}
+
+.bulk-btn.select-all-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.bulk-btn.select-all-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2980b9, #21618c);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.bulk-btn.clear-btn {
+    background: linear-gradient(135deg, #e67e22, #d35400);
+    color: white;
+}
+
+.bulk-btn.clear-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #d35400, #ba4a00);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+}
+
+/* Product card selection state */
+.product-card.bulk-selected {
+    border: 3px solid #e74c3c !important;
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.5) !important;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+.product-card.bulk-selected::before {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #e74c3c;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 10;
+}
+
+/* Bulk mode overlay */
+.bulk-mode-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Animations */
+@keyframes bulkControlsSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Heart button hover effects */
+.heart-button:hover {
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+.heart-button:hover i {
+    color: #e74c3c !important;
+}
+
+/* Wishlist button states */
 .wishlist-btn.active {
-    background: #e74c3c !important;
+    background-color: #e74c3c !important;
+    color: white !important;
+    border-color: #e74c3c !important;
+}
+
+.wishlist-btn:hover {
+    background-color: #c0392b !important;
     color: white !important;
 }
 
-.heart-button.active i,
-.wishlist-btn.active i {
-    color: white !important;
+/* Wishlist count badge */
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    animation: countBounce 0.3s ease-in-out;
 }
 
+/* Wishlist dropdown enhancements - REMOVED TO AVOID CONFLICTS */
+
+/* REMOVED TO AVOID CONFLICTS */
+
+.wishlist-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.wishlist-dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.wishlist-dropdown-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.wishlist-dropdown-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wishlist-dropdown-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wishlist-dropdown-item-price {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e74c3c;
+    margin-bottom: 2px;
+}
+
+.wishlist-dropdown-item-category {
+    font-size: 11px;
+    color: #666;
+    text-transform: capitalize;
+}
+
+.wishlist-dropdown-item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.wishlist-dropdown-item-actions button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-add-cart {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-add-cart:hover {
+    background-color: #0056b3;
+}
+
+.btn-remove {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-remove:hover {
+    background-color: #c82333;
+}
+
+/* Animations */
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes countBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Notification styles */
 .wishlist-notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 300px;
+}
+
+.wishlist-notification.show {
+    transform: translateX(0);
+}
+
+.wishlist-notification.error {
+    background: #dc3545;
+}
+
+.wishlist-notification.warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.wishlist-notification.info {
+    background: #17a2b8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .wishlist-notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .bulk-wishlist-controls {
+        min-width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        height: 100vh;
+        max-height: 100vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .wishlist-dropdown-item {
+        padding: 10px;
+    }
+    
+    .wishlist-dropdown-item img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .bulk-wishlist-controls {
+        min-width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        height: 100vh;
+        max-height: 100vh;
+    }
+    
+    .bulk-actions {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .bulk-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Accessibility improvements */
+.heart-button:focus,
+.wishlist-btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.heart-button:focus:not(:focus-visible),
+.wishlist-btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Loading states */
+.heart-button.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.heart-button.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 </style>
 `;
 
 // Inject styles
 document.head.insertAdjacentHTML('beforeend', wishlistStyles);
+}

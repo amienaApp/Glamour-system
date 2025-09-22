@@ -7,13 +7,36 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
+// Get sort parameter
+$sort = $_GET['sort'] ?? 'newest';
+
+// Build sort options
+$sortOptions = [];
+switch ($sort) {
+    case 'newest':
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+    case 'price-low':
+        $sortOptions = ['price' => 1];
+        break;
+    case 'price-high':
+        $sortOptions = ['price' => -1];
+        break;
+    case 'popular':
+        $sortOptions = ['featured' => -1, '_id' => -1];
+        break;
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
+        break;
+}
+
 // Get products based on subcategory or all perfumes
 if ($subcategory) {
-    $products = $productModel->getBySubcategory(ucfirst($subcategory));
+    $products = $productModel->getBySubcategory(ucfirst($subcategory), $sortOptions);
     $pageTitle = ucfirst($subcategory);
 } else {
     // Get all perfume products
-    $products = $productModel->getByCategory("Perfumes");
+    $products = $productModel->getByCategory("Perfumes", $sortOptions);
     $pageTitle = "Perfumes";
 }
 
@@ -31,21 +54,20 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
+            <!-- Mobile Filter Button -->
+            <button class="mobile-filter-btn" id="mobile-filter-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            
             <div class="sort-control">
                 <label for="sort-select-perfumes">Sort:</label>
-                <select id="sort-select-perfumes" class="sort-select">
-                    <option value="featured" selected>Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
+                <select id="sort-select-perfumes" class="sort-select" onchange="updateSort(this.value)">
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option active">60</a>
-                <span>|</span>
-                <a href="#" class="view-option">120</a>
             </div>
         </div>
     </div>
@@ -55,7 +77,13 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <?php
+                // Determine stock status
+                $stock = (int)($product['stock'] ?? 0);
+                $isSoldOut = $stock <= 0;
+                $isLowStock = $stock > 0 && $stock <= 7;
+                ?>
+                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" data-product-id="<?php echo $product['_id']; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -149,14 +177,26 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
                             <?php endif; ?>
                         </div>
                     </div>
@@ -205,7 +245,13 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     <div class="product-grid" id="all-perfumes-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <div class="product-card" data-product-id="<?php echo $product['_id']; ?>">
+                <?php
+                // Determine stock status
+                $stock = (int)($product['stock'] ?? 0);
+                $isSoldOut = $stock <= 0;
+                $isLowStock = $stock > 0 && $stock <= 7;
+                ?>
+                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" data-product-id="<?php echo $product['_id']; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -299,14 +345,26 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="fas fa-heart"></i>
+                            <i class="far fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
                             <?php endif; ?>
                         </div>
                     </div>
@@ -352,4 +410,82 @@ $womensFragrances = $productModel->getBySubcategory("Women's Fragrances");
     </div>
     <?php endif; ?>
 </main>
+
+<!-- Mobile Filter Overlay -->
+<div class="mobile-filter-overlay" id="mobile-filter-overlay">
+    <div class="mobile-filter-content">
+        <div class="mobile-filter-header">
+            <button class="mobile-filter-close" id="mobile-filter-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-filter-body">
+            <!-- Category Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Category</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-category-filter">
+                        <!-- Category filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Color Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Color</h4>
+                    </div>
+                    <div class="mobile-color-grid" id="mobile-color-filter">
+                        <!-- Color filter options will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price Filter -->
+            <div class="mobile-filter-section">
+                <div class="mobile-filter-group">
+                    <div class="mobile-filter-header">
+                        <h4>Price Range</h4>
+                    </div>
+                    <div class="mobile-filter-options" id="mobile-price-filter">
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-0-100" value="0-100" data-filter="price_range">
+                            <label for="price-0-100">$0 - $100</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-100-200" value="100-200" data-filter="price_range">
+                            <label for="price-100-200">$100 - $200</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-200-400" value="200-400" data-filter="price_range">
+                            <label for="price-200-400">$200 - $400</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-400-plus" value="400+" data-filter="price_range">
+                            <label for="price-400-plus">$400+</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                        <div class="mobile-filter-option">
+                            <input type="checkbox" id="price-on-sale" value="on-sale" data-filter="price_range">
+                            <label for="price-on-sale">On Sale</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mobile-filter-footer">
+            <button class="mobile-clear-filters-btn" id="mobile-clear-filters">Clear All</button>
+            <button class="mobile-apply-filters-btn" id="mobile-apply-filters">Apply Filters</button>
+        </div>
+    </div>
+</div>
 
