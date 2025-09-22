@@ -132,3 +132,193 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Header Modals Functionality for Index Page
+function initializeHeaderModals() {
+    // Get modal elements
+    const userModal = document.getElementById('user-modal');
+    const userIcon = document.getElementById('user-icon');
+    const signinBtn = document.getElementById('signin-btn');
+    const signupBtn = document.getElementById('signup-btn');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const switchToRegister = document.getElementById('switch-to-register');
+    const switchToLogin = document.getElementById('switch-to-login');
+    
+    // Debug: Log found elements
+    console.log('Modal elements found:', {
+        userModal: !!userModal,
+        userIcon: !!userIcon,
+        signinBtn: !!signinBtn,
+        signupBtn: !!signupBtn,
+        loginForm: !!loginForm,
+        registerForm: !!registerForm
+    });
+
+    // User icon click functionality
+    if (userIcon) {
+        userIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown) {
+                const isVisible = userDropdown.classList.contains('show');
+                
+                if (isVisible) {
+                    userDropdown.style.opacity = '0';
+                    userDropdown.style.visibility = 'hidden';
+                    userDropdown.style.transform = 'translateY(-10px)';
+                    userDropdown.classList.remove('show');
+                } else {
+                    userDropdown.style.opacity = '1';
+                    userDropdown.style.visibility = 'visible';
+                    userDropdown.style.transform = 'translateY(0)';
+                    userDropdown.classList.add('show');
+                }
+            }
+        });
+    }
+
+    // Sign In button functionality - shows login modal
+    if (signinBtn) {
+        console.log('Sign in button found, adding event listener');
+        signinBtn.addEventListener('click', function(e) {
+            console.log('Sign in button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Hide dropdown first
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown) {
+                userDropdown.style.opacity = '0';
+                userDropdown.style.visibility = 'hidden';
+                userDropdown.style.transform = 'translateY(-10px)';
+                userDropdown.classList.remove('show');
+            }
+            
+            // Show login modal immediately
+            if (userModal) {
+                console.log('Showing login modal');
+                userModal.style.display = 'flex';
+                userModal.classList.add('show');
+                if (loginForm) {
+                    loginForm.style.display = 'flex';
+                    loginForm.classList.add('show');
+                }
+                if (registerForm) {
+                    registerForm.style.display = 'none';
+                    registerForm.classList.remove('show');
+                }
+            } else {
+                console.log('User modal not found!');
+            }
+        });
+    }
+
+    // Sign Up button functionality - shows register modal
+    if (signupBtn) {
+        console.log('Sign up button found, adding event listener');
+        signupBtn.addEventListener('click', function(e) {
+            console.log('Sign up button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Hide dropdown first
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown) {
+                userDropdown.style.opacity = '0';
+                userDropdown.style.visibility = 'hidden';
+                userDropdown.style.transform = 'translateY(-10px)';
+                userDropdown.classList.remove('show');
+            }
+            
+            // Show register modal immediately
+            if (userModal) {
+                console.log('Showing register modal');
+                userModal.style.display = 'flex';
+                userModal.classList.add('show');
+                if (loginForm) {
+                    loginForm.style.display = 'none';
+                    loginForm.classList.remove('show');
+                }
+                if (registerForm) {
+                    registerForm.style.display = 'flex';
+                    registerForm.classList.add('show');
+                }
+            } else {
+                console.log('User modal not found!');
+            }
+        });
+    }
+
+    // Close modal functionality
+    const closeButtons = document.querySelectorAll('.close-btn');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (userModal) {
+                userModal.classList.remove('show');
+                userModal.style.display = 'none';
+            }
+        });
+    });
+
+    // Close dropdown and modal when clicking outside
+    document.addEventListener('click', function(e) {
+        const userDropdown = document.getElementById('user-dropdown');
+        const userIcon = document.getElementById('user-icon');
+        const userModal = document.getElementById('user-modal');
+        
+        // Close dropdown if clicking outside
+        if (userDropdown && userIcon && !userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.style.opacity = '0';
+            userDropdown.style.visibility = 'hidden';
+            userDropdown.style.transform = 'translateY(-10px)';
+            userDropdown.classList.remove('show');
+        }
+        
+        // Close modal if clicking outside
+        if (userModal && !userModal.contains(e.target)) {
+            userModal.classList.remove('show');
+            userModal.style.display = 'none';
+        }
+    });
+
+    // Switch between login and register forms
+    if (switchToRegister) {
+        switchToRegister.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (loginForm) {
+                loginForm.style.display = 'none';
+                loginForm.classList.remove('show');
+            }
+            if (registerForm) {
+                registerForm.style.display = 'flex';
+                registerForm.classList.add('show');
+            }
+        });
+    }
+
+    if (switchToLogin) {
+        switchToLogin.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (registerForm) {
+                registerForm.style.display = 'none';
+                registerForm.classList.remove('show');
+            }
+            if (loginForm) {
+                loginForm.style.display = 'flex';
+                loginForm.classList.add('show');
+            }
+        });
+    }
+}
+
+// Initialize header modals when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing header modals...');
+    initializeHeaderModals();
+    console.log('Header modals initialized successfully');
+});

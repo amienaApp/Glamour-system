@@ -2172,6 +2172,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentSubcategory = urlParams.get('subcategory') || '';
         
+        // Initialize filter functions
+        initializeFilterFunctions();
+        
+        // Add event listeners for price filters
+        const priceCheckboxes = document.querySelectorAll('input[name="price[]"]');
+        priceCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                applyFilters();
+            });
+        });
+        
+        // Initialize style count
+        const productCards = document.querySelectorAll('.product-card');
+        updateStyleCount(productCards.length);
+        
     // Filter state
     let filterState = {
         sizes: [],
@@ -3141,5 +3156,107 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateSizeCount();
         };
+    }
+    
+    // Initialize filter functions
+    function initializeFilterFunctions() {
+        // Make functions globally available
+        window.updateCategoryFilter = updateCategoryFilter;
+        window.clearAllFiltersSimple = clearAllFiltersSimple;
+    }
+    
+    // Category filter function
+    function updateCategoryFilter(category, checked) {
+        // Uncheck other category filters
+        const categoryCheckboxes = document.querySelectorAll('input[name="category[]"]');
+        categoryCheckboxes.forEach(checkbox => {
+            if (checkbox.value !== category) {
+                checkbox.checked = false;
+            }
+        });
+        
+        // Apply filters
+        applyFilters();
+    }
+    
+    // Clear all filters function
+    function clearAllFiltersSimple() {
+        // Clear all checkboxes
+        const allCheckboxes = document.querySelectorAll('.sidebar input[type="checkbox"]');
+        allCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // Show all products
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            card.style.display = 'block';
+        });
+        
+        // Update style count
+        updateStyleCount(productCards.length);
+    }
+    
+    // Apply filters function
+    function applyFilters() {
+        const productCards = document.querySelectorAll('.product-card');
+        let visibleCount = 0;
+        
+        productCards.forEach(card => {
+            let shouldShow = true;
+            
+            // Check category filters
+            const categoryCheckboxes = document.querySelectorAll('input[name="category[]"]:checked');
+            if (categoryCheckboxes.length > 0) {
+                const productCategory = card.getAttribute('data-product-subcategory') || '';
+                const categoryMatch = Array.from(categoryCheckboxes).some(checkbox => {
+                    return productCategory.toLowerCase().includes(checkbox.value.toLowerCase());
+                });
+                if (!categoryMatch) shouldShow = false;
+            }
+            
+            // Check price filters
+            const priceCheckboxes = document.querySelectorAll('input[name="price[]"]:checked');
+            if (priceCheckboxes.length > 0) {
+                const productPrice = parseFloat(card.getAttribute('data-product-price') || '0');
+                const priceMatch = Array.from(priceCheckboxes).some(checkbox => {
+                    const value = checkbox.value;
+                    if (value === 'on-sale') {
+                        return card.getAttribute('data-product-on-sale') === 'true';
+                    } else if (value === '0-25') {
+                        return productPrice >= 0 && productPrice <= 25;
+                    } else if (value === '25-50') {
+                        return productPrice > 25 && productPrice <= 50;
+                    } else if (value === '50-75') {
+                        return productPrice > 50 && productPrice <= 75;
+                    } else if (value === '75-100') {
+                        return productPrice > 75 && productPrice <= 100;
+                    } else if (value === '100+') {
+                        return productPrice > 100;
+                    }
+                    return true;
+                });
+                if (!priceMatch) shouldShow = false;
+            }
+            
+            // Show or hide product card
+            if (shouldShow) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update style count
+        updateStyleCount(visibleCount);
+    }
+    
+    // Update style count function
+    function updateStyleCount(count) {
+        const styleCountElement = document.getElementById('style-count');
+        if (styleCountElement) {
+            styleCountElement.textContent = `${count} Beauty Products`;
+        }
     }
 });
