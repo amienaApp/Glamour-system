@@ -21,15 +21,15 @@ class QuickviewManager {
     bindEvents() {
         // Close quickview events
         document.addEventListener('click', (e) => {
-            console.log('QuickviewManager: Click detected on:', e.target);
+            // Click detected
             if (e.target.id === 'close-quick-view' || e.target.closest('#close-quick-view')) {
-                console.log('QuickviewManager: Close button clicked via event listener');
+                // Close button clicked
                 e.preventDefault();
                 e.stopPropagation();
                 this.closeQuickview();
             }
             if (e.target.id === 'quick-view-overlay') {
-                console.log('QuickviewManager: Overlay clicked');
+                // Overlay clicked
                 this.closeQuickview();
             }
         });
@@ -43,7 +43,7 @@ class QuickviewManager {
 
         // Add to cart and wishlist events
         document.addEventListener('click', (e) => {
-            console.log('QuickviewManager: Click detected on:', e.target);
+            // Click detected
             if (e.target.id === 'add-to-bag-quick' || e.target.closest('#add-to-bag-quick')) {
                 console.log('QuickviewManager: Add to bag button clicked');
                 this.addToCart();

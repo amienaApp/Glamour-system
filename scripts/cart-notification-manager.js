@@ -650,7 +650,7 @@ class CartNotificationManager {
 // Initialize cart notification manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     if (!window.cartNotificationManager) {
-        console.log('Initializing cart notification manager...');
+        // Initializing cart notification manager
         window.cartNotificationManager = new CartNotificationManager();
         
         // Make functions available globally
@@ -686,8 +686,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return window.cartNotificationManager.refreshCart();
         };
         
-        console.log('Cart notification manager initialized successfully');
+        // Cart notification manager initialized successfully
     } else {
-        console.log('Cart notification manager already initialized, skipping...');
+        // Cart notification manager already initialized
     }
 });

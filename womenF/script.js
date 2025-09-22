@@ -1,6 +1,6 @@
 // Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('WomenF script loaded successfully');
+    // WomenF script loaded successfully
     
     // Initialize all functionality
     initializeCategoryModals();
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     available: card.querySelector('.add-to-bag:not([disabled])') ? true : false
                 };
             });
-            console.log('Stored original products:', originalProducts.length);
+            // Stored original products
         }
     }
     

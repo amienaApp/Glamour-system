@@ -34,10 +34,10 @@ if ($paymentSuccess) {
     $cartCleared = $cartModel->clearCart($userId);
     if ($cartCleared) {
         // Log successful cart clearing
-        error_log("Cart cleared successfully for user: {$userId} after payment success on orders page");
+        // Cart cleared successfully
     } else {
         // Log failed cart clearing
-        error_log("Failed to clear cart for user: {$userId} after payment success on orders page");
+        // Failed to clear cart
     }
     
     // Clear the payment success flag from session after processing

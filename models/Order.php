@@ -180,7 +180,7 @@ class Order {
                     );
                     
                     // Log the stock reduction for debugging
-                    error_log("Stock reduced for product {$item['product_id']}: {$currentStock} -> {$newStock} (reduced by {$quantity})");
+                    // Stock reduced successfully
                 }
             }
         }
@@ -234,7 +234,7 @@ class Order {
                     );
                     
                     // Log the stock restoration for debugging
-                    error_log("Stock restored for product {$item['product_id']}: {$currentStock} -> {$newStock} (restored {$quantity})");
+                    // Stock restored successfully
                 }
             }
         }
@@ -619,7 +619,7 @@ class Order {
             return true;
             
         } catch (Exception $e) {
-            error_log("Error in confirmOrderAndReduceStock for order {$orderId}: " . $e->getMessage());
+            // Error in confirmOrderAndReduceStock
             return false;
         }
     }

@@ -466,7 +466,7 @@ class Cart {
             
             return true;
         } catch (Exception $e) {
-            error_log("Error clearing cart for user {$userId}: " . $e->getMessage());
+            // Error clearing cart
             return false;
         }
     }
@@ -594,14 +594,14 @@ class Cart {
                 );
                 
                 if ($result->getModifiedCount() > 0) {
-                    error_log("Stock reduced for product {$productId}: {$currentStock} -> {$newStock} (reduced by {$quantity})");
+                    // Stock reduced successfully
                     return true;
                 }
             }
             
             return false;
         } catch (Exception $e) {
-            error_log("Error reducing stock for product {$productId}: " . $e->getMessage());
+            // Error reducing stock
             return false;
         }
     }
@@ -642,14 +642,14 @@ class Cart {
                 );
                 
                 if ($result->getModifiedCount() > 0) {
-                    error_log("Stock restored for product {$productId}: {$currentStock} -> {$newStock} (restored by {$quantity})");
+                    // Stock restored successfully
                     return true;
                 }
             }
             
             return false;
         } catch (Exception $e) {
-            error_log("Error restoring stock for product {$productId}: " . $e->getMessage());
+            // Error restoring stock
             return false;
         }
     }

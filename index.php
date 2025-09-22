@@ -1565,8 +1565,7 @@ session_start();
              const addToCartButtons = document.querySelectorAll('.add-to-bag');
              addToCartButtons.forEach(button => {
                  button.addEventListener('click', function() {
-                     // Add your cart functionality here
-                     console.log('Add to cart clicked for product:', this.getAttribute('data-product-id'));
+                    // Add your cart functionality here
                  });
              });
          });

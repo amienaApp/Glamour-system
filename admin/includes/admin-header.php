@@ -115,9 +115,9 @@ function checkFontAwesomeLoaded() {
     
     if (fontFamily.includes('Font Awesome')) {
         document.body.classList.add('fa-loaded');
-        console.log('Font Awesome loaded successfully');
+        // Font Awesome loaded successfully
     } else {
-        console.log('Font Awesome not loaded, using fallback icons');
+        // Font Awesome not loaded, using fallback icons
     }
 }
 

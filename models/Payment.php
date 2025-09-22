@@ -91,7 +91,7 @@ class Payment {
             // Confirm order (stock already reduced when items were added to cart)
             $orderConfirmed = $this->confirmOrder($payment['order_id']);
             if (!$orderConfirmed) {
-                error_log("Warning: Failed to confirm order for order {$payment['order_id']}");
+                // Warning: Failed to confirm order
             }
             
             // Cart will be cleared on orders.php page after redirect
@@ -404,19 +404,19 @@ class Payment {
             $cartModel = new Cart();
             
             // Log the attempt
-            error_log("Attempting to clear cart for user: {$userId}");
+            // Attempting to clear cart
             
             $result = $cartModel->clearCart($userId);
             
             if ($result) {
-                error_log("Successfully cleared cart for user: {$userId}");
+                // Successfully cleared cart
             } else {
-                error_log("Failed to clear cart for user: {$userId}");
+                // Failed to clear cart
             }
             
             return $result;
         } catch (Exception $e) {
-            error_log("Exception clearing cart for user {$userId}: " . $e->getMessage());
+            // Exception clearing cart
             return false;
         }
     }
@@ -429,7 +429,7 @@ class Payment {
             $db = MongoDB::getInstance();
             $cartsCollection = $db->getCollection('carts');
             
-            error_log("Force clearing cart for user: {$userId}");
+            // Force clearing cart
             
             // First try to update the cart to empty
             $updateResult = $cartsCollection->updateOne(
@@ -445,7 +445,7 @@ class Payment {
             );
             
             if ($updateResult->getModifiedCount() > 0) {
-                error_log("Force clear cart successful via update for user: {$userId}");
+                // Force clear cart successful via update
                 return true;
             }
             
@@ -462,11 +462,11 @@ class Payment {
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
             
-            error_log("Force clear cart successful via delete/recreate for user: {$userId}");
+            // Force clear cart successful via delete/recreate
             return true;
             
         } catch (Exception $e) {
-            error_log("Force clear cart failed for user {$userId}: " . $e->getMessage());
+            // Force clear cart failed
             return false;
         }
     }
@@ -479,7 +479,7 @@ class Payment {
             $orderModel = new Order();
             return $orderModel->updateOrderStatus($orderId, 'confirmed');
         } catch (Exception $e) {
-            error_log("Error confirming order {$orderId}: " . $e->getMessage());
+            // Error confirming order
             return false;
         }
     }
@@ -492,7 +492,7 @@ class Payment {
             $orderModel = new Order();
             return $orderModel->confirmOrderAndReduceStock($orderId);
         } catch (Exception $e) {
-            error_log("Error confirming order {$orderId}: " . $e->getMessage());
+            // Error confirming order
             return false;
         }
     }

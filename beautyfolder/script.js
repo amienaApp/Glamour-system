@@ -1,6 +1,6 @@
 // Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('WomenF script loaded successfully');
+    // Beauty script loaded successfully
     
     // Initialize all functionality
     initializeCategoryModals();
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('quick-view-overlay');
         const closeBtn = document.getElementById('close-quick-view');
         
-        console.log('Quick view elements found:', {
+        // Quick view elements found
             sidebar: !!sidebar,
             overlay: !!overlay,
             closeBtn: !!closeBtn

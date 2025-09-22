@@ -146,7 +146,7 @@ class UniversalFilter {
     }
     
     applyFilters() {
-        console.log('Applying filters:', this.currentFilters);
+        // Applying filters
         
         // Show loading state
         this.showFilterLoading();
@@ -195,7 +195,7 @@ class UniversalFilter {
             body: JSON.stringify(filterData)
         })
         .then(response => {
-            console.log('Filter response status:', response.status);
+            // Filter response status
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

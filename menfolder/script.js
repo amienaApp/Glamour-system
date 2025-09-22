@@ -1,6 +1,6 @@
 // Simple Script
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
+    // Script loaded
     
     // Initialize category modal functionality
     initializeCategoryModals();
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.getElementById('quick-view-overlay');
     const closeBtn = document.getElementById('close-quick-view');
     
-    console.log('Quick view elements found:', {
+    // Quick view elements found
         sidebar: !!sidebar,
         overlay: !!overlay,
         closeBtn: !!closeBtn

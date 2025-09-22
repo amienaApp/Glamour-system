@@ -183,7 +183,7 @@ if (typeof WishlistManager === 'undefined') {
                         }
                     }
                 } catch (e) {
-                    console.log('Could not parse variants data:', e);
+                    // Could not parse variants data
                 }
             }
         }
@@ -356,7 +356,7 @@ if (typeof WishlistManager === 'undefined') {
         if (window.showNotification) {
             window.showNotification(message, type);
         } else {
-            console.log(`${type.toUpperCase()}: ${message}`);
+            // Show notification
         }
     }
     
@@ -793,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Listen for wishlist change events
     document.addEventListener('wishlistChange', (e) => {
-        console.log('Wishlist changed:', e.detail);
+        // Wishlist changed
         
         // Update any analytics or tracking
         if (typeof gtag !== 'undefined') {
