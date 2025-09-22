@@ -1,7 +1,7 @@
 <!-- Sidebar Filters -->
 <aside class="sidebar">
     <div class="sidebar-header">
-        <h3>Refine By</h3>
+        <h3>Filters</h3>
         <span class="style-count" id="style-count">12 Styles</span>
         <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
     </div>
@@ -102,38 +102,6 @@
                         <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
                         <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
                     </div>
-                    <script>
-                        // Ensure size filter functions are available
-                        if (typeof selectAllSizes === 'undefined') {
-                            window.selectAllSizes = function() {
-                                const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-                                sizeCheckboxes.forEach(checkbox => {
-                                    checkbox.checked = true;
-                                    const changeEvent = new Event('change', { bubbles: true });
-                                    checkbox.dispatchEvent(changeEvent);
-                                });
-                                // Update count if function exists
-                                if (typeof updateSizeCount === 'function') {
-                                    updateSizeCount();
-                                }
-                            };
-                        }
-                        
-                        if (typeof clearSizeFilters === 'undefined') {
-                            window.clearSizeFilters = function() {
-                                const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-                                sizeCheckboxes.forEach(checkbox => {
-                                    checkbox.checked = false;
-                                    const changeEvent = new Event('change', { bubbles: true });
-                                    checkbox.dispatchEvent(changeEvent);
-                                });
-                                // Update count if function exists
-                                if (typeof updateSizeCount === 'function') {
-                                    updateSizeCount();
-                                }
-                            };
-                        }
-                    </script>
                 </div>
             </div>
         </div>
@@ -200,17 +168,17 @@
                 </div>
                 <div class="filter-options">
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="in-stock" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="in-stock">
                         <span class="checkmark"></span>
                         In Stock
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="on-sale" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="on-sale">
                         <span class="checkmark"></span>
                         On Sale
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="availability[]" value="new-arrival" data-filter="availability">
+                        <input type="checkbox" name="availability[]" value="new-arrival">
                         <span class="checkmark"></span>
                         New Arrival
                     </label>

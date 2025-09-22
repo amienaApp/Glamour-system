@@ -9,6 +9,48 @@ $subcategory = $_GET['subcategory'] ?? '';
 if ($subcategory) {
     $page_title = ucfirst($subcategory) . ' - ' . $page_title;
 }
+
+// Load categories and subcategories from database
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+
+$categoryModel = new Category();
+$womenCategory = $categoryModel->getByName("Women's Clothing");
+$subcategories = [];
+
+if ($womenCategory && isset($womenCategory['subcategories'])) {
+    // Convert BSONArray to regular array if needed
+    $allSubcategories = [];
+    foreach ($womenCategory['subcategories'] as $sub) {
+        if (is_array($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } elseif (is_object($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } else {
+            $allSubcategories[] = $sub;
+        }
+    }
+    
+    // Filter out unwanted subcategories
+    $excludedSubcategories = ['Outerwear', 'Bottoms'];
+    $subcategories = array_filter($allSubcategories, function($subcategory) use ($excludedSubcategories) {
+        return !in_array($subcategory, $excludedSubcategories);
+    });
+}
+
+// Define image mapping for subcategories
+$subcategoryImages = [
+    'Dresses' => '../img/women/13.webp',
+    'Tops' => '../img/women/tops/1.webp',
+    'Activewear' => '../img/women/tops/1.webp', // Use tops image since activewear doesn't exist
+    'Wedding Dress' => '../img/women/wedding/1.webp',
+    'Bridesmaid Wear' => '../img/women/brides maid/1.jpg', // Fixed: brides maid (with space)
+    'Wedding Guest' => '../img/women/14.avif',
+    'Summer Dresses' => '../img/women/dresses/20.1.webp'
+];
+
+// Default image for subcategories without specific images
+$defaultImage = '../img/women/dresses/12.webp';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,38 +65,91 @@ if ($subcategory) {
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
 
+                <!-- Mobile Navigation Overlay -->
+                <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+                    <div class="mobile-nav-content">
+                        <div class="mobile-nav-header">
+                            <div class="mobile-nav-logo">
+                                <div class="logo-main">Glamour Palace</div>
+                                <div class="logo-accent">FASHION & LIFESTYLE</div>
+                            </div>
+                            <button class="mobile-nav-close" id="mobile-nav-close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mobile-nav-menu">
+                            <ul class="mobile-nav-list">
+                                <li><a href="../index.php" class="mobile-nav-link">Home</a></li>
+                                <li><a href="women.php" class="mobile-nav-link">Women</a></li>
+                                <li><a href="../menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                                <li><a href="../kidsfolder/kids.php" class="mobile-nav-link">Kids</a></li>
+                                <li><a href="../beautyfolder/beauty.php" class="mobile-nav-link">Beauty</a></li>
+                                <li><a href="../bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                                <li><a href="../shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                                <li><a href="../accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                                <li><a href="../perfumes/perfumes.php" class="mobile-nav-link">Perfumes</a></li>
+                                <li><a href="../homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Image Bar Section -->
                 <div class="image-bar">
+                    <!-- Shop All Link -->
                     <a href="women.php" class="image-item">
-                        <img src="../img/women/dresses/12.webp" alt="Women Fashion 12">
+                        <img src="../img/women/dresses/12.webp" alt="Shop All Women's Clothing">
                         <h3>Shop All</h3>
                     </a>
-                    <a href="women.php?subcategory=dresses" class="image-item">
-                        <img src="../img/women/13.webp" alt="Women Fashion 13">
-                        <h3>Dresses</h3>
-                    </a>
-                    <a href="women.php?subcategory=wedding-guest" class="image-item">
-                        <img src="../img/women/14.avif" alt="Women Fashion 14">
-                        <h3>Wedding Guest</h3>
-                    </a>
-                    <a href="women.php?subcategory=wedding-dress" class="image-item">
-                        <img src="../img/women/dresses/17.webp" alt="Women Fashion 17">
-                        <h3>Wedding-dress</h3>
-                    </a>
-                    <a href="women.php?subcategory=abaya" class="image-item">
-                        <img src="../img/women/NEW/11.webp" alt="Women Fashion 12">
-                        <h3>Abaya</h3>
-                    </a>
-                    <a href="women.php?subcategory=summer-dresses" class="image-item">
-                        <img src="../img/women/dresses/20.1.webp" alt="Women Fashion 13">
-                        <h3>Summer-dresses</h3>
-                    </a>
+                    
+                    <?php if (!empty($subcategories)): ?>
+                        <?php foreach ($subcategories as $subcategoryName): ?>
+                            <?php
+                            // Convert subcategory name to URL-friendly format
+                            $subcategoryUrl = strtolower(str_replace([' ', '&'], ['-', 'and'], $subcategoryName));
+                            
+                            // Get image for this subcategory
+                            $subcategoryImage = $subcategoryImages[$subcategoryName] ?? $defaultImage;
+                            
+                            // Convert display name (handle special cases)
+                            $displayName = $subcategoryName;
+                            if ($subcategoryName === 'Wedding Dress') {
+                                $displayName = 'Wedding Dress';
+                            } elseif ($subcategoryName === 'Bridesmaid Wear') {
+                                $displayName = 'Bridesmaid Wear';
+                            }
+                            ?>
+                            <a href="women.php?subcategory=<?php echo urlencode($subcategoryUrl); ?>" class="image-item">
+                                <img src="<?php echo htmlspecialchars($subcategoryImage); ?>" 
+                                     alt="<?php echo htmlspecialchars($subcategoryName); ?>"
+                                     onerror="this.src='<?php echo $defaultImage; ?>'">
+                                <h3><?php echo htmlspecialchars($displayName); ?></h3>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback if no subcategories found -->
+                        <a href="women.php?subcategory=dresses" class="image-item">
+                            <img src="../img/women/13.webp" alt="Dresses">
+                            <h3>Dresses</h3>
+                        </a>
+                        <a href="women.php?subcategory=tops" class="image-item">
+                            <img src="../img/women/tops/1.webp" alt="Tops">
+                            <h3>Tops</h3>
+                        </a>
+                        <a href="women.php?subcategory=bottoms" class="image-item">
+                            <img src="../img/women/jeans/1.webp" alt="Bottoms">
+                            <h3>Bottoms</h3>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="page-layout">
@@ -115,6 +210,84 @@ if ($subcategory) {
             }
         </script>
 
+        <!-- Simple Sorting Function -->
+        <script>
+        function updateSort(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortValue);
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+            window.location.reload();
+        }
+        </script>
+
+        <!-- Mobile Navigation JavaScript -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburgerMenu = document.querySelector('.hamburger-menu');
+            const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+            const mobileNavClose = document.getElementById('mobile-nav-close');
+            const body = document.body;
+
+            // Open mobile navigation
+            if (hamburgerMenu) {
+                hamburgerMenu.addEventListener('click', function() {
+                    mobileNavOverlay.classList.add('active');
+                    body.classList.add('mobile-nav-open');
+                    hamburgerMenu.classList.add('active');
+                });
+            }
+
+            // Close mobile navigation
+            if (mobileNavClose) {
+                mobileNavClose.addEventListener('click', function() {
+                    mobileNavOverlay.classList.remove('active');
+                    body.classList.remove('mobile-nav-open');
+                    if (hamburgerMenu) {
+                        hamburgerMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Close mobile navigation when clicking overlay
+            if (mobileNavOverlay) {
+                mobileNavOverlay.addEventListener('click', function(e) {
+                    if (e.target === mobileNavOverlay) {
+                        mobileNavOverlay.classList.remove('active');
+                        body.classList.remove('mobile-nav-open');
+                        if (hamburgerMenu) {
+                            hamburgerMenu.classList.remove('active');
+                        }
+                    }
+                });
+            }
+
+            // Close mobile navigation when clicking on a link
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileNavOverlay.classList.remove('active');
+                    body.classList.remove('mobile-nav-open');
+                    if (hamburgerMenu) {
+                        hamburgerMenu.classList.remove('active');
+                    }
+                });
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    mobileNavOverlay.classList.remove('active');
+                    body.classList.remove('mobile-nav-open');
+                    if (hamburgerMenu) {
+                        hamburgerMenu.classList.remove('active');
+                    }
+                }
+            });
+        });
+        </script>
+
         <!-- Quick View Sidebar -->
         <div id="quick-view-sidebar" class="quickview-sidebar">
             <button class="close-btn" onclick="closeQuickView()">×</button>
@@ -172,6 +345,143 @@ if ($subcategory) {
         
         <!-- Overlay -->
         <div id="quick-view-overlay" class="quickview-overlay"></div>
+
+        <script>
+            // Mobile Filter Functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+                const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+                const mobileFilterClose = document.getElementById('mobile-filter-close');
+                const mobileClearFilters = document.getElementById('mobile-clear-filters');
+                const mobileApplyFilters = document.getElementById('mobile-apply-filters');
+                const body = document.body;
+
+                // Open mobile filter menu
+                if (mobileFilterBtn) {
+                    mobileFilterBtn.addEventListener('click', function() {
+                        mobileFilterOverlay.classList.add('active');
+                        body.classList.add('mobile-filter-open');
+                    });
+                }
+
+                // Close mobile filter menu
+                if (mobileFilterClose) {
+                    mobileFilterClose.addEventListener('click', function() {
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    });
+                }
+
+                // Close mobile filter when clicking overlay
+                if (mobileFilterOverlay) {
+                    mobileFilterOverlay.addEventListener('click', function(e) {
+                        if (e.target === mobileFilterOverlay) {
+                            mobileFilterOverlay.classList.remove('active');
+                            body.classList.remove('mobile-filter-open');
+                        }
+                    });
+                }
+
+                // Clear all filters
+                if (mobileClearFilters) {
+                    mobileClearFilters.addEventListener('click', function() {
+                        const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                    });
+                }
+
+                // Apply filters
+                if (mobileApplyFilters) {
+                    mobileApplyFilters.addEventListener('click', function() {
+                        // Get selected filters
+                        const selectedFilters = {};
+                        const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]:checked');
+                        
+                        checkboxes.forEach(checkbox => {
+                            const filterType = checkbox.getAttribute('data-filter');
+                            if (!selectedFilters[filterType]) {
+                                selectedFilters[filterType] = [];
+                            }
+                            selectedFilters[filterType].push(checkbox.value);
+                        });
+
+                        // Apply filters to products
+                        applyFilters(selectedFilters);
+                        
+                        // Close filter menu
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    });
+                }
+
+                // Function to apply filters
+                function applyFilters(filters) {
+                    const productCards = document.querySelectorAll('.product-card');
+                    
+                    productCards.forEach(card => {
+                        let shouldShow = true;
+                        
+                        // Check category filters
+                        if (filters.category && filters.category.length > 0) {
+                            const productCategory = card.getAttribute('data-product-subcategory');
+                            const categoryMatch = filters.category.some(filter => {
+                                return productCategory && productCategory.toLowerCase().includes(filter.toLowerCase());
+                            });
+                            if (!categoryMatch) shouldShow = false;
+                        }
+                        
+                        // Check color filters
+                        if (filters.color && filters.color.length > 0) {
+                            const productColor = card.getAttribute('data-product-color');
+                            const colorMatch = filters.color.some(filter => {
+                                return productColor && productColor.toLowerCase() === filter.toLowerCase();
+                            });
+                            if (!colorMatch) shouldShow = false;
+                        }
+                        
+                        // Check price filters
+                        if (filters.price_range && filters.price_range.length > 0) {
+                            const productPrice = parseFloat(card.getAttribute('data-product-price'));
+                            const priceMatch = filters.price_range.some(filter => {
+                                switch(filter) {
+                                    case '0-100':
+                                        return productPrice >= 0 && productPrice <= 100;
+                                    case '100-200':
+                                        return productPrice > 100 && productPrice <= 200;
+                                    case '200-400':
+                                        return productPrice > 200 && productPrice <= 400;
+                                    case '400+':
+                                        return productPrice > 400;
+                                    case 'on-sale':
+                                        // You can add sale logic here
+                                        return false;
+                                    default:
+                                        return true;
+                                }
+                            });
+                            if (!priceMatch) shouldShow = false;
+                        }
+                        
+                        // Show or hide product card
+                        if (shouldShow) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+
+                // Handle window resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 1024) {
+                        mobileFilterOverlay.classList.remove('active');
+                        body.classList.remove('mobile-filter-open');
+                    }
+                });
+            });
+        </script>
 
 </body>
 </html>

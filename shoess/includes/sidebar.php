@@ -71,7 +71,7 @@ foreach ($allShoes as $shoe) {
 <!-- Sidebar Filters -->
 <aside class="sidebar">
     <div class="sidebar-header">
-        <h3>Refine By</h3>
+        <h3>Filters</h3>
         <span class="style-count" id="style-count"><?php echo count($allShoes); ?> Styles</span>
         <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
             Clear All Filters

@@ -94,14 +94,6 @@ foreach ($allPerfumes as $perfume) {
                     <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
             </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option <?php echo $limit === 24 ? 'active' : ''; ?>" onclick="updateLimit(24)">24</a>
-                <span>|</span>
-                <a href="#" class="view-option <?php echo $limit === 60 ? 'active' : ''; ?>" onclick="updateLimit(60)">60</a>
-                <span>|</span>
-                <a href="#" class="view-option <?php echo $limit === 120 ? 'active' : ''; ?>" onclick="updateLimit(120)">120</a>
-            </div>
         </div>
     </div>
 

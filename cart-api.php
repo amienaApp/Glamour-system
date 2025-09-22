@@ -135,17 +135,25 @@ try {
                     $additionalData['variant_image'] = $variantImage;
                 }
                 
-                $success = $cartModel->addToCart($defaultUserId, $productId, $quantity, $color, $size, $additionalData);
-                
-                if ($success) {
-                    $cartCount = $cartModel->getCartItemCount($defaultUserId);
+                try {
+                    $success = $cartModel->addToCart($defaultUserId, $productId, $quantity, $color, $size, $additionalData);
+                    
+                    if ($success) {
+                        $cartCount = $cartModel->getCartItemCount($defaultUserId);
+                        $response = [
+                            'success' => true,
+                            'message' => 'Product added to cart successfully!',
+                            'cart_count' => $cartCount
+                        ];
+                    } else {
+                        throw new Exception('Failed to add product to cart');
+                    }
+                } catch (Exception $e) {
+                    // Handle stock validation errors
                     $response = [
-                        'success' => true,
-                        'message' => 'Product added to cart successfully!',
-                        'cart_count' => $cartCount
+                        'success' => false,
+                        'message' => $e->getMessage()
                     ];
-                } else {
-                    throw new Exception('Failed to add product to cart');
                 }
                 break;
                 
@@ -207,6 +215,7 @@ try {
                     $response = [
                         'success' => true,
                         'message' => 'Cart cleared successfully!',
+                        'cart_count' => 0,
                         'data' => ['items' => [], 'total' => 0, 'item_count' => 0]
                     ];
                 } else {
@@ -221,6 +230,13 @@ try {
                 
                 if (empty($cart['items'])) {
                     throw new Exception('Cart is empty');
+                }
+                
+                // Validate stock availability before creating order
+                try {
+                    $orderModel->validateOrderItems($cart);
+                } catch (Exception $e) {
+                    throw new Exception('Stock validation failed: ' . $e->getMessage());
                 }
                 
                 $orderDetails = [
@@ -273,11 +289,32 @@ try {
                 break;
                 
             case 'get_cart_count':
+                // OPTIMIZATION: Use fast cart count method
                 $cartCount = $cartModel->getCartItemCount($defaultUserId);
                 $response = [
                     'success' => true,
                     'cart_count' => $cartCount
                 ];
+                break;
+                
+            case 'get_cart_summary':
+                // OPTIMIZATION: Ultra-fast cart summary for header display
+                try {
+                    $summary = $cartModel->getCartSummary($defaultUserId);
+                    $response = [
+                        'success' => true,
+                        'cart_count' => $summary['item_count'],
+                        'cart_total' => $summary['total']
+                    ];
+                } catch (Exception $e) {
+                    // Fallback to basic count if summary fails
+                    $count = $cartModel->getCartItemCount($defaultUserId);
+                    $response = [
+                        'success' => true,
+                        'cart_count' => $count,
+                        'cart_total' => 0
+                    ];
+                }
                 break;
                 
             default:

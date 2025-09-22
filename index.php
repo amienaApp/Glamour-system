@@ -18,6 +18,170 @@ session_start();
     <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
+    
+    <!-- Hide mobile elements on desktop for index page -->
+    <style>
+        @media (min-width: 769px) {
+            .hamburger-menu,
+            .mobile-filter-btn,
+            .mobile-filter-overlay,
+            .mobile-filter-content,
+            .mobile-filter-close,
+            .mobile-filter-close *,
+            .mobile-filter-close:before,
+            .mobile-filter-close:after,
+            .mobile-filter-close::before,
+            .mobile-filter-close::after,
+            .mobile-nav-close,
+            #mobile-nav-close,
+            .mobile-header,
+            .mobile-nav,
+            .mobile-menu,
+            .mobile-menu-toggle,
+            .mobile-menu-button,
+            .mobile-navigation,
+            .mobile-nav-container,
+            .mobile-nav-menu,
+            .mobile-nav-links,
+            .mobile-nav-item,
+            .mobile-nav-link,
+            .mobile-logo,
+            .mobile-close,
+            .mobile-close-btn,
+            .mobile-close-button,
+            .close-btn,
+            .close-button,
+            .menu-close,
+            .nav-close,
+            .mobile-menu-close,
+            .hamburger-close,
+            .mobile-toggle,
+            .mobile-toggle-btn,
+            .logo-main,
+            .logo-accent,
+            .logo-text,
+            .close,
+            .close-icon,
+            .close-x,
+            .x-close,
+            .btn-close,
+            .close-button,
+            .close-btn,
+            .menu-close-btn,
+            .nav-close-btn,
+            .header-close,
+            .content-close,
+            .modal-close,
+            .overlay-close,
+            .sidebar-close,
+            .filter-close,
+            .mobile-close-btn,
+            .mobile-close-button,
+            .mobile-menu-close,
+            .hamburger-close,
+            .close-icon-btn,
+            .close-icon-button,
+            .close-btn-icon,
+            .close-button-icon,
+            .close-x-btn,
+            .close-x-button,
+            .x-close-btn,
+            .x-close-button,
+            .close-icon,
+            .close-symbol,
+            .close-mark,
+            .close-sign,
+            .close-symbol-icon,
+            .close-mark-icon,
+            .close-sign-icon,
+            .close-symbol-btn,
+            .close-mark-btn,
+            .close-sign-btn,
+            .close-symbol-button,
+            .close-mark-button,
+            .close-sign-button,
+            .close-icon-symbol,
+            .close-icon-mark,
+            .close-icon-sign,
+            .close-btn-symbol,
+            .close-btn-mark,
+            .close-btn-sign,
+            .close-button-symbol,
+            .close-button-mark,
+            .close-button-sign,
+            .close-x-symbol,
+            .close-x-mark,
+            .close-x-sign,
+            .x-close-symbol,
+            .x-close-mark,
+            .x-close-sign,
+            .close-symbol-x,
+            .close-mark-x,
+            .close-sign-x,
+            .close-symbol-icon-x,
+            .close-mark-icon-x,
+            .close-sign-icon-x,
+            .close-symbol-btn-x,
+            .close-mark-btn-x,
+            .close-sign-btn-x,
+            .close-symbol-button-x,
+            .close-mark-button-x,
+            .close-sign-button-x,
+            .close-icon-symbol-x,
+            .close-icon-mark-x,
+            .close-icon-sign-x,
+            .close-btn-symbol-x,
+            .close-btn-mark-x,
+            .close-btn-sign-x,
+            .close-button-symbol-x,
+            .close-button-mark-x,
+            .close-button-sign-x,
+            .close-x-symbol-x,
+            .close-x-mark-x,
+            .close-x-sign-x,
+            .x-close-symbol-x,
+            .x-close-mark-x,
+            .x-close-sign-x {
+                display: none !important;
+            }
+            
+            /* Ensure desktop header is visible */
+            .top-nav {
+                display: flex !important;
+            }
+            
+            .logo-container {
+                display: flex !important;
+            }
+            
+            .nav-menu-container {
+                display: flex !important;
+            }
+            
+            .nav-right-container {
+                display: flex !important;
+            }
+        }
+        
+        /* Force hide mobile filter close button on desktop */
+        @media (min-width: 769px) {
+            .mobile-filter-close,
+            .mobile-nav-close,
+            #mobile-nav-close {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                position: absolute !important;
+                left: -9999px !important;
+                top: -9999px !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+        }
+    </style>
     
     <!-- Custom Animation Styles -->
     <style>
@@ -350,6 +514,35 @@ session_start();
     
     <!-- Include the home header -->
     <?php include 'heading/home-header.php'; ?>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+        <div class="mobile-nav-content">
+            <div class="mobile-nav-header">
+                <div class="mobile-nav-logo">
+                    <div class="logo-main">Glamour Palace</div>
+                    <div class="logo-accent">FASHION & LIFESTYLE</div>
+                </div>
+                <button class="mobile-nav-close" id="mobile-nav-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <ul class="mobile-nav-list">
+                    <li><a href="index.php" class="mobile-nav-link">Home</a></li>
+                    <li><a href="womenF/women.php" class="mobile-nav-link">Women</a></li>
+                    <li><a href="menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                    <li><a href="kidsfolder/kids.php" class="mobile-nav-link">Kids</a></li>
+                    <li><a href="beautyfolder/beauty.php" class="mobile-nav-link">Beauty</a></li>
+                    <li><a href="bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                    <li><a href="shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                    <li><a href="accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                    <li><a href="perfumes/perfumes.php" class="mobile-nav-link">Perfumes</a></li>
+                    <li><a href="homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
      
    
 
@@ -1247,6 +1440,72 @@ session_start();
          window.location.reload();
      }
      </script>
+
+     <!-- Mobile Navigation JavaScript -->
+     <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const hamburgerMenu = document.querySelector('.hamburger-menu');
+         const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+         const mobileNavClose = document.getElementById('mobile-nav-close');
+         const body = document.body;
+
+         // Open mobile navigation
+         if (hamburgerMenu) {
+             hamburgerMenu.addEventListener('click', function() {
+                 mobileNavOverlay.classList.add('active');
+                 body.classList.add('mobile-nav-open');
+                 hamburgerMenu.classList.add('active');
+             });
+         }
+
+         // Close mobile navigation
+         if (mobileNavClose) {
+             mobileNavClose.addEventListener('click', function() {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             });
+         }
+
+         // Close mobile navigation when clicking overlay
+         if (mobileNavOverlay) {
+             mobileNavOverlay.addEventListener('click', function(e) {
+                 if (e.target === mobileNavOverlay) {
+                     mobileNavOverlay.classList.remove('active');
+                     body.classList.remove('mobile-nav-open');
+                     if (hamburgerMenu) {
+                         hamburgerMenu.classList.remove('active');
+                     }
+                 }
+             });
+         }
+
+         // Close mobile navigation when clicking on a link
+         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+         mobileNavLinks.forEach(link => {
+             link.addEventListener('click', function() {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             });
+         });
+
+         // Handle window resize
+         window.addEventListener('resize', function() {
+             if (window.innerWidth > 768) {
+                 mobileNavOverlay.classList.remove('active');
+                 body.classList.remove('mobile-nav-open');
+                 if (hamburgerMenu) {
+                     hamburgerMenu.classList.remove('active');
+                 }
+             }
+         });
+     });
+     </script>
      
      <!-- Quick View Functionality -->
 <script src="scripts/quickview-manager.js"></script>
@@ -1306,8 +1565,7 @@ session_start();
              const addToCartButtons = document.querySelectorAll('.add-to-bag');
              addToCartButtons.forEach(button => {
                  button.addEventListener('click', function() {
-                     // Add your cart functionality here
-                     console.log('Add to cart clicked for product:', this.getAttribute('data-product-id'));
+                    // Add your cart functionality here
                  });
              });
          });

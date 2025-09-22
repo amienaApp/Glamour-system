@@ -59,7 +59,9 @@ if ($amount == 0 && !$cart) {
 
 // If amount is still 0, redirect to cart page with message
 if ($amount == 0) {
-    header('Location: cart-unified.php?message=empty_cart');
+    // Set session variable for empty cart message
+    $_SESSION['empty_cart_message'] = true;
+    header('Location: cart-unified.php');
     exit;
 }
 
@@ -861,11 +863,29 @@ if ($amount == 0) {
                 
                 if (processResult.success) {
                     showNotification(processResult.message, 'success');
-                    setTimeout(() => {
-                        window.location.href = 'orders.php?payment_success=true';
-                    }, 2000);
+                    // Set session variable to indicate payment success
+                    fetch('set-payment-success.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'payment_success=true'
+                    }).then(() => {
+                        setTimeout(() => {
+                            // Redirect to orders page after successful payment
+                            window.location.href = 'orders.php';
+                        }, 2000);
+                    });
                 } else {
-                    throw new Error(processResult.message);
+                    // Payment failed - show error and offer to retry
+                    showNotification(processResult.message, 'error');
+                    
+                    // Optionally, you could add a retry button or redirect to cart
+                    setTimeout(() => {
+                        if (confirm('Payment failed. Would you like to return to your cart to try again?')) {
+                            window.location.href = 'cart-unified.php';
+                        }
+                    }, 3000);
                 }
 
             } catch (error) {

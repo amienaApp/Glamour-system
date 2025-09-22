@@ -88,11 +88,15 @@ class Payment {
 
         // Update order status if payment is successful
         if ($result && $result['success']) {
-            $this->updateOrderStatus($payment['order_id'], 'confirmed');
-            $cartCleared = $this->clearUserCart($payment['user_id']);
-            if (!$cartCleared) {
+            // Confirm order (stock already reduced when items were added to cart)
+            $orderConfirmed = $this->confirmOrder($payment['order_id']);
+            if (!$orderConfirmed) {
+                // Warning: Failed to confirm order
             }
-            $result['message'] = "🎉 Congratulations! Your order is successful!";
+            
+            // Cart will be cleared on orders.php page after redirect
+            $result['message'] = "🎉 Congratulations! Your order is successful! You will be redirected to your orders page.";
+            $result['order_confirmed'] = $orderConfirmed;
         }
 
         return $result;
@@ -398,8 +402,97 @@ class Payment {
         try {
             require_once __DIR__ . '/Cart.php';
             $cartModel = new Cart();
-            return $cartModel->clearCart($userId);
+            
+            // Log the attempt
+            // Attempting to clear cart
+            
+            $result = $cartModel->clearCart($userId);
+            
+            if ($result) {
+                // Successfully cleared cart
+            } else {
+                // Failed to clear cart
+            }
+            
+            return $result;
         } catch (Exception $e) {
+            // Exception clearing cart
+            return false;
+        }
+    }
+
+    /**
+     * Force clear user's cart using direct database access
+     */
+    private function forceClearUserCart($userId) {
+        try {
+            $db = MongoDB::getInstance();
+            $cartsCollection = $db->getCollection('carts');
+            
+            // Force clearing cart
+            
+            // First try to update the cart to empty
+            $updateResult = $cartsCollection->updateOne(
+                ['user_id' => $userId],
+                [
+                    '$set' => [
+                        'items' => [],
+                        'total' => 0,
+                        'item_count' => 0,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]
+                ]
+            );
+            
+            if ($updateResult->getModifiedCount() > 0) {
+                // Force clear cart successful via update
+                return true;
+            }
+            
+            // If no document was updated, try to delete and recreate
+            $deleteResult = $cartsCollection->deleteOne(['user_id' => $userId]);
+            
+            // Create empty cart
+            $cartsCollection->insertOne([
+                'user_id' => $userId,
+                'items' => [],
+                'total' => 0,
+                'item_count' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            // Force clear cart successful via delete/recreate
+            return true;
+            
+        } catch (Exception $e) {
+            // Force clear cart failed
+            return false;
+        }
+    }
+
+    /**
+     * Confirm order (stock already reduced when items were added to cart)
+     */
+    private function confirmOrder($orderId) {
+        try {
+            $orderModel = new Order();
+            return $orderModel->updateOrderStatus($orderId, 'confirmed');
+        } catch (Exception $e) {
+            // Error confirming order
+            return false;
+        }
+    }
+
+    /**
+     * Confirm order and reduce stock (called after successful payment)
+     */
+    private function confirmOrderAndReduceStock($orderId) {
+        try {
+            $orderModel = new Order();
+            return $orderModel->confirmOrderAndReduceStock($orderId);
+        } catch (Exception $e) {
+            // Error confirming order
             return false;
         }
     }
