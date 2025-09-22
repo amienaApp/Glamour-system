@@ -103,6 +103,8 @@ class QuickviewManager {
                 apiUrl = `../get-product-details.php?product_id=${productId}`;
             } else if (window.location.pathname.includes('/accessories/')) {
                 apiUrl = `../get-product-details.php?product_id=${productId}`;
+            } else if (window.location.pathname.includes('/bagsfolder/')) {
+                apiUrl = `../get-product-details.php?product_id=${productId}`;
             } else if (window.location.pathname.includes('/perfumes/')) {
                 apiUrl = `../get-product-details.php?product_id=${productId}`;
             } else {

@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
                                    currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
                                    currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
+                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                   currentPath.includes('/bagsfolder/');
             window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
         });
         
@@ -242,13 +243,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Function to update cart count
         function updateCartCount() {
             const cartCountElement = document.querySelector('.cart-count');
+            console.log('Cart count element found:', !!cartCountElement); // Debug log
             if (cartCountElement) {
                 // Determine the correct path to cart API based on current URL
                 const currentPath = window.location.pathname;
                 const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
                                        currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
                                        currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
-                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/');
+                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                       currentPath.includes('/bagsfolder/');
                 const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
                 
                 // Fetch current cart count from cart API
@@ -261,11 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.count > 0) {
-                        cartCountElement.textContent = data.count;
+                    console.log('Cart count API response:', data); // Debug log
+                    if (data.success && data.cart_count > 0) {
+                        cartCountElement.textContent = data.cart_count;
                         cartCountElement.style.display = 'flex';
+                        console.log('Cart count displayed:', data.cart_count); // Debug log
                     } else {
                         cartCountElement.style.display = 'none';
+                        console.log('Cart count hidden, count:', data.cart_count); // Debug log
                     }
                 })
                 .catch(error => {
@@ -332,48 +338,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Simple cart count functions (like wishlist)
-    function updateCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            try {
-                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                const count = cart.length;
-                cartCountElement.textContent = count;
-                
-                if (count > 0) {
-                    cartCountElement.style.display = 'flex';
-                } else {
-                    cartCountElement.style.display = 'none';
-                }
-            } catch (error) {
-                cartCountElement.style.display = 'none';
-            }
-        }
-    }
+    // Note: updateCartCount is defined above and uses API-based cart count
     
     function addToCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            let currentCount = parseInt(cartCountElement.textContent) || 0;
-            currentCount++;
-            cartCountElement.textContent = currentCount;
-            cartCountElement.style.display = 'flex';
-        }
+        // Refresh cart count from API instead of just incrementing
+        updateCartCount();
     }
     
     function removeFromCartCount() {
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            let currentCount = parseInt(cartCountElement.textContent) || 0;
-            currentCount = Math.max(0, currentCount - 1);
-            cartCountElement.textContent = currentCount;
-            
-            if (currentCount > 0) {
-                cartCountElement.style.display = 'flex';
-            } else {
-                cartCountElement.style.display = 'none';
-            }
-        }
+        // Refresh cart count from API instead of just decrementing
+        updateCartCount();
     }
 
     // Make functions available globally

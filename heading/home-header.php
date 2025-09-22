@@ -4,6 +4,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Determine the correct path prefix based on current directory
+$currentDir = dirname($_SERVER['PHP_SELF']);
+$isInPagesDir = strpos($currentDir, '/pages') !== false;
+$pathPrefix = $isInPagesDir ? '../' : '';
+?>
+
+<?php
 // Check if MongoDB extension is available before loading autoloader
 $mongodbAvailable = extension_loaded('mongodb');
 
@@ -88,69 +95,69 @@ $regionOptions = [
     <!-- Navigation Menu - Center -->
     <div class="nav-menu-container">
         <ul class="nav-menu">
-            <li><a href="index.php" class="nav-link">Home</a></li>
+            <li><a href="<?php echo $pathPrefix; ?>index.php" class="nav-link">Home</a></li>
             <li class="nav-item-modal">
                 <a href="#" class="nav-link">Categories</a>
                 <!-- Categories Dropdown -->
                 <div class="category-dropdown">
                     <div class="dropdown-item">
-                        <a href="womenF/women.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>womenF/women.php" class="dropdown-link">
                             <i class="fas fa-female"></i>
                             <span>Women Clothing</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="menfolder/men.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>menfolder/men.php" class="dropdown-link">
                             <i class="fas fa-male"></i>
                             <span>Men Clothing</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="childrenfolder/children.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>kidsfolder/kids.php" class="dropdown-link">
                             <i class="fas fa-child"></i>
                             <span>Kids Collection</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="shoess/shoes.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>shoess/shoes.php" class="dropdown-link">
                             <i class="fas fa-shoe-prints"></i>
                             <span>Shoes</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="perfumes/index.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>perfumes/index.php" class="dropdown-link">
                             <i class="fas fa-spray-can"></i>
                             <span>Perfumes</span>
                         </a>
                     </div>
                     <div class="dropdown-item">
-                        <a href="accessories/accessories.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>accessories/accessories.php" class="dropdown-link">
                             <i class="fas fa-gem"></i>
                             <span>Accessories</span>
                         </a>
                     </div>
                                          <div class="dropdown-item">
-                         <a href="homedecor/homedecor.php" class="dropdown-link">
+                         <a href="<?php echo $pathPrefix; ?>homedecor/homedecor.php" class="dropdown-link">
                              <i class="fas fa-home"></i>
                              <span>Home Decor</span>
                          </a>
                      </div>
                      <div class="dropdown-item">
-                         <a href="bagsfolder/bags.php" class="dropdown-link">
+                         <a href="<?php echo $pathPrefix; ?>bagsfolder/bags.php" class="dropdown-link">
                              <i class="fas fa-shopping-bag"></i>
                              <span>Bags</span>
                          </a>
                      </div>
                     <div class="dropdown-item">
-                        <a href="perfumes/index.php" class="dropdown-link">
+                        <a href="<?php echo $pathPrefix; ?>beautyfolder/beauty.php" class="dropdown-link">
                             <i class="fas fa-palette"></i>
                             <span>Beauty & Cosmetics</span>
                         </a>
                     </div>
                 </div>
             </li>
-            <li><a href="pages/contact.php" class="nav-link">Contact us</a></li>
-            <li><a href="pages/about.php" class="nav-link">About us</a></li>
+            <li><a href="<?php echo $pathPrefix; ?>pages/contact.php" class="nav-link">Contact us</a></li>
+            <li><a href="<?php echo $pathPrefix; ?>pages/about.php" class="nav-link">About us</a></li>
         </ul>
     </div>
 
@@ -187,7 +194,7 @@ $regionOptions = [
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
                             </a>
-                            <a href="../orders.php" class="menu-item">
+                            <a href="<?php echo $pathPrefix; ?>orders.php" class="menu-item">
                                 <i class="fas fa-box"></i>
                                 <span>My orders</span>
                             </a>
@@ -207,18 +214,35 @@ $regionOptions = [
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="heart-icon" title="Wishlist">
+            <div class="heart-icon" title="Wishlist" onclick="toggleWishlistDropdown()" style="cursor: pointer; position: relative;">
                 <i class="fas fa-heart"></i>
+                <span class="wishlist-count">0</span>
+                
+                <!-- Wishlist Dropdown -->
+                <div class="wishlist-dropdown" id="wishlist-dropdown">
+                    <div class="wishlist-dropdown-header">
+                        <h3><i class="fas fa-heart"></i> My Wishlist</h3>
+                        <button onclick="openWishlistPage()" class="view-all-btn">View All</button>
             </div>
-            <div class="shopping-cart cart-icon" title="Cart" style="position: relative;" onclick="cartManager.openCartSidebar()">
+                    <div class="wishlist-dropdown-content" id="wishlist-dropdown-content">
+                        <!-- Wishlist items will be loaded here -->
+                    </div>
+                    <div class="wishlist-dropdown-empty" id="wishlist-dropdown-empty" style="display: none;">
+                        <i class="fas fa-heart"></i>
+                        <p>Your wishlist is empty</p>
+                        <small>Start adding items you love!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="shopping-cart" title="Cart" style="position: relative;">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count cart-icon-count">0</span>
+                <span class="cart-count">0</span>
             </div>
         </div>
 
         <!-- Somalia Flag - Compact (Disabled) -->
         <div class="flag-container" title="Region Settings (Coming Soon)">
-            <img src="../img/flag.jpg" alt="Somalia Flag" class="flag" id="somalia-flag">
+            <img src="<?php echo $pathPrefix; ?>img/flag.jpg" alt="Somalia Flag" class="flag" id="somalia-flag">
         </div>
     </div>
 </nav>
@@ -329,7 +353,7 @@ $regionOptions = [
                     <div class="form-group">
                         <div class="contact-input-container">
                             <div class="flag-prefix">
-                                <img src="../img/flag.jpg" alt="Somali Flag" class="flag-icon">
+                                <img src="<?php echo $pathPrefix; ?>img/flag.jpg" alt="Somali Flag" class="flag-icon">
                                 <span class="country-code">+252</span>
                             </div>
                             <input type="tel" id="contact-number" class="form-input contact-input" placeholder="XXX XXX XXX" maxlength="9" pattern="[0-9]{9}" required>
@@ -398,7 +422,7 @@ $regionOptions = [
     });
 
     function loadCartCount() {
-        fetch('../cart-api.php', {
+        fetch('<?php echo $pathPrefix; ?>cart-api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -408,7 +432,7 @@ $regionOptions = [
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateCartCount(data.cart_count);
+                updateCartCount();
             }
         })
         .catch(error => {
@@ -416,41 +440,321 @@ $regionOptions = [
         });
     }
 
-    function updateCartCount(count) {
+    // Function to update cart count (API-based like main header)
+    function updateCartCount() {
         const cartCountElement = document.querySelector('.cart-count');
-        
         if (cartCountElement) {
-            cartCountElement.textContent = count;
+            // Determine the correct path to cart API based on current URL
+            const currentPath = window.location.pathname;
+            const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                   currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                   currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                   currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                   currentPath.includes('/bagsfolder/');
+            const cartApiPath = '<?php echo $pathPrefix; ?>cart-api.php';
             
-            // Add visual indicator if count > 0
-            if (count > 0) {
-                cartCountElement.style.cssText = `
-                    display: flex !important;
-                    background: #e53e3e;
-                    color: white;
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                    font-size: 12px;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                    position: absolute;
-                    top: -8px;
-                    right: -8px;
-                    z-index: 10;
-                `;
+            // Fetch current cart count from cart API
+            fetch(cartApiPath, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=get_cart_count'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.cart_count > 0) {
+                    cartCountElement.textContent = data.cart_count;
+                    cartCountElement.style.display = 'flex';
             } else {
+                    cartCountElement.textContent = '0';
                 cartCountElement.style.display = 'none';
             }
+            })
+            .catch(error => {
+                console.log('Cart count fetch error:', error);
+                cartCountElement.style.display = 'none';
+            });
         } else {
-            console.error('Cart count element not found!');
+            console.log('Cart count element not found!');
         }
     }
+    
+    // Cart count helper functions
+    function addToCartCount() {
+        // This function is called when items are added to cart
+        // It will trigger a refresh of the cart count from the API
+        updateCartCount();
+    }
+    
+    function removeFromCartCount() {
+        // This function is called when items are removed from cart
+        // It will trigger a refresh of the cart count from the API
+        updateCartCount();
+    }
+
+    // Initialize cart count functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update cart count from cart system
+        updateCartCount();
+        
+        // Refresh cart count when page becomes visible (user returns from cart)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                updateCartCount();
+            }
+        });
+        
+        // Also refresh cart count when page loads
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page was loaded from back-forward cache
+                updateCartCount();
+            }
+        });
+        
+        // Refresh cart count every 10 seconds to keep it updated
+        setInterval(updateCartCount, 10000);
+    });
+
+    // Initialize cart functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartIcon = document.querySelector('.shopping-cart');
+        if (cartIcon) {
+            // Add click event listener for cart functionality
+            cartIcon.addEventListener('click', function(e) {
+                // Show loading state
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                this.style.cursor = 'wait';
+                
+                // Redirect to cart-unified.php when cart icon is clicked (instant redirect)
+                const currentPath = window.location.pathname;
+                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                       currentPath.includes('/bagsfolder/');
+                window.location.href = '<?php echo $pathPrefix; ?>cart-unified.php';
+            });
+            
+            // Add a small tooltip to show cart is clickable
+            cartIcon.title = 'Click to view cart';
+            
+            // Add hover effects for better UX
+            cartIcon.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+            });
+            
+            cartIcon.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+        }
+    });
+
+    // Wishlist functionality
+    function toggleWishlistDropdown() {
+        const dropdown = document.getElementById('wishlist-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('show');
+            if (dropdown.classList.contains('show')) {
+                loadWishlistDropdown();
+            }
+        }
+    }
+    
+    function openWishlistPage() {
+        // Check if we're in a subfolder and adjust path accordingly
+        const currentPath = window.location.pathname;
+        const isInSubfolder = currentPath.includes('/kidsfolder/') || currentPath.includes('/beautyfolder/') || 
+                             currentPath.includes('/womenF/') || currentPath.includes('/menfolder/') || 
+                             currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                             currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                             currentPath.includes('/bagsfolder/');
+        
+        window.location.href = '<?php echo $pathPrefix; ?>wishlist.php';
+    }
+    
+    function loadWishlistDropdown() {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const content = document.getElementById('wishlist-dropdown-content');
+        const empty = document.getElementById('wishlist-dropdown-empty');
+        
+        if (wishlist.length === 0) {
+            content.style.display = 'none';
+            empty.style.display = 'block';
+        } else {
+            content.style.display = 'block';
+            empty.style.display = 'none';
+            
+            // Show only first 3 items in dropdown
+            const displayItems = wishlist.slice(0, 3);
+            content.innerHTML = displayItems.map(item => `
+                <div class="wishlist-dropdown-item">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                    <div class="wishlist-dropdown-item-info">
+                        <div class="wishlist-dropdown-item-name">${item.name}</div>
+                        <div class="wishlist-dropdown-item-price">$${item.price}</div>
+                        <div class="wishlist-dropdown-item-category">${item.category}</div>
+                    </div>
+                    <div class="wishlist-dropdown-item-actions">
+                        <button class="btn-add-cart" onclick="addToCartFromDropdown('${item.id}')">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                        <button class="btn-remove" onclick="removeFromWishlistDropdown('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Show "View All" button if there are more than 3 items
+            if (wishlist.length > 3) {
+                content.innerHTML += `
+                    <div class="wishlist-dropdown-item" style="justify-content: center; border-top: 2px solid #eee;">
+                        <button onclick="openWishlistPage()" style="background: #f8f9fa; border: 1px solid #ddd; padding: 8px 20px; border-radius: 6px; cursor: pointer; color: #666;">
+                            View All ${wishlist.length} Items
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    function addToCartFromDropdown(productId) {
+        // Try to use existing cart functionality
+        if (typeof addToCart === 'function') {
+            addToCart(productId);
+        } else {
+            showNotification('Product added to cart!', 'success');
+        }
+    }
+    
+    function removeFromWishlistDropdown(productId) {
+        if (confirm('Remove from wishlist?')) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            wishlist = wishlist.filter(item => item.id !== productId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            
+            showNotification('Removed from wishlist', 'info');
+            loadWishlistDropdown();
+            updateWishlistCount();
+        }
+    }
+    
+    function showNotification(message, type = 'success') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.wishlist-notification');
+        existingNotifications.forEach(notification => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        });
+        
+        // Create notification
+        const notification = document.createElement('div');
+        notification.className = 'wishlist-notification';
+        
+        // Set colors based on type
+        let backgroundColor, icon;
+        switch (type) {
+            case 'success':
+                backgroundColor = '#28a745';
+                icon = '✓';
+                break;
+            case 'error':
+                backgroundColor = '#dc3545';
+                icon = '✗';
+                break;
+            case 'info':
+            default:
+                backgroundColor = '#17a2b8';
+                icon = 'ℹ';
+                break;
+        }
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${backgroundColor};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            font-weight: 500;
+            font-size: 14px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+        `;
+        
+        notification.textContent = `${icon} ${message}`;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Remove after 2 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 2000);
+    }
+    
+    // Update wishlist count from localStorage
+    function updateWishlistCount() {
+        const wishlistCountElement = document.querySelector('.wishlist-count');
+        if (wishlistCountElement) {
+            try {
+                const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                if (wishlist.length > 0) {
+                    wishlistCountElement.textContent = wishlist.length;
+                    wishlistCountElement.style.display = 'flex';
+                } else {
+                    wishlistCountElement.style.display = 'none';
+                }
+            } catch (error) {
+                wishlistCountElement.style.display = 'none';
+            }
+        }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('wishlist-dropdown');
+        const heartIcon = document.querySelector('.heart-icon');
+        
+        if (dropdown && heartIcon && !heartIcon.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+    
+    // Load wishlist count on page load
+    updateWishlistCount();
+
+    // Make functions available globally
+    window.updateCartCount = updateCartCount;
+    window.addToCartCount = addToCartCount;
+    window.removeFromCartCount = removeFromCartCount;
+    window.toggleWishlistDropdown = toggleWishlistDropdown;
+    window.openWishlistPage = openWishlistPage;
+    window.updateWishlistCount = updateWishlistCount;
+    window.addToCartFromDropdown = addToCartFromDropdown;
+    window.removeFromWishlistDropdown = removeFromWishlistDropdown;
 
     // Function to be called from other pages when adding to cart
     function addToCart(productId) {
-        fetch('../cart-api.php', {
+        fetch('<?php echo $pathPrefix; ?>cart-api.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -460,7 +764,7 @@ $regionOptions = [
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateCartCount(data.cart_count);
+                updateCartCount();
                 // Show success message
                 alert('Product added to cart successfully!');
             } else {
@@ -697,7 +1001,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                 
                 // Send login request
-                fetch('./login-handler.php', {
+                fetch('<?php echo $pathPrefix; ?>login-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -769,7 +1073,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                 
                 // Send registration request
-                fetch('./register-handler.php', {
+                fetch('<?php echo $pathPrefix; ?>register-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -891,7 +1195,7 @@ $regionOptions = [
 
         // Logout function
         window.logout = function() {
-            fetch('./logout-handler.php', {
+            fetch('<?php echo $pathPrefix; ?>logout-handler.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -931,3 +1235,260 @@ $regionOptions = [
 
 <!-- Cart Overlay -->
 <div class="cart-overlay" id="cart-overlay" onclick="cartManager.closeCartSidebar()"></div> 
+
+<style>
+/* Wishlist Dropdown Styles */
+.wishlist-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    margin-top: 10px;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.wishlist-dropdown.show {
+    display: block;
+    animation: wishlistSlideDown 0.3s ease;
+}
+
+@keyframes wishlistSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wishlist-dropdown-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wishlist-dropdown-header h3 i {
+    color: #e74c3c;
+}
+
+.view-all-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: #0056b3;
+}
+
+.wishlist-dropdown-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.wishlist-dropdown-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.wishlist-dropdown-empty i {
+    font-size: 2.5rem;
+    color: #ddd;
+    margin-bottom: 15px;
+}
+
+.wishlist-dropdown-empty p {
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.wishlist-dropdown-empty small {
+    font-size: 0.85rem;
+}
+
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Heart icon hover effect */
+.heart-icon:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+/* Cart count styles */
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Shopping cart hover effect */
+.shopping-cart:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+/* Wishlist dropdown item styles */
+.wishlist-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.wishlist-dropdown-item:hover {
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.wishlist-dropdown-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+    background: #f8f9fa;
+}
+
+.wishlist-dropdown-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.wishlist-dropdown-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wishlist-dropdown-item-price {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e74c3c;
+    margin: 0 0 5px 0;
+}
+
+.wishlist-dropdown-item-category {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.wishlist-dropdown-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.wishlist-dropdown-item-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.wishlist-dropdown-item-actions .btn-add-cart {
+    color: #007bff;
+}
+
+.wishlist-dropdown-item-actions .btn-add-cart:hover {
+    background: #e3f2fd;
+}
+
+.wishlist-dropdown-item-actions .btn-remove {
+    color: #dc3545;
+}
+
+.wishlist-dropdown-item-actions .btn-remove:hover {
+    background: #f8d7da;
+}
+
+/* Show/hide dropdown */
+.wishlist-dropdown.show {
+    display: block !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .wishlist-dropdown {
+        width: 300px;
+        right: -50px;
+    }
+    
+    .wishlist-dropdown-item {
+        padding: 12px 15px;
+    }
+    
+    .wishlist-dropdown-item img {
+        width: 50px;
+        height: 50px;
+    }
+}
+</style> 

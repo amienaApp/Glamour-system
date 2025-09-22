@@ -683,39 +683,46 @@ body {
 
 /* geallery */
 .gallery {
-
-
-margin-left: 50px;
-margin-right: 50px;
-width: 600px;
-height:600px;
+margin-left: 20px;
+margin-right: 20px;
+width: 100%;
+height: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
 
 }
 .container4{
  padding: 10px;
- width: 450px;
+ width: 100%;
  display: grid;
- grid-template-columns: repeat(4,1fr);
- row-gap: 5px;
+ grid-template-columns: repeat(3,1fr);
+ grid-template-rows: repeat(3,1fr);
+ gap: 10px;
+ height: 100%;
  
 }
 
 .polaroid {
 background: #f3eeee;
-
-height: 150px;
-padding: 10px 10px 20px;
+width: 100%;
+height: 100%;
+padding: 8px 8px 15px;
 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 border-radius: 5px;
 transition: transform 0.2s ease;
+display: flex;
+flex-direction: column;
+overflow: hidden;
 
 }
 
 .polaroid img {
 width: 100%;
-height: 80%;
+height: 85%;
 object-fit: cover;
 border-radius: 3px;
+flex: 1;
 }
 .polaroid:hover {
 transform: scale(1.03);
@@ -778,39 +785,11 @@ transform: scale(1.03);
   width: 100%;
 }
 
-.container4 {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  height: 100%;
-  align-content: stretch;
-  flex: 1;
-}
+/* Removed duplicate container4 styles - using the updated version above */
 
-.polaroid {
-  background: #e5e5e5;
-  width: 100%;
-  height: 100%;
-  padding: 10px 10px 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  transition: transform 0.2s ease;
-  overflow: hidden;
-}
+/* Removed duplicate polaroid styles - using the updated version above */
 
-.polaroid img {
-  width: 100%;
-  height: 80%;
-  object-fit: cover;
-  border-radius: 3px;
-  
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-  margin-bottom: 0.5rem;
-}
+/* Removed duplicate polaroid img styles - using the updated version above */
 
 
 
@@ -2099,28 +2078,6 @@ transform: scale(1.03);
     transform: scale(1.05);
 }
 
-/* Featured Products */
-.featured-products {
-    padding: 80px 0;
-    background: white;
-}
-
-.featured-products h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 50px;
-    color: #333;
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
 
 /* Footer */
 .footer {
@@ -2212,8 +2169,7 @@ transform: scale(1.03);
         gap: 20px;
     }
     
-    .featured-categories h2,
-    .featured-products h2 {
+    .featured-categories h2 {
         font-size: 2rem;
     }
 }
