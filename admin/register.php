@@ -28,6 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Passwords do not match';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address';
+    } elseif (!preg_match('/^[a-zA-Z]+$/', $name)) {
+        $error = 'Name must contain only letters (a-z, A-Z)';
+    } elseif (strlen($name) < 3 || strlen($name) > 20) {
+        $error = 'Name must be 3-20 characters long';
     } else {
         // Get admin collection
         $db = MongoDB::getInstance();
@@ -253,7 +257,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="name">Full Name</label>
                 <div class="input-icon">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="name" name="name" required placeholder="Enter your full name" value="<?php echo htmlspecialchars($name ?? ''); ?>">
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name" 
+                           pattern="[a-zA-Z]+" title="Name must contain only letters (a-z, A-Z)" 
+                           minlength="3" maxlength="20" value="<?php echo htmlspecialchars($name ?? ''); ?>">
                 </div>
             </div>
             
@@ -293,5 +299,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Already have an account? <a href="login.php">Sign in here</a>
         </div>
     </div>
+    
+    <!-- Username Validation Script -->
+    <script src="../username-validation.js"></script>
 </body>
 </html>

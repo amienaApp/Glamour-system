@@ -317,15 +317,13 @@ class Category {
                     [
                         'name' => 'Boys',
                         'sub_subcategories' => [
-                            'T-Shirts', 'Polo Shirts', 'Button-Down Shirts', 'Tank Tops', 'Long Sleeve Tees',
-                            'Jeans', 'Cargo Pants', 'Dress Pants', 'Shorts', 'Sweatpants'
+                            'Shirts', 'T-Shirts', 'Suits', 'Pants', 'Shorts & Underwear', 'Hoodies & Sweatshirts'
                         ]
                     ],
                     [
                         'name' => 'Girls',
                         'sub_subcategories' => [
-                            'Dresses', 'Tops', 'Blouses', 'T-Shirts', 'Tank Tops',
-                            'Jeans', 'Leggings', 'Skirts', 'Shorts', 'Pants'
+                            'Dresses', 'Tops', 'Bottoms', 'Pants', 'Shorts'
                         ]
                     ],
                     [

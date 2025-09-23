@@ -325,7 +325,9 @@ if (isset($_SESSION['user_id'])) {
                 <div class="form-group">
                     <label for="username" class="required">Username</label>
                     <input type="text" id="username" name="username" class="form-input" 
-                           placeholder="Choose a username" required>
+                           placeholder="Choose a username" pattern="[a-zA-Z]+" 
+                           title="Username must contain only letters (a-z, A-Z)" 
+                           minlength="3" maxlength="20" required>
                 </div>
 
                 <div class="form-group">
@@ -617,5 +619,8 @@ if (isset($_SESSION['user_id'])) {
             hideMessage();
         }, 5000);
     </script>
+    
+    <!-- Username Validation Script -->
+    <script src="../username-validation.js"></script>
 </body>
 </html>

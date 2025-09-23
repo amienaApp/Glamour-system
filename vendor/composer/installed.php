@@ -3,7 +3,7 @@
         'name' => 'glamour/shopping-system',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'e39aa0c75e8e609bd60f1a735ec724a41491d1ef',
+        'reference' => '1bd47a937a2173e9b2a04b6e3f5ff7641028e61f',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'glamour/shopping-system' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'e39aa0c75e8e609bd60f1a735ec724a41491d1ef',
+            'reference' => '1bd47a937a2173e9b2a04b6e3f5ff7641028e61f',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

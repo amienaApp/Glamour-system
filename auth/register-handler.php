@@ -55,6 +55,20 @@ try {
         throw new Exception("Invalid email format");
     }
 
+    // Validate username format - only letters a-z and A-Z
+    if (!preg_match('/^[a-zA-Z]+$/', $input['username'])) {
+        throw new Exception("Username must contain only letters (a-z, A-Z)");
+    }
+    
+    // Validate username length
+    if (strlen($input['username']) < 3) {
+        throw new Exception("Username must be at least 3 characters long");
+    }
+    
+    if (strlen($input['username']) > 20) {
+        throw new Exception("Username must be less than 20 characters long");
+    }
+
     // Validate password match
     if ($input['password'] !== $input['confirm_password']) {
         throw new Exception("Passwords do not match");
@@ -202,6 +216,20 @@ try {
     // Validate email format
     if (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
         throw new Exception("Invalid email format");
+    }
+
+    // Validate username format - only letters a-z and A-Z
+    if (!preg_match('/^[a-zA-Z]+$/', $input['username'])) {
+        throw new Exception("Username must contain only letters (a-z, A-Z)");
+    }
+    
+    // Validate username length
+    if (strlen($input['username']) < 3) {
+        throw new Exception("Username must be at least 3 characters long");
+    }
+    
+    if (strlen($input['username']) > 20) {
+        throw new Exception("Username must be less than 20 characters long");
     }
 
     // Validate password match

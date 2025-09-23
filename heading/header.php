@@ -2048,4 +2048,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 });
-</script> 
+</script>
+
+<!-- Username Validation Script -->
+<script src="username-validation.js"></script> 
