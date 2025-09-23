@@ -156,6 +156,7 @@ class Cart {
                     'updated_at' => date('Y-m-d H:i:s')
                 ]]
             );
+            return $result->getModifiedCount() > 0;
         } else {
             // Create new cart
             $cartItem = [
@@ -190,11 +191,6 @@ class Cart {
             ];
             
             $result = $this->collection->insertOne($cartData);
-        }
-        
-        if ($existingCart) {
-            return $result->getModifiedCount() > 0;
-        } else {
             return $result->getInsertedId() ? true : false;
         }
     }

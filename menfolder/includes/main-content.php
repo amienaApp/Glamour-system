@@ -325,7 +325,17 @@ if (!empty($filters)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if ($isLowStock): ?>
+                        <?php 
+                        // Redefine variables for this section
+                        $stock = (int)($product['stock'] ?? 0);
+                        $available = $product['available'] ?? true;
+                        $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                        $isSoldOut = $stock <= 0 || !$isAvailable;
+                        $isLowStock = $stock > 0 && $stock <= 5;
+                        ?>
+                        <?php if ($isSoldOut): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif ($isLowStock): ?>
                             <div class="product-availability low-stock-text">
                                 ⚠️ Only <?php echo $stock; ?> left in stock!
                             </div>

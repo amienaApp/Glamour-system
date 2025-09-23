@@ -61,6 +61,8 @@ if (!$defaultUserId) {
     $defaultUserId = 'session_' . session_id();
 }
 
+// Session-based cart for unauthenticated users
+
 // Check if user is authenticated for checkout operations only
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $checkoutActions = ['place_order', 'checkout'];
@@ -332,6 +334,20 @@ try {
 
 // Clear any output buffer and send clean JSON response
 ob_end_clean();
+
+// Ensure no output before JSON
+if (ob_get_level()) {
+    ob_clean();
+}
+
+// Set proper headers
+header('Content-Type: application/json');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Send clean JSON response
+
 echo json_encode($response);
 exit();
 ?>

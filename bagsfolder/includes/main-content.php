@@ -289,6 +289,13 @@ $clutches = $productModel->getBySubcategory('Clutches');
     <div class="product-grid" id="all-bags-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
+                <?php 
+                $stock = (int)($product['stock'] ?? 0);
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -430,12 +437,9 @@ $clutches = $productModel->getBySubcategory('Clutches');
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php 
-                        $stock = (int)($product['stock'] ?? 0);
-                        ?>
-                        <?php if (false): ?>
+                        <?php if ($isSoldOut): ?>
                             <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                        <?php elseif ($isLowStock): ?>
                             <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
                         <?php endif; ?>
                     </div>

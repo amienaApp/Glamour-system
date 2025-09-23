@@ -275,7 +275,7 @@ class Product {
                 'description' => 'Premium leather handbag for everyday use',
                 'featured' => true,
                 'sale' => false
-            ]
+            ],
         ];
 
         $addedCount = 0;

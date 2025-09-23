@@ -1190,8 +1190,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.success) {
                 // Update cart count using unified system
-                if (window.cartNotificationManager) {
-                    window.cartNotificationManager.handleCartUpdate(data);
+                if (typeof window.handleCartUpdate === 'function') {
+                    window.handleCartUpdate(data);
                 } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
@@ -1347,8 +1347,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 // Update cart count using unified system
-                if (window.cartNotificationManager) {
-                    window.cartNotificationManager.handleCartUpdate(data);
+                if (typeof window.handleCartUpdate === 'function') {
+                    window.handleCartUpdate(data);
                 } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
@@ -1496,8 +1496,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.success) {
                 // Update cart count using unified system
-                if (window.cartNotificationManager) {
-                    window.cartNotificationManager.handleCartUpdate(data);
+                if (typeof window.handleCartUpdate === 'function') {
+                    window.handleCartUpdate(data);
                 } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -71,28 +70,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'chair_count' => $_POST['chair_count'] ?? '',
             'table_length' => $_POST['table_length'] ?? '',
             'table_width' => $_POST['table_width'] ?? '',
-            'sofa_count' => $_POST['sofa_count'] ?? ''
+            'sofa_count' => $_POST['sofa_count'] ?? '',
+            'brand' => $_POST['brand'] ?? '',
+            'gender' => $_POST['gender'] ?? '',
+            'size' => $_POST['size'] ?? ''
         ];
 
         // Handle category-specific fields
         if (strtolower($productData['category'] ?? '') === 'perfumes') {
             $productData['category'] = 'Perfumes';
-            $productData['brand'] = $_POST['brand'] ?? '';
-            $productData['gender'] = $_POST['gender'] ?? '';
-            $productData['size'] = $_POST['size'] ?? '';
         }
         
-        if (strtolower($productData['category'] ?? '') === 'bags') {
-            $productData['gender'] = $_POST['gender'] ?? '';
-        }
-        
+        // Handle accessories gender field specifically
         if (strtolower($productData['category'] ?? '') === 'accessories') {
-            $productData['gender'] = $_POST['gender'] ?? '';
+            $productData['gender'] = $_POST['accessories_gender'] ?? $_POST['gender'] ?? '';
         }
 
         // Handle sale price
         if (isset($_POST['sale']) && !empty($_POST['salePrice'])) {
             $productData['salePrice'] = (float)$_POST['salePrice'];
+        } else {
+            $productData['salePrice'] = null; // Clear sale price if not on sale
         }
 
         // Handle main product images
@@ -102,6 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (move_uploaded_file($_FILES['front_image']['tmp_name'], $frontImagePath)) {
                 $productData['front_image'] = 'uploads/products/' . $frontImageName;
             }
+        } else {
+            // Preserve existing front image if no new one uploaded
+            $productData['front_image'] = $product['front_image'] ?? $product['image_front'] ?? '';
         }
 
         if (isset($_FILES['back_image']) && $_FILES['back_image']['error'] === UPLOAD_ERR_OK) {
@@ -110,6 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (move_uploaded_file($_FILES['back_image']['tmp_name'], $backImagePath)) {
                 $productData['back_image'] = 'uploads/products/' . $backImageName;
             }
+        } else {
+            // Preserve existing back image if no new one uploaded
+            $productData['back_image'] = $product['back_image'] ?? $product['image_back'] ?? '';
         }
 
         // Handle color variants
@@ -121,6 +125,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'color' => $variant['color'] ?? '',
                     'size_category' => $variant['size_category'] ?? '',
                     'selected_sizes' => $variant['selected_sizes'] ?? '',
+                    'price' => isset($variant['price']) ? floatval($variant['price']) : null,
+                    'stock' => isset($variant['stock']) ? (int)$variant['stock'] : 0,
+                    'brand' => $variant['brand'] ?? '',
+                    'gender' => $variant['gender'] ?? $variant['accessories_gender'] ?? '',
+                    'size' => $variant['size'] ?? '',
                     'front_image' => '',
                     'back_image' => '',
                     'side_image' => ''
@@ -134,6 +143,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (move_uploaded_file($_FILES['color_variants']['tmp_name'][$index]['front_image'], $frontImagePath)) {
                         $variantData['front_image'] = 'uploads/products/' . $frontImageName;
                     }
+                } else {
+                    // Preserve existing variant front image if no new one uploaded
+                    $existingVariant = $product['color_variants'][$index] ?? null;
+                    $variantData['front_image'] = $existingVariant['front_image'] ?? '';
                 }
 
                 if (isset($_FILES['color_variants']['name'][$index]['back_image']) && 
@@ -143,6 +156,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (move_uploaded_file($_FILES['color_variants']['tmp_name'][$index]['back_image'], $backImagePath)) {
                         $variantData['back_image'] = 'uploads/products/' . $backImageName;
                     }
+                } else {
+                    // Preserve existing variant back image if no new one uploaded
+                    $existingVariant = $product['color_variants'][$index] ?? null;
+                    $variantData['back_image'] = $existingVariant['back_image'] ?? '';
                 }
 
                 $colorVariants[] = $variantData;
@@ -742,6 +759,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .color-input:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .color-input-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+        
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .color-preview:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-help-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: block;
         }
 
         /* Image Upload Styling */
@@ -1609,22 +1654,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
         <?php endif; ?>
         
-        <?php if (isset($product) && $product): ?>
-            <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
-                Product ID: <?php echo htmlspecialchars($productId); ?><br>
-                Product Name: <?php echo htmlspecialchars($product['name'] ?? 'NOT SET'); ?><br>
-                Product Price: <?php echo htmlspecialchars($product['price'] ?? 'NOT SET'); ?><br>
-                Product Category: <?php echo htmlspecialchars($product['category'] ?? 'NOT SET'); ?><br>
-                Product Description: <?php echo htmlspecialchars($product['description'] ?? 'NOT SET'); ?><br>
-                Product Data Exists: <?php echo $product ? 'YES' : 'NO'; ?><br>
-            </div>
-        <?php else: ?>
-            <div style="background: red; padding: 10px; margin: 10px 0; color: white;">
-                <strong>ERROR - No Product Data Found!</strong><br>
-                Product ID: <?php echo htmlspecialchars($productId); ?><br>
-                Product Variable: <?php echo isset($product) ? 'SET' : 'NOT SET'; ?><br>
-            </div>
-        <?php endif; ?>
         
                 <!-- Product Count Selector -->
         <div class="product-count-selector">
@@ -1844,7 +1873,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h2 class="section-title"><i class="fas fa-palette"></i> Color Selection</h2>
                         <div class="color-panel">
                             <label for="color">Main Product Color</label>
-                        <input type="color" id="color" name="color" class="color-input" value="#667eea">
+                            <div class="color-input-group">
+                                <input type="color" id="color" name="color" class="color-input" value="<?php echo htmlspecialchars($product['color'] ?? '#667eea'); ?>">
+                                <div class="color-preview" id="color-preview" style="background-color: <?php echo htmlspecialchars($product['color'] ?? '#667eea'); ?>"></div>
+                            </div>
+                            <small class="color-help-text">This color will be displayed on the product card</small>
                         </div>
                 </div>
 
@@ -6289,48 +6322,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Initialize stock-availability sync
         document.addEventListener('DOMContentLoaded', setupStockAvailabilitySync);
 
-    </script>
-</body>
-</html> 
-            // Single product form
-            const stockInput = document.getElementById('stock');
-            const availableCheckbox = document.getElementById('available');
-            
-            if (stockInput && availableCheckbox) {
-                stockInput.addEventListener('input', function() {
-                    const stock = parseInt(this.value) || 0;
-                    availableCheckbox.checked = stock > 0;
-                    
-                    // Update the help text
-                    const helpText = this.nextElementSibling;
-                    if (helpText && helpText.tagName === 'SMALL') {
-                        if (stock > 0) {
-                            helpText.textContent = 'Product will be available for purchase';
-                            helpText.style.color = '#28a745';
-                        } else {
-                            helpText.textContent = 'Product will be marked as sold out';
-                            helpText.style.color = '#dc3545';
-                        }
-                    }
+        // Initialize color change handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorInput = document.getElementById('color');
+            if (colorInput) {
+                colorInput.addEventListener('input', function() {
+                    updateProductCardColor(this.value);
                 });
             }
-
-            // Multi-product forms
-            document.addEventListener('input', function(e) {
-                if (e.target.name && e.target.name.includes('[stock]')) {
-                    const stock = parseInt(e.target.value) || 0;
-                    const productIndex = e.target.name.match(/\[(\d+)\]/)[1];
-                    const availableCheckbox = document.getElementById(`available-${productIndex}`);
-                    
-                    if (availableCheckbox) {
-                        availableCheckbox.checked = stock > 0;
-                    }
+        });
+        
+        // Function to update product card color preview
+        function updateProductCardColor(colorValue) {
+            // Update the main color preview element
+            const colorPreview = document.getElementById('color-preview');
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = colorValue;
+            }
+            
+            // Update any other color preview elements on the page
+            const colorPreviews = document.querySelectorAll('.color-preview, .product-color-preview');
+            colorPreviews.forEach(preview => {
+                preview.style.backgroundColor = colorValue;
+            });
+            
+            // Update any color circles or swatches
+            const colorCircles = document.querySelectorAll('.color-circle, .color-swatch');
+            colorCircles.forEach(circle => {
+                if (circle.classList.contains('active') || circle.classList.contains('main-color')) {
+                    circle.style.backgroundColor = colorValue;
                 }
             });
+            
+            // Update any product card previews
+            const productCards = document.querySelectorAll('.product-card-preview, .preview-card');
+            productCards.forEach(card => {
+                const colorElement = card.querySelector('.product-color, .color-indicator');
+                if (colorElement) {
+                    colorElement.style.backgroundColor = colorValue;
+                }
+            });
+            
+            // Show a visual feedback that the color has changed
+            if (colorPreview) {
+                colorPreview.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    colorPreview.style.transform = 'scale(1)';
+                }, 200);
+            }
         }
-
-        // Initialize stock-availability sync
-        document.addEventListener('DOMContentLoaded', setupStockAvailabilitySync);
 
     </script>
 </body>
