@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if this is a single product update
     if (isset($_POST['product_id']) && !isset($_POST['products'])) {
         $productId = $_POST['product_id'];
+        $stock = (int)($_POST['stock'] ?? 0);
         $productData = [
             'name' => $_POST['name'] ?? '',
             'price' => floatval($_POST['price'] ?? 0),
@@ -58,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
-            'available' => isset($_POST['available']),
-            'stock' => (int)($_POST['stock'] ?? 0),
+            'available' => $stock > 0, // Automatically set available based on stock
+            'stock' => $stock,
             'size_category' => $_POST['size_category'] ?? '',
             'selected_sizes' => $_POST['selected_sizes'] ?? '',
             'shoe_type' => $_POST['shoe_type'] ?? '',
@@ -229,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'description' => $productPost['description'] ?? '',
                 'featured' => isset($productPost['featured']),
                 'sale' => isset($productPost['sale']),
-                'available' => isset($productPost['available']),
+                'available' => (int)($productPost['stock'] ?? 0) > 0, // Automatically set available based on stock
                 'stock' => (int)($productPost['stock'] ?? 0),
                 'size_category' => $productPost['size_category'] ?? '',
                 'selected_sizes' => $productPost['selected_sizes'] ?? '',
@@ -446,7 +447,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
-            'available' => isset($_POST['available']),
+            'available' => (int)($_POST['stock'] ?? 0) > 0, // Automatically set available based on stock
             'stock' => (int)($_POST['stock'] ?? 0),
             'size_category' => $_POST['size_category'] ?? '',
             'selected_sizes' => $_POST['selected_sizes'] ?? '',
@@ -1989,7 +1990,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group">
                             <label for="stock">Stock Quantity</label>
                         <input type="number" id="stock" name="stock" min="0" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" placeholder="Enter stock quantity">
-                        <small style="color: #666; font-size: 0.9em;">Set to 0 or uncheck "Available" to mark as sold out</small>
+                        <small style="color: #666; font-size: 0.9em;">Availability will be automatically set based on stock quantity</small>
                         </div>
 
                         <div class="checkbox-group">
@@ -6245,6 +6246,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sessionStorage.removeItem('clearFormsOnLoad');
             }
         });
+
+        // Auto-update availability based on stock
+        function setupStockAvailabilitySync() {
+            // Single product form
+            const stockInput = document.getElementById('stock');
+            const availableCheckbox = document.getElementById('available');
+            
+            if (stockInput && availableCheckbox) {
+                stockInput.addEventListener('input', function() {
+                    const stock = parseInt(this.value) || 0;
+                    availableCheckbox.checked = stock > 0;
+                    
+                    // Update the help text
+                    const helpText = this.nextElementSibling;
+                    if (helpText && helpText.tagName === 'SMALL') {
+                        if (stock > 0) {
+                            helpText.textContent = 'Product will be available for purchase';
+                            helpText.style.color = '#28a745';
+                        } else {
+                            helpText.textContent = 'Product will be marked as sold out';
+                            helpText.style.color = '#dc3545';
+                        }
+                    }
+                });
+            }
+
+            // Multi-product forms
+            document.addEventListener('input', function(e) {
+                if (e.target.name && e.target.name.includes('[stock]')) {
+                    const stock = parseInt(e.target.value) || 0;
+                    const productIndex = e.target.name.match(/\[(\d+)\]/)[1];
+                    const availableCheckbox = document.getElementById(`available-${productIndex}`);
+                    
+                    if (availableCheckbox) {
+                        availableCheckbox.checked = stock > 0;
+                    }
+                }
+            });
+        }
+
+        // Initialize stock-availability sync
+        document.addEventListener('DOMContentLoaded', setupStockAvailabilitySync);
+
+    </script>
+</body>
+</html> 
+            // Single product form
+            const stockInput = document.getElementById('stock');
+            const availableCheckbox = document.getElementById('available');
+            
+            if (stockInput && availableCheckbox) {
+                stockInput.addEventListener('input', function() {
+                    const stock = parseInt(this.value) || 0;
+                    availableCheckbox.checked = stock > 0;
+                    
+                    // Update the help text
+                    const helpText = this.nextElementSibling;
+                    if (helpText && helpText.tagName === 'SMALL') {
+                        if (stock > 0) {
+                            helpText.textContent = 'Product will be available for purchase';
+                            helpText.style.color = '#28a745';
+                        } else {
+                            helpText.textContent = 'Product will be marked as sold out';
+                            helpText.style.color = '#dc3545';
+                        }
+                    }
+                });
+            }
+
+            // Multi-product forms
+            document.addEventListener('input', function(e) {
+                if (e.target.name && e.target.name.includes('[stock]')) {
+                    const stock = parseInt(e.target.value) || 0;
+                    const productIndex = e.target.name.match(/\[(\d+)\]/)[1];
+                    const availableCheckbox = document.getElementById(`available-${productIndex}`);
+                    
+                    if (availableCheckbox) {
+                        availableCheckbox.checked = stock > 0;
+                    }
+                }
+            });
+        }
+
+        // Initialize stock-availability sync
+        document.addEventListener('DOMContentLoaded', setupStockAvailabilitySync);
+
     </script>
 </body>
 </html> 

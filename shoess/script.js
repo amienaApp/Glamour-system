@@ -1707,11 +1707,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Flag Container Click - Disabled (Coming Soon)
+        // Flag Container Click - Disabled (Decorative Only)
         if (flagContainer) {
             flagContainer.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Region settings coming soon!');
+                // Flag is decorative only - no action needed
             });
         }
         
@@ -2013,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi'],
                 'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow'],
                 'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe'],
-                'mudug': ['Galkayo', 'Hobyo', 'Garoowe'],
+                'mudug': ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
                 'nugaal': ['Garowe', 'Eyl', 'Burtinle'],
                 'sanaag': ['Erigavo', 'Badhan', 'Las Khorey'],
                 'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],

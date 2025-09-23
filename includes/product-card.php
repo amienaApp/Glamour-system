@@ -244,10 +244,7 @@ function renderProductCard($product) {
                 </div>
                 
                 <div class="options-section">
-                    <div class="selection-required">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Required:</strong> Please select both a color and size before adding to cart.
-                    </div>
+                    <!-- Removed selection requirement message -->
                     
                     <div class="option-group">
                         <h4>Color</h4>
@@ -1301,11 +1298,7 @@ function renderProductCard($product) {
             
             const quantity = parseInt(document.getElementById('quickViewQuantity').value);
             
-            // Validate selections
-            if (!selectedColor || !selectedSize) {
-                showNotification('Please select color and size', 'error');
-                return;
-            }
+            // Removed color and size validation - no prompts
             
             // Add to cart with selected options
             addToCart(currentProduct.id, {
@@ -1537,10 +1530,7 @@ function renderProductCard($product) {
         }
 
         function addToCartFromModal() {
-            if (!window.selectedColor || !window.selectedSize) {
-                showNotification('Please select both color and size', 'error');
-                return;
-            }
+            // Removed color and size validation - no prompts
             
             const btn = document.getElementById('addToCartBtn');
             const originalText = btn.innerHTML;

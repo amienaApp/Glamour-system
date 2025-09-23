@@ -249,8 +249,8 @@ $regionOptions = [
             </div>
         </div>
 
-        <!-- Somalia Flag - Compact (Disabled) -->
-        <div class="flag-container" title="Region Settings (Coming Soon)">
+        <!-- Somalia Flag - Compact (Decorative) -->
+        <div class="flag-container" title="Somalia Flag">
             <img src="<?php echo getAssetPath('img/flag.jpg'); ?>" alt="Somalia Flag" class="flag" id="somalia-flag">
         </div>
     </div>
@@ -275,8 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                    currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
                                    currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
                                    currentPath.includes('/bagsfolder/');
-            
-            // INSTANT redirect - no visual changes, no delays, no waiting
             window.location.href = isInSubdirectory ? '../cart-unified.php' : 'cart-unified.php';
         });
         
@@ -301,10 +299,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Legacy updateCartCount function - now handled by cart notification manager
         function updateCartCount() {
-            if (window.cartNotificationManager) {
-                return window.cartNotificationManager.refreshCart();
+            const cartCountElement = document.querySelector('.cart-count');
+            console.log('Cart count element found:', !!cartCountElement); // Debug log
+            if (cartCountElement) {
+                // Determine the correct path to cart API based on current URL
+                const currentPath = window.location.pathname;
+                const isInSubdirectory = currentPath.includes('/womenF/') || currentPath.includes('/kidsfolder/') || 
+                                       currentPath.includes('/beautyfolder/') || currentPath.includes('/menfolder/') || 
+                                       currentPath.includes('/perfumes/') || currentPath.includes('/homedecor/') ||
+                                       currentPath.includes('/shoess/') || currentPath.includes('/accessories/') ||
+                                       currentPath.includes('/bagsfolder/');
+                const cartApiPath = isInSubdirectory ? '../cart-api.php' : 'cart-api.php';
+                
+                // Fetch current cart count from cart API
+                fetch(cartApiPath, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=get_cart_count'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Cart count API response:', data); // Debug log
+                    if (data.success && data.cart_count > 0) {
+                        cartCountElement.textContent = data.cart_count;
+                        cartCountElement.style.display = 'flex';
+                        console.log('Cart count displayed:', data.cart_count); // Debug log
+                    } else {
+                        cartCountElement.style.display = 'none';
+                        console.log('Cart count hidden, count:', data.cart_count); // Debug log
+                    }
+                })
+                .catch(error => {
+                    console.log('Cart count fetch error:', error);
+                    cartCountElement.style.display = 'none';
+                });
             } else {
-                console.warn('Cart notification manager not available for cart count update');
+                console.log('Cart count element not found!');
             }
         }
     
@@ -362,26 +394,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Legacy updateCartCount function - now handled by cart notification manager
-    function updateCartCount() {
-        if (window.cartNotificationManager) {
-            return window.cartNotificationManager.refreshCart();
-        } else {
-            console.warn('Cart notification manager not available for cart count update');
-        }
-    }
+    // Simple cart count functions (like wishlist)
+    // Note: updateCartCount is defined above and uses API-based cart count
     
     // Legacy cart count functions - now handled by cart notification manager
     function addToCartCount() {
-        if (window.cartNotificationManager) {
-            return window.cartNotificationManager.refreshCart();
-        }
+        // Refresh cart count from API instead of just incrementing
+        updateCartCount();
     }
     
     function removeFromCartCount() {
-        if (window.cartNotificationManager) {
-            return window.cartNotificationManager.refreshCart();
-        }
+        // Refresh cart count from API instead of just decrementing
+        updateCartCount();
     }
 
     // Make functions available globally

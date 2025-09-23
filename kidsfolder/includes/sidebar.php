@@ -2,128 +2,57 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Filters</h3>
-        <span class="style-count" id="style-count">1000+ Kids Styles</span>
-        <button id="clear-filters" class="clear-filters-btn">Clear All Filters</button>
+        <span class="style-count" id="style-count">4146 Styles</span>
+        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">
-        <!-- Kids Category Filter -->
+
+    <!-- Category Filter -->
+    <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Kids Category</h4>
+                <h4>Category</h4>
             </div>
-            <div class="filter-options">
-                <div class="category-grid" id="kids-category-filter">
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="shirts" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Shirts
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="dresses" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Dresses
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="pants" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Pants
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="shorts" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Shorts
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="skirts" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Skirts
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="tops" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Tops
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="accessories" data-filter="kids_category">
-                        <span class="checkmark"></span>
-                        Accessories
-                    </label>
-                </div>
+            <div class="filter-options" id="category-filter">
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="boys" data-filter="category">
+                    <span class="checkmark"></span>
+                    Boys
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="girls" data-filter="category">
+                    <span class="checkmark"></span>
+                    Girls
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="baby" data-filter="category">
+                    <span class="checkmark"></span>
+                    Baby
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="toddler" data-filter="category">
+                    <span class="checkmark"></span>
+                    Toddler
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="accessories" data-filter="category">
+                    <span class="checkmark"></span>
+                    Accessories
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="shoes" data-filter="category">
+                    <span class="checkmark"></span>
+                    Shoes
+                </label>
             </div>
         </div>
-
-        <!-- Gender Filter -->
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Gender</h4>
-            </div>
-            <div class="filter-options">
-                <div class="gender-grid" id="gender-filter">
-                    <label class="filter-option">
-                        <input type="checkbox" name="gender[]" value="boys" data-filter="gender">
-                        <span class="checkmark"></span>
-                        Boys
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="gender[]" value="girls" data-filter="gender">
-                        <span class="checkmark"></span>
-                        Girls
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="gender[]" value="unisex" data-filter="gender">
-                        <span class="checkmark"></span>
-                        Unisex
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Age Group Filter -->
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Age Group</h4>
-            </div>
-            <div class="filter-options">
-                <div class="age-grid" id="age-filter">
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="2-4" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        2-4 Years
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="4-6" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        4-6 Years
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="6-8" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        6-8 Years
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="8-10" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        8-10 Years
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="10-12" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        10-12 Years
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="age[]" value="12-14" data-filter="age_group">
-                        <span class="checkmark"></span>
-                        12-14 Years
-                    </label>
-                </div>
-            </div>
-        </div>
-
+    </div>
         <!-- Size Filter -->
         <div class="filter-group">
             <div class="filter-header">
                 <h4>Size</h4>
+                <span class="size-count" id="size-count"></span>
             </div>
             <div class="filter-options">
                 <div class="size-grid" id="size-filter">
@@ -143,9 +72,9 @@
                         4T
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="5" data-filter="size">
+                        <input type="checkbox" name="size[]" value="5T" data-filter="size">
                         <span class="checkmark"></span>
-                        5
+                        5T
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="size[]" value="6" data-filter="size">
@@ -178,56 +107,146 @@
                         14
                     </label>
                 </div>
+                <div class="size-actions">
+                    <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
+                    <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
+                </div>
+                <script>
+                    // Ensure size filter functions are available
+                    if (typeof selectAllSizes === 'undefined') {
+                        window.selectAllSizes = function() {
+                            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                            sizeCheckboxes.forEach(checkbox => {
+                                checkbox.checked = true;
+                                const changeEvent = new Event('change', { bubbles: true });
+                                checkbox.dispatchEvent(changeEvent);
+                            });
+                            // Update count if function exists
+                            if (typeof updateSizeCount === 'function') {
+                                updateSizeCount();
+                            }
+                        };
+                    }
+                    
+                    if (typeof clearSizeFilters === 'undefined') {
+                        window.clearSizeFilters = function() {
+                            const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                            sizeCheckboxes.forEach(checkbox => {
+                                checkbox.checked = false;
+                                const changeEvent = new Event('change', { bubbles: true });
+                                checkbox.dispatchEvent(changeEvent);
+                            });
+                            // Update count if function exists
+                            if (typeof updateSizeCount === 'function') {
+                                updateSizeCount();
+                            }
+                        };
+                    }
+                </script>
             </div>
         </div>
 
         <!-- Color Filter -->
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Color</h4>
-            </div>
-            <div class="filter-options">
-                <div class="color-grid" id="color-filter">
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="blue" data-filter="color">
-                        <span class="color-swatch" style="background-color: #4A90E2;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="red" data-filter="color">
-                        <span class="color-swatch" style="background-color: #E74C3C;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="green" data-filter="color">
-                        <span class="color-swatch" style="background-color: #2ECC71;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="yellow" data-filter="color">
-                        <span class="color-swatch" style="background-color: #F1C40F;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="pink" data-filter="color">
-                        <span class="color-swatch" style="background-color: #E91E63;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="purple" data-filter="color">
-                        <span class="color-swatch" style="background-color: #9B59B6;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="orange" data-filter="color">
-                        <span class="color-swatch" style="background-color: #FF9800;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="black" data-filter="color">
-                        <span class="color-swatch" style="background-color: #2C3E50;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="white" data-filter="color">
-                        <span class="color-swatch" style="background-color: #ECF0F1; border: 1px solid #BDC3C7;"></span>
-                    </label>
-                    <label class="color-option">
-                        <input type="checkbox" name="color[]" value="gray" data-filter="color">
-                        <span class="color-swatch" style="background-color: #95A5A6;"></span>
-                    </label>
+        <div class="filter-section">
+            <div class="filter-group">
+                <div class="filter-header">
+                    <h4>Color</h4>
+                </div>
+                <div class="filter-options">
+                    <div class="color-grid" id="color-filter">
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#050505" data-filter="color">
+                            <span class="color-swatch" style="background-color: #050505;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#0d0d0d" data-filter="color">
+                            <span class="color-swatch" style="background-color: #0d0d0d;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#121212" data-filter="color">
+                            <span class="color-swatch" style="background-color: #121212;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#1b6435" data-filter="color">
+                            <span class="color-swatch" style="background-color: #1b6435;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#1f1e21" data-filter="color">
+                            <span class="color-swatch" style="background-color: #1f1e21;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#473c3f" data-filter="color">
+                            <span class="color-swatch" style="background-color: #473c3f;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#4b1924" data-filter="color">
+                            <span class="color-swatch" style="background-color: #4b1924;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#5e331c" data-filter="color">
+                            <span class="color-swatch" style="background-color: #5e331c;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#6d79ab" data-filter="color">
+                            <span class="color-swatch" style="background-color: #6d79ab;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#754640" data-filter="color">
+                            <span class="color-swatch" style="background-color: #754640;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#782121" data-filter="color">
+                            <span class="color-swatch" style="background-color: #782121;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#917e7e" data-filter="color">
+                            <span class="color-swatch" style="background-color: #917e7e;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#b4e5fe" data-filter="color">
+                            <span class="color-swatch" style="background-color: #b4e5fe;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#b9ba95" data-filter="color">
+                            <span class="color-swatch" style="background-color: #b9ba95;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#d1f5ef" data-filter="color">
+                            <span class="color-swatch" style="background-color: #d1f5ef;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#d6efff" data-filter="color">
+                            <span class="color-swatch" style="background-color: #d6efff;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#e9e0de" data-filter="color">
+                            <span class="color-swatch" style="background-color: #e9e0de;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#ea6695" data-filter="color">
+                            <span class="color-swatch" style="background-color: #ea6695;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#eed3d3" data-filter="color">
+                            <span class="color-swatch" style="background-color: #eed3d3;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#f67fbc" data-filter="color">
+                            <span class="color-swatch" style="background-color: #f67fbc;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#faf3f8" data-filter="color">
+                            <span class="color-swatch" style="background-color: #faf3f8;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#fe6ca6" data-filter="color">
+                            <span class="color-swatch" style="background-color: #fe6ca6;"></span>
+                        </label>
+                        <label class="color-option">
+                            <input type="checkbox" name="color[]" value="#ffccea" data-filter="color">
+                            <span class="color-swatch" style="background-color: #ffccea;"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,7 +256,7 @@
     <div class="filter-section">
         <div class="filter-group">
             <div class="filter-header">
-                <h4>Price Range</h4>
+                <h4>Price</h4>
             </div>
             <div class="filter-options" id="price-filter">
                 <label class="filter-option">
@@ -246,74 +265,36 @@
                     On Sale
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="0-10" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="0-25" data-filter="price_range">
                     <span class="checkmark"></span>
-                    $0 - $10
+                    $0 - $25
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="10-20" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="25-50" data-filter="price_range">
                     <span class="checkmark"></span>
-                    $10 - $20
+                    $25 - $50
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="20-30" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="50-75" data-filter="price_range">
                     <span class="checkmark"></span>
-                    $20 - $30
+                    $50 - $75
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="30-40" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="75-100" data-filter="price_range">
                     <span class="checkmark"></span>
-                    $30 - $40
+                    $75 - $100
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="40+" data-filter="price_range">
+                    <input type="checkbox" name="price[]" value="100+" data-filter="price_range">
                     <span class="checkmark"></span>
-                    $40+
+                    $100+
                 </label>
             </div>
         </div>
     </div>
 
-    <!-- Brand Filter -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Brand</h4>
-            </div>
-            <div class="filter-options" id="brand-filter">
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="carters" data-filter="brand">
-                    <span class="checkmark"></span>
-                    Carter's
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="gap-kids" data-filter="brand">
-                    <span class="checkmark"></span>
-                    Gap Kids
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="old-navy" data-filter="brand">
-                    <span class="checkmark"></span>
-                    Old Navy
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="hm-kids" data-filter="brand">
-                    <span class="checkmark"></span>
-                    H&M Kids
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="zara-kids" data-filter="brand">
-                    <span class="checkmark"></span>
-                    Zara Kids
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="brand[]" value="uniqlo-kids" data-filter="brand">
-                    <span class="checkmark"></span>
-                    Uniqlo Kids
-                </label>
-            </div>
-        </div>
-    </div>
+    
 
+    
     </div>
 </aside>

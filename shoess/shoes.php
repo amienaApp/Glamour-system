@@ -1,5 +1,16 @@
 <?php
+// Add cache-busting headers to prevent stale product data
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 $page_title = 'Galamor palace';
+
+// Load filter data helper
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Shoes');
 
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
@@ -27,6 +38,7 @@ if ($subcategory) {
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>

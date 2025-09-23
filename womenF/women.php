@@ -13,6 +13,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Women\'s Clothing');
 
 $categoryModel = new Category();
 $womenCategory = $categoryModel->getByName("Women's Clothing");
@@ -347,6 +351,76 @@ $defaultImage = '../img/women/dresses/12.webp';
         <div id="quick-view-overlay" class="quickview-overlay"></div>
 
         <script>
+            // Function to populate mobile filter options
+            function populateMobileFilters() {
+                // Get filter options from the sidebar
+                const sidebar = document.querySelector('.sidebar');
+                if (!sidebar) return;
+
+                // Populate category filters
+                const categoryOptions = sidebar.querySelectorAll('input[name="subcategory[]"]');
+                const mobileCategoryFilter = document.getElementById('mobile-category-filter');
+                if (mobileCategoryFilter && categoryOptions.length > 0) {
+                    mobileCategoryFilter.innerHTML = '';
+                    categoryOptions.forEach(option => {
+                        const filterOption = document.createElement('div');
+                        filterOption.className = 'mobile-filter-option';
+                        filterOption.innerHTML = `
+                            <input type="checkbox" id="mobile-${option.value}" value="${option.value}" data-filter="category">
+                            <label for="mobile-${option.value}">${option.nextElementSibling.textContent.trim()}</label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        `;
+                        mobileCategoryFilter.appendChild(filterOption);
+                    });
+                }
+
+                // Populate color filters
+                const colorOptions = sidebar.querySelectorAll('.color-option');
+                const mobileColorFilter = document.getElementById('mobile-color-filter');
+                if (mobileColorFilter && colorOptions.length > 0) {
+                    mobileColorFilter.innerHTML = '';
+                    colorOptions.forEach(option => {
+                        const color = option.getAttribute('data-color');
+                        const filterOption = document.createElement('div');
+                        filterOption.className = 'mobile-color-option';
+                        filterOption.innerHTML = `
+                            <input type="checkbox" id="mobile-color-${color}" value="${color}" data-filter="color">
+                            <label for="mobile-color-${color}">
+                                <span class="color-swatch" style="background-color: ${color};"></span>
+                                <span class="color-name">${color}</span>
+                            </label>
+                            <i class="fas fa-check mobile-checkmark"></i>
+                        `;
+                        mobileColorFilter.appendChild(filterOption);
+                    });
+                }
+            }
+
+            // Function to sync mobile filter state with sidebar
+            function syncMobileFilterState() {
+                const sidebar = document.querySelector('.sidebar');
+                if (!sidebar) return;
+
+                // Sync category filters
+                const sidebarCategoryOptions = sidebar.querySelectorAll('input[name="subcategory[]"]');
+                sidebarCategoryOptions.forEach(sidebarOption => {
+                    const mobileOption = document.getElementById(`mobile-${sidebarOption.value}`);
+                    if (mobileOption) {
+                        mobileOption.checked = sidebarOption.checked;
+                    }
+                });
+
+                // Sync color filters
+                const sidebarColorOptions = sidebar.querySelectorAll('.color-option');
+                sidebarColorOptions.forEach(sidebarOption => {
+                    const color = sidebarOption.getAttribute('data-color');
+                    const mobileOption = document.getElementById(`mobile-color-${color}`);
+                    if (mobileOption) {
+                        mobileOption.checked = sidebarOption.classList.contains('selected');
+                    }
+                });
+            }
+
             // Mobile Filter Functionality
             document.addEventListener('DOMContentLoaded', function() {
                 const mobileFilterBtn = document.getElementById('mobile-filter-btn');
@@ -355,6 +429,12 @@ $defaultImage = '../img/women/dresses/12.webp';
                 const mobileClearFilters = document.getElementById('mobile-clear-filters');
                 const mobileApplyFilters = document.getElementById('mobile-apply-filters');
                 const body = document.body;
+
+                // Populate mobile filter options
+                populateMobileFilters();
+                
+                // Sync mobile filter state with sidebar
+                syncMobileFilterState();
 
                 // Open mobile filter menu
                 if (mobileFilterBtn) {

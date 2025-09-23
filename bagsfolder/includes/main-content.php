@@ -1,3 +1,4 @@
+
 <?php
 require_once __DIR__ . '/../../config1/mongodb.php';
 require_once __DIR__ . '/../../models/Product.php';
@@ -7,8 +8,54 @@ $productModel = new Product();
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 
-// Get sort parameter
+// Get query parameters for filtering
+$gender = $_GET['gender'] ?? null;
+$category = $_GET['category'] ?? null;
+$color = $_GET['color'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
 $sort = $_GET['sort'] ?? 'newest';
+$limit = intval($_GET['limit'] ?? 60);
+$skip = intval($_GET['skip'] ?? 0);
+
+// Build filters
+$filters = [];
+$filters['category'] = 'Bags'; // Always filter for bags
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
+if ($gender) $filters['gender'] = $gender;
+if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($color) {
+    // Define color groups - map color names to hex codes (existing + future products)
+    $colorGroups = [
+        'black' => ['#000000', '#181a1a', '#0a0a0a', '#111218', '#1a1a1a', '#333333', '#2c2c2c'],
+        'beige' => ['#e1c9c9', '#f5f5dc', '#f0e68c', '#d2b48c', '#deb887', '#f4a460', '#b38f65'],
+        'blue' => ['#414c61', '#0066cc', '#0000ff', '#4169e1', '#1e90ff', '#00bfff', '#87ceeb', '#4682b4', '#5f9ea0'],
+        'brown' => ['#8b4f33', '#5d3c3c', '#a52a2a', '#d2691e', '#cd853f', '#bc8f8f', '#d2b48c', '#deb887', '#f4a460'],
+        'gold' => ['#ffd700', '#ffb347', '#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500'],
+        'green' => ['#82ff4d', '#228b22', '#32cd32', '#00ff00', '#008000', '#00ff7f', '#7fff00', '#adff2f', '#9acd32'],
+        'grey' => ['#575759', '#4a4142', '#808080', '#a9a9a9', '#c0c0c0', '#d3d3d3', '#dcdcdc', '#f5f5f5', '#696969', '#778899'],
+        'orange' => ['#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#ffd700', '#ffb347'],
+        'pink' => ['#ffc0cb', '#ff69b4', '#ff1493', '#dc143c', '#ffb6c1', '#ffa0b4', '#ff91a4'],
+        'purple' => ['#373645', '#800080', '#4b0082', '#6a5acd', '#8a2be2', '#9932cc', '#ba55d3', '#da70d6'],
+        'red' => ['#5a2b34', '#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff6347', '#ff4500', '#ff1493', '#c71585'],
+        'silver' => ['#c0c0c0', '#d3d3d3', '#a9a9a9', '#dcdcdc', '#f5f5f5', '#e6e6fa', '#f0f8ff'],
+        'taupe' => ['#b38f65', '#483c32', '#8b7355', '#a0956b', '#d2b48c', '#deb887', '#f4a460', '#cd853f'],
+        'white' => ['#ffffff', '#fff', '#f5f5f5', '#fafafa', '#f8f8ff', '#f0f8ff', '#e6e6fa', '#fff8dc'],
+        'yellow' => ['#ffff00', '#ffd700', '#ffeb3b', '#ffc107', '#ffa000', '#ff8f00', '#ff6f00', '#ffea00']
+    ];
+    
+    // Get the hex codes for the selected color group
+    $hexCodes = $colorGroups[$color] ?? [$color];
+    
+    // Use $in operator to match any of the hex codes in the group
+    $filters['color'] = ['$in' => $hexCodes];
+}
+if ($minPrice !== null) {
+    $filters['price'] = ['$gte' => floatval($minPrice)];
+    if ($maxPrice !== null) {
+        $filters['price']['$lte'] = floatval($maxPrice);
+    }
+}
 
 // Build sort options
 $sortOptions = [];
@@ -30,23 +77,22 @@ switch ($sort) {
         break;
 }
 
-// Convert URL-friendly subcategory back to database format
-$subcategoryForQuery = '';
-if ($subcategory) {
-    // Convert URL format back to database format
-    $subcategoryForQuery = str_replace(['-', 'and'], [' ', '&'], $subcategory);
-    $subcategoryForQuery = ucwords($subcategoryForQuery);
-}
 
-// Get products based on subcategory or all bags
-if ($subcategoryForQuery) {
-    $products = $productModel->getBySubcategory($subcategoryForQuery, $sortOptions);
-    $pageTitle = $subcategoryForQuery;
-} else {
-    // Get all bags products
-    $products = $productModel->getByCategory("Bags", $sortOptions);
-    $pageTitle = "Bags";
-}
+// Get bags from database
+$products = $productModel->getAll($filters, $sortOptions, $limit, $skip);
+$total = $productModel->getCount($filters);
+
+// Set page title
+$pageTitle = $subcategory ? ucfirst($subcategory) : "Bags";
+
+// Get all handbags from the database
+$handbags = $productModel->getBySubcategory('Handbags');
+
+// Get all backpacks from the database
+$backpacks = $productModel->getBySubcategory('Backpacks');
+
+// Get all clutches from the database
+$clutches = $productModel->getBySubcategory('Clutches');
 
 ?>
 
@@ -56,12 +102,6 @@ if ($subcategoryForQuery) {
     <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
-            <!-- Mobile Filter Button -->
-            <button class="mobile-filter-btn" id="mobile-filter-btn">
-                <i class="fas fa-filter"></i>
-                <span>Filters</span>
-            </button>
-            
             <div class="sort-control">
                 <label for="sort-select-bags">Sort:</label>
                 <select id="sort-select-bags" class="sort-select" onchange="updateSort(this.value)">
@@ -74,23 +114,24 @@ if ($subcategoryForQuery) {
         </div>
     </div>
 
-    <!-- Products Grid -->
-    <div class="product-grid" id="bags-products-grid">
+    <?php if ($subcategory): ?>
+    <!-- Filtered Products Grid -->
+    <div class="product-grid" id="filtered-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php 
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
                 ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
-                     data-product-price="<?php echo $product['price']; ?>"
-                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
-                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -103,21 +144,88 @@ if ($subcategoryForQuery) {
                                 $backImage = $frontImage;
                             }
                             
-                            if ($frontImage): ?>
-                                <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
-                                     alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
-                                     class="active" 
-                                     data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
                             <?php endif; ?>
                             
-                            <?php if ($backImage): ?>
-                                <img src="../<?php echo htmlspecialchars($backImage); ?>" 
-                                     alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
-                                     data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="far fa-heart"></i>
+                            <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
@@ -135,32 +243,225 @@ if ($subcategoryForQuery) {
                     </div>
                     <div class="product-info">
                         <div class="color-options">
-                            <?php if (!empty($product['color'])): ?>
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
                                 <span class="color-circle active" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
                             <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                            <?php if ($isSoldOut): ?>
-                                SOLD OUT
-                            <?php elseif ($isLowStock): ?>
-                                ⚠️ Only <?php echo $stock; ?> left in stock!
-                            <?php endif; ?>
-                        </div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        ?>
+                        <?php if (false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="no-products">
-                <h3>No products found</h3>
-                <p>We couldn't find any bags in this category.</p>
+                <p>No products found for this category.</p>
             </div>
         <?php endif; ?>
     </div>
+    <?php else: ?>
+    <!-- All Bags Display -->
+    <div class="product-grid" id="all-bags-grid">
+        <?php if (!empty($products)): ?>
+            <?php foreach ($products as $index => $product): ?>
+                <div class="product-card" 
+                     data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
+                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
+                    <div class="product-image">
+                        <div class="image-slider">
+                            <?php 
+                            // Main product images
+                            $frontImage = $product['front_image'] ?? $product['image_front'] ?? '';
+                            $backImage = $product['back_image'] ?? $product['image_back'] ?? '';
+                            
+                            // If no back image, use front image for both
+                            if (empty($backImage) && !empty($frontImage)) {
+                                $backImage = $frontImage;
+                            }
+                            
+                            if ($frontImage): 
+                                $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                           class="active" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
+                                         class="active" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php if ($backImage): 
+                                $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
+                                    <video src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                           alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                           data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                           muted
+                                           loop>
+                                    </video>
+                                <?php else: ?>
+                                    <img src="../<?php echo htmlspecialchars($backImage); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant images
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    $variantFrontImage = $variant['front_image'] ?? '';
+                                    $variantBackImage = $variant['back_image'] ?? '';
+                                    
+                                    // If no back image for variant, use front image for both
+                                    if (empty($variantBackImage) && !empty($variantFrontImage)) {
+                                        $variantBackImage = $variantFrontImage;
+                                    }
+                                    
+                                    if ($variantFrontImage): 
+                                        $variantFrontExtension = pathinfo($variantFrontImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantFrontExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($variantBackImage): 
+                                        $variantBackExtension = pathinfo($variantBackImage, PATHINFO_EXTENSION);
+                                        if (in_array(strtolower($variantBackExtension), ['mp4', 'webm', 'mov'])): ?>
+                                            <video src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                   alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                   data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                   muted
+                                                   loop>
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
+                            <?php else: ?>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="color-options">
+                            <?php 
+                            // Main product color
+                            if (!empty($product['color'])): ?>
+                                <span class="color-circle active" 
+                                      style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
+                                      title="<?php echo htmlspecialchars($product['color']); ?>" 
+                                      data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            // Color variant colors
+                            if (!empty($product['color_variants'])):
+                                foreach ($product['color_variants'] as $variant):
+                                    if (!empty($variant['color'])): ?>
+                                        <span class="color-circle" 
+                                              style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
+                                              title="<?php echo htmlspecialchars($variant['name']); ?>" 
+                                              data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        ?>
+                        <?php if (false): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="no-products">
+                <p>No bags found.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- Pagination -->
+    <?php if ($total > $limit): ?>
+        <div class="pagination">
+            <?php 
+            $totalPages = ceil($total / $limit);
+            $currentPage = floor($skip / $limit) + 1;
+            
+            for ($i = 1; $i <= $totalPages; $i++): ?>
+                <a href="#" class="page-link <?php echo $i === $currentPage ? 'active' : ''; ?>" 
+                   onclick="goToPage(<?php echo $i; ?>)"><?php echo $i; ?></a>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
 </main>
 
 <!-- Quick View Sidebar -->
@@ -172,10 +473,10 @@ if ($subcategoryForQuery) {
     </div>
     
     <div class="quick-view-content">
-        <!-- Product Media -->
+        <!-- Product Images -->
         <div class="quick-view-images">
             <div class="main-image-container">
-                <img id="quick-view-main-image" src="" alt="Product Media">
+                <img id="quick-view-main-image" src="" alt="Product Image">
             </div>
             <div class="thumbnail-images" id="quick-view-thumbnails">
                 <!-- Thumbnails will be populated by JavaScript -->
@@ -185,10 +486,11 @@ if ($subcategoryForQuery) {
         <!-- Product Details -->
         <div class="quick-view-details">
             <h2 id="quick-view-title"></h2>
+            <div class="quick-view-brand" id="quick-view-brand"></div>
             <div class="quick-view-price" id="quick-view-price"></div>
             <div class="quick-view-reviews">
-                <span class="stars" id="quick-view-stars"></span>
-                <span class="review-count" id="quick-view-review-count"></span>
+                <span class="stars">★★★★★</span>
+                <span class="review-count">(0 Reviews)</span>
             </div>
             
             <!-- Color Selection -->
@@ -199,6 +501,14 @@ if ($subcategoryForQuery) {
                 </div>
             </div>
             
+            <!-- Size Selection -->
+            <div class="quick-view-sizes">
+                <h4>Size</h4>
+                <div class="size-selection" id="quick-view-size-selection">
+                    <!-- Sizes will be populated by JavaScript -->
+                </div>
+            </div>
+            
             <!-- Action Buttons -->
             <div class="quick-view-actions">
                 <button class="add-to-bag-quick" id="add-to-bag-quick">
@@ -206,201 +516,88 @@ if ($subcategoryForQuery) {
                     Add to Bag
                 </button>
                 <button class="add-to-wishlist-quick" id="add-to-wishlist-quick">
-                    <i class="far fa-heart"></i>
-                    Add to Wishlist
+                    <i class="fas fa-heart"></i>
+                    + Wishlist
                 </button>
-            </div>
-            
-            <!-- Availability Status -->
-            <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
-                <!-- Availability will be populated by JavaScript -->
             </div>
             
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p id="quick-view-description"></p>
+                <p>A beautiful bag perfect for any occasion. Features a durable design and comfortable carrying experience.</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Quick View Overlay -->
-<div class="quick-view-overlay" id="quick-view-overlay"></div>
 
-<!-- Mobile Filter Overlay -->
-<div class="mobile-filter-overlay" id="mobile-filter-overlay">
-    <div class="mobile-filter-content">
-        <div class="mobile-filter-header">
-            <h3>Filters</h3>
-            <button class="mobile-filter-close" id="mobile-filter-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+<script>
+// Color filtering logic - show only the color variant that matches the selected filter
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedColor = urlParams.get('color');
+    
+    if (selectedColor) {
+        // Define color groups
+        const colorGroups = {
+            'black': ['#000000', '#181a1a', '#0a0a0a', '#111218', '#1a1a1a', '#333333', '#2c2c2c'],
+            'beige': ['#e1c9c9', '#f5f5dc', '#f0e68c', '#d2b48c', '#deb887', '#f4a460', '#b38f65'],
+            'blue': ['#414c61', '#0066cc', '#0000ff', '#4169e1', '#1e90ff', '#00bfff', '#87ceeb', '#4682b4', '#5f9ea0'],
+            'brown': ['#8b4f33', '#5d3c3c', '#a52a2a', '#d2691e', '#cd853f', '#bc8f8f', '#d2b48c', '#deb887', '#f4a460'],
+            'gold': ['#ffd700', '#ffb347', '#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500'],
+            'green': ['#82ff4d', '#228b22', '#32cd32', '#00ff00', '#008000', '#00ff7f', '#7fff00', '#adff2f', '#9acd32'],
+            'grey': ['#575759', '#4a4142', '#808080', '#a9a9a9', '#c0c0c0', '#d3d3d3', '#dcdcdc', '#f5f5f5', '#696969', '#778899'],
+            'orange': ['#ffa500', '#ff8c00', '#ff7f50', '#ff6347', '#ff4500', '#ffd700', '#ffb347'],
+            'pink': ['#ffc0cb', '#ff69b4', '#ff1493', '#dc143c', '#ffb6c1', '#ffa0b4', '#ff91a4'],
+            'purple': ['#373645', '#800080', '#4b0082', '#6a5acd', '#8a2be2', '#9932cc', '#ba55d3', '#da70d6'],
+            'red': ['#5a2b34', '#ff0000', '#dc143c', '#b22222', '#8b0000', '#ff6347', '#ff4500', '#ff1493', '#c71585'],
+            'silver': ['#c0c0c0', '#d3d3d3', '#a9a9a9', '#dcdcdc', '#f5f5f5', '#e6e6fa', '#f0f8ff'],
+            'taupe': ['#b38f65', '#483c32', '#8b7355', '#a0956b', '#d2b48c', '#deb887', '#f4a460', '#cd853f'],
+            'white': ['#ffffff', '#fff', '#f5f5f5', '#fafafa', '#f8f8ff', '#f0f8ff', '#e6e6fa', '#fff8dc'],
+            'yellow': ['#ffff00', '#ffd700', '#ffeb3b', '#ffc107', '#ffa000', '#ff8f00', '#ff6f00', '#ffea00']
+        };
         
-        <div class="mobile-filter-body">
-            <!-- Copy all sidebar filters here -->
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Category</h4>
-                    </div>
-                    <div class="mobile-filter-options" id="mobile-category-filter">
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="shoulder-bags" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Shoulder Bags
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="clutches" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Clutches
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="tote-bags" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Tote Bags
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="crossbody-bags" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Crossbody Bags
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="backpacks" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Backpacks
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="briefcases" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Briefcases
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="laptop-bags" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Laptop Bags
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="waist-bags" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Waist Bags
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="category[]" value="wallets" data-filter="category">
-                            <span class="mobile-checkmark"></span>
-                            Wallets
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Color</h4>
-                    </div>
-                    <div class="mobile-filter-options">
-                        <div class="mobile-color-grid" id="mobile-color-filter">
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#f5f5dc" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #f5f5dc;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#000000" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #000000;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#0066cc" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #0066cc;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#8b4513" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #8b4513;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#ffd700" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #ffd700;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#228b22" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #228b22;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#808080" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #808080;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#ffa500" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #ffa500;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#ffc0cb" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #ffc0cb;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#800080" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #800080;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#ff0000" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #ff0000;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#c0c0c0" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #c0c0c0;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#483c32" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #483c32;"></span>
-                            </label>
-                            <label class="mobile-color-option">
-                                <input type="checkbox" name="color[]" value="#ffffff" data-filter="color">
-                                <span class="mobile-color-swatch" style="background-color: #ffffff; border: 1px solid #ddd;"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Price</h4>
-                    </div>
-                    <div class="mobile-filter-options" id="mobile-price-filter">
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="price[]" value="on-sale" data-filter="price_range">
-                            <span class="mobile-checkmark"></span>
-                            On Sale
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="price[]" value="0-100" data-filter="price_range">
-                            <span class="mobile-checkmark"></span>
-                            $0 - $100
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="price[]" value="100-200" data-filter="price_range">
-                            <span class="mobile-checkmark"></span>
-                            $100 - $200
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="price[]" value="200-400" data-filter="price_range">
-                            <span class="mobile-checkmark"></span>
-                            $200 - $400
-                        </label>
-                        <label class="mobile-filter-option">
-                            <input type="checkbox" name="price[]" value="400+" data-filter="price_range">
-                            <span class="mobile-checkmark"></span>
-                            $400+
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+        const allowedColors = colorGroups[selectedColor] || [selectedColor];
         
-        <div class="mobile-filter-footer">
-            <button class="mobile-clear-filters-btn" id="mobile-clear-filters">Clear All</button>
-            <button class="mobile-apply-filters-btn" id="mobile-apply-filters">Apply Filters</button>
-        </div>
-    </div>
-</div>
+        // Process each product card
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(function(card) {
+            // Find all color variant elements (images, color swatches, etc.)
+            const colorElements = card.querySelectorAll('[data-color]');
+            let hasMatchingColor = false;
+            
+            // First, hide all color variants
+            colorElements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+            
+            // Then show only the matching color variants
+            colorElements.forEach(function(element) {
+                const elementColor = element.getAttribute('data-color');
+                if (elementColor && allowedColors.includes(elementColor)) {
+                    element.style.display = 'block';
+                    hasMatchingColor = true;
+                }
+            });
+            
+            // If no color variants match, show the main product image
+            if (!hasMatchingColor) {
+                const mainImage = card.querySelector('.product-image img:not([data-color])');
+                if (mainImage) {
+                    mainImage.style.display = 'block';
+                }
+            }
+        });
+        
+        // Also filter color swatches in product details
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        colorSwatches.forEach(function(swatch) {
+            const swatchColor = swatch.getAttribute('data-color');
+            if (swatchColor && !allowedColors.includes(swatchColor)) {
+                swatch.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+<div class="quick-view-overlay" id="quick-view-overlay"></div> 

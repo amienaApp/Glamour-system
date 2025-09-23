@@ -449,6 +449,8 @@ if ($amount == 0) {
     </style>
 </head>
 <body>
+    <!-- Header removed as requested -->
+    
     <div class="container">
                     <a href="cart-unified.php" class="back-btn">
             <i class="fas fa-arrow-left"></i>
@@ -567,21 +569,24 @@ if ($amount == 0) {
                                 <label for="region-${method.id}" class="required-field">Region</label>
                                 <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
                                     <option value="">Select Region</option>
-                                    <option value="banadir">Banadir</option>
-                                    <option value="bari">Bari</option>
-                                    <option value="bay">Bay</option>
-                                    <option value="galkacyo">Galkacyo</option>
-                                    <option value="gedo">Gedo</option>
-                                    <option value="hiran">Hiran</option>
-                                    <option value="jubaland">Jubaland</option>
-                                    <option value="mudug">Mudug</option>
-                                    <option value="nugal">Nugal</option>
-                                    <option value="sanaag">Sanaag</option>
-                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
-                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
-                                    <option value="sool">Sool</option>
+                                    <option value="awdal">Awdal</option>
+                                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
                                     <option value="togdheer">Togdheer</option>
-                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="nugaal">Nugaal</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="galguduud">Galgaduud</option>
+                                    <option value="hiran">Hiiraan</option>
+                                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="bakool">Bakool</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
+                                    <option value="jubbada-hoose">Jubbada Hoose</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -608,7 +613,7 @@ if ($amount == 0) {
                                         +252
                                     </div>
                                                                          <input type="tel" id="phone-${method.id}" class="form-input phone-input" 
-                                            placeholder="090 xxx xxxx" maxlength="10" required>
+                                            placeholder="090 xxx xxxx" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                                 </div>
                                                                  <div class="help-text">
                                      Supports: SAHAL (090), SAAD (063), EVC (061), EDAHAB (066) - Enter 10 digits
@@ -640,21 +645,24 @@ if ($amount == 0) {
                                 <label for="region-${method.id}" class="required-field">Region</label>
                                 <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
                                     <option value="">Select Region</option>
-                                    <option value="banadir">Banadir</option>
-                                    <option value="bari">Bari</option>
-                                    <option value="bay">Bay</option>
-                                    <option value="galkacyo">Galkacyo</option>
-                                    <option value="gedo">Gedo</option>
-                                    <option value="hiran">Hiran</option>
-                                    <option value="jubaland">Jubaland</option>
-                                    <option value="mudug">Mudug</option>
-                                    <option value="nugal">Nugal</option>
-                                    <option value="sanaag">Sanaag</option>
-                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
-                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
-                                    <option value="sool">Sool</option>
+                                    <option value="awdal">Awdal</option>
+                                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
                                     <option value="togdheer">Togdheer</option>
-                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="nugaal">Nugaal</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="galguduud">Galgaduud</option>
+                                    <option value="hiran">Hiiraan</option>
+                                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="bakool">Bakool</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
+                                    <option value="jubbada-hoose">Jubbada Hoose</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -717,21 +725,24 @@ if ($amount == 0) {
                                 <label for="region-${method.id}" class="required-field">Region</label>
                                 <select id="region-${method.id}" class="form-input" required onchange="updateCities('${method.id}')">
                                     <option value="">Select Region</option>
-                                    <option value="banadir">Banadir</option>
-                                    <option value="bari">Bari</option>
-                                    <option value="bay">Bay</option>
-                                    <option value="galkacyo">Galkacyo</option>
-                                    <option value="gedo">Gedo</option>
-                                    <option value="hiran">Hiran</option>
-                                    <option value="jubaland">Jubaland</option>
-                                    <option value="mudug">Mudug</option>
-                                    <option value="nugal">Nugal</option>
-                                    <option value="sanaag">Sanaag</option>
-                                    <option value="shabeellaha_dhexe">Shabeellaha Dhexe</option>
-                                    <option value="shabeellaha_hoose">Shabeellaha Hoose</option>
-                                    <option value="sool">Sool</option>
+                                    <option value="awdal">Awdal</option>
+                                    <option value="woqooyi-galbeed">Woqooyi Galbeed</option>
                                     <option value="togdheer">Togdheer</option>
-                                    <option value="woqooyi_galbeed">Woqooyi Galbeed</option>
+                                    <option value="sanaag">Sanaag</option>
+                                    <option value="sool">Sool</option>
+                                    <option value="bari">Bari</option>
+                                    <option value="nugaal">Nugaal</option>
+                                    <option value="mudug">Mudug</option>
+                                    <option value="galguduud">Galgaduud</option>
+                                    <option value="hiran">Hiiraan</option>
+                                    <option value="shabeellaha-dhexe">Shabeellaha Dhexe</option>
+                                    <option value="banadir">Banadir</option>
+                                    <option value="shabeellaha-hoose">Shabeellaha Hoose</option>
+                                    <option value="bay">Bay</option>
+                                    <option value="bakool">Bakool</option>
+                                    <option value="gedo">Gedo</option>
+                                    <option value="jubbada-dhexe">Jubbada Dhexe</option>
+                                    <option value="jubbada-hoose">Jubbada Hoose</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1054,21 +1065,24 @@ if ($amount == 0) {
             
             // Define cities for each region
             const cities = {
-                banadir: ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn'],
-                bari: ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban'],
-                bay: ['Baidoa', 'Buurhakaba', 'Dinsor', 'Qansaxdheere'],
-                galkacyo: ['Galkacyo', 'Garoowe', 'Burtinle', 'Dangorayo'],
-                gedo: ['Garbahaarrey', 'Bardheere', 'Luuq', 'El Wak'],
-                hiran: ['Beledweyne', 'Buulobarde', 'Jalalaqsi', 'Mahas'],
-                jubaland: ['Kismayo', 'Jamaame', 'Afmadow', 'Badhaadhe'],
-                mudug: ['Galkacyo', 'Garoowe', 'Burtinle', 'Dangorayo'],
-                nugal: ['Garoowe', 'Eyl', 'Burtinle', 'Dangorayo'],
-                sanaag: ['Ceerigaabo', 'Badhan', 'Laasqoray', 'Dhahar'],
-                shabeellaha_dhexe: ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
-                shabeellaha_hoose: ['Marka', 'Afgooye', 'Wanlaweyn', 'Qoryooley'],
-                sool: ['Laas Caanood', 'Caynabo', 'Taleex', 'Xudun'],
-                togdheer: ['Hargeisa', 'Burao', 'Oodweyne', 'Sheikh'],
-                woqooyi_galbeed: ['Hargeisa', 'Berbera', 'Gabiley', 'Burao']
+        awdal: ['Borama', 'Zeila', 'Lughaya'],
+        'woqooyi-galbeed': ['Hargeisa', 'Berbera', 'Gabiley'],
+        togdheer: ['Burao', 'Oodweyne', 'Balidhiig'],
+        sanaag: ['Erigavo', 'Badhan', 'Las Qoray'],
+        sool: ['Las Anod', 'Taleh', 'Hudun'],
+        bari: ['Bosaso', 'Qandala', 'Iskushuban'],
+        nugaal: ['Garowe', 'Burtinle', 'Eyl'],
+        mudug: ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
+        galguduud: ['Dhusamareb', 'Guriceel', 'Cadaado', 'Balanbale'],
+        hiran: ['Beledweyne', 'Bulo Burte', 'Jalalaqsi'],
+        'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Mahaday'],
+        banadir: ['Abdiaziz', 'Bondhere', 'Daynile', 'Dharkenley', 'Hamar-Jajab', 'Hamar-Weyne', 'Hodan', 'Howlwadag', 'Karaan', 'Kaxda', 'Shangani', 'Shibis', 'Waberi', 'Wadajir', 'Wardhigley', 'Yaqshid'],
+        'shabeellaha-hoose': ['Marka', 'Afgoye', 'Qoryoley', 'Barawe'],
+        bay: ['Baidoa', 'Burhakaba', 'Dinsoor'],
+        bakool: ['Hudur', 'Tayeeglow', 'Wajid', 'El Barde'],
+        gedo: ['Garbahaarreey', 'Bardera', 'Luuq', 'Beled Hawo', 'Dolow'],
+        'jubbada-dhexe': ['Bu\'aale', 'Sakow', 'Jilib'],
+        'jubbada-hoose': ['Kismayo', 'Afmadow', 'Dhobley', 'Jamaame']
             };
             
             const regionCities = cities[selectedRegion] || [];

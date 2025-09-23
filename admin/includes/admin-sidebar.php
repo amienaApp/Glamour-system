@@ -67,6 +67,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-user-shield"></i>
                 Manage Admins
             </a>
+            <a href="manage-feedback.php" class="nav-item <?php echo $currentPage === 'manage-feedback.php' ? 'active' : ''; ?>">
+                <i class="fas fa-comments"></i>
+                Manage Feedback
+            </a>
         </div>
 
         <div class="nav-section">

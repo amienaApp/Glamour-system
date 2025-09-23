@@ -758,7 +758,7 @@ $page_title = 'My Wishlist - Glamour Palace';
                             <img src="${item.image}" 
                                  alt="${item.name}" 
                                  class="wishlist-item-image"
-                                 onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+                                 onerror="this.src='img/placeholder.jpg'">
                             <button class="heart-button-wishlist" data-product-id="${item.id}" onclick="toggleWishlistFromWishlistPage('${item.id}')">
                                 <i class="fas fa-heart"></i>
                             </button>

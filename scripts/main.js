@@ -132,3 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Note: Header authentication functionality is now handled by heading/header.php
+// This file focuses on product-specific functionality
