@@ -14,7 +14,7 @@ $category = $_GET['category'] ?? null;
 $color = $_GET['color'] ?? null;
 $minPrice = $_GET['min_price'] ?? null;
 $maxPrice = $_GET['max_price'] ?? null;
-$sort = $_GET['sort'] ?? 'oldest';
+$sort = $_GET['sort'] ?? 'newest';
 $limit = intval($_GET['limit'] ?? 60);
 $skip = intval($_GET['skip'] ?? 0);
 
@@ -60,9 +60,6 @@ if ($minPrice !== null) {
 // Build sort options
 $sortOptions = [];
 switch ($sort) {
-    case 'oldest':
-        $sortOptions = ['_id' => 1]; // Ascending order by ID - oldest first
-        break;
     case 'newest':
         $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
         break;
@@ -75,8 +72,8 @@ switch ($sort) {
     case 'popular':
         $sortOptions = ['featured' => -1, '_id' => -1];
         break;
-    default: // oldest
-        $sortOptions = ['_id' => 1]; // Ascending order by ID - oldest first
+    default: // newest
+        $sortOptions = ['_id' => -1]; // Descending order by ID - newest first
         break;
 }
 
@@ -108,18 +105,11 @@ $clutches = $productModel->getBySubcategory('Clutches');
             <div class="sort-control">
                 <label for="sort-select-bags">Sort:</label>
                 <select id="sort-select-bags" class="sort-select" onchange="updateSort(this.value)">
-                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest First</option>
+                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
                     <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
                     <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
                     <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
-            </div>
-            <div class="view-control">
-                <span>View:</span>
-                <a href="#" class="view-option <?php echo $limit === 60 ? 'active' : ''; ?>" onclick="updateLimit(60)">60</a>
-                <span>|</span>
-                <a href="#" class="view-option <?php echo $limit === 120 ? 'active' : ''; ?>" onclick="updateLimit(120)">120</a>
             </div>
         </div>
     </div>
