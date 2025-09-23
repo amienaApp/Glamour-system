@@ -163,7 +163,7 @@ html {
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     background: #ffffff;
-    min-width: 600px;
+    min-width: 950px;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;

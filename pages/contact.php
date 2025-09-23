@@ -54,22 +54,22 @@
     <!-- Left Side -->
     <div class="contact-left">
       <div class="contact-info-grid kaladuwid">
-        <div class="info-card">
+        <div class="info-card clickable-card" onclick="makePhoneCall('+252907166125')">
           <i class="fas fa-phone"></i>
           <p><strong>Phone</strong></p>
-          <p>+2529745454 <br>+25297744040</p>
+          <p>+252907166125</p>
         </div>
-        <div class="info-card ">
+        <div class="info-card clickable-card" onclick="openWhatsApp('+252907166125')">
           <i class="fab fa-whatsapp"></i>
           <p><strong>Whatsapp</strong></p>
-          <p>+25297454545</p>
+          <p>+252907166125</p>
         </div>
-        <div class="info-card">
+        <div class="info-card clickable-card" onclick="openEmail('glamorpalaca@gmail.com')">
           <i class="fas fa-envelope"></i>
           <p><strong>Email</strong></p>
-          <p>Glamor@gmail.com</p>
+          <p>glamorpalaca@gmail.com</p>
         </div>
-        <div class="info-card">
+        <div class="info-card clickable-card" onclick="openGoogleMaps('Shaariqa Road, Garowe, Somalia')">
           <i class="fas fa-store"></i>
           <p><strong>Our Shop</strong></p>
           <p>Shaariqa Road (CF2Q+9J5)</p>
@@ -225,6 +225,71 @@
               }
           });
       });
+  </script>
+  
+  <!-- Contact Card Functionality -->
+  <script>
+    // Function to make phone call
+    function makePhoneCall(phoneNumber) {
+      // Remove any spaces or special characters except +
+      const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+      window.location.href = `tel:${cleanNumber}`;
+    }
+    
+    // Function to open WhatsApp
+    function openWhatsApp(phoneNumber) {
+      // Remove any spaces or special characters except +
+      const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+      const whatsappUrl = `https://wa.me/${cleanNumber}`;
+      window.open(whatsappUrl, '_blank');
+    }
+    
+     // Function to open email client
+     function openEmail(emailAddress) {
+       console.log('Opening email for:', emailAddress); // Debug log
+       
+       // Force Gmail web to open (like WhatsApp)
+       const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`;
+       console.log('Gmail URL:', gmailUrl); // Debug log
+       window.open(gmailUrl, '_blank');
+     }
+    
+    // Function to open Google Maps
+    function openGoogleMaps(address) {
+      const encodedAddress = encodeURIComponent(address);
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+      window.open(mapsUrl, '_blank');
+    }
+    
+    // Add hover effects for clickable cards
+    document.addEventListener('DOMContentLoaded', function() {
+      const clickableCards = document.querySelectorAll('.clickable-card');
+      
+      clickableCards.forEach(card => {
+        // Add cursor pointer
+        card.style.cursor = 'pointer';
+        
+        // Add hover effect
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-5px)';
+          this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+          this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+        });
+        
+        // Add click animation
+        card.addEventListener('click', function() {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = 'translateY(-5px)';
+          }, 150);
+        });
+      });
+    });
   </script>
   
 </body>
