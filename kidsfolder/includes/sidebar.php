@@ -16,32 +16,32 @@
             </div>
             <div class="filter-options" id="category-filter">
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="boys" data-filter="category" onchange="updateCategoryFilter('boys', this.checked)">
+                    <input type="checkbox" name="category[]" value="boys" data-filter="category">
                     <span class="checkmark"></span>
                     Boys
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="girls" data-filter="category" onchange="updateCategoryFilter('girls', this.checked)">
+                    <input type="checkbox" name="category[]" value="girls" data-filter="category">
                     <span class="checkmark"></span>
                     Girls
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="baby" data-filter="category" onchange="updateCategoryFilter('baby', this.checked)">
+                    <input type="checkbox" name="category[]" value="baby" data-filter="category">
                     <span class="checkmark"></span>
                     Baby
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="toddler" data-filter="category" onchange="updateCategoryFilter('toddler', this.checked)">
+                    <input type="checkbox" name="category[]" value="toddler" data-filter="category">
                     <span class="checkmark"></span>
                     Toddler
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="accessories" data-filter="category" onchange="updateCategoryFilter('accessories', this.checked)">
+                    <input type="checkbox" name="category[]" value="accessories" data-filter="category">
                     <span class="checkmark"></span>
                     Accessories
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="shoes" data-filter="category" onchange="updateCategoryFilter('shoes', this.checked)">
+                    <input type="checkbox" name="category[]" value="shoes" data-filter="category">
                     <span class="checkmark"></span>
                     Shoes
                 </label>

@@ -2,6 +2,12 @@
 session_start();
 $page_title = 'Galamor palace';
 
+// Load filter data helper
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Home & Living');
+
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 

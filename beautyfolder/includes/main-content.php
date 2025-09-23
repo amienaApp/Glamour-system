@@ -13,6 +13,8 @@ $category = $_GET['category'] ?? null;
 $color = $_GET['color'] ?? null;
 $minPrice = $_GET['min_price'] ?? null;
 $maxPrice = $_GET['max_price'] ?? null;
+$size = $_GET['size'] ?? null;
+$onSale = $_GET['on_sale'] ?? null;
 $sort = $_GET['sort'] ?? 'newest';
 
 // Build sort options
@@ -40,7 +42,19 @@ $filters = [];
 $filters['category'] = 'Beauty & Cosmetics'; // Always filter for beauty products
 if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
-if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($category) {
+    // Convert URL-friendly category names back to database format
+    $categoryMap = [
+        'makeup' => 'Makeup',
+        'skincare' => 'Skincare', 
+        'hair-care' => 'Hair Care',
+        'bath-body' => 'Bath & Body',
+        'fragrance' => 'Fragrance',
+        'tools-brushes' => 'Tools & Brushes',
+        'nail-care' => 'Nail Care'
+    ];
+    $filters['subcategory'] = $categoryMap[$category] ?? ucfirst($category);
+}
 if ($color) {
     // Define color groups - map color names to hex codes
     $colorGroups = [
@@ -73,6 +87,12 @@ if ($minPrice !== null) {
         $filters['price']['$lte'] = floatval($maxPrice);
     }
 }
+if ($size) {
+    $filters['sizes'] = ['$in' => [$size]];
+}
+if ($onSale === 'true') {
+    $filters['on_sale'] = true;
+}
 
 // Convert URL-friendly subcategory back to database format
 $subcategoryForQuery = '';
@@ -92,14 +112,14 @@ if ($subcategory) {
 // Get products based on filters
 if (!empty($filters)) {
     $products = $productModel->getAll($filters, $sortOptions);
-    $pageTitle = "Women's Clothing";
+    $pageTitle = "Beauty & Cosmetics";
     if ($subcategoryForQuery) {
         $pageTitle = $subcategoryForQuery;
     }
 } else {
-    // Get all women's clothing products (including sold out ones)
-    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
-    $pageTitle = "Women's Clothing";
+    // Get all beauty products (including sold out ones)
+    $products = $productModel->getByCategory("Beauty & Cosmetics", $sortOptions);
+    $pageTitle = "Beauty & Cosmetics";
 }
 ?>
 

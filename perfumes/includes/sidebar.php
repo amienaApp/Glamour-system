@@ -2,7 +2,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Filters</h3>
-        <span class="style-count" id="style-count">4146 Styles</span>
+        <span class="style-count" id="style-count"><?php echo $filterData['productCount']; ?> Perfumes</span>
         <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
      <div class="side">
@@ -16,39 +16,44 @@
             </div>
             <div class="filter-options" id="category-filter">
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="dresses" data-filter="category" onchange="updateCategoryFilter('dresses', this.checked)">
+                    <input type="checkbox" name="category[]" value="mens-perfume" data-filter="category" onchange="updateCategoryFilter('mens-perfume', this.checked)">
                     <span class="checkmark"></span>
-                    Dresses
+                    Men's Perfume
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="tops" data-filter="category" onchange="updateCategoryFilter('tops', this.checked)">
+                    <input type="checkbox" name="category[]" value="womens-perfume" data-filter="category" onchange="updateCategoryFilter('womens-perfume', this.checked)">
                     <span class="checkmark"></span>
-                    Tops
+                    Women's Perfume
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="bottoms" data-filter="category" onchange="updateCategoryFilter('bottoms', this.checked)">
+                    <input type="checkbox" name="category[]" value="unisex-perfume" data-filter="category" onchange="updateCategoryFilter('unisex-perfume', this.checked)">
                     <span class="checkmark"></span>
-                    Bottoms
+                    Unisex Perfume
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="outerwear" data-filter="category" onchange="updateCategoryFilter('outerwear', this.checked)">
+                    <input type="checkbox" name="category[]" value="cologne" data-filter="category" onchange="updateCategoryFilter('cologne', this.checked)">
                     <span class="checkmark"></span>
-                    Outerwear
+                    Cologne
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="activewear" data-filter="category" onchange="updateCategoryFilter('activewear', this.checked)">
+                    <input type="checkbox" name="category[]" value="eau-de-toilette" data-filter="category" onchange="updateCategoryFilter('eau-de-toilette', this.checked)">
                     <span class="checkmark"></span>
-                    Activewear
+                    Eau de Toilette
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="lingerie" data-filter="category" onchange="updateCategoryFilter('lingerie', this.checked)">
+                    <input type="checkbox" name="category[]" value="eau-de-parfum" data-filter="category" onchange="updateCategoryFilter('eau-de-parfum', this.checked)">
                     <span class="checkmark"></span>
-                    Lingerie
+                    Eau de Parfum
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="swimwear" data-filter="category" onchange="updateCategoryFilter('swimwear', this.checked)">
+                    <input type="checkbox" name="category[]" value="perfume-sets" data-filter="category" onchange="updateCategoryFilter('perfume-sets', this.checked)">
                     <span class="checkmark"></span>
-                    Swimwear
+                    Perfume Sets
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox" name="category[]" value="mini-perfumes" data-filter="category" onchange="updateCategoryFilter('mini-perfumes', this.checked)">
+                    <span class="checkmark"></span>
+                    Mini Perfumes
                 </label>
             </div>
         </div>
@@ -139,98 +144,16 @@
                 </div>
                 <div class="filter-options">
                     <div class="color-grid" id="color-filter">
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#050505" data-filter="color">
-                            <span class="color-swatch" style="background-color: #050505;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#0d0d0d" data-filter="color">
-                            <span class="color-swatch" style="background-color: #0d0d0d;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#121212" data-filter="color">
-                            <span class="color-swatch" style="background-color: #121212;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#1b6435" data-filter="color">
-                            <span class="color-swatch" style="background-color: #1b6435;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#1f1e21" data-filter="color">
-                            <span class="color-swatch" style="background-color: #1f1e21;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#473c3f" data-filter="color">
-                            <span class="color-swatch" style="background-color: #473c3f;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#4b1924" data-filter="color">
-                            <span class="color-swatch" style="background-color: #4b1924;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#5e331c" data-filter="color">
-                            <span class="color-swatch" style="background-color: #5e331c;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#6d79ab" data-filter="color">
-                            <span class="color-swatch" style="background-color: #6d79ab;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#754640" data-filter="color">
-                            <span class="color-swatch" style="background-color: #754640;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#782121" data-filter="color">
-                            <span class="color-swatch" style="background-color: #782121;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#917e7e" data-filter="color">
-                            <span class="color-swatch" style="background-color: #917e7e;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#b4e5fe" data-filter="color">
-                            <span class="color-swatch" style="background-color: #b4e5fe;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#b9ba95" data-filter="color">
-                            <span class="color-swatch" style="background-color: #b9ba95;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#d1f5ef" data-filter="color">
-                            <span class="color-swatch" style="background-color: #d1f5ef;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#d6efff" data-filter="color">
-                            <span class="color-swatch" style="background-color: #d6efff;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#e9e0de" data-filter="color">
-                            <span class="color-swatch" style="background-color: #e9e0de;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#ea6695" data-filter="color">
-                            <span class="color-swatch" style="background-color: #ea6695;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#eed3d3" data-filter="color">
-                            <span class="color-swatch" style="background-color: #eed3d3;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#f67fbc" data-filter="color">
-                            <span class="color-swatch" style="background-color: #f67fbc;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#faf3f8" data-filter="color">
-                            <span class="color-swatch" style="background-color: #faf3f8;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#fe6ca6" data-filter="color">
-                            <span class="color-swatch" style="background-color: #fe6ca6;"></span>
-                        </label>
-                        <label class="color-option">
-                            <input type="checkbox" name="color[]" value="#ffccea" data-filter="color">
-                            <span class="color-swatch" style="background-color: #ffccea;"></span>
-                        </label>
+                        <?php if (!empty($filterData['colors'])): ?>
+                            <?php foreach ($filterData['colors'] as $color): ?>
+                                <label class="color-option">
+                                    <input type="checkbox" name="color[]" value="<?php echo htmlspecialchars($color); ?>" data-filter="color" onchange="updateColorFilter('<?php echo htmlspecialchars($color); ?>', this.checked)">
+                                    <span class="color-swatch" style="background-color: <?php echo htmlspecialchars($color); ?>;"></span>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="no-colors">No colors available</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -244,36 +167,25 @@
                 <h4>Price</h4>
             </div>
             <div class="filter-options" id="price-filter">
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="on-sale" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    On Sale
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="0-25" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    $0 - $25
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="25-50" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    $25 - $50
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="50-75" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    $50 - $75
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="75-100" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    $75 - $100
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox" name="price[]" value="100+" data-filter="price_range">
-                    <span class="checkmark"></span>
-                    $100+
-                </label>
+                <?php if ($filterData['hasOnSale']): ?>
+                    <label class="filter-option">
+                        <input type="checkbox" name="price[]" value="on-sale" data-filter="price_range" onchange="updatePriceFilter('on-sale', null, this.checked)">
+                        <span class="checkmark"></span>
+                        On Sale
+                    </label>
+                <?php endif; ?>
+                
+                <?php if (!empty($filterData['priceRanges'])): ?>
+                    <?php foreach ($filterData['priceRanges'] as $range): ?>
+                        <label class="filter-option">
+                            <input type="checkbox" name="price[]" value="<?php echo $range['min'] . '-' . ($range['max'] ?? 'max'); ?>" data-filter="price_range" onchange="updatePriceFilter(<?php echo $range['min']; ?>, <?php echo $range['max'] ?? 'null'; ?>, this.checked)">
+                            <span class="checkmark"></span>
+                            <?php echo htmlspecialchars($range['label']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="no-prices">No price ranges available</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -283,5 +195,3 @@
     
     </div>
 </aside>
-
-<script src="../../instant-filters.js"></script> 

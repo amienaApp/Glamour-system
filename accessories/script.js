@@ -2973,3 +2973,80 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 });
+
+// Missing filter functions for accessories folder sidebar
+function updateCategoryFilter(category, isChecked) {
+    console.log('updateCategoryFilter called:', category, isChecked);
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    if (isChecked) {
+        params.set('category', category);
+    } else {
+        params.delete('category');
+    }
+    window.location.href = url.toString();
+}
+
+function clearAllFiltersSimple() {
+    console.log('clearAllFiltersSimple called');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    const url = new URL(window.location);
+    url.search = '';
+    window.location.href = url.toString();
+}
+
+function updateColorFilter(color, isChecked) {
+    console.log('updateColorFilter called:', color, isChecked);
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    if (isChecked) {
+        params.set('color', color);
+    } else {
+        params.delete('color');
+    }
+    window.location.href = url.toString();
+}
+
+function updatePriceFilter(minPrice, maxPrice, isChecked) {
+    console.log('updatePriceFilter called:', minPrice, maxPrice, isChecked);
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    if (isChecked) {
+        if (minPrice === 'on-sale') {
+            params.set('on_sale', 'true');
+        } else {
+            if (minPrice !== null) params.set('min_price', minPrice);
+            if (maxPrice !== null) params.set('max_price', maxPrice);
+        }
+    } else {
+        if (minPrice === 'on-sale') {
+            params.delete('on_sale');
+        } else {
+            params.delete('min_price');
+            params.delete('max_price');
+        }
+    }
+    window.location.href = url.toString();
+}
+
+function updateSizeFilter(size, isChecked) {
+    console.log('updateSizeFilter called:', size, isChecked);
+    const url = new URL(window.location);
+    const params = url.searchParams;
+    if (isChecked) {
+        params.set('size', size);
+    } else {
+        params.delete('size');
+    }
+    window.location.href = url.toString();
+}
+
+// Make functions globally available
+window.updateCategoryFilter = updateCategoryFilter;
+window.clearAllFiltersSimple = clearAllFiltersSimple;
+window.updateColorFilter = updateColorFilter;
+window.updatePriceFilter = updatePriceFilter;
+window.updateSizeFilter = updateSizeFilter;

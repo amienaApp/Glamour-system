@@ -13,6 +13,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Beauty & Cosmetics');
 
 $categoryModel = new Category();
 $beautyCategory = $categoryModel->getByName("Beauty & Cosmetics");
@@ -519,7 +523,12 @@ $subcategoryImages = [
             // Count the initial products displayed
             const productCards = document.querySelectorAll('.product-card');
             const initialCount = productCards.length;
-            updateStyleCount(initialCount);
+            
+            // Update style count with beauty-specific text
+            const styleCountElement = document.getElementById('style-count');
+            if (styleCountElement) {
+                styleCountElement.textContent = `${initialCount} Beauty Products`;
+            }
         });
         </script>
 

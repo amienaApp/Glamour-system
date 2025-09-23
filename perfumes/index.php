@@ -13,6 +13,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Perfumes');
 
 $categoryModel = new Category();
 $perfumesCategory = $categoryModel->getByName("Perfumes");

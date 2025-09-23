@@ -40,7 +40,20 @@ $filters = [];
 $filters['category'] = "Men's Clothing"; // Always filter for men's clothing
 if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
-if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($category) {
+    // Convert URL-friendly category names back to database format
+    $categoryMap = [
+        'shirts' => 'Shirts',
+        't-shirts' => 'T-Shirts',
+        'pants' => 'Pants',
+        'jeans' => 'Jeans',
+        'suits' => 'Suits',
+        'jackets' => 'Jackets',
+        'activewear' => 'Activewear',
+        'underwear' => 'Underwear'
+    ];
+    $filters['subcategory'] = $categoryMap[$category] ?? ucfirst($category);
+}
 if ($color) {
     // Define color groups - map color names to hex codes
     $colorGroups = [
@@ -92,14 +105,14 @@ if ($subcategory) {
 // Get products based on filters
 if (!empty($filters)) {
     $products = $productModel->getAll($filters, $sortOptions);
-    $pageTitle = "Women's Clothing";
+    $pageTitle = "Men's Clothing";
     if ($subcategoryForQuery) {
         $pageTitle = $subcategoryForQuery;
     }
 } else {
-    // Get all women's clothing products (including sold out ones)
-    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
-    $pageTitle = "Women's Clothing";
+    // Get all men's clothing products (including sold out ones)
+    $products = $productModel->getByCategory("Men's Clothing", $sortOptions);
+    $pageTitle = "Men's Clothing";
 }
 ?>
 
