@@ -247,6 +247,7 @@ body {
     padding: 3rem;
     border-radius: 20px;
     color: white;
+   
 }
 
 .contact-right h2 {
@@ -293,7 +294,7 @@ form textarea:focus {
 }
 
 form textarea {
-    min-height: 120px;
+    min-height: 150px;
     resize: vertical;
 }
 
