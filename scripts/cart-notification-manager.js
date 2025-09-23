@@ -206,10 +206,7 @@ class CartNotificationManager {
         
         this.isLoading = true;
         
-        // Show instant visual feedback
-        this.cartCount += quantity;
-        this.updateCartCountDisplay();
-        this.showNotification('Product added to cart!', 'success');
+        // Don't show optimistic feedback - wait for server confirmation
         
         try {
             const response = await fetch(this.apiPath, {
@@ -242,6 +239,9 @@ class CartNotificationManager {
                 this.cartCount = parseInt(data.cart_count) || 0;
                 this.updateCartCountDisplay();
                 
+                // Show success message only after server confirmation
+                this.showNotification(data.message || 'Product added to cart!', 'success');
+                
                 // Trigger custom event
                 this.triggerCartEvent('itemAdded', {
                     productId,
@@ -251,17 +251,17 @@ class CartNotificationManager {
                 
                 return true;
             } else {
-                // Revert optimistic update on failure
-                this.cartCount = Math.max(0, this.cartCount - quantity);
-                this.updateCartCountDisplay();
+                console.log('Cart API returned success: false, message:', data.message);
                 throw new Error(data.message || 'Failed to add product to cart');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
-            // Revert optimistic update on error
-            this.cartCount = Math.max(0, this.cartCount - quantity);
-            this.updateCartCountDisplay();
-            this.showNotification('Error adding product to cart', 'error');
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            this.showNotification('Error adding product to cart: ' + error.message, 'error');
             return false;
         } finally {
             this.isLoading = false;
@@ -684,6 +684,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         window.refreshCart = () => {
             return window.cartNotificationManager.refreshCart();
+        };
+        
+        window.handleCartUpdate = (detail) => {
+            if (window.cartNotificationManager && typeof window.cartNotificationManager.handleCartUpdate === 'function') {
+                return window.cartNotificationManager.handleCartUpdate(detail);
+            } else {
+                console.warn('Cart notification manager not initialized yet');
+                return false;
+            }
         };
         
         // Cart notification manager initialized successfully
