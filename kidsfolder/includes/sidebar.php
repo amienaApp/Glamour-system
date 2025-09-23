@@ -20,9 +20,14 @@
                         Shirts
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="dresses" data-filter="kids_category">
+                        <input type="checkbox" name="kids_category[]" value="t-shirts" data-filter="kids_category">
                         <span class="checkmark"></span>
-                        Dresses
+                        T-Shirts
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="kids_category[]" value="suits" data-filter="kids_category">
+                        <span class="checkmark"></span>
+                        Suits
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="kids_category[]" value="pants" data-filter="kids_category">
@@ -30,14 +35,19 @@
                         Pants
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="shorts" data-filter="kids_category">
+                        <input type="checkbox" name="kids_category[]" value="shorts-underwear" data-filter="kids_category">
                         <span class="checkmark"></span>
-                        Shorts
+                        Shorts & Underwear
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="skirts" data-filter="kids_category">
+                        <input type="checkbox" name="kids_category[]" value="hoodies-sweatshirts" data-filter="kids_category">
                         <span class="checkmark"></span>
-                        Skirts
+                        Hoodies & Sweatshirts
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="kids_category[]" value="dresses" data-filter="kids_category">
+                        <span class="checkmark"></span>
+                        Dresses
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="kids_category[]" value="tops" data-filter="kids_category">
@@ -45,9 +55,9 @@
                         Tops
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="kids_category[]" value="accessories" data-filter="kids_category">
+                        <input type="checkbox" name="kids_category[]" value="bottoms" data-filter="kids_category">
                         <span class="checkmark"></span>
-                        Accessories
+                        Bottoms
                     </label>
                 </div>
             </div>
