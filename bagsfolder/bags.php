@@ -8,6 +8,12 @@ header("Expires: 0");
 
 $page_title = 'Galamor palace';
 
+// Load filter data helper
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Bags');
+
 // Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
 

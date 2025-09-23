@@ -2,7 +2,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h3>Filters</h3>
-        <span class="style-count" id="style-count">4146 Styles</span>
+        <span class="style-count" id="style-count"><?php echo $filterData['productCount']; ?> Women's Products</span>
         <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFiltersSimple()">Clear All Filters</button>
     </div>
      <div class="side">
@@ -283,5 +283,3 @@
     
     </div>
 </aside>
-
-<script src="../../instant-filters.js"></script> 

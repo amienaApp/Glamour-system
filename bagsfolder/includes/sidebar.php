@@ -48,14 +48,14 @@ foreach ($allBags as $bag) {
                     <label class="filter-option">
                         <input type="checkbox" name="gender[]" value="women" 
                                <?php echo $currentGender === 'women' ? 'checked' : ''; ?>
-                               onchange="updateGenderFilter('women', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Women
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="gender[]" value="men" 
                                <?php echo $currentGender === 'men' ? 'checked' : ''; ?>
-                               onchange="updateGenderFilter('men', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Men
                     </label>
@@ -73,63 +73,63 @@ foreach ($allBags as $bag) {
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Shoulder Bags" 
                                <?php echo $currentCategory === 'Shoulder Bags' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Shoulder Bags', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Shoulder Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Clutches" 
                                <?php echo $currentCategory === 'Clutches' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Clutches', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Clutches Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Tote Bags" 
                                <?php echo $currentCategory === 'Tote Bags' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Tote Bags', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Tote Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Crossbody Bags" 
                                <?php echo $currentCategory === 'Crossbody Bags' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Crossbody Bags', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Crossbody Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Backpacks" 
                                <?php echo $currentCategory === 'Backpacks' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Backpacks', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Backpacks
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Briefcases" 
                                <?php echo $currentCategory === 'Briefcases' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Briefcases', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Briefcases
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Laptop Bags" 
                                <?php echo $currentCategory === 'Laptop Bags' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Laptop Bags', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Laptop Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Waist Bags" 
                                <?php echo $currentCategory === 'Waist Bags' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Waist Bags', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Waist Bags
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="category[]" value="Wallets" 
                                <?php echo $currentCategory === 'Wallets' ? 'checked' : ''; ?>
-                               onchange="updateCategoryFilter('Wallets', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Wallets
                     </label>
@@ -149,85 +149,85 @@ foreach ($allBags as $bag) {
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="beige" 
                                    <?php echo $currentColor === 'beige' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('beige', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #f5f5dc;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="black" 
                                    <?php echo $currentColor === 'black' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('black', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #000;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="blue" 
                                    <?php echo $currentColor === 'blue' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('blue', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #0066cc;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="brown" 
                                    <?php echo $currentColor === 'brown' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('brown', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #8b4513;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="gold" 
                                    <?php echo $currentColor === 'gold' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('gold', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #ffd700;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="green" 
                                    <?php echo $currentColor === 'green' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('green', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #228b22;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="grey" 
                                    <?php echo $currentColor === 'grey' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('grey', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #808080;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="orange" 
                                    <?php echo $currentColor === 'orange' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('orange', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #ffa500;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="pink" 
                                    <?php echo $currentColor === 'pink' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('pink', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #ffc0cb;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="purple" 
                                    <?php echo $currentColor === 'purple' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('purple', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #800080;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="red" 
                                    <?php echo $currentColor === 'red' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('red', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #ff0000;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="silver" 
                                    <?php echo $currentColor === 'silver' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('silver', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #c0c0c0;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="taupe" 
                                    <?php echo $currentColor === 'taupe' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('taupe', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #483c32;"></span>
                         </label>
                         <label class="color-option">
                             <input type="checkbox" name="color[]" value="white" 
                                    <?php echo $currentColor === 'white' ? 'checked' : ''; ?>
-                                   onchange="updateColorFilter('white', this.checked)">
+                                  >
                             <span class="color-swatch" style="background-color: #fff; border: 1px solid #ddd;"></span>
                         </label>
                     </div>
@@ -245,28 +245,28 @@ foreach ($allBags as $bag) {
                     <label class="filter-option">
                         <input type="checkbox" name="price[]" value="0-100" 
                                <?php echo ($currentMinPrice == '0' && $currentMaxPrice == '100') ? 'checked' : ''; ?>
-                               onchange="updatePriceFilter(0, 100, this.checked)">
+                              >
                         <span class="checkmark"></span>
                         $0 - $100
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="price[]" value="100-200" 
                                <?php echo ($currentMinPrice == '100' && $currentMaxPrice == '200') ? 'checked' : ''; ?>
-                               onchange="updatePriceFilter(100, 200, this.checked)">
+                              >
                         <span class="checkmark"></span>
                         $100 - $200
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="price[]" value="200-400" 
                                <?php echo ($currentMinPrice == '200' && $currentMaxPrice == '400') ? 'checked' : ''; ?>
-                               onchange="updatePriceFilter(200, 400, this.checked)">
+                              >
                         <span class="checkmark"></span>
                         $200 - $400
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="price[]" value="400+" 
                                <?php echo ($currentMinPrice == '400') ? 'checked' : ''; ?>
-                               onchange="updatePriceFilter(400, null, this.checked)">
+                              >
                         <span class="checkmark"></span>
                         $400+
                     </label>

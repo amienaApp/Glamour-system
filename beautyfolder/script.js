@@ -2972,4 +2972,48 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSizeCount();
         };
     }
+
+    // Instant filter functions for beauty folder sidebar - NO PAGE RELOADS
+    function updateCategoryFilter(category, isChecked) {
+        console.log('updateCategoryFilter called:', category, isChecked);
+        if (window.instantFilter) {
+            window.instantFilter.updateCategoryFilter(category, isChecked);
+        }
+    }
+
+    function clearAllFiltersSimple() {
+        console.log('clearAllFiltersSimple called');
+        if (window.instantFilter) {
+            window.instantFilter.clearAllFilters();
+        }
+    }
+
+    function updateColorFilter(color, isChecked) {
+        console.log('updateColorFilter called:', color, isChecked);
+        if (window.instantFilter) {
+            window.instantFilter.updateColorFilter(color, isChecked);
+        }
+    }
+
+    function updatePriceFilter(minPrice, maxPrice, isChecked) {
+        console.log('updatePriceFilter called:', minPrice, maxPrice, isChecked);
+        if (window.instantFilter) {
+            const priceRange = minPrice === 'on-sale' ? 'on-sale' : `${minPrice}-${maxPrice || 'max'}`;
+            window.instantFilter.updatePriceFilter(priceRange, isChecked);
+        }
+    }
+
+    function updateSizeFilter(size, isChecked) {
+        console.log('updateSizeFilter called:', size, isChecked);
+        if (window.instantFilter) {
+            window.instantFilter.updateSizeFilter(size, isChecked);
+        }
+    }
+
+    // Make functions globally available
+    window.updateCategoryFilter = updateCategoryFilter;
+    window.clearAllFiltersSimple = clearAllFiltersSimple;
+    window.updateColorFilter = updateColorFilter;
+    window.updatePriceFilter = updatePriceFilter;
+    window.updateSizeFilter = updateSizeFilter;
 });

@@ -40,7 +40,20 @@ $filters = [];
 $filters['category'] = 'Perfumes'; // Always filter for perfumes
 if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
-if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($category) {
+    // Convert URL-friendly category names back to database format
+    $categoryMap = [
+        'mens-perfume' => 'Men\'s Perfume',
+        'womens-perfume' => 'Women\'s Perfume',
+        'unisex-perfume' => 'Unisex Perfume',
+        'cologne' => 'Cologne',
+        'eau-de-toilette' => 'Eau de Toilette',
+        'eau-de-parfum' => 'Eau de Parfum',
+        'perfume-sets' => 'Perfume Sets',
+        'mini-perfumes' => 'Mini Perfumes'
+    ];
+    $filters['subcategory'] = $categoryMap[$category] ?? ucfirst($category);
+}
 if ($color) {
     // Define color groups - map color names to hex codes
     $colorGroups = [
@@ -92,14 +105,14 @@ if ($subcategory) {
 // Get products based on filters
 if (!empty($filters)) {
     $products = $productModel->getAll($filters, $sortOptions);
-    $pageTitle = "Women's Clothing";
+    $pageTitle = "Perfumes";
     if ($subcategoryForQuery) {
         $pageTitle = $subcategoryForQuery;
     }
 } else {
-    // Get all women's clothing products (including sold out ones)
-    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
-    $pageTitle = "Women's Clothing";
+    // Get all perfumes products (including sold out ones)
+    $products = $productModel->getByCategory("Perfumes", $sortOptions);
+    $pageTitle = "Perfumes";
 }
 ?>
 

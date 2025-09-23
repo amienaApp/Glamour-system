@@ -13,6 +13,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Women\'s Clothing');
 
 $categoryModel = new Category();
 $womenCategory = $categoryModel->getByName("Women's Clothing");
@@ -66,6 +70,7 @@ $defaultImage = '../img/women/dresses/12.webp';
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <script src="../scripts/instant-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>

@@ -88,21 +88,21 @@ foreach ($allShoes as $shoe) {
                 <label class="filter-option">
                     <input type="checkbox" name="gender[]" value="women" 
                            <?php echo $currentGender === 'women' ? 'checked' : ''; ?>
-                           onchange="updateGenderFilter('women', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     Women (<?php echo $stats['women_shoes']; ?>)
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="gender[]" value="men" 
                            <?php echo $currentGender === 'men' ? 'checked' : ''; ?>
-                           onchange="updateGenderFilter('men', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     Men (<?php echo $stats['men_shoes']; ?>)
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="gender[]" value="children" id="children-checkbox" 
                            <?php echo $currentGender === 'children' ? 'checked' : ''; ?>
-                           onchange="updateGenderFilter('children', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     Children (<?php echo $stats['children_shoes']; ?>)
                 </label>
@@ -112,14 +112,14 @@ foreach ($allShoes as $shoe) {
                     <label class="filter-option">
                         <input type="checkbox" name="children[]" value="boys" 
                                <?php echo $currentGender === 'boys' ? 'checked' : ''; ?>
-                               onchange="updateGenderFilter('boys', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Boys
                     </label>
                     <label class="filter-option">
                         <input type="checkbox" name="children[]" value="girls" 
                                <?php echo $currentGender === 'girls' ? 'checked' : ''; ?>
-                               onchange="updateGenderFilter('girls', this.checked)">
+                              >
                         <span class="checkmark"></span>
                         Girls
                     </label>
@@ -127,7 +127,7 @@ foreach ($allShoes as $shoe) {
                 <label class="filter-option">
                     <input type="checkbox" name="children[]" value="infant" 
                            <?php echo $currentGender === 'infant' ? 'checked' : ''; ?>
-                           onchange="updateGenderFilter('infant', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     Infant (<?php echo $stats['infant_shoes']; ?>)
                 </label>
@@ -153,84 +153,84 @@ foreach ($allShoes as $shoe) {
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="35" 
                                        <?php echo $currentSize === '35' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('35', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 35
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="36" 
                                        <?php echo $currentSize === '36' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('36', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 36
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="37" 
                                        <?php echo $currentSize === '37' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('37', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 37
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="38" 
                                        <?php echo $currentSize === '38' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('38', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 38
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="39" 
                                        <?php echo $currentSize === '39' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('39', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 39
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="40" 
                                        <?php echo $currentSize === '40' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('40', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 40
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="41" 
                                        <?php echo $currentSize === '41' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('41', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 41
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="42" 
                                        <?php echo $currentSize === '42' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('42', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 42
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="43" 
                                        <?php echo $currentSize === '43' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('43', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 43
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="44" 
                                        <?php echo $currentSize === '44' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('44', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 44
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="45" 
                                        <?php echo $currentSize === '45' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('45', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 45
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="46" 
                                        <?php echo $currentSize === '46' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('46', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 46
                             </label>
@@ -249,105 +249,105 @@ foreach ($allShoes as $shoe) {
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="6" 
                                        <?php echo $currentSize === '6' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('6', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 6
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="7" 
                                        <?php echo $currentSize === '7' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('7', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 7
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="8" 
                                        <?php echo $currentSize === '8' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('8', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 8
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="10" 
                                        <?php echo $currentSize === '10' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('10', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 10
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="12" 
                                        <?php echo $currentSize === '12' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('12', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 12
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="14" 
                                        <?php echo $currentSize === '14' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('14', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 14
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="16" 
                                        <?php echo $currentSize === '16' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('16', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 16
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="18" 
                                        <?php echo $currentSize === '18' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('18', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 18
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="20" 
                                        <?php echo $currentSize === '20' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('20', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 20
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="22" 
                                        <?php echo $currentSize === '22' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('22', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 22
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="24" 
                                        <?php echo $currentSize === '24' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('24', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 24
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="26" 
                                        <?php echo $currentSize === '26' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('26', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 26
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="28" 
                                        <?php echo $currentSize === '28' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('28', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 28
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="32" 
                                        <?php echo $currentSize === '32' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('32', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 32
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="34" 
                                        <?php echo $currentSize === '34' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('34', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 34
                             </label>
@@ -366,21 +366,21 @@ foreach ($allShoes as $shoe) {
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="1-4-month" 
                                        <?php echo $currentSize === '1-4-month' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('1-4-month', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 1 to 4 m
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="5-8-month" 
                                        <?php echo $currentSize === '5-8-month' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('5-8-month', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 5 to 8 m
                             </label>
                             <label class="filter-option">
                                 <input type="checkbox" name="size[]" value="9-13-month" 
                                        <?php echo $currentSize === '9-13-month' ? 'checked' : ''; ?>
-                                       onchange="updateSizeFilter('9-13-month', this.checked)">
+                                      >
                                 <span class="checkmark"></span>
                                 9 to 13 m
                             </label>
@@ -445,42 +445,42 @@ foreach ($allShoes as $shoe) {
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="on-sale" 
                            <?php echo $currentPriceRange === 'on-sale' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('on-sale', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     On Sale
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="0-25" 
                            <?php echo $currentPriceRange === '0-25' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('0-25', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     $0 - $25
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="25-50" 
                            <?php echo $currentPriceRange === '25-50' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('25-50', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     $25 - $50
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="50-75" 
                            <?php echo $currentPriceRange === '50-75' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('50-75', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     $50 - $75
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="75-100" 
                            <?php echo $currentPriceRange === '75-100' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('75-100', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     $75 - $100
                 </label>
                 <label class="filter-option">
                     <input type="checkbox" name="price[]" value="100+" 
                            <?php echo $currentPriceRange === '100+' ? 'checked' : ''; ?>
-                           onchange="updatePriceRangeFilter('100+', this.checked)">
+                          >
                     <span class="checkmark"></span>
                     $100+
                 </label>
@@ -713,7 +713,7 @@ function displayColors(colors) {
         colorOption.innerHTML = `
             <input type="checkbox" name="color[]" value="${color.value}" 
                    ${isChecked}
-                   onchange="updateColorFilter('${color.value}', this.checked)">
+                  >
             <span class="color-swatch" style="background-color: ${color.hex}; ${borderStyle}"></span>
         `;
         

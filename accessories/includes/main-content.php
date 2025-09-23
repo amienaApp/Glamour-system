@@ -40,7 +40,20 @@ $filters = [];
 $filters['category'] = 'Accessories'; // Always filter for accessories
 if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
-if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
+if ($category) {
+    // Convert URL-friendly category names back to database format
+    $categoryMap = [
+        'watches' => 'Watches',
+        'sunglasses' => 'Sunglasses',
+        'jewelry' => 'Jewelry',
+        'belts' => 'Belts',
+        'scarves' => 'Scarves',
+        'hats' => 'Hats',
+        'gloves' => 'Gloves',
+        'bags' => 'Bags'
+    ];
+    $filters['subcategory'] = $categoryMap[$category] ?? ucfirst($category);
+}
 if ($color) {
     // Define color groups - map color names to hex codes
     $colorGroups = [
@@ -92,14 +105,14 @@ if ($subcategory) {
 // Get products based on filters
 if (!empty($filters)) {
     $products = $productModel->getAll($filters, $sortOptions);
-    $pageTitle = "Women's Clothing";
+    $pageTitle = "Accessories";
     if ($subcategoryForQuery) {
         $pageTitle = $subcategoryForQuery;
     }
 } else {
-    // Get all women's clothing products (including sold out ones)
-    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
-    $pageTitle = "Women's Clothing";
+    // Get all accessories products (including sold out ones)
+    $products = $productModel->getByCategory("Accessories", $sortOptions);
+    $pageTitle = "Accessories";
 }
 ?>
 

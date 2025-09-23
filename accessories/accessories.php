@@ -19,6 +19,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Accessories');
 
 $categoryModel = new Category();
 $accessoriesCategory = $categoryModel->getByName("Accessories");
@@ -318,6 +322,7 @@ $subcategoryImages = [
 
 
         <!-- Scripts -->
+        <script src="../scripts/instant-filter.js?v=<?php echo time(); ?>"></script>
         <script src="script.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>

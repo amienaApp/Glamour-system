@@ -13,6 +13,10 @@ if ($subcategory) {
 // Load categories and subcategories from database
 require_once '../config1/mongodb.php';
 require_once '../models/Category.php';
+require_once '../includes/filter-data-helper.php';
+
+// Get dynamic filter data for sidebar
+$filterData = getFilterData('Beauty & Cosmetics');
 
 $categoryModel = new Category();
 $beautyCategory = $categoryModel->getByName("Beauty & Cosmetics");
@@ -64,6 +68,7 @@ $subcategoryImages = [
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
+    <script src="../scripts/instant-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
@@ -519,7 +524,12 @@ $subcategoryImages = [
             // Count the initial products displayed
             const productCards = document.querySelectorAll('.product-card');
             const initialCount = productCards.length;
-            updateStyleCount(initialCount);
+            
+            // Update style count with beauty-specific text
+            const styleCountElement = document.getElementById('style-count');
+            if (styleCountElement) {
+                styleCountElement.textContent = `${initialCount} Beauty Products`;
+            }
         });
         </script>
 
