@@ -146,7 +146,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
         return 'uploads/' . $imagePath;
     }
     
-    return 'img/default-product.jpg';
+    return 'img/placeholder.jpg';
 }
 ?>
 
