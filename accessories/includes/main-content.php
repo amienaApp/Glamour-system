@@ -155,13 +155,21 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php
-                // Determine stock status
+                // Determine stock status - same logic as womenF
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isSoldOut = $stock <= 0 || $available === false;
+                $isLowStock = $stock > 0 && $stock <= 7 && $available !== false;
                 ?>
                 <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price']; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
@@ -274,13 +282,11 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                                         data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
-                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                            <?php if ($isSoldOut): ?>
-                                SOLD OUT
-                            <?php elseif ($isLowStock): ?>
-                                ⚠️ Only <?php echo $stock; ?> left in stock!
-                            <?php endif; ?>
-                        </div>
+                        <?php if ($isSoldOut): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif ($isLowStock): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
+                        <?php endif; ?>
                     </div>
                     <div class="product-info">
                         <div class="color-options">
@@ -323,13 +329,21 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php
-                // Determine stock status
+                // Determine stock status - same logic as womenF
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isSoldOut = $stock <= 0 || $available === false;
+                $isLowStock = $stock > 0 && $stock <= 7 && $available !== false;
                 ?>
                 <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
                      data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price']; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
@@ -442,13 +456,11 @@ $sunglasses = $productModel->getBySubcategory('Sunglasses');
                                         data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
-                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                            <?php if ($isSoldOut): ?>
-                                SOLD OUT
-                            <?php elseif ($isLowStock): ?>
-                                ⚠️ Only <?php echo $stock; ?> left in stock!
-                            <?php endif; ?>
-                        </div>
+                        <?php if ($isSoldOut): ?>
+                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
+                        <?php elseif ($isLowStock): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
+                        <?php endif; ?>
                     </div>
                     <div class="product-info">
                         <div class="color-options">

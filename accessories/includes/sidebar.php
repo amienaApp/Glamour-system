@@ -429,8 +429,22 @@ function updateProductGrid(products) {
 
 function createProductCard(product) {
     const card = document.createElement('div');
+    
+    // Determine if product is sold out - same logic as womenF
+    const stock = parseInt(product.stock) || 0;
+    const available = product.available;
+    const isSoldOut = stock <= 0 || available === false;
+    const isLowStock = stock > 0 && stock <= 5 && available !== false;
+    
     card.className = 'product-card';
     card.setAttribute('data-product-id', product.id);
+    card.setAttribute('data-product-name', product.name || '');
+    card.setAttribute('data-product-price', product.price || 0);
+    card.setAttribute('data-product-category', product.category || '');
+    card.setAttribute('data-product-subcategory', product.subcategory || '');
+    card.setAttribute('data-product-stock', stock);
+    card.setAttribute('data-product-available', available ? 'true' : 'false');
+    card.setAttribute('data-product-color', product.color || '');
     card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
     card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
     card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
@@ -461,9 +475,9 @@ function createProductCard(product) {
             </button>
             <div class="product-actions">
                 <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                ${product.available === false ? 
+                ${isSoldOut ? 
                     '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
-                    '<button class="add-to-bag">Add To Bag</button>'
+                    '<button class="add-to-bag" data-product-id="' + product.id + '" data-product-name="' + product.name + '" data-product-price="' + product.price + '" data-product-color="' + (product.color || '') + '" data-product-stock="' + stock + '">Add To Bag</button>'
                 }
             </div>
         </div>
@@ -483,10 +497,10 @@ function createProductCard(product) {
                     <span class="original-price">$${originalPrice.toFixed(0)}</span>
                 ` : `$${price.toFixed(0)}`}
             </div>
-            ${product.available === false ? 
+            ${isSoldOut ? 
                 '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
-                (product.stock && product.stock <= 5 && product.stock > 0 ? 
-                    `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : '')
+                (isLowStock ? 
+                    `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${stock} left</div>` : '')
             }
         </div>
     `;

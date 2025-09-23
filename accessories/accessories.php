@@ -234,6 +234,7 @@ $page_title = 'Galamor palace';
         <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
         <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
+        <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
         <script src="search.js?v=<?php echo time(); ?>"></script>
 
 </body>

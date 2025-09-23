@@ -536,6 +536,24 @@
     text-decoration: line-through;
 }
 
+/* Sold Out Manager Styles */
+.product-card.sold-out {
+    opacity: 0.7;
+}
+
+.sold-out-btn {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    border-color: #ccc !important;
+    opacity: 0.7;
+}
+
+.sold-out-text {
+    color: #e53e3e !important;
+    font-weight: 600;
+}
+
 /* Action Buttons */
 .quick-view-actions {
     display: flex;
