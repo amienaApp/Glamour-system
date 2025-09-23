@@ -34,6 +34,11 @@ class User {
             throw new Exception("Email already registered");
         }
 
+        // Validate username format
+        if (!$this->validateUsername($userData['username'])) {
+            throw new Exception("Username must contain only letters (a-z, A-Z) and be 3-20 characters long");
+        }
+
         // Check if username already exists
         $existingUsername = $this->collection->findOne(['username' => $userData['username']]);
         if ($existingUsername) {
@@ -72,6 +77,11 @@ class User {
             if (empty($userData[$field])) {
                 throw new Exception("Field '$field' is required");
             }
+        }
+
+        // Validate username format
+        if (!$this->validateUsername($userData['username'])) {
+            throw new Exception("Username must contain only letters (a-z, A-Z) and be 3-20 characters long");
         }
 
         // Check if email already exists
@@ -322,6 +332,28 @@ class User {
      */
     public function validateEmail($email) {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Validate username format - only letters a-z and A-Z
+     */
+    public function validateUsername($username) {
+        // Check if username contains only letters a-z and A-Z
+        if (!preg_match('/^[a-zA-Z]+$/', $username)) {
+            return false;
+        }
+        
+        // Check minimum length
+        if (strlen($username) < 3) {
+            return false;
+        }
+        
+        // Check maximum length
+        if (strlen($username) > 20) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

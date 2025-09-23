@@ -1499,4 +1499,7 @@ $regionOptions = [
         height: 50px;
     }
 }
-</style> 
+</style>
+
+<!-- Username Validation Script -->
+<script src="username-validation.js"></script> 
