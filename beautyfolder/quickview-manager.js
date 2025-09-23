@@ -350,8 +350,7 @@ class QuickviewManager {
     }
 
     async addToCart() {
-        if (!this.currentProduct || !this.selectedColor || !this.selectedSize) {
-            alert('Please select both color and size');
+        if (!this.currentProduct) {
             return;
         }
 

@@ -438,8 +438,14 @@ ini_set('display_errors', 0);
 
                 <div class="form-group">
                     <label for="contact_number" class="required">Contact Number</label>
-                    <input type="tel" id="contact_number" name="contact_number" class="form-input" 
-                           placeholder="+252 xxx xxxx" required>
+                    <div class="contact-input-container" style="display: flex; align-items: center; border: 2px solid #e9ecef; border-radius: 8px; overflow: hidden;">
+                        <div class="flag-prefix" style="display: flex; align-items: center; background: #f8f9fa; padding: 12px; border-right: 2px solid #e9ecef;">
+                            <img src="/Glamour-system/img/flag.jpg" alt="Somali Flag" style="width: 20px; height: 15px; margin-right: 8px; border-radius: 2px;">
+                            <span class="country-code" style="color: #666; font-weight: 500;">+252</span>
+                        </div>
+                        <input type="tel" id="contact_number" name="contact_number" class="form-input" 
+                               placeholder="XXX XXX XXXX" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="flex: 1; border: none; padding: 12px; outline: none;">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -617,17 +623,17 @@ ini_set('display_errors', 0);
 
         // Cities for each region
         const citiesByRegion = {
-            'banadir': ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn'],
-            'bari': ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban', 'Bandarbeyla'],
-            'bay': ['Baidoa', 'Burdhubo', 'Dinsor', 'Qansaxdheere'],
-            'galguduud': ['Dhusamareb', 'Adado', 'Abudwaq', 'Galgadud'],
-            'gedo': ['Garbahaarrey', 'Bardhere', 'Luuq', 'El Wak', 'Dolow'],
-            'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi', 'Mahas'],
-            'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow', 'Dujuma'],
-            'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe', 'Afmadow'],
-            'mudug': ['Galkayo', 'Hobyo', 'Harardhere', 'Jariiban'],
-            'nugaal': ['Garowe', 'Eyl', 'Burtinle', 'Dangorayo'],
-            'sanaag': ['Erigavo', 'Badhan', 'Laasqoray', 'Dhahar'],
+            'banadir': ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn', 'Kaxda', 'Daynile', 'Hamar Weyne', 'Shangaani', 'Bondhere', 'Waberi', 'Hamar Jabjab', 'Hodan', 'Howlwadag', 'Wardhigley', 'Yaqshid', 'Karan', 'Shibis', 'Abdiaziz', 'Shangani', 'Bakara'],
+            'bari': ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban', 'Bandarbeyla', 'Bargal', 'Alula', 'Hafun', 'Rako', 'Ufayn', 'Bareeda', 'Dharoor', 'Gumbah', 'Hingalol', 'Murcanyo', 'Qandala', 'Ras Bina', 'Tisjiic'],
+            'bay': ['Baidoa', 'Burdhubo', 'Dinsor', 'Qansaxdheere', 'Bakool', 'Hudur', 'Rab Dhuure', 'Wajid', 'Yeed', 'Ceel Barde', 'Dabataag', 'Deynunay', 'Ufurow', 'Waajid'],
+            'galguduud': ['Dhusamareb', 'Adado', 'Abudwaq', 'Ceel Buur', 'Ceel Dheer', 'Cabudwaaq', 'Dhuusamarreeb', 'Hobyo', 'Jariiban', 'Mareer Gur', 'Mareeg', 'Masagaway', 'Oodweyne', 'Qoryooley', 'Wabxo', 'Xarardheere'],
+            'gedo': ['Garbahaarrey', 'Bardhere', 'Luuq', 'El Wak', 'Dolow', 'Bulo Haji', 'Bulo Xawo', 'Dolo Ado', 'Dolo Bay', 'Fafan', 'Garbahaarey', 'Hudur', 'Kurtunwaarey', 'Rab Dhuure', 'Sakow', 'Waajid'],
+            'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi', 'Mahas', 'Bulo Burte', 'Ceel Ali', 'Ceel Cali', 'Halgan', 'Mataban', 'Maxaas', 'Moqokori', 'Rab Dhuure', 'Wanlaweyn'],
+            'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow', 'Dujuma', 'Bardheere', 'Kurtunwaarey', 'Luuq', 'Saakow', 'Wanlaweyn'],
+            'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe', 'Afmadow', 'Baraawe', 'Jamaame', 'Kismaayo', 'Kurtunwaarey', 'Qoryooley'],
+            'mudug': ['Galkayo', 'Hobyo', 'Harardhere', 'Jariiban', 'Cabudwaaq', 'Ceel Dheer', 'Dhuusamarreeb', 'Galkacyo', 'Mareer Gur', 'Mareeg', 'Masagaway', 'Oodweyne', 'Qoryooley', 'Wabxo', 'Xarardheere'],
+            'nugaal': ['Garowe', 'Eyl', 'Burtinle', 'Dangorayo', 'Garoowe', 'Nugaal', 'Qardho', 'Rako', 'Ufayn'],
+            'sanaag': ['Erigavo', 'Badhan', 'Laasqoray', 'Dhahar', 'Ceerigaabo'],
             'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
             'shabeellaha-hoose': ['Merca', 'Baraawe', 'Kurtunwaarey', 'Qoryooley'],
             'sool': ['Laascaanood', 'Taleex', 'Xudun', 'Caynabo'],

@@ -134,10 +134,12 @@ if (!empty($filters)) {
             <?php foreach ($products as $index => $product): ?>
                 <?php 
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
                 ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
@@ -147,7 +149,11 @@ if (!empty($filters)) {
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
-                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
+                     data-product-available="<?php 
+                     $available = $product['available'] ?? true;
+                     $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                     echo $isAvailable ? 'true' : 'false'; 
+                     ?>"
                      data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
                      data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
                      data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
@@ -306,13 +312,11 @@ if (!empty($filters)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                            <?php if ($isSoldOut): ?>
-                                SOLD OUT
-                            <?php elseif ($isLowStock): ?>
+                        <?php if ($isLowStock): ?>
+                            <div class="product-availability low-stock-text">
                                 ⚠️ Only <?php echo $stock; ?> left in stock!
-                            <?php endif; ?>
-                        </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -442,10 +446,21 @@ if (!empty($filters)) {
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
-                            <?php if (($product['available'] ?? true) === false): ?>
-                                <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
+                            <?php 
+                            $stock = (int)($product['stock'] ?? 0);
+                            $available = $product['available'] ?? true;
+                            $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                            $isSoldOut = $stock <= 0 || !$isAvailable;
+                            ?>
+                            <?php if ($isSoldOut): ?>
+                                <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -480,10 +495,11 @@ if (!empty($filters)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        ?>
+                        <?php if ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
                         <?php endif; ?>
                     </div>
                 </div>

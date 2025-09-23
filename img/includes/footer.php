@@ -62,7 +62,7 @@
             <h3>Get 15% off when you sign up for texts!</h3>
             <p>By signing up via text, you agree to receive recurring automated marketing texts from Glamour Shopping.</p>
             <div class="newsletter-form">
-                <input type="tel" placeholder="Enter your phone number" class="phone-input">
+                <input type="tel" placeholder="Enter your phone number" class="phone-input" maxlength="9" pattern="[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <button class="newsletter-btn">Text 'GLAMOUR' to 54858</button>
             </div>
         </div>

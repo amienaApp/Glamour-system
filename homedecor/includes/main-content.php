@@ -206,10 +206,12 @@ if (empty($featuredProducts)) {
                 <?php
                 // Determine stock status
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
                 ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -374,10 +376,16 @@ if (empty($featuredProducts)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        $available = $product['available'] ?? true;
+                // Handle both boolean and string values for available field
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                        $isSoldOut = $stock <= 0 || !$isAvailable;
+                        ?>
+                        <?php if ($isSoldOut): ?>
+                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -396,10 +404,12 @@ if (empty($featuredProducts)) {
                 <?php
                 // Determine stock status
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
                 ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-category="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
@@ -564,10 +574,16 @@ if (empty($featuredProducts)) {
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        $available = $product['available'] ?? true;
+                // Handle both boolean and string values for available field
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                        $isSoldOut = $stock <= 0 || !$isAvailable;
+                        ?>
+                        <?php if ($isSoldOut): ?>
+                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
                         <?php endif; ?>
                     </div>
                 </div>

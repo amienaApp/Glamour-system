@@ -1,540 +1,109 @@
-// Simple Script
+// Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    // Script loaded
+    // WomenF script loaded successfully
     
-    // Initialize category modal functionality
+    // Initialize all functionality
     initializeCategoryModals();
-    
-    // Initialize header modals functionality
     initializeHeaderModals();
+    initializeFilters();
+    initializeQuickView();
     
-    // Initialize filter functionality will be called after function definition
+    // Store original products for clear filters functionality
+    let originalProducts = [];
+    let isFiltered = false;
     
-    // Quick View functionality
-    const sidebar = document.getElementById('quick-view-sidebar');
-    const overlay = document.getElementById('quick-view-overlay');
-    const closeBtn = document.getElementById('close-quick-view');
+    // Store original products on page load
+    function storeOriginalProducts() {
+        const productGrid = document.getElementById('all-products-grid') || 
+                           document.getElementById('filtered-products-grid') ||
+                           document.querySelector('.product-grid');
+        
+        if (productGrid) {
+            const productCards = productGrid.querySelectorAll('.product-card');
+            originalProducts = Array.from(productCards).map(card => {
+                return {
+                    id: card.getAttribute('data-product-id'),
+                    name: card.getAttribute('data-product-name'),
+                    price: parseFloat(card.getAttribute('data-product-price')),
+                    salePrice: card.getAttribute('data-product-sale-price'),
+                    description: card.getAttribute('data-product-description'),
+                    category: card.getAttribute('data-product-category'),
+                    subcategory: card.getAttribute('data-product-subcategory'),
+                    featured: card.getAttribute('data-product-featured') === 'true',
+                    onSale: card.getAttribute('data-product-on-sale') === 'true',
+                    stock: parseInt(card.getAttribute('data-product-stock')),
+                    rating: parseFloat(card.getAttribute('data-product-rating')),
+                    review_count: parseInt(card.getAttribute('data-product-review-count')),
+                    front_image: card.getAttribute('data-product-front-image'),
+                    back_image: card.getAttribute('data-product-back-image'),
+                    color: card.getAttribute('data-product-color'),
+                    images: JSON.parse(card.getAttribute('data-product-images') || '[]'),
+                    color_variants: JSON.parse(card.getAttribute('data-product-color-variants') || '[]'),
+                    sizes: JSON.parse(card.getAttribute('data-product-sizes') || '[]'),
+                    size_category: card.getAttribute('data-product-size-category'),
+                    selected_sizes: JSON.parse(card.getAttribute('data-product-selected-sizes') || '[]'),
+                    variants: JSON.parse(card.getAttribute('data-product-variants') || '[]'),
+                    product_variants: JSON.parse(card.getAttribute('data-product-product-variants') || '[]'),
+                    options: JSON.parse(card.getAttribute('data-product-options') || '[]'),
+                    product_options: JSON.parse(card.getAttribute('data-product-product-options') || '[]'),
+                    image_front: card.getAttribute('data-product-image-front'),
+                    image_back: card.getAttribute('data-product-image-back'),
+                    available: card.querySelector('.add-to-bag:not([disabled])') ? true : false
+                };
+            });
+            // Stored original products
+        }
+    }
     
-    // Quick view elements found
-        sidebar: !!sidebar,
-        overlay: !!overlay,
-        closeBtn: !!closeBtn
-    });
+    // Call this after page loads
+    setTimeout(storeOriginalProducts, 100);
+    
+    // Global variables to track selected variants in quick view
+    let selectedQuickViewColor = '';
+    let selectedQuickViewSize = '';
+
+    function initializeQuickView() {
+        const sidebar = document.getElementById('quick-view-sidebar');
+        const overlay = document.getElementById('quick-view-overlay');
+        const closeBtn = document.getElementById('close-quick-view');
+        
+        console.log('Quick view elements found:', {
+            sidebar: !!sidebar,
+            overlay: !!overlay,
+            closeBtn: !!closeBtn
+        }); 
     
     // Quick View button click handler
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('quick-view') || e.target.closest('.quick-view')) {
             e.preventDefault();
-            console.log('Quick view button clicked!');
+            // console.log('Quick view button clicked!');
             const button = e.target.classList.contains('quick-view') ? e.target : e.target.closest('.quick-view');
             const productId = button.getAttribute('data-product-id');
-            console.log('Product ID:', productId);
+            // console.log('Product ID:', productId);
             if (productId) {
                 openQuickView(productId);
             } else {
                 console.error('No product ID found');
-                    }
-    }
-    
-    // Filter Functionality
-    function initializeFilters() {
-        console.log('Initializing filters...');
-        
-        // Get current subcategory from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentSubcategory = urlParams.get('subcategory') || '';
-        
-        // Filter state
-        let filterState = {
-            sizes: [],
-            colors: [],
-            price_ranges: [],
-            categories: [],
-            brands: []
-        };
-        
-        // Load categories dynamically
-        loadCategories();
-        
-        // Add event listeners to all filter checkboxes
-        document.addEventListener('change', function(e) {
-            if (e.target.hasAttribute('data-filter')) {
-                const filterType = e.target.getAttribute('data-filter');
-                const filterValue = e.target.value;
-                const isChecked = e.target.checked;
-                
-                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
-                
-                // Update filter state
-                if (isChecked) {
-                    if (!filterState[filterType + 's'].includes(filterValue)) {
-                        filterState[filterType + 's'].push(filterValue);
-                    }
-                } else {
-                    const index = filterState[filterType + 's'].indexOf(filterValue);
-                    if (index > -1) {
-                        filterState[filterType + 's'].splice(index, 1);
-                    }
-                }
-                
-                console.log('Current filter state:', filterState);
-                
-                // Apply filters
-                applyFilters();
             }
-        });
-        
-        // Clear filters button
-        const clearFiltersBtn = document.querySelector('.clear-filters-btn');
-        if (clearFiltersBtn) {
-            clearFiltersBtn.addEventListener('click', function() {
-                clearAllFilters();
-            });
-        }
-        
-        function applyFilters() {
-            console.log('Applying filters...');
-            
-            // Show loading state
-            showFilterLoading();
-            
-            // Prepare filter data
-            const filterData = {
-                action: 'filter_products',
-                subcategory: currentSubcategory,
-                sizes: filterState.sizes,
-                colors: filterState.colors,
-                price_ranges: filterState.price_ranges,
-                categories: filterState.categories,
-                brands: filterState.brands
-            };
-            
-            console.log('Sending filter data:', filterData);
-            
-            // Send filter request
-            fetch('filter-api.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(filterData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Filter response:', data);
-                
-                if (data.success) {
-                    updateProductGrid(data.data.products);
-                    updateStyleCount(data.data.total_count);
-                    hideFilterLoading();
-                } else {
-                    console.error('Filter error:', data.message);
-                    hideFilterLoading();
-                    showFilterError(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Filter request error:', error);
-                hideFilterLoading();
-                showFilterError('Network error occurred');
-            });
-        }
-        
-        function clearAllFilters() {
-            console.log('Clearing all filters...');
-            
-            // Uncheck all filter checkboxes (including dynamically loaded ones)
-            document.querySelectorAll('input[data-filter]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            // Reset filter state
-            filterState = {
-                sizes: [],
-                colors: [],
-                price_ranges: [],
-                categories: [],
-                brands: []
-            };
-            
-            // Apply filters (will show all products)
-            applyFilters();
-        }
-        
-        // Make clearAllFilters globally accessible
-        window.clearAllFilters = clearAllFilters;
-        
-        function updateProductGrid(products) {
-            console.log(`Updating product grid with ${products.length} products`);
-            
-            // Get the product grid
-            const productGrid = document.querySelector('.product-grid') || 
-                               document.querySelector('.products-container') ||
-                               document.querySelector('.main-content');
-            
-            if (!productGrid) {
-                console.error('Product grid not found');
-                return;
-            }
-            
-            // Clear existing products
-            productGrid.innerHTML = '';
-            
-            if (products.length === 0) {
-                productGrid.innerHTML = `
-                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                        <p>No products found matching your filters.</p>
-                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Add products to grid
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                productGrid.appendChild(productCard);
-            });
-            
-            // Reinitialize product cards
-            const newProductCards = productGrid.querySelectorAll('.product-card');
-            newProductCards.forEach(card => {
-                initializeProductCard(card);
-            });
-        }
-        
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.setAttribute('data-product-id', product.id);
-            
-            // Store color variants data for cart functionality
-            if (product.color_variants && product.color_variants.length > 0) {
-                card.setAttribute('data-product-variants', JSON.stringify(product.color_variants));
-            }
-            
-            // Store price data
-            card.setAttribute('data-price', product.price);
-            
-            // Get the best image for the product
-            const imagePath = getProductImage(product);
-            
-            // Create color options HTML
-            let colorOptionsHTML = '';
-            if (product.color_variants && product.color_variants.length > 0) {
-                product.color_variants.forEach((variant, index) => {
-                    const isActive = index === 0 ? 'active' : '';
-                    colorOptionsHTML += `
-                        <span class="color-circle ${isActive}" 
-                              style="background-color: ${variant.color};" 
-                              title="${variant.color}" 
-                              data-color="${variant.color}"></span>
-                    `;
-                });
-            } else {
-                colorOptionsHTML = `
-                    <span class="color-circle active" 
-                          style="background-color: ${product.color};" 
-                          title="${product.color}" 
-                          data-color="${product.color}"></span>
-                `;
-            }
-            
-            card.innerHTML = `
-                <div class="product-image">
-                    <div class="image-slider">
-                        <img src="../${imagePath}" 
-                             alt="${product.name}" 
-                             class="active" 
-                             data-color="${product.color}">
-                    </div>
-                    <button class="heart-button">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <div class="product-actions">
-                        <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                        ${product.available ? 
-                            '<button class="add-to-bag">Add To Bag</button>' : 
-                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>'
-                        }
-                    </div>
-                </div>
-                <div class="product-info">
-                    <div class="color-options">
-                        ${colorOptionsHTML}
-                    </div>
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${product.price}</div>
-                    ${!product.available ? 
-                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' : 
-                        (product.stock <= 5 && product.stock > 0 ? 
-                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : 
-                            ''
-                        )
-                    }
-                </div>
-            `;
-            
-            return card;
-        }
-        
-        function getProductImage(product) {
-            if (product.front_image) {
-                return product.front_image;
-            } else if (product.back_image) {
-                return product.back_image;
-            } else if (product.color_variants && product.color_variants.length > 0) {
-                return product.color_variants[0].front_image || product.color_variants[0].back_image || 'img/default-product.jpg';
-            }
-            return 'img/default-product.jpg';
-        }
-        
-        function updateStyleCount(count) {
-            const styleCountElement = document.querySelector('.style-count');
-            if (styleCountElement) {
-                styleCountElement.textContent = `${count} Styles`;
-            }
-        }
-        
-        function showFilterLoading() {
-            // Add loading overlay to product grid
-            const productGrid = document.querySelector('.product-grid') || 
-                               document.querySelector('.products-container') ||
-                               document.querySelector('.main-content');
-            if (productGrid) {
-                const loadingOverlay = document.createElement('div');
-                loadingOverlay.id = 'filter-loading';
-                loadingOverlay.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(255, 255, 255, 0.8);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                `;
-                loadingOverlay.innerHTML = `
-                    <div style="text-align: center;">
-                        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-                        <p>Filtering products...</p>
-                    </div>
-                `;
-                productGrid.style.position = 'relative';
-                productGrid.appendChild(loadingOverlay);
-                
-                // Also add loading state to sidebar
-                const sidebar = document.querySelector('.sidebar');
-                if (sidebar) {
-                    sidebar.classList.add('filter-loading');
-                }
-            }
-        }
-        
-        function hideFilterLoading() {
-            const loadingOverlay = document.getElementById('filter-loading');
-            if (loadingOverlay) {
-                loadingOverlay.remove();
-            }
-            
-            // Remove loading state from sidebar
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                sidebar.classList.remove('filter-loading');
-            }
-        }
-        
-        function showFilterError(message) {
-            // Show error notification
-            showValidationModal('error', 'Filter Error', message);
-        }
-        
-        // Add CSS for loading animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    // Call initializeFilters after it's defined
-    initializeFilters();
-    
-    // Load Categories Function
-    function loadCategories() {
-        console.log('Loading categories...');
-        
-        const categoryContainer = document.getElementById('category-filter-options');
-        if (!categoryContainer) {
-            console.error('Category filter container not found');
-            return;
-        }
-        
-        console.log('Category container found, making API request...');
-        
-        // Fetch categories from API
-        fetch('get-categories.php')
-            .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Categories response:', data);
-                
-                if (data.success && data.data.categories) {
-                    console.log('Rendering categories:', data.data.categories);
-                    renderCategories(data.data.categories);
-                } else {
-                    console.error('Failed to load categories:', data.message);
-                    showCategoryError('Failed to load categories: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error loading categories:', error);
-                showCategoryError('Network error occurred while loading categories: ' + error.message);
-            });
-    }
-    
-    function renderCategories(categories) {
-        const categoryContainer = document.getElementById('category-filter-options');
-        if (!categoryContainer) return;
-        
-        // Clear loading state
-        categoryContainer.innerHTML = '';
-        
-        if (categories.length === 0) {
-            categoryContainer.innerHTML = `
-                <div style="text-align: center; padding: 10px; color: #666;">
-                    No categories available
-                </div>
-            `;
-            return;
-        }
-        
-        // Create category checkboxes
-        categories.forEach(category => {
-            const label = document.createElement('label');
-            label.className = 'filter-option';
-            label.innerHTML = `
-                <input type="checkbox" name="category[]" value="${category.value}" data-filter="category">
-                <span class="checkmark"></span>
-                ${category.name}
-                <span class="category-count" style="color: #666; font-size: 0.8em; margin-left: 5px;">(${category.count})</span>
-            `;
-            categoryContainer.appendChild(label);
-        });
-        
-        console.log(`Rendered ${categories.length} categories`);
-    }
-    
-    function showCategoryError(message) {
-        const categoryContainer = document.getElementById('category-filter-options');
-        if (categoryContainer) {
-            // Show fallback categories if API fails
-            const fallbackCategories = [
-                { name: 'Shirts', value: 'shirts', count: 15 },
-                { name: 'T-Shirts', value: 'tshirts', count: 23 },
-                { name: 'Suits', value: 'suits', count: 8 },
-                { name: 'Pants', value: 'pants', count: 12 },
-                { name: 'Shorts', value: 'shorts', count: 6 },
-                { name: 'Hoodies', value: 'hoodies', count: 10 }
-            ];
-            
-            categoryContainer.innerHTML = `
-                <div style="text-align: center; padding: 10px; color: #e53e3e; margin-bottom: 10px;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    ${message} - Showing fallback categories
-                    <br>
-                    <button onclick="loadCategories()" style="margin-top: 5px; padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Retry
-                    </button>
-                </div>
-            `;
-            
-            // Render fallback categories
-            fallbackCategories.forEach(category => {
-                const label = document.createElement('label');
-                label.className = 'filter-option';
-                label.innerHTML = `
-                    <input type="checkbox" name="category[]" value="${category.value}" data-filter="category">
-                    <span class="checkmark"></span>
-                    ${category.name}
-                    <span class="category-count" style="color: #666; font-size: 0.8em; margin-left: 5px;">(${category.count})</span>
-                `;
-                categoryContainer.appendChild(label);
-            });
-        }
-        
-        // Log error for debugging
-        console.error('Category loading error:', message);
-    }
-    
-    // Size Filter Enhancement Functions
-    function selectAllSizes() {
-        console.log('Selecting all sizes...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-        sizeCheckboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                checkbox.checked = true;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-    }
-    
-    function clearSizeFilters() {
-        console.log('Clearing size filters...');
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-        sizeCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-    }
-    
-    function updateSizeCount() {
-        const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]:checked');
-        const sizeCountElement = document.getElementById('size-count');
-        if (sizeCountElement) {
-            const count = sizeCheckboxes.length;
-            sizeCountElement.textContent = count > 0 ? `(${count} selected)` : '';
-        }
-    }
-    
-    // Make functions globally accessible
-    window.selectAllSizes = selectAllSizes;
-    window.clearSizeFilters = clearSizeFilters;
-    window.updateSizeCount = updateSizeCount;
-    window.loadCategories = loadCategories;
-    
-    // Add event listener for size count updates
-    document.addEventListener('change', function(e) {
-        if (e.target.closest('#size-filter')) {
-            updateSizeCount();
         }
     });
-    
-    // Initialize size count on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        updateSizeCount();
-    });
-});
     
     // Close quick view
     if (closeBtn) closeBtn.addEventListener('click', closeQuickView);
     if (overlay) overlay.addEventListener('click', closeQuickView);
-    
+
     function openQuickView(productId) {
-        console.log('Opening quick view for:', productId);
+        // console.log('Opening quick view for:', productId);
         
+        try {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-        if (!productCard) return;
+            if (!productCard) {
+                console.error('Product card not found for ID:', productId);
+                return;
+            }
+            
+            // console.log('Product card found:', productCard);
         
         const name = productCard.querySelector('.product-name')?.textContent || 'Product';
         const price = productCard.querySelector('.product-price')?.textContent || '$0';
@@ -544,9 +113,73 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceEl = document.getElementById('quick-view-price');
         const addToBagBtn = document.getElementById('add-to-bag-quick');
         
-        if (titleEl) titleEl.textContent = name;
+        if (titleEl) {
+            titleEl.textContent = name;
+            titleEl.setAttribute('data-product-id', productId);
+        }
         if (priceEl) priceEl.textContent = price;
-        if (addToBagBtn) addToBagBtn.setAttribute('data-product-id', productId);
+        
+        // Initialize wishlist button state
+        const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+        if (wishlistBtn && window.wishlistManager) {
+            const isInWishlist = window.wishlistManager.isInWishlist(productId);
+            window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
+        }
+        // Handle both button types
+        const mainAddToBagBtn = document.getElementById('add-to-bag-quick');
+        const altAddToBagBtn = document.getElementById('add-to-bag-quick-alt');
+        
+        if (mainAddToBagBtn) {
+            mainAddToBagBtn.setAttribute('data-product-id', productId);
+            mainAddToBagBtn.disabled = false;
+            mainAddToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Bag';
+        }
+        
+        if (altAddToBagBtn) {
+            altAddToBagBtn.setAttribute('data-product-id', productId);
+            altAddToBagBtn.disabled = true;
+            altAddToBagBtn.textContent = 'Please select a color';
+        }
+        
+        // Handle color variants
+        const variantsData = productCard.getAttribute('data-product-variants');
+        let variants = [];
+        if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+            try {
+                variants = JSON.parse(variantsData);
+            } catch (e) {
+                console.log('Could not parse variants data:', e);
+            }
+        }
+        
+        // Populate color options in quickview
+        const colorSelectionEl = document.getElementById('quick-view-color-selection');
+        if (colorSelectionEl && variants.length > 0) {
+            colorSelectionEl.innerHTML = '';
+            variants.forEach((variant, index) => {
+                if (variant.color) {
+                    const colorOption = document.createElement('div');
+                    colorOption.className = 'color-option';
+                    colorOption.style.backgroundColor = variant.color;
+                    colorOption.setAttribute('data-color', variant.color);
+                    colorOption.setAttribute('data-variant-index', index);
+                    colorOption.title = variant.name || variant.color;
+                    
+                    // Add click handler for color selection
+                    colorOption.addEventListener('click', function() {
+                        selectQuickViewColor(variant, productCard);
+                    });
+                    
+                    colorSelectionEl.appendChild(colorOption);
+                }
+            });
+            
+            // Select first color by default
+            if (variants.length > 0 && variants[0].color) {
+                selectedQuickViewColor = variants[0].color;
+                selectQuickViewColor(variants[0], productCard);
+            }
+        }
         
         // Handle images
         const mainImage = document.getElementById('quick-view-main-image');
@@ -664,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (isActive) {
                         colorBtn.classList.add('active');
+                        selectedQuickViewColor = color; // Set initial selected color
                     }
                     
                     // Add click handler for quick view color circles
@@ -677,6 +311,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Add active class to clicked option
                         this.classList.add('active');
                         this.style.border = '2px solid #000';
+                        
+                        // Store selected color
+                        selectedQuickViewColor = color;
                         
                         // Update media for this color
                         const mediaForColor = productCard.querySelectorAll(`.image-slider img[data-color="${color}"], .image-slider video[data-color="${color}"]`);
@@ -760,71 +397,517 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Handle size selection in quick view
+        // Handle size selection in quick view - Enhanced for Multiple Forms
         const sizeSelection = document.getElementById('quick-view-size-selection');
         if (sizeSelection) {
+            // console.log('Size selection element found, processing sizes...');
+            
+            try {
             sizeSelection.innerHTML = '';
             
-            // Default sizes
-            const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                // Helper function to clean JSON strings
+                function cleanJsonString(jsonString) {
+                    if (!jsonString || jsonString === '[]' || jsonString === 'null') {
+                        return null;
+                    }
+                    
+                    let cleaned = jsonString;
+                    // Remove outer quotes if present
+                    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+                        cleaned = cleaned.slice(1, -1);
+                    }
+                    // Unescape quotes
+                    cleaned = cleaned.replace(/\\"/g, '"');
+                    return cleaned;
+                }
+                
+                // Get actual available sizes from product data
+                let sizes = [];
+                
+                // Try to get sizes from product data - check all possible sources
+                const productSizes = productCard.dataset.productSizes;
+                const productSelectedSizes = productCard.dataset.productSelectedSizes;
+                const productVariants = productCard.dataset.productVariants;
+                const productProductVariants = productCard.dataset.productProductVariants;
+                const productOptions = productCard.dataset.productOptions;
+                const productProductOptions = productCard.dataset.productProductOptions;
+            
+            /* console.log('Raw product size data:', {
+                productSizes: productSizes,
+                productSelectedSizes: productSelectedSizes,
+                productVariants: productVariants,
+                productProductVariants: productProductVariants,
+                productOptions: productOptions,
+                productProductOptions: productProductOptions
+            }); */
+            
+            // Check multiple possible size data sources in order of preference
+            if (productSizes && productSizes !== '[]' && productSizes !== 'null') {
+                try {
+                    const cleanSizes = cleanJsonString(productSizes);
+                    if (cleanSizes) {
+                        // console.log('Cleaned productSizes:', cleanSizes);
+                        const parsedSizes = JSON.parse(cleanSizes);
+                        if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
+                            sizes = parsedSizes.filter(size => size && size.trim() !== '');
+                            // console.log('Found sizes in productSizes:', sizes);
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse productSizes:', e);
+                    // console.log('Raw productSizes:', productSizes);
+                }
+            }
+            
+            // If no sizes from productSizes, try selectedSizes
+            if (sizes.length === 0 && productSelectedSizes && productSelectedSizes !== '[]' && productSelectedSizes !== 'null') {
+                try {
+                    const cleanSelectedSizes = cleanJsonString(productSelectedSizes);
+                    if (cleanSelectedSizes) {
+                        // console.log('Cleaned productSelectedSizes:', cleanSelectedSizes);
+                        const parsedSelectedSizes = JSON.parse(cleanSelectedSizes);
+                        if (Array.isArray(parsedSelectedSizes) && parsedSelectedSizes.length > 0) {
+                            sizes = parsedSelectedSizes.filter(size => size && size.trim() !== '');
+                            // console.log('Found sizes in productSelectedSizes:', sizes);
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse productSelectedSizes:', e);
+                    // console.log('Raw productSelectedSizes:', productSelectedSizes);
+                }
+            }
+            
+            // If still no sizes, try to extract from variants
+            if (sizes.length === 0 && (productVariants || productProductVariants)) {
+                try {
+                    const variantsData = productVariants || productProductVariants;
+                    if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                        const parsedVariants = JSON.parse(variantsData);
+                        if (Array.isArray(parsedVariants)) {
+                            const variantSizes = [];
+                            parsedVariants.forEach(variant => {
+                                if (variant && variant.size && variant.size.trim() !== '' && !variantSizes.includes(variant.size)) {
+                                    variantSizes.push(variant.size);
+                                }
+                            });
+                            if (variantSizes.length > 0) {
+                                sizes = variantSizes;
+                                // console.log('Found sizes in variants:', sizes);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse variants for sizes:', e);
+                }
+            }
+            
+            // If still no sizes, try to extract from options
+            if (sizes.length === 0 && (productOptions || productProductOptions)) {
+                try {
+                    const optionsData = productOptions || productProductOptions;
+                    if (optionsData && optionsData !== '[]' && optionsData !== 'null') {
+                        const parsedOptions = JSON.parse(optionsData);
+                        if (Array.isArray(parsedOptions)) {
+                            const optionSizes = [];
+                            parsedOptions.forEach(option => {
+                                if (option && option.size && option.size.trim() !== '' && !optionSizes.includes(option.size)) {
+                                    optionSizes.push(option.size);
+                                }
+                            });
+                            if (optionSizes.length > 0) {
+                                sizes = optionSizes;
+                                // console.log('Found sizes in options:', sizes);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // console.log('Could not parse options for sizes:', e);
+                }
+            }
+            
+            // If still no sizes, use women's clothing sizes as fallback
+            if (sizes.length === 0) {
+                console.log('No sizes found for this product - using women\'s clothing sizes');
+                // Use women's clothing sizes: XS, S, M, L, XL, XXL
+                sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                selectedQuickViewSize = 'M'; // Set default size
+            }
+            
+            // console.log('Available sizes for product:', sizes);
+            /* console.log('Product size data sources:', {
+                productSizes: productSizes,
+                productSelectedSizes: productSelectedSizes,
+                productVariants: productVariants,
+                productProductVariants: productProductVariants
+            }); */
+            
+            // Function to convert size codes to full names
+            function getSizeName(sizeCode) {
+                const sizeMap = {
+                    'XXS': 'Extra Extra Small',
+                    'XS': 'Extra Small', 
+                    'S': 'Small',
+                    'M': 'Medium',
+                    'L': 'Large',
+                    'XL': 'Extra Large',
+                    'XXL': 'Extra Extra Large',
+                    'XXXL': 'Extra Extra Extra Large',
+                    '0': 'Size 0',
+                    '2': 'Size 2',
+                    '4': 'Size 4',
+                    '6': 'Size 6',
+                    '8': 'Size 8',
+                    '10': 'Size 10',
+                    '12': 'Size 12',
+                    '14': 'Size 14',
+                    '16': 'Size 16',
+                    '18': 'Size 18',
+                    '20': 'Size 20',
+                    '22': 'Size 22',
+                    '24': 'Size 24',
+                    '26': 'Size 26',
+                    '28': 'Size 28',
+                    '30': 'Size 30',
+                    '32': 'Size 32',
+                    '34': 'Size 34',
+                    '36': 'Size 36',
+                    '38': 'Size 38',
+                    '40': 'Size 40',
+                    '42': 'Size 42',
+                    '44': 'Size 44',
+                    '46': 'Size 46',
+                    '48': 'Size 48',
+                    '50': 'Size 50',
+                    '52': 'Size 52',
+                    '54': 'Size 54',
+                    '56': 'Size 56',
+                    '58': 'Size 58',
+                    '60': 'Size 60',
+                    '62': 'Size 62',
+                    '64': 'Size 64',
+                    '66': 'Size 66',
+                    '68': 'Size 68',
+                    '70': 'Size 70',
+                    '72': 'Size 72',
+                    '74': 'Size 74',
+                    '76': 'Size 76',
+                    '78': 'Size 78',
+                    '80': 'Size 80',
+                    '82': 'Size 82',
+                    '84': 'Size 84',
+                    '86': 'Size 86',
+                    '88': 'Size 88',
+                    '90': 'Size 90',
+                    '92': 'Size 92',
+                    '94': 'Size 94',
+                    '96': 'Size 96',
+                    '98': 'Size 98',
+                    '100': 'Size 100'
+                };
+                
+                // Return full name if found, otherwise return the original code
+                return sizeMap[sizeCode] || sizeCode;
+            }
+            
+            // If no sizes available, show appropriate message but still allow selection
+            if (sizes.length === 0) {
+                // This should not happen anymore since we added fallback above, but keep as safety
+                sizes = ['S', 'M', 'L', 'XL'];
+                selectedQuickViewSize = 'M';
+            }
+            
+            // Create size selection header with count
+            const sizeHeader = document.createElement('div');
+            sizeHeader.className = 'size-selection-header';
+            sizeHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            `;
+            
+            const sizeTitle = document.createElement('h4');
+            sizeTitle.textContent = 'Size';
+            sizeTitle.style.cssText = 'margin: 0; font-size: 14px; font-weight: 600;';
+            
+            const sizeCount = document.createElement('span');
+            sizeCount.id = 'quick-view-size-count';
+            sizeCount.style.cssText = 'font-size: 12px; color: #666; font-weight: 400;';
+            
+            sizeHeader.appendChild(sizeTitle);
+            sizeHeader.appendChild(sizeCount);
+            sizeSelection.appendChild(sizeHeader);
+            
+            // Create size action buttons
+            const sizeActions = document.createElement('div');
+            sizeActions.className = 'size-actions';
+            sizeActions.style.cssText = `
+                display: flex;
+                gap: 8px;
+                margin-bottom: 10px;
+                width: 100%;
+            `;
+            
+            const selectAllBtn = document.createElement('button');
+            selectAllBtn.textContent = 'Select All';
+            selectAllBtn.className = 'size-action-btn';
+            selectAllBtn.style.cssText = `
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            `;
+            
+            const clearAllBtn = document.createElement('button');
+            clearAllBtn.textContent = 'Clear';
+            clearAllBtn.className = 'size-action-btn';
+            clearAllBtn.style.cssText = `
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                color: #495057;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                flex: 1;
+            `;
+            
+            // Add event listeners for action buttons
+            selectAllBtn.addEventListener('click', function() {
+                sizeSelection.querySelectorAll('.size-option').forEach(opt => {
+                    opt.classList.add('selected');
+                    opt.style.border = '2px solid #333';
+                    opt.style.backgroundColor = '#333';
+                    opt.style.color = 'white';
+                });
+                updateSizeCount();
+            });
+            
+            clearAllBtn.addEventListener('click', function() {
+                sizeSelection.querySelectorAll('.size-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.style.border = '2px solid #ddd';
+                    opt.style.backgroundColor = 'transparent';
+                    opt.style.color = '#333';
+                });
+                selectedQuickViewSize = '';
+                updateSizeCount();
+            });
+            
+            sizeActions.appendChild(selectAllBtn);
+            sizeActions.appendChild(clearAllBtn);
+            sizeSelection.appendChild(sizeActions);
+            
+            // Create size options container
+            const sizeOptionsContainer = document.createElement('div');
+            sizeOptionsContainer.className = 'size-options-container';
+            sizeOptionsContainer.style.cssText = `
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            `;
             
             sizes.forEach(size => {
                 const sizeBtn = document.createElement('div');
                 sizeBtn.className = 'size-option';
+                
+                // Use the original size code from database (S, M, L, etc.)
                 sizeBtn.textContent = size;
+                sizeBtn.setAttribute('data-size', size);
+                sizeBtn.setAttribute('title', `Size: ${size}`);
                 sizeBtn.style.cssText = `
+                    display: inline-block;
                     padding: 8px 12px;
+                    margin: 2px;
                     border: 2px solid #ddd;
                     border-radius: 4px;
                     cursor: pointer;
-                    margin: 0 5px 5px 0;
-                    display: inline-block;
+                    background-color: transparent;
+                    color: #333;
                     transition: all 0.3s ease;
                     font-size: 14px;
                     font-weight: 500;
+                    min-width: 40px;
+                    text-align: center;
                 `;
                 
-                // Add click handler
+                // Set default selected size (first available size)
+                if (sizes.indexOf(size) === 0) {
+                    sizeBtn.classList.add('selected');
+                    sizeBtn.style.border = '2px solid #333';
+                    sizeBtn.style.backgroundColor = '#333';
+                    sizeBtn.style.color = 'white';
+                    selectedQuickViewSize = size;
+                }
+                
+                // Add click handler with enhanced functionality
                 sizeBtn.addEventListener('click', function() {
-                    // Remove active class from all size options
-                    sizeSelection.querySelectorAll('.size-option').forEach(opt => {
-                        opt.style.border = '2px solid #ddd';
-                        opt.style.backgroundColor = 'transparent';
-                        opt.style.color = '#333';
-                    });
-                    
-                    // Add active class to clicked option
+                    // Toggle selection instead of single selection
+                    if (this.classList.contains('selected')) {
+                        // Deselect
+                        this.classList.remove('selected');
+                        this.style.border = '2px solid #ddd';
+                        this.style.backgroundColor = 'transparent';
+                        this.style.color = '#333';
+                        
+                        // If this was the selected size, clear it
+                        if (selectedQuickViewSize === size) {
+                            selectedQuickViewSize = '';
+                        }
+                    } else {
+                        // Select
+                        this.classList.add('selected');
                     this.style.border = '2px solid #333';
                     this.style.backgroundColor = '#333';
                     this.style.color = 'white';
+                    
+                        // Set as selected size if none selected
+                        if (!selectedQuickViewSize) {
+                    selectedQuickViewSize = size;
+                        }
+                    }
+                    
+                    // Update count display
+                    updateSizeCount();
                 });
                 
-                sizeSelection.appendChild(sizeBtn);
+                sizeOptionsContainer.appendChild(sizeBtn);
             });
+            
+            sizeSelection.appendChild(sizeOptionsContainer);
+            
+            // Initialize size count
+            updateSizeCount();
+            
+            } catch (error) {
+                console.error('Error in size selection:', error);
+                // Show a simple fallback message
+                sizeSelection.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Size selection temporarily unavailable</div>';
+            }
         }
         
         // Show quick view
-        console.log('Showing quick view...');
+        // console.log('Showing quick view...');
         if (sidebar) {
             sidebar.classList.add('active');
-            console.log('Sidebar active class added');
+            // console.log('Sidebar active class added');
         } else {
             console.error('Sidebar not found');
         }
         if (overlay) {
             overlay.classList.add('active');
-            console.log('Overlay active class added');
+            // console.log('Overlay active class added');
         } else {
             console.error('Overlay not found');
         }
         document.body.style.overflow = 'hidden';
-        console.log('Quick view should be visible now');
+        // console.log('Quick view should be visible now');
+        
+        } catch (error) {
+            console.error('Error in openQuickView:', error);
+            // Still try to show the quickview even if there was an error
+            if (sidebar) sidebar.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
     
     function closeQuickView() {
+        // console.log('Closing quick view...');
         if (sidebar) sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
+    }
+    
+    function selectQuickViewColor(variant, productCard) {
+        selectedQuickViewColor = variant.color;
+        
+        // Update active color in quickview
+        const colorOptions = document.querySelectorAll('#quick-view-color-selection .color-option');
+        colorOptions.forEach(option => {
+            option.classList.remove('active');
+            if (option.getAttribute('data-color') === variant.color) {
+                option.classList.add('active');
+            }
+        });
+        
+        // Update quickview image to show variant image
+        const mainImage = document.getElementById('quick-view-main-image');
+        const mainVideo = document.getElementById('quick-view-main-video');
+        
+        if (variant.front_image) {
+            // Use variant image directly
+            if (mainImage) {
+                mainImage.src = variant.front_image;
+                mainImage.style.display = 'block';
+            }
+            if (mainVideo) {
+                mainVideo.style.display = 'none';
+            }
+        } else {
+            // Find variant image from product card
+            const imageSlider = productCard.querySelector('.image-slider');
+            if (imageSlider) {
+                const variantImage = imageSlider.querySelector(`img[data-color="${variant.color}"], video[data-color="${variant.color}"]`);
+                if (variantImage) {
+                    const isVideo = variantImage.tagName.toLowerCase() === 'video';
+                    if (isVideo) {
+                        if (mainVideo) {
+                            mainVideo.src = variantImage.src;
+                            mainVideo.style.display = 'block';
+                            mainVideo.muted = true;
+                            mainVideo.loop = true;
+                            mainVideo.play().catch(e => console.log('Video autoplay prevented:', e));
+                        }
+                        if (mainImage) {
+                            mainImage.style.display = 'none';
+                        }
+                    } else {
+                        if (mainImage) {
+                            mainImage.src = variantImage.src;
+                            mainImage.style.display = 'block';
+                        }
+                        if (mainVideo) {
+                            mainVideo.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Update price if variant has different price
+        const priceEl = document.getElementById('quick-view-price');
+        if (priceEl && variant.price) {
+            priceEl.textContent = `$${parseFloat(variant.price).toFixed(2)}`;
+        }
+        
+        // Update the Add to Bag button state - handle both button types
+        const addToBagBtn = document.getElementById('add-to-bag-quick');
+        const altAddToBagBtn = document.getElementById('add-to-bag-quick-alt');
+        
+        if (addToBagBtn) {
+            addToBagBtn.disabled = false;
+            addToBagBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> Add to Bag';
+        }
+        
+        if (altAddToBagBtn) {
+            altAddToBagBtn.disabled = false;
+            altAddToBagBtn.textContent = 'Add to Cart';
+        }
+    }
+    
+        // Make functions globally accessible
+        window.closeQuickView = closeQuickView;
+        window.openQuickView = openQuickView;
+        window.addToCartFromCard = addToCartFromCard;
     }
     
     // Color circle functionality
@@ -846,32 +929,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add active class to clicked circle
                 e.target.classList.add('active');
                 
+                // Find the variant data for the selected color
+                let selectedVariant = null;
+                const variantsData = productCard.getAttribute('data-product-variants');
+                if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                    try {
+                        const variants = JSON.parse(variantsData);
+                        if (Array.isArray(variants)) {
+                            selectedVariant = variants.find(variant => variant.color === selectedColor);
+                        }
+                    } catch (e) {
+                        console.log('Could not parse variants data:', e);
+                    }
+                }
+                
+                // Update product name if variant has a different name
+                const productNameElement = productCard.querySelector('.product-name');
+                if (productNameElement && selectedVariant && selectedVariant.name) {
+                    productNameElement.textContent = selectedVariant.name;
+                }
+                
+                // Update product price if variant has a different price
+                const productPriceElement = productCard.querySelector('.product-price');
+                if (productPriceElement && selectedVariant && selectedVariant.price) {
+                    productPriceElement.textContent = `$${selectedVariant.price.toFixed(0)}`;
+                }
+                
                 // Show media for this color
                 if (imageSlider) {
+                    // First, hide all media
+                    imageSlider.querySelectorAll('img, video').forEach(media => {
+                        media.classList.remove('active');
+                        media.style.opacity = '0';
+                        media.style.display = 'none';
+                    });
+                    
+                    // Find media for the selected color
                     const mediaForColor = imageSlider.querySelectorAll(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
                     
-                    if (mediaForColor.length > 0) {
-                        // Hide all media first
-                        imageSlider.querySelectorAll('img, video').forEach(media => {
-                            media.classList.remove('active');
-                            media.style.opacity = '0';
-                        });
-                        
-                        // Show first media for this color (front view)
-                        const firstMedia = mediaForColor[0];
-                        firstMedia.classList.add('active');
-                        firstMedia.style.opacity = '1';
-                        
-                        // Auto-play video if it's a video
-                        if (firstMedia.tagName.toLowerCase() === 'video') {
-                            firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
-                        }
-                        
-                        // Now you can click on the media to see back view
-                        // The click handler will cycle through all media for this color
-                        console.log(`Showing ${mediaForColor.length} media items for color: ${selectedColor}`);
-                        console.log('Click on the media to see back view');
+                if (mediaForColor.length > 0) {
+                    // Show first media for this color (front view)
+                    const firstMedia = mediaForColor[0];
+                    firstMedia.classList.add('active');
+                    firstMedia.style.opacity = '1';
+                    firstMedia.style.display = 'block';
+                    
+                    // Auto-play video if it's a video
+                    if (firstMedia.tagName.toLowerCase() === 'video') {
+                        firstMedia.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
+                } else {
+                    // If no variant media found, show the main product media
+                    const mainMedia = imageSlider.querySelector('img[data-color], video[data-color]');
+                    if (mainMedia) {
+                        mainMedia.classList.add('active');
+                        mainMedia.style.opacity = '1';
+                        mainMedia.style.display = 'block';
+                    }
+                }
                 }
             }
         }
@@ -899,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nextIndex = (currentIndex + 1) % mediaForColor.length;
                     const nextMedia = mediaForColor[nextIndex];
                     
-                    console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
+                    // console.log(`Switching from media ${currentIndex + 1} to ${nextIndex + 1} of ${mediaForColor.length}`);
                     
                     // Hide all media
                     allMedia.forEach(media => {
@@ -916,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         nextMedia.play().catch(e => console.log('Video autoplay prevented:', e));
                     }
                 } else {
-                    console.log('Only one media item for this color, no switching possible');
+                    // console.log('Only one media item for this color, no switching possible');
                 }
             }
         }
@@ -964,19 +1079,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (button.disabled) return;
             
-            const productCard = button.closest('.product-card');
-            const productId = productCard ? productCard.getAttribute('data-product-id') : null;
-            const productName = productCard ? productCard.querySelector('.product-name')?.textContent : 'Product';
-            
-            if (productId) {
-                addToCart(productId, productName);
+            if (button) {
+                addToCartFromCard(button);
             }
         }
         
         // Quick view add to bag functionality
-        if (e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
+        if (e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' || 
+            e.target.classList.contains('add-to-bag-quick') || e.target.closest('.add-to-bag-quick')) {
             e.preventDefault();
-            const button = e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick');
+            const button = e.target.id === 'add-to-bag-quick' || e.target.id === 'add-to-bag-quick-alt' ? 
+                          e.target : (e.target.classList.contains('add-to-bag-quick') ? e.target : e.target.closest('.add-to-bag-quick'));
             
             if (button.disabled) return;
             
@@ -984,12 +1097,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const productName = document.getElementById('quick-view-title')?.textContent || 'Product';
             
             if (productId) {
-                // Get selected color and size from quick view
-                const selectedQuickViewColor = document.querySelector('#quick-view-color-selection .quick-view-color-circle.active')?.getAttribute('data-color') || '';
-                const selectedQuickViewSize = document.querySelector('#quick-view-size-selection .size-option.active')?.textContent || '';
-                
-                // If no size selected, use fallback
+                // Check if variants are selected
+                if (!selectedQuickViewColor) {
+                    showNotification('Please select a color first', 'error');
+                    return;
+                }
                 if (!selectedQuickViewSize) {
+                    // For products without sizes, use fallback
                     selectedQuickViewSize = 'M';
                 }
                 
@@ -1151,17 +1265,60 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
-        // console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+
+    function addToCartFromCard(button) {
+        // Get the product card from the button
+        const productCard = button.closest('.product-card');
+        if (!productCard) {
+            console.error('Product card not found');
+            return;
+        }
         
-        // Get the product card to find variant data
-        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        // Get product information
+        const productId = productCard.getAttribute('data-product-id');
+        const productName = productCard.querySelector('.product-name')?.textContent || 'Product';
+        const mainPrice = parseFloat(productCard.getAttribute('data-price')) || 0;
+        
+        if (!productId) {
+            console.error('Product ID not found');
+            return;
+        }
+        
+        // Get selected color from active color circle
+        let selectedColor = '';
         let selectedVariant = null;
         let selectedVariantImage = '';
-        const mainPrice = productCard ? parseFloat(productCard.getAttribute('data-price')) || 0 : 0;
-        
-        if (productCard && selectedColor) {
+        const activeColorCircle = productCard.querySelector('.color-circle.active');
+        if (activeColorCircle) {
+            selectedColor = activeColorCircle.getAttribute('data-color') || '';
+            
+            // Get the currently active/visible image from the image slider
+            const imageSlider = productCard.querySelector('.image-slider');
+            if (imageSlider) {
+                // Method 1: Try to find active image with matching color
+                let activeImage = imageSlider.querySelector('img.active, video.active');
+                
+                if (activeImage && activeImage.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = activeImage.src;
+                } else {
+                    // Method 2: Find any image with the selected color
+                    const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
+                    if (colorImage) {
+                        selectedVariantImage = colorImage.src;
+                    } else {
+                        // Method 3: Find any visible image (opacity > 0 or display != none)
+                        const allImages = imageSlider.querySelectorAll('img, video');
+                        for (let img of allImages) {
+                            const style = window.getComputedStyle(img);
+                            if (style.opacity !== '0' && style.display !== 'none') {
+                                selectedVariantImage = img.src;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
             // Find the specific color variant data
             const variantsData = productCard.getAttribute('data-product-variants');
             if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
@@ -1174,13 +1331,153 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Could not parse variants data:', e);
                 }
             }
+        }
+        
+        // Get selected size if available
+        let selectedSize = '';
+        const activeSizeOption = productCard.querySelector('.size-option.selected');
+        if (activeSizeOption) {
+            selectedSize = activeSizeOption.getAttribute('data-size') || '';
+        }
+        
+        // Determine the price to use (variant price or main price)
+        let finalPrice = mainPrice;
+        if (selectedVariant && selectedVariant.price && selectedVariant.price > 0) {
+            finalPrice = selectedVariant.price;
+        }
+        
+        // Show loading state
+        let originalText = button.textContent;
+        button.textContent = 'Adding...';
+        button.disabled = true;
+        
+        // No loading notification needed
+        
+        // Prepare cart data
+        let cartData = `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&price=${finalPrice}&return_url=${encodeURIComponent(window.location.href)}`;
+        
+        // Add variant-specific data if available
+        // Always send variant image if we have it, regardless of selectedVariant
+        if (selectedVariantImage) {
+            cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+        } else {
+            // Fallback: Try to find variant image directly from product card
+            const allImages = productCard.querySelectorAll('img[data-color]');
+            for (let img of allImages) {
+                if (img.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = img.src;
+                    cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+                    break;
+                }
+            }
+        }
+        
+        if (selectedVariant) {
+            if (selectedVariant.name) {
+                cartData += `&variant_name=${encodeURIComponent(selectedVariant.name)}`;
+            }
+            if (selectedVariant.stock !== undefined) {
+                cartData += `&variant_stock=${selectedVariant.stock}`;
+            }
+            if (!selectedVariantImage && selectedVariant.front_image) {
+                cartData += `&variant_image=${encodeURIComponent(selectedVariant.front_image)}`;
+                console.log('✅ Sending variant front_image to cart:', selectedVariant.front_image);
+            }
+        }
+        
+        // Make API call to add to cart with selected color and size
+        fetch('../cart-api.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: cartData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
+                    addToCartCount();
+                }
+                
+                // Show brief success notification
+                showNotification(`✓ ${productName} added to cart!`, 'success');
+            } else {
+                // Show error notification
+                showNotification(`✗ Error: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('✗ Error adding product to cart', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            button.textContent = originalText;
+            button.disabled = false;
+        });
+    }
+
+    function addToCartFromQuickView(productId, productName, selectedColor, selectedSize) {
+        // console.log('Adding to cart from quick view:', productId, productName, 'Color:', selectedColor, 'Size:', selectedSize);
+        
+        // Get the product card to find variant data
+        const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+        let selectedVariant = null;
+        let selectedVariantImage = '';
+        const mainPrice = productCard ? parseFloat(productCard.getAttribute('data-price')) || 0 : 0;
+        
+        if (productCard && selectedColor) {
+            // First, try to get the variant image from the quickview
+            const quickViewImage = document.getElementById('quick-view-main-image');
+            const quickViewVideo = document.getElementById('quick-view-main-video');
             
-            // Get variant image for the selected color
-            const imageSlider = productCard.querySelector('.image-slider');
-            if (imageSlider) {
-                const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
-                if (colorImage) {
-                    selectedVariantImage = colorImage.src;
+            if (quickViewImage && quickViewImage.style.display !== 'none') {
+                selectedVariantImage = quickViewImage.src;
+            } else if (quickViewVideo && quickViewVideo.style.display !== 'none') {
+                selectedVariantImage = quickViewVideo.src;
+            } else {
+                // Fallback: Get the currently active/visible image from the image slider
+                const imageSlider = productCard.querySelector('.image-slider');
+                if (imageSlider) {
+                    // Method 1: Try to find active image with matching color
+                    let activeImage = imageSlider.querySelector('img.active, video.active');
+                    
+                    if (activeImage && activeImage.getAttribute('data-color') === selectedColor) {
+                        selectedVariantImage = activeImage.src;
+                    } else {
+                        // Method 2: Find any image with the selected color
+                        const colorImage = imageSlider.querySelector(`img[data-color="${selectedColor}"], video[data-color="${selectedColor}"]`);
+                        if (colorImage) {
+                            selectedVariantImage = colorImage.src;
+                        } else {
+                            // Method 3: Find any visible image (opacity > 0 or display != none)
+                            const allImages = imageSlider.querySelectorAll('img, video');
+                            for (let img of allImages) {
+                                const style = window.getComputedStyle(img);
+                                if (style.opacity !== '0' && style.display !== 'none') {
+                                    selectedVariantImage = img.src;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Find the specific color variant data
+            const variantsData = productCard.getAttribute('data-product-variants');
+            if (variantsData && variantsData !== '[]' && variantsData !== 'null') {
+                try {
+                    const variants = JSON.parse(variantsData);
+                    if (Array.isArray(variants) && variants.length > 0) {
+                        selectedVariant = variants.find(variant => variant.color === selectedColor);
+                    }
+                } catch (e) {
+                    console.log('Could not parse variants data:', e);
                 }
             }
         }
@@ -1192,7 +1489,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Show loading state
-        const button = document.getElementById('add-to-bag-quick');
+        const button = document.getElementById('add-to-bag-quick') || document.getElementById('add-to-bag-quick-alt');
         let originalText = '';
         if (button) {
             originalText = button.textContent;
@@ -1200,14 +1497,26 @@ document.addEventListener('DOMContentLoaded', function() {
             button.disabled = true;
         }
         
-        // No loading notification needed
+        // Prepare price info for success message
+        const priceInfo = selectedVariant && selectedVariant.price ? ` - $${selectedVariant.price}` : '';
         
         // Prepare cart data
         let cartData = `action=add_to_cart&product_id=${productId}&quantity=1&color=${encodeURIComponent(selectedColor)}&size=${encodeURIComponent(selectedSize)}&price=${finalPrice}&return_url=${encodeURIComponent(window.location.href)}`;
         
         // Add variant-specific data if available
+        // Always send variant image if we have it, regardless of selectedVariant
         if (selectedVariantImage) {
             cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+        } else {
+            // Fallback: Try to find variant image directly from product card
+            const allImages = productCard.querySelectorAll('img[data-color]');
+            for (let img of allImages) {
+                if (img.getAttribute('data-color') === selectedColor) {
+                    selectedVariantImage = img.src;
+                    cartData += `&variant_image=${encodeURIComponent(selectedVariantImage)}`;
+                    break;
+                }
+            }
         }
         
         if (selectedVariant) {
@@ -1245,6 +1554,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show brief success notification
                 showNotification(`✓ ${productName} added to cart!`, 'success');
+                
+                // Close quick view after successful addition
+                setTimeout(() => {
+                    closeQuickView();
+                }, 1500);
             } else {
                 // Show error notification
                 showNotification(`✗ Error: ${data.message}`, 'error');
@@ -1322,7 +1636,8 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.style.transform = 'translateX(0)';
         }, 100);
         
-        // Remove after 3 seconds
+        // Remove after 1 second for success messages, longer for others
+        const duration = type === 'success' ? 1000 : 3000; // 1 second for success, 3 seconds for others
         setTimeout(() => {
             notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
@@ -1330,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, 3000);
+        }, duration);
     }
     
     // Category Modal Functionality
@@ -1346,7 +1661,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subcategory = subcategoryItem.getAttribute('data-subcategory');
                 const href = subcategoryItem.getAttribute('href');
                 
-                console.log('Subcategory clicked:', category, subcategory);
+                // console.log('Subcategory clicked:', category, subcategory);
                 
                 // Navigate to the section if href is provided
                 if (href && href.startsWith('#')) {
@@ -1365,18 +1680,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             block: 'start'
                         });
                         
-                        console.log(`Navigating to section: ${href}`);
+                        // console.log(`Navigating to section: ${href}`);
                     }
                 } else if (href && !href.startsWith('#')) {
                     // Allow navigation to full URLs (don't prevent default)
-                    console.log(`Navigating to URL: ${href}`);
+                    // console.log(`Navigating to URL: ${href}`);
                     // Close modals before navigation
                     categoryModals.forEach(modal => {
                         modal.style.opacity = '0';
                         modal.style.visibility = 'hidden';
                     });
                 } else if (subcategory) {
-                    console.log(`Navigating to ${category} > ${subcategory}`);
+                    // console.log(`Navigating to ${category} > ${subcategory}`);
                     // Fallback for other subcategories that don't have sections yet
                 }
             }
@@ -1456,11 +1771,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Flag Container Click - Disabled (Coming Soon)
+        // Flag Container Click - Disabled (Decorative Only)
         if (flagContainer) {
             flagContainer.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Region settings coming soon!');
+                // Flag is decorative only - no action needed
             });
         }
         
@@ -1615,7 +1930,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send login request
-                fetch('login-handler.php', {
+                fetch('login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1697,7 +2012,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 
                 // Send registration request
-                fetch('register-handler.php', {
+                fetch('register.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1762,7 +2077,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi'],
                 'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow'],
                 'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe'],
-                'mudug': ['Galkayo', 'Hobyo', 'Garoowe'],
+                'mudug': ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
                 'nugaal': ['Garowe', 'Eyl', 'Burtinle'],
                 'sanaag': ['Erigavo', 'Badhan', 'Las Khorey'],
                 'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
@@ -1857,7 +2172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Logout function
         function logout() {
-            fetch('logout-handler.php', {
+            fetch('logout.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1917,9 +2232,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const filterValue = e.target.value;
                 const isChecked = e.target.checked;
                 
-                console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
+                // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
-                // Update filter state - handle different filter types
+                // Update filter state with proper mapping
                 let filterArrayKey = filterType + 's';
                 
                 // Handle special cases for filter type mapping
@@ -1942,7 +2257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                console.log('Current filter state:', filterState);
+                // console.log('Current filter state:', filterState);
                 
                 // Apply filters
                 applyFilters();
@@ -1991,6 +2306,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Filter response:', data);
                 
                 if (data.success) {
+                    console.log('Products returned:', data.data.products.length);
+                    console.log('Product subcategories:', data.data.products.map(p => p.subcategory));
                     updateProductGrid(data.data.products);
                     updateStyleCount(data.data.total_count);
                     hideFilterLoading();
@@ -1998,48 +2315,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Filter error:', data.message);
                     hideFilterLoading();
                     showFilterError(data.message);
-                    
-                    // Show error message in product grid
-                    const productGrid = document.getElementById('filtered-products-grid') || 
-                                       document.getElementById('all-mens-clothing-grid') ||
-                                       document.querySelector('.product-grid');
-                    if (productGrid) {
-                        productGrid.innerHTML = `
-                            <div class="filter-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8d7da; border-radius: 8px; margin: 20px 0;">
-                                <div style="font-size: 48px; color: #721c24; margin-bottom: 16px;">⚠️</div>
-                                <h3 style="color: #721c24; margin-bottom: 8px;">Filter Error</h3>
-                                <p style="color: #721c24; margin-bottom: 20px;">${data.message}</p>
-                                <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
-                            </div>
-                        `;
-                    }
                 }
             })
             .catch(error => {
                 console.error('Filter request error:', error);
                 hideFilterLoading();
                 showFilterError('Network error occurred');
-                
-                // Show network error message in product grid
-                const productGrid = document.getElementById('filtered-products-grid') || 
-                                   document.getElementById('all-mens-clothing-grid') ||
-                                   document.querySelector('.product-grid');
-                if (productGrid) {
-                    productGrid.innerHTML = `
-                        <div class="network-error" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fff3cd; border-radius: 8px; margin: 20px 0;">
-                            <div style="font-size: 48px; color: #856404; margin-bottom: 16px;">🌐</div>
-                            <h3 style="color: #856404; margin-bottom: 8px;">Connection Error</h3>
-                            <p style="color: #856404; margin-bottom: 20px;">Unable to load products. Please check your connection and try again.</p>
-                            <button onclick="applyFilters()" class="retry-btn" style="background: #ffc107; color: #212529; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500; margin-right: 10px;">Retry</button>
-                            <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
-                        </div>
-                    `;
-                }
             });
         }
         
         function clearAllFilters() {
-            // console.log('Clearing all filters...');
+            console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
@@ -2056,13 +2342,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 availabilities: []
             };
             
-            // Apply filters (will show all products)
-            applyFilters();
+            // Restore original products instead of making API call
+            if (originalProducts.length > 0) {
+                console.log('Restoring original products:', originalProducts.length);
+                updateProductGrid(originalProducts);
+                updateStyleCount(originalProducts.length);
+                isFiltered = false;
+            } else {
+                // Fallback: reload page if no original products stored
+                console.log('No original products stored, reloading page...');
+                window.location.reload();
+            }
         }
         
-        // Make functions globally accessible
+        // Make clearAllFilters globally accessible
         window.clearAllFilters = clearAllFilters;
-        window.applyFilters = applyFilters;
         
         function updateProductGrid(products) {
             console.log(`Updating product grid with ${products.length} products`);
@@ -2073,106 +2367,142 @@ document.addEventListener('DOMContentLoaded', function() {
                 productGrid = document.getElementById('filtered-products-grid');
             } else {
                 // Try different grid IDs for main page
-                productGrid = document.getElementById('all-mens-clothing-grid') || 
+                productGrid = document.getElementById('all-products-grid') || 
                              document.getElementById('filtered-products-grid') ||
                              document.querySelector('.product-grid');
             }
             
+            // Mark as filtered if we're updating with filtered results
+            if (products !== originalProducts) {
+                isFiltered = true;
+            }
+            
             if (!productGrid) {
                 console.error('Product grid not found');
+                console.log('Available grids:', {
+                    'all-products-grid': !!document.getElementById('all-products-grid'),
+                    'filtered-products-grid': !!document.getElementById('filtered-products-grid'),
+                    'product-grids': document.querySelectorAll('.product-grid').length
+                });
                 return;
             }
+            
+            console.log('Found product grid:', productGrid.id);
             
             // Clear existing products
             productGrid.innerHTML = '';
             
             if (products.length === 0) {
                 productGrid.innerHTML = `
-                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
-                        <div style="font-size: 48px; color: #6c757d; margin-bottom: 16px;">🔍</div>
-                        <h3 style="color: #495057; margin-bottom: 8px;">No products found</h3>
-                        <p style="color: #6c757d; margin-bottom: 20px;">No products match your current filter selection.</p>
-                        <button onclick="clearAllFilters()" class="clear-filters-btn" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Clear All Filters</button>
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <p>No products found matching your filters.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
                     </div>
                 `;
                 return;
             }
             
-            // Create product cards for filtered results
+            // Generate product cards for filtered results
             products.forEach(product => {
-                const productCard = createProductCard(product);
+                const productCard = generateProductCard(product);
                 productGrid.appendChild(productCard);
-            });
-            
-            // Initialize product cards after adding them
-            const newProductCards = productGrid.querySelectorAll('.product-card');
-            newProductCards.forEach(card => {
-                initializeProductCard(card);
             });
         }
         
-        function createProductCard(product) {
+        function generateProductCard(product) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.setAttribute('data-product-id', product.id);
+            card.setAttribute('data-product-name', product.name);
+            card.setAttribute('data-product-price', product.price);
+            card.setAttribute('data-product-sale-price', product.salePrice || '');
+            card.setAttribute('data-product-description', product.description || '');
+            card.setAttribute('data-product-category', product.category || '');
+            card.setAttribute('data-product-subcategory', product.subcategory || '');
+            card.setAttribute('data-product-featured', product.featured ? 'true' : 'false');
+            card.setAttribute('data-product-on-sale', product.sale ? 'true' : 'false');
+            card.setAttribute('data-product-stock', product.stock || 0);
+            card.setAttribute('data-product-rating', product.rating || 0);
+            card.setAttribute('data-product-review-count', product.review_count || 0);
+            card.setAttribute('data-product-front-image', product.front_image || '');
+            card.setAttribute('data-product-back-image', product.back_image || '');
+            card.setAttribute('data-product-color', product.color || '');
+            card.setAttribute('data-product-images', JSON.stringify(product.images || []));
+            card.setAttribute('data-product-color-variants', JSON.stringify(product.color_variants || []));
             card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
+            card.setAttribute('data-product-size-category', product.size_category || '');
             card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
             card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-product-variants', JSON.stringify(product.product_variants || []));
             card.setAttribute('data-product-options', JSON.stringify(product.options || []));
+            card.setAttribute('data-product-product-options', JSON.stringify(product.product_options || []));
+            card.setAttribute('data-product-image-front', product.image_front || '');
+            card.setAttribute('data-product-image-back', product.image_back || '');
             
-            // Get front and back images
-            const frontImage = product.front_image || '';
-            const backImage = product.back_image || frontImage;
-            const productColor = product.color || '#000000';
+            // Generate the product card HTML
+            const frontImage = product.front_image || product.image_front || '';
+            const backImage = product.back_image || product.image_back || frontImage;
+            const isVideo = frontImage && (frontImage.includes('.mp4') || frontImage.includes('.webm') || frontImage.includes('.mov'));
             
             card.innerHTML = `
                 <div class="product-image">
                     <div class="image-slider">
-                        ${frontImage ? `
-                            <img src="../${frontImage}" 
-                                 alt="${product.name} - Front" 
-                                 class="active" 
-                                 data-color="${productColor}">
-                        ` : ''}
-                        ${backImage && backImage !== frontImage ? `
-                            <img src="../${backImage}" 
-                                 alt="${product.name} - Back" 
-                                 data-color="${productColor}">
-                        ` : ''}
+                        ${frontImage ? (isVideo ? 
+                            `<video src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${backImage && backImage !== frontImage ? (backImage.includes('.mp4') || backImage.includes('.webm') || backImage.includes('.mov') ? 
+                            `<video src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => {
+                            const variantFrontImage = variant.front_image || '';
+                            const variantBackImage = variant.back_image || variantFrontImage;
+                            const isVariantVideo = variantFrontImage && (variantFrontImage.includes('.mp4') || variantFrontImage.includes('.webm') || variantFrontImage.includes('.mov'));
+                            
+                            return `
+                                ${variantFrontImage ? (isVariantVideo ? 
+                                    `<video src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}">`
+                                ) : ''}
+                                ${variantBackImage && variantBackImage !== variantFrontImage ? (variantBackImage.includes('.mp4') || variantBackImage.includes('.webm') || variantBackImage.includes('.mov') ? 
+                                    `<video src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}">`
+                                ) : ''}
+                            `;
+                        }).join('') : ''}
                     </div>
                     <button class="heart-button" data-product-id="${product.id}">
                         <i class="fas fa-heart"></i>
                     </button>
                     <div class="product-actions">
                         <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                        ${product.available !== false ? `
-                            <button class="add-to-bag">Add To Bag</button>
-                        ` : `
-                            <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
-                        `}
+                        ${product.available === false ? 
+                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
+                            '<button class="add-to-bag">Add To Bag</button>'
+                        }
                     </div>
                 </div>
                 <div class="product-info">
                     <div class="color-options">
-                        <span class="color-circle active" 
-                              style="background-color: ${productColor};" 
-                              title="${productColor}" 
-                              data-color="${productColor}"></span>
+                        ${product.color ? `<span class="color-circle active" style="background-color: ${product.color};" title="${product.color}" data-color="${product.color}"></span>` : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => 
+                            variant.color ? `<span class="color-circle" style="background-color: ${variant.color};" title="${variant.name}" data-color="${variant.color}"></span>` : ''
+                        ).join('') : ''}
                     </div>
                     <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${product.price.toFixed(0)}</div>
-                    ${product.available === false ? `
-                        <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                    ` : product.stock <= 5 && product.stock > 0 ? `
-                        <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>
-                    ` : ''}
+                    <div class="product-price">$${Math.round(product.price)}</div>
+                    ${product.available === false ? 
+                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.75rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
+                        (product.stock && product.stock <= 5 && product.stock > 0 ? 
+                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : ''
+                        )
+                    }
                 </div>
             `;
             
             return card;
         }
-        
-        
         
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
@@ -2184,7 +2514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function showFilterLoading() {
             // Add loading overlay to product grid
             const productGrid = document.getElementById('filtered-products-grid') || 
-                               document.getElementById('dresses-grid') ||
+                               document.getElementById('all-products-grid') ||
                                document.querySelector('.product-grid');
             if (productGrid) {
                 const loadingOverlay = document.createElement('div');
@@ -2641,123 +2971,5 @@ document.addEventListener('DOMContentLoaded', function() {
             
             updateSizeCount();
         };
-    }
-    
-    // Function to load colors from database
-    function loadColorsFromDatabase() {
-        console.log('Loading colors from database...');
-        fetch('get-colors-api.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('API response:', data);
-                if (data.success && data.data && data.data.colors) {
-                    console.log('Colors loaded successfully:', data.data.colors);
-                    populateColorFilter(data.data.colors);
-                } else {
-                    console.error('Error loading colors:', data.message || 'Unknown error');
-                    showColorLoadError();
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching colors:', error);
-                showColorLoadError();
-            });
-    }
-    
-    // Function to populate color filter with database colors
-    function populateColorFilter(colors) {
-        const colorContainer = document.getElementById('color-filter-options');
-        if (!colorContainer) {
-            console.error('Color container not found');
-            return;
-        }
-        
-        colorContainer.innerHTML = '';
-        
-        console.log('Populating color filter with colors:', colors);
-        
-        colors.forEach((color, index) => {
-            const label = document.createElement('label');
-            label.className = 'color-option';
-            
-            // Use the hex value from the API response
-            const hexValue = color.hex;
-            const colorValue = color.value;
-            
-            // Add border for white/light colors
-            const borderStyle = (hexValue.toLowerCase() === '#ffffff' || hexValue.toLowerCase() === '#fff') ? 'border: 1px solid #ddd;' : '';
-            
-            label.innerHTML = `
-                <input type="checkbox" name="color[]" value="${colorValue}" data-filter="color">
-                <span class="color-swatch" style="background-color: ${hexValue}; ${borderStyle}"></span>
-            `;
-            
-            colorContainer.appendChild(label);
-            
-            // Log each color for debugging
-            console.log(`Color ${index + 1}:`, {
-                value: colorValue,
-                hex: hexValue,
-                count: color.count
-            });
-        });
-        
-        console.log('Color filter populated with', colors.length, 'colors');
-    }
-    
-    // Function to get color name from hex value
-    function getColorNameFromHex(hex) {
-        // Return empty string since we're not displaying color names anymore
-        return '';
-    }
-    
-    // Function to get hex value from color name
-    function getHexFromColorName(colorName) {
-        const colorMap = {
-            'black': '#000000',
-            'white': '#ffffff',
-            'red': '#ff0000',
-            'green': '#228b22',
-            'blue': '#0066cc',
-            'yellow': '#ffff00',
-            'magenta': '#ff00ff',
-            'cyan': '#00ffff',
-            'grey': '#808080',
-            'silver': '#c0c0c0',
-            'gold': '#ffd700',
-            'orange': '#ffa500',
-            'purple': '#800080',
-            'pink': '#ffc0cb',
-            'brown': '#8b4513',
-            'beige': '#f5f5dc',
-            'taupe': '#483c32'
-        };
-        return colorMap[colorName.toLowerCase()] || '#cccccc';
-    }
-    
-    // Function to show color load error
-    function showColorLoadError() {
-        const colorContainer = document.getElementById('color-filter-options');
-        if (colorContainer) {
-            // Show fallback colors instead of error message
-            const fallbackColors = [
-                { value: '#000000', hex: '#000000', count: 0 },
-                { value: '#ffffff', hex: '#ffffff', count: 0 },
-                { value: '#0066cc', hex: '#0066cc', count: 0 },
-                { value: '#808080', hex: '#808080', count: 0 },
-                { value: '#8b4513', hex: '#8b4513', count: 0 },
-                { value: '#ff0000', hex: '#ff0000', count: 0 },
-                { value: '#228b22', hex: '#228b22', count: 0 },
-                { value: '#ffa500', hex: '#ffa500', count: 0 }
-            ];
-            
-            console.log('Using fallback colors due to API error');
-            populateColorFilter(fallbackColors);
-        }
     }
 });

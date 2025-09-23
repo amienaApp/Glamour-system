@@ -579,8 +579,7 @@ class QuickviewManager {
         console.log('QuickviewManager: selectedColor:', this.selectedColor);
         console.log('QuickviewManager: selectedSize:', this.selectedSize);
         
-        if (!this.currentProduct || !this.selectedColor || !this.selectedSize) {
-            alert('Please select both color and size');
+        if (!this.currentProduct) {
             return;
         }
 

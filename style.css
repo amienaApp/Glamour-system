@@ -3076,7 +3076,7 @@ transform: scale(1.03);
 /* Sold Out Text Styles */
 .sold-out-text {
     color: #e53e3e !important;
-    font-size: 0.9rem !important;
+    font-size: 0.75rem !important;
     font-weight: 600 !important;
     margin-top: 5px !important;
     text-align: center !important;
@@ -3092,7 +3092,7 @@ transform: scale(1.03);
 }
 
 .product-availability {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 600;
     margin-top: 5px;
     text-align: center;

@@ -1055,9 +1055,12 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                     </div>
                     <div class="form-group">
                         <label for="checkoutRegContact">Contact Number *</label>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #f8f9fa; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; color: #666;">+252</span>
-                            <input type="tel" id="checkoutRegContact" name="contact_number" placeholder="123456789" maxlength="9" pattern="[0-9]{9}" required style="flex: 1;">
+                        <div class="contact-input-container" style="display: flex; align-items: center; border: 2px solid #e9ecef; border-radius: 8px; overflow: hidden;">
+                            <div class="flag-prefix" style="display: flex; align-items: center; background: #f8f9fa; padding: 12px; border-right: 2px solid #e9ecef;">
+                                <img src="/Glamour-system/img/flag.jpg" alt="Somali Flag" style="width: 20px; height: 15px; margin-right: 8px; border-radius: 2px;">
+                                <span class="country-code" style="color: #666; font-weight: 500;">+252</span>
+                            </div>
+                            <input type="tel" id="checkoutRegContact" name="contact_number" placeholder="XXX XXX XXXX" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="flex: 1; border: none; padding: 12px; outline: none;">
                         </div>
                     </div>
                     <div class="form-group">
@@ -1100,6 +1103,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                     <div class="form-group">
                         <label for="checkoutRegPassword">Password *</label>
                         <input type="password" id="checkoutRegPassword" name="password" required>
+                        <div id="checkout-password-strength" class="password-strength" style="margin-top: 8px; font-size: 0.8rem;"></div>
                     </div>
                     <div class="form-group">
                         <label for="checkoutRegConfirmPassword">Confirm Password *</label>
@@ -1556,7 +1560,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                     
                     try {
-                        const response = await fetch('menfolder/login-handler.php', {
+                        const response = await fetch('/Glamour-system/auth/login-handler.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1614,7 +1618,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                     
                     try {
-                        const response = await fetch('menfolder/register-handler.php', {
+                        const response = await fetch('/Glamour-system/auth/register-handler.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1643,6 +1647,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 });
             }
         });
+
     </script>
 </body>
 </html>

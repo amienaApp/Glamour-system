@@ -37,8 +37,8 @@ switch ($sort) {
 
 // Build filters
 $filters = [];
-$filters['category'] = "Beauty & Cosmetics"; // Always filter for beauty products
-if ($subcategory) $filters['subcategory'] = $subcategory;
+$filters['category'] = 'Beauty & Cosmetics'; // Always filter for beauty products
+if ($subcategory) $filters['subcategory'] = ucfirst($subcategory);
 if ($gender) $filters['gender'] = $gender;
 if ($category) $filters['subcategory'] = ucfirst($category); // Use subcategory for category filter
 if ($color) {
@@ -74,25 +74,33 @@ if ($minPrice !== null) {
     }
 }
 
+// Convert URL-friendly subcategory back to database format
+$subcategoryForQuery = '';
+if ($subcategory) {
+    // Convert URL format back to database format
+    $subcategoryForQuery = str_replace(['-', 'and'], [' ', '&'], $subcategory);
+    $subcategoryForQuery = ucwords($subcategoryForQuery);
+    
+    // Handle special cases
+    if ($subcategoryForQuery === 'Wedding Dress') {
+        $subcategoryForQuery = 'Wedding Dress';
+    } elseif ($subcategoryForQuery === 'Bridesmaid Wear') {
+        $subcategoryForQuery = 'Bridesmaid Wear';
+    }
+}
+
 // Get products based on filters
 if (!empty($filters)) {
     $products = $productModel->getAll($filters, $sortOptions);
-    $pageTitle = "Beauty & Cosmetics";
-    if ($subcategory) {
-        $pageTitle = $subcategory;
+    $pageTitle = "Women's Clothing";
+    if ($subcategoryForQuery) {
+        $pageTitle = $subcategoryForQuery;
     }
 } else {
-    // Get ALL beauty products from the database
-    $products = $productModel->getByCategory("Beauty & Cosmetics", $sortOptions);
-    $pageTitle = "Beauty & Cosmetics";
+    // Get all women's clothing products (including sold out ones)
+    $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
+    $pageTitle = "Women's Clothing";
 }
-
-// Get all makeup products from the database
-$makeup = $productModel->getBySubcategory('Makeup');
-
-// Get all skincare products from the database
-$skincare = $productModel->getBySubcategory('Skincare');
-
 ?>
 
 <!-- Main Content Section -->
@@ -108,46 +116,44 @@ $skincare = $productModel->getBySubcategory('Skincare');
             </button>
             
             <div class="sort-control">
-                <label for="sort-select-beauty">Sort:</label>
-                <select id="sort-select-beauty" class="sort-select" onchange="updateSort(this.value)">
+                <label for="sort-select-women">Sort:</label>
+                <select id="sort-select-women" class="sort-select" onchange="updateSort(this.value)">
                     <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest</option>
                     <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to High</option>
                     <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to Low</option>
                     <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
                 </select>
             </div>
-            
         </div>
-        
     </div>
 
-    <?php if ($subcategory): ?>
-    <!-- Filtered Products Grid -->
-    <div class="product-grid" id="filtered-products-grid">
+    <?php if ($subcategoryForQuery): ?>
+    <!-- Specific Subcategory Products Grid -->
+    <div class="product-grid" id="women-products-grid">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $index => $product): ?>
-                <?php
-                // Determine stock status
+                <?php 
                 $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
+                $available = $product['available'] ?? true;
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                $isSoldOut = $stock <= 0 || !$isAvailable;
+                $isLowStock = $stock > 0 && $stock <= 5;
                 ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
-                     data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+<<<<<<< HEAD
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
-                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
+                     data-product-available="<?php 
+                     $available = $product['available'] ?? true;
+                     $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                     echo $isAvailable ? 'true' : 'false'; 
+                     ?>"
                      data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
                      data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
                      data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
@@ -158,12 +164,14 @@ $skincare = $productModel->getBySubcategory('Skincare');
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['variants'] ?? [])); ?>"
+                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
                      data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
+                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -178,14 +186,13 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             if ($frontImage): 
                                 $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
                                     <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop
-                                           controls>
+                                           loop>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
@@ -197,13 +204,12 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             <?php if ($backImage): 
                                 $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
                                     <video src="../<?php echo htmlspecialchars($backImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop
-                                           controls>
+                                           loop>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -266,26 +272,28 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             <?php if ($isSoldOut): ?>
                                 <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
-                            <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                                <?php if ($isSoldOut): ?>
-                                    SOLD OUT
-                                <?php elseif ($isLowStock): ?>
-                                    ⚠️ Only <?php echo $stock; ?> left in stock!
-                                <?php endif; ?>
-                            </div>
                         </div>
                     </div>
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($product['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($product['color'])): ?>
-                                <span class="color-circle active" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -293,21 +301,24 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             if (!empty($product['color_variants'])):
                                 foreach ($product['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
-                        <?php endif; ?>
+                        <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
+                            <?php if ($isSoldOut): ?>
+                                SOLD OUT
+                            <?php elseif ($isLowStock): ?>
+                                ⚠️ Only <?php echo $stock; ?> left in stock!
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -319,48 +330,19 @@ $skincare = $productModel->getBySubcategory('Skincare');
         <?php endif; ?>
     </div>
     <?php else: ?>
-    <!-- All Beauty Products Grid -->
+    <!-- All Products Grid (filterable by sidebar) -->
     <div class="product-grid" id="all-products-grid">
         <?php if (!empty($products)): ?>
+            
             <?php foreach ($products as $index => $product): ?>
-                <?php
-                // Determine stock status
-                $stock = (int)($product['stock'] ?? 0);
-                $isSoldOut = $stock <= 0;
-                $isLowStock = $stock > 0 && $stock <= 7;
-                ?>
-                <div class="product-card <?php echo $isSoldOut ? 'sold-out' : ''; ?>" 
+                <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
-                     data-product-sale-price="<?php echo $product['sale_price'] ?? ''; ?>"
-                     data-product-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
-                     data-product-available="<?php echo ($product['available'] ?? true) ? 'true' : 'false'; ?>"
-                     data-product-rating="<?php echo $product['rating'] ?? 0; ?>"
-                     data-product-review-count="<?php echo $product['review_count'] ?? 0; ?>"
-                     data-product-front-image="<?php echo htmlspecialchars($product['front_image'] ?? $product['image_front'] ?? ''); ?>"
-                     data-product-back-image="<?php echo htmlspecialchars($product['back_image'] ?? $product['image_back'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
-                     data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
-                     data-product-variants="<?php echo htmlspecialchars(json_encode($product['variants'] ?? [])); ?>"
-                     data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
-                     data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
-                     data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
-                     data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
-                     data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>">
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
                         <div class="image-slider">
                             <?php 
@@ -375,32 +357,34 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             
                             if ($frontImage): 
                                 $frontExtension = pathinfo($frontImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
+                                if (in_array(strtolower($frontExtension), ['mp4', 'webm', 'mov'])): ?>
                                     <video src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
                                            loop
-                                           controls>
+                                           onerror="console.error('Failed to load video:', this.src);"
+>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                          alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                          class="active" 
-                                         data-color="<?php echo htmlspecialchars($product['color']); ?>">
+                                         data-color="<?php echo htmlspecialchars($product['color']); ?>"
+                                         onerror="console.error('Failed to load image:', this.src);"
+>
                                 <?php endif; ?>
                             <?php endif; ?>
                             
                             <?php if ($backImage): 
                                 $backExtension = pathinfo($backImage, PATHINFO_EXTENSION);
-                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov', 'avi', 'mkv'])): ?>
+                                if (in_array(strtolower($backExtension), ['mp4', 'webm', 'mov'])): ?>
                                     <video src="../<?php echo htmlspecialchars($backImage); ?>" 
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop
-                                           controls>
+                                           loop>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -428,12 +412,16 @@ $skincare = $productModel->getBySubcategory('Skincare');
                                                    alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
-                                                   loop>
+                                                   loop
+                                                   onerror="console.error('Failed to load variant video:', this.src);"
+>
                                             </video>
                                         <?php else: ?>
                                             <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
                                                  alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
-                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>">
+                                                 data-color="<?php echo htmlspecialchars($variant['color']); ?>"
+                                                 onerror="console.error('Failed to load variant image:', this.src);"
+>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                     
@@ -456,33 +444,41 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             <?php endif; ?>
                         </div>
                         <button class="heart-button" data-product-id="<?php echo $product['_id']; ?>">
-                            <i class="far fa-heart"></i>
+                            <i class="fas fa-heart"></i>
                         </button>
                         <div class="product-actions">
                             <button class="quick-view" data-product-id="<?php echo $product['_id']; ?>">Quick View</button>
+                            <?php 
+                            $stock = (int)($product['stock'] ?? 0);
+                            $available = $product['available'] ?? true;
+                            $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                            $isSoldOut = $stock <= 0 || !$isAvailable;
+                            ?>
                             <?php if ($isSoldOut): ?>
                                 <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
                             <?php else: ?>
-                                <button class="add-to-bag">Add To Bag</button>
+                                <button class="add-to-bag" 
+                                        data-product-id="<?php echo $product['_id']; ?>"
+                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                        data-product-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                        data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                                        data-product-stock="<?php echo $stock; ?>">Add To Bag</button>
                             <?php endif; ?>
-                            <div class="product-availability <?php echo $isSoldOut ? 'sold-out-text' : ($isLowStock ? 'low-stock-text' : ''); ?>" style="<?php echo ($isSoldOut || $isLowStock) ? '' : 'display: none;'; ?>">
-                                <?php if ($isSoldOut): ?>
-                                    SOLD OUT
-                                <?php elseif ($isLowStock): ?>
-                                    ⚠️ Only <?php echo $stock; ?> left in stock!
-                                <?php endif; ?>
-                            </div>
                         </div>
                     </div>
                     <div class="product-info">
                         <div class="color-options">
                             <?php 
+                            $hasColorVariants = !empty($product['color_variants']);
+                            $isFirstColor = true;
+                            
                             // Main product color
                             if (!empty($product['color'])): ?>
-                                <span class="color-circle active" 
+                                <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                       style="background-color: <?php echo htmlspecialchars($product['color']); ?>;" 
                                       title="<?php echo htmlspecialchars($product['color']); ?>" 
                                       data-color="<?php echo htmlspecialchars($product['color']); ?>"></span>
+                                <?php $isFirstColor = false; ?>
                             <?php endif; ?>
                             
                             <?php 
@@ -490,28 +486,34 @@ $skincare = $productModel->getBySubcategory('Skincare');
                             if (!empty($product['color_variants'])):
                                 foreach ($product['color_variants'] as $variant):
                                     if (!empty($variant['color'])): ?>
-                                        <span class="color-circle" 
+                                        <span class="color-circle <?php echo $isFirstColor ? 'active' : ''; ?>" 
                                               style="background-color: <?php echo htmlspecialchars($variant['color']); ?>;" 
                                               title="<?php echo htmlspecialchars($variant['name']); ?>" 
                                               data-color="<?php echo htmlspecialchars($variant['color']); ?>"></span>
+                                        <?php $isFirstColor = false; ?>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
                         <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
-                        <?php if (($product['available'] ?? true) === false): ?>
-                            <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                        <?php elseif (($product['stock'] ?? 0) <= 5 && ($product['stock'] ?? 0) > 0): ?>
-                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $product['stock']; ?> left</div>
+                        <?php 
+                        $stock = (int)($product['stock'] ?? 0);
+                        $available = $product['available'] ?? true;
+                // Handle both boolean and string values for available field
+                $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
+                        $isSoldOut = $stock <= 0 || !$isAvailable;
+                        ?>
+                        <?php if ($isSoldOut): ?>
+                        <?php elseif ($stock <= 5 && $stock > 0): ?>
+                            <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only <?php echo $stock; ?> left</div>
                         <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="no-products">
-                <h3>No products found</h3>
-                <p>We couldn't find any beauty products.</p>
+                <p>No products available at the moment.</p>
             </div>
         <?php endif; ?>
     </div>
@@ -565,12 +567,7 @@ $skincare = $productModel->getBySubcategory('Skincare');
             
             <!-- Action Buttons -->
             <div class="quick-view-actions">
-                <button class="add-to-bag-quick" id="add-to-bag-quick" 
-                        data-product-id="" 
-                        data-product-name="" 
-                        data-product-price="" 
-                        data-product-color=""
-                        data-product-stock="">
+                <button class="add-to-bag-quick" id="add-to-bag-quick">
                     <i class="fas fa-shopping-bag"></i>
                     Add to Bag
                 </button>
@@ -580,16 +577,18 @@ $skincare = $productModel->getBySubcategory('Skincare');
                 </button>
             </div>
             
+            <!-- Availability Status -->
+            <div class="quick-view-availability" id="quick-view-availability" style="margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center; font-weight: 600;">
+                <!-- Availability will be populated by JavaScript -->
+            </div>
+            
             <!-- Product Description -->
             <div class="quick-view-description">
-                <p>A beautiful product perfect for any occasion. Features high-quality materials and modern design.</p>
+                <p id="quick-view-description"></p>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Quick View Overlay -->
-<div class="quick-view-overlay" id="quick-view-overlay"></div>
 
 <!-- Mobile Filter Overlay -->
 <div class="mobile-filter-overlay" id="mobile-filter-overlay">
@@ -608,21 +607,7 @@ $skincare = $productModel->getBySubcategory('Skincare');
                         <h4>Category</h4>
                     </div>
                     <div class="mobile-filter-options" id="mobile-category-filter">
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-category-makeup" value="Makeup" data-filter="category">
-                            <label for="mobile-category-makeup">Makeup</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-category-skincare" value="Skincare" data-filter="category">
-                            <label for="mobile-category-skincare">Skincare</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-category-fragrance" value="Fragrance" data-filter="category">
-                            <label for="mobile-category-fragrance">Fragrance</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
+                        <!-- Category filter options will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -647,28 +632,28 @@ $skincare = $productModel->getBySubcategory('Skincare');
                     </div>
                     <div class="mobile-filter-options" id="mobile-price-filter">
                         <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-price-0-25" value="0-25" data-filter="price_range">
-                            <label for="mobile-price-0-25">$0 - $25</label>
+                            <input type="checkbox" id="price-0-100" value="0-100" data-filter="price_range">
+                            <label for="price-0-100">$0 - $100</label>
                             <i class="fas fa-check mobile-checkmark"></i>
                         </div>
                         <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-price-25-50" value="25-50" data-filter="price_range">
-                            <label for="mobile-price-25-50">$25 - $50</label>
+                            <input type="checkbox" id="price-100-200" value="100-200" data-filter="price_range">
+                            <label for="price-100-200">$100 - $200</label>
                             <i class="fas fa-check mobile-checkmark"></i>
                         </div>
                         <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-price-50-100" value="50-100" data-filter="price_range">
-                            <label for="mobile-price-50-100">$50 - $100</label>
+                            <input type="checkbox" id="price-200-400" value="200-400" data-filter="price_range">
+                            <label for="price-200-400">$200 - $400</label>
                             <i class="fas fa-check mobile-checkmark"></i>
                         </div>
                         <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-price-100-200" value="100-200" data-filter="price_range">
-                            <label for="mobile-price-100-200">$100 - $200</label>
+                            <input type="checkbox" id="price-400-plus" value="400+" data-filter="price_range">
+                            <label for="price-400-plus">$400+</label>
                             <i class="fas fa-check mobile-checkmark"></i>
                         </div>
                         <div class="mobile-filter-option">
-                            <input type="checkbox" id="mobile-price-200+" value="200+" data-filter="price_range">
-                            <label for="mobile-price-200+">$200+</label>
+                            <input type="checkbox" id="price-on-sale" value="on-sale" data-filter="price_range">
+                            <label for="price-on-sale">On Sale</label>
                             <i class="fas fa-check mobile-checkmark"></i>
                         </div>
                     </div>
@@ -682,3 +667,6 @@ $skincare = $productModel->getBySubcategory('Skincare');
         </div>
     </div>
 </div>
+
+<!-- Quick View Overlay -->
+<div class="quick-view-overlay" id="quick-view-overlay"></div> 

@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+// Add cache-busting headers to prevent stale product data
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 $page_title = 'Galamor palace';
 
 // Get subcategory from URL parameter
@@ -27,19 +33,19 @@ $subcategories = [
 
 // Define image mapping for subcategories
 $subcategoryImages = [
-    'Shoulder Bags' => '../img/bags/shoulder/1.webp',
-    'Clutches' => '../img/bags/clutches/1.webp',
-    'Tote Bags' => '../img/bags/tote/1.webp',
-    'Crossbody Bags' => '../img/bags/crossbody/1.webp',
-    'Backpacks' => '../img/bags/backpack/1.webp',
-    'Briefcases' => '../img/bags/briefcase/1.webp',
-    'Laptop Bags' => '../img/bags/laptop/1.webp',
-    'Waist Bags' => '../img/bags/waist/1.webp',
-    'Wallets' => '../img/bags/wallet/1.webp'
+    'Shoulder Bags' => '../img/bags/womenbags/shoulderbags/1.webp',
+    'Clutches' => '../img/bags/womenbags/cluthesbags/1.webp',
+    'Tote Bags' => '../img/bags/womenbags/totebags/1.webp',
+    'Crossbody Bags' => '../img/bags/womenbags/crossbodybags/1.jpg',
+    'Backpacks' => '../img/bags/womenbags/backpacks/1.jpeg',
+    'Briefcases' => '../img/bags/womenbags/briefcases/1.webp',
+    'Laptop Bags' => '../img/bags/womenbags/briefcases/1.webp',
+    'Waist Bags' => '../img/bags/womenbags/waistbags/1.jpeg',
+    'Wallets' => '../img/bags/womenbags/wallets/1.jpeg'
 ];
 
 // Default image for subcategories without specific images
-$defaultImage = '../img/bags/default/1.webp';
+$defaultImage = '../img/bags/1.jpg';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +64,25 @@ $defaultImage = '../img/bags/default/1.webp';
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
+    <script>
+        // Override any cached image paths with correct ones
+        window.bagImagePaths = {
+            'Shoulder Bags': '../img/bags/womenbags/shoulderbags/1.webp',
+            'Clutches': '../img/bags/womenbags/cluthesbags/1.webp',
+            'Tote Bags': '../img/bags/womenbags/totebags/1.webp',
+            'Crossbody Bags': '../img/bags/womenbags/crossbodybags/1.jpg',
+            'Backpacks': '../img/bags/womenbags/backpacks/1.jpeg',
+            'Briefcases': '../img/bags/womenbags/briefcases/1.webp',
+            'Laptop Bags': '../img/bags/womenbags/briefcases/1.webp',
+            'Waist Bags': '../img/bags/womenbags/waistbags/1.jpeg',
+            'Wallets': '../img/bags/womenbags/wallets/1.jpeg'
+        };
+        
+        // Force cache clear
+        console.log('Bag image paths updated:', window.bagImagePaths);
+    </script>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>

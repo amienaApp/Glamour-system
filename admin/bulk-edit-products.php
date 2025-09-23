@@ -86,6 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     }
                     break;
                     
+                case 'stock':
+                    $stock = intval($value);
+                    if ($stock >= 0) {
+                        $updateData['stock'] = $stock;
+                        $updateData['available'] = $stock > 0; // Automatically set available based on stock
+                    } else {
+                        $errorCount++;
+                        $errors[] = "Invalid stock quantity for product ID: $productId";
+                        continue;
+                    }
+                    break;
+                    
                 default:
                     $errorCount++;
                     $errors[] = "Unknown action: $action for product ID: $productId";
