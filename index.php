@@ -506,9 +506,153 @@ session_start();
                 0 0 20px rgba(102, 126, 234, 0.6),
                 0 0 40px rgba(102, 126, 234, 0.4),
                 0 0 60px rgba(102, 126, 234, 0.2);
+      }
+    </style>
+    
+    <!-- Compact Footer Styles -->
+    <style>
+        .custom-footer {
+            background:rgb(173, 175, 176);
+            color: #000000;
+            padding: 10px 0 5px;
+            margin-top: 15px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .footer-col {
+            padding: 5px;
+        }
+        
+        .footer-col h3 {
+            color: #000000;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 2px;
+        }
+        
+        .footer-col a {
+            color: #000000 !important;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700 !important;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .custom-footer .footer-col ul li a {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+        
+        .footer-col a:hover {
+            color: #ff6b9d;
+        }
+        
+        .footer-col a i {
+            width: 16px;
+            text-align: center;
+            color: #000000 !important;
+        }
+        
+        .footer-col h3 i {
+            margin-right: 8px;
+            color: #000000 !important;
+        }
+        
+        .footer-col p {
+            color: #000000;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .footer-contact {
+            margin: 0;
+        }
+        
+        .footer-contact li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #000000;
+        }
+        
+        .footer-icon {
+            margin-right: 8px;
+            width: 16px;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social a:hover {
+            background: #ff6b9d;
+            transform: translateY(-2px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 5px 10px 0;
+            margin-top: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            color: #000000;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 15px;
+            }
+            
+            .custom-footer {
+                padding: 25px 0 15px;
+            }
         }
     </style>
-   
+    
 </head>
 <body>
     
@@ -748,20 +892,20 @@ session_start();
        <div class="gallery">
          <div class="container4">
              <div class="polaroid">
-                <a href="womenF/women.php?subcategory=dresses">
+                <a href="kidsfolder/kids.php?subcategory=girls">
                    <img src="./img/sawiro/9.jpg" alt="Photo 1">
                 </a>
              </div>
 
              <div class="polaroid">
-                <a href="womenF/women.php?subcategory=dresses">
+                <a href="kidsfolder/kids.php?subcategory=girls">
                    <img src="./img/sawiro/8.jpg" alt="Photo 2">
                 </a>
              </div>
              
 
              <div class="polaroid">
-                <a href="womenF/women.php?subcategory=dresses">
+                <a href="kidsfolder/kids.php?subcategory=boys">
                    <img src="./img/sawiro/10.jpg" alt="Photo 3">
                 </a>
              </div>
@@ -773,7 +917,7 @@ session_start();
              </div>
 
              <div class="polaroid">
-                <a href="womenF/women.php?subcategory=dresses">
+                <a href="menfolder/men.php?subcategory=shirts">
                    <img src="./img/sawiro/7.jpg" alt="Photo 5">
                 </a>
              </div>
@@ -785,19 +929,19 @@ session_start();
              </div>
 
              <div class="polaroid">
-               <a href="shoess/men.php?category=children">
+               <a href="shoess/shoes.php?gender=children">
                   <img src="./img/sawiro/kidshoe.jpg" alt="Photo 7">
                </a>
              </div>
 
              <div class="polaroid">
-               <a href="womenF/women.php?subcategory=dresses">
+               <a href="perfumes/index.php">
                   <img src="./img/sawiro/12.jpg" alt="Photo 8">
                </a>
              </div>
 
              <div class="polaroid">
-               <a href="womenF/women.php?subcategory=dresses">
+               <a href="homedecor/homedecor.php">
                   <img src="./img/sawiro/13.jpg" alt="Photo 9">
                </a>
              </div>
@@ -828,166 +972,139 @@ session_start();
    <section>
    <div class="container5" >
        <div class="category5 animate__animated animate__zoomIn">
-         <a href="menfolder/men.php?category=suits">
+         <a href="menfolder/men.php?subcategory=suits">
            <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
-           <div class="overlay5">suit Dresses</div>
          </a>
        </div>
       
        <div class="category5 animate__animated animate__zoomIn animate__delay-1s">
          <a href="womenF/women.php?subcategory=dresses">
            <img src="./img/sawiro/22.webp" alt="Formal Dresses">
-           <div class="overlay5">Formal Dresses</div>
          </a>
        </div>
 
          <div class="category5">
        <a href="womenF/women.php?subcategory=dresses">
          <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
-         <div class="overlay5">Bride Dresses</div>
        </a>
        </div>
        
        <div class="category5">
-         <a href="beautyfolder/beauty.php">
+         <a href="beautyfolder/beauty.php?subcategory=makeup">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">makeup</div>
          </a>
        </div>
 
        <div class="category5">
-         <a href="bagsfolder/bags.php">
-           <img src="./img/sawiro/handbag1.jpg" alt="Formal Dresses">
-           <div class="overlay5">Handbag</div>
+         <a href="bagsfolder/bags.php?category=handbags">
+           <img src="./img/sawiro/handbag1.jpg" alt="Handbags">
          </a>
        </div>
 
        <div class="category5">
          <a href="womenF/women.php?subcategory=dresses">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Formal Dresses</div>
          </a>
        </div>
   
 
        <div class="category5">
-        <a href="shoess/shoes.php">
+        <a href="shoess/shoes.php?category=casual">
          <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
-         <div class="overlay5">Casual Shoes</div>
         </a>
        </div>
 
        <div class="category5">
          <a href="accessories/accessories.php?category=watches">
            <video src="./img/sawiro/watch.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Watches</div>
          </a>
        </div>
 
        <div class="category5">
          <a href="accessories/accessories.php?category=jewelry">
-           <img src="./img/sawiro/jwel2.jpg" alt="Formal Dresses">
-           <div class="overlay5">Jewelry</div>
+           <img src="./img/sawiro/jwel2.jpg" alt="Jewelry">
          </a>
        </div>
 
        <!-- Additional Videos -->
-       <div class="category5">
-         <a href="kidsfolder/kids.php">
-           <video src="./img/sawiro/kidsvideo.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Kids Collection</div>
-         </a>
-       </div>
+       
 
        <div class="category5">
-         <a href="homedecor/homedecor.php">
-           <video src="./img/sawiro/homedecorvideo.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Home Decor</div>
+         <a href="homedecor/homedecor.php?category=living">
+           <video src="./img/sawiro/home.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
          <a href="perfumes/index.php">
-           <video src="./img/sawiro/perfumevideo.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Perfumes</div>
+           <video src="./img/sawiro/perfume.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <!-- Additional Images -->
        <div class="category5">
          <a href="menfolder/men.php?subcategory=shirts">
-           <img src="./img/sawiro/menshirt1.jpg" alt="Men's Shirts">
-           <div class="overlay5">Men's Shirts</div>
+           <img src="./img/sawiro/24.jpg" alt="Men's Shirts">
          </a>
        </div>
 
        <div class="category5">
          <a href="womenF/women.php?subcategory=tops">
-           <img src="./img/sawiro/womentop1.jpg" alt="Women's Tops">
-           <div class="overlay5">Women's Tops</div>
+           <video src="./img/sawiro/abaya.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
          <a href="bagsfolder/bags.php?category=handbags">
-           <img src="./img/sawiro/handbag3.jpg" alt="Designer Handbags">
-           <div class="overlay5">Designer Handbags</div>
+           <img src="./img/sawiro/bag.jpg" alt="Designer Handbags">
          </a>
        </div>
 
        <div class="category5">
          <a href="shoess/shoes.php?category=heels">
-           <img src="./img/sawiro/heels1.jpg" alt="High Heels">
-           <div class="overlay5">High Heels</div>
+           <img src="./img/sawiro/heel.jpg" alt="High Heels">
          </a>
        </div>
 
        <div class="category5">
          <a href="beautyfolder/beauty.php?subcategory=skincare">
-           <img src="./img/sawiro/skincare1.jpg" alt="Skincare Products">
-           <div class="overlay5">Skincare</div>
+           <img src="./img/sawiro/skin.jpg" alt="Skincare Products">
          </a>
        </div>
 
        <div class="category5">
          <a href="accessories/accessories.php?category=belts">
-           <img src="./img/sawiro/belt1.jpg" alt="Fashion Belts">
-           <div class="overlay5">Fashion Belts</div>
+           <img src="./img/sawiro/belt.jpg" alt="Fashion Belts">
          </a>
        </div>
 
        <div class="category5">
          <a href="homedecor/homedecor.php?category=decor">
-           <img src="./img/sawiro/homedecor1.jpg" alt="Home Decor Items">
-           <div class="overlay5">Home Decor</div>
+           <img src="./img/sawiro/homedecor.jpg" alt="Home Decor Items">
          </a>
        </div>
 
        <div class="category5">
          <a href="kidsfolder/kids.php?subcategory=boys">
-           <img src="./img/sawiro/kidsboy1.jpg" alt="Boys Clothing">
-           <div class="overlay5">Boys Collection</div>
+           <img src="./img/sawiro/boy.jpg" alt="Boys Clothing">
          </a>
        </div>
 
        <div class="category5">
          <a href="kidsfolder/kids.php?subcategory=girls">
-           <img src="./img/sawiro/kidsgirl1.jpg" alt="Girls Clothing">
-           <div class="overlay5">Girls Collection</div>
+           <img src="./img/sawiro/girl.jpg" alt="Girls Clothing">
          </a>
        </div>
 
        <div class="category5">
-         <a href="womenF/women.php?subcategory=accessories">
-           <video src="./img/sawiro/womenaccessories.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Women's Accessories</div>
+         <a href="accessories/accessories.php?category=women">
+           <video src="./img/sawiro/accessories.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
-         <a href="menfolder/men.php?subcategory=accessories">
-           <video src="./img/sawiro/menaccessories.mp4" autoplay loop muted controls ></video>
-           <div class="overlay5">Men's Accessories</div>
+         <a href="accessories/accessories.php?category=men">
+           <video src="./img/sawiro/watchvideo.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
@@ -995,234 +1112,6 @@ session_start();
    </div>
     </section>
   
-   <!-- featured products -->
-    
-
-
-
-<!-- featured products Section -->
-<main class="main-content">
-    <div class="content-header" >
-        <h1 class="page-title">Featured Products</h1>
-        <div class="content-controls">
-            <div class="sort-control">
-                <label for="sort-select">Sort:</label>
-                <select id="sort-select" class="sort-select" onchange="updateSort(this.value)">
-                    <option value="newest" selected>Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="popular">Most Popular</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    
-
-    <div class="product-grid" data-category="shirts">
-       
-        <div class="product-card" data-product-id="1" data-product-stock="5" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/23.jpg" alt="Product 23 - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="1">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="1">Quick View</button>
-                    <button class="add-to-bag" data-product-id="1">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #96e0f3ff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 1</h3>
-                <div class="product-price">$25</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-        <!-- Product 2 - SOLD OUT -->
-        <div class="product-card sold-out" data-product-id="2" data-product-stock="0" data-product-available="false">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/24.jpg" alt="Product 24 - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="2">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="2">Quick View</button>
-                    <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color:#060606ff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 2</h3>
-                <div class="product-price">$30</div>
-                <div class="product-availability sold-out-text">SOLD OUT</div>
-            </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="product-card" data-product-id="3" data-product-stock="3" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/20.webp" alt="Product 20 - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="3">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="3">Quick View</button>
-                    <button class="add-to-bag" data-product-id="3">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 3</h3>
-                <div class="product-price">$28</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="product-card" data-product-id="4" data-product-stock="8" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/barca.jpg" alt="Barca Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="4">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="4">Quick View</button>
-                    <button class="add-to-bag" data-product-id="4">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #001f3f;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 4</h3>
-                <div class="product-price">$35</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-        <!-- Product 5 - SOLD OUT -->
-        <div class="product-card sold-out" data-product-id="5" data-product-stock="0" data-product-available="false">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/glas2.jpg" alt="Designer Glasses - Front" class="active" data-color="maroon">
-                    <img src="img/sawiro/glas1.jpg" alt="Designer Glasses - Front" data-color="black">
-                </div>
-                <button class="heart-button" data-product-id="5">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="5">Quick View</button>
-                    <button class="add-to-bag sold-out-btn" disabled>Sold Out</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #8B0000;" title="Maroon" data-color="maroon"></span>
-                    <span class="color-circle" style="background-color: #000000;" title="Black" data-color="black"></span>
-                </div>
-                <h3 class="product-name">Designer Glasses</h3>
-                <div class="product-price">$45</div>
-                <div class="product-availability sold-out-text">SOLD OUT</div>
-            </div>
-        </div>
-
-        <!-- Product 6 -->
-        <div class="product-card" data-product-id="6" data-product-stock="2" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/handbag2.jpg" alt="Handbag Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="6">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="6">Quick View</button>
-                    <button class="add-to-bag" data-product-id="6">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #ffffffff;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 6</h3>
-                <div class="product-price">$55</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-        <!-- Product 7 -->
-        <div class="product-card" data-product-id="7" data-product-stock="10" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/jwel2.jpg" alt="Jewelry Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="7">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="7">Quick View</button>
-                    <button class="add-to-bag" data-product-id="7">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #14220cff" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 7</h3>
-                <div class="product-price">$38</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-            
-
-        <!-- Product 8 -->
-        <div class="product-card" data-product-id="8" data-product-stock="1" data-product-available="true">
-            <div class="product-image">
-                <div class="image-slider">
-                    <img src="img/sawiro/watch2.jpg" alt="Watch Product - Front" class="active" data-color="default">
-                </div>
-                <button class="heart-button" data-product-id="8">
-                    <i class="fas fa-heart"></i>
-                </button>
-                <div class="product-actions">
-                    <button class="quick-view" data-product-id="8">Quick View</button>
-                    <button class="add-to-bag" data-product-id="8">Add To Bag</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="color-options">
-                    <span class="color-circle active" style="background-color: #000;" title="Default" data-color="default"></span>
-                </div>
-                <h3 class="product-name">Featured Product 8</h3>
-                <div class="product-price">$65</div>
-                <div class="product-availability" style="display: none;">In Stock</div>
-            </div>
-        </div>
-
-    </div>
-
-   
-
-        
-    </div>
-
-</main>
 
 <!-- Quick View Sidebar -->
 <div class="quick-view-sidebar" id="quick-view-sidebar">
@@ -1295,26 +1184,29 @@ session_start();
     <footer class="custom-footer">
         <div class="footer-container">
         <div class="footer-col">
-            <h3>Useful Links</h3>
+            <h3><i class="fas fa-shopping-bag"></i> Shop Categories</h3>
             <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">About us</a></li>
-            <li><a href="#">pagedetails</a></li>
-            <li><a href="#">Contact us</a></li>
+            <li><a href="beautyfolder/beauty.php"><i class="fas fa-palette"></i> Beauty</a></li>
+            <li><a href="womenF/women.php"><i class="fas fa-female"></i> Women's Fashion</a></li>
+            <li><a href="menfolder/men.php"><i class="fas fa-male"></i> Men's Fashion</a></li>
+            <li><a href="kidsfolder/kids.php"><i class="fas fa-child"></i> Kids</a></li>
+            <li><a href="shoess/shoes.php"><i class="fas fa-shoe-prints"></i> Shoes</a></li>
+            <li><a href="bagsfolder/bags.php"><i class="fas fa-shopping-bag"></i> Bags</a></li>
+            <li><a href="accessories/accessories.php"><i class="fas fa-gem"></i> Accessories</a></li>
+            <li><a href="perfumes/index.php"><i class="fas fa-spray-can"></i> Perfumes</a></li>
+            <li><a href="homedecor/homedecor.php"><i class="fas fa-home"></i> Home Decor</a></li>
             </ul>
         </div>
         <div class="footer-col">
-            <h3>About us</h3>
-            <p>We are a team of passionate people whose goal is to improve everyone's life through disruptive products. We build great products to solve your business problems.</p>
-            <p>Our products are designed for small to medium size companies willing to optimize their performance.</p>
+            <h3><i class="fas fa-crown"></i> Glamour Palace</h3>
+            <p>Your premier destination for fashion, beauty, and lifestyle products. We bring you the latest trends with exceptional quality and service.</p>
         </div>
         <div class="footer-col">
-            <h3>Connect with us</h3>
+            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
             <ul class="footer-contact">
-            <li><span class="footer-icon">💬</span> Contact us</li>
-            <li><span class="footer-icon">✉</span> Glamor@gmail.com</li>
-            <li><span class="footer-icon">📞</span> +252907166125 $252906041037 </li>
+            <li><span class="footer-icon"><i class="fas fa-envelope"></i></span> Glamor@gmail.com</li>
+            <li><span class="footer-icon"><i class="fas fa-phone"></i></span> +252 907 166 125</li>
+            <li><span class="footer-icon"><i class="fas fa-map-marker-alt"></i></span> Shaariqa Road, Garowe, Somalia</li>
             </ul>
             <div class="footer-social">
             <a href="https://wa.me/252907166125" target="_blank" title="WhatsApp">
@@ -1335,20 +1227,6 @@ session_start();
             </div>
         </div>
          
-    <!-- Newsletter -->
-    <div style="flex:1 1 250px; margin-bottom:20px;">
-      <h3 style="margin-bottom:15px; font-weight:bold;">Newsletter</h3>
-      <p style="margin-bottom:10px;">Subscribe to our newsletter for latest updates and offers.</p>
-      <form action="#" method="post" style="display:flex;">
-        <input type="email" placeholder="Your email" style="flex:1; padding:10px; border:none; border-radius:3px 0 0 3px;">
-        <button type="submit" style="padding:10px 20px; background-color:#ff6600; border:none; border-radius:0 3px 3px 0; color:#fff; cursor:pointer;">Subscribe</button>
-      </form></div>
-        </div>
-        <div class="last-images"> 
-        <img src="./img/pay.jpg">
-        <img src="./img/play.jpg">
-            <img src="./img/app.jpg">
-
         </div>
         <div class="footer-bottom">
         Copyright © Glamor palaca
@@ -1429,83 +1307,6 @@ session_start();
 
          <script src="scripts/main.js"></script>
      
-     <!-- Simple Sorting Function -->
-     <script>
-     function updateSort(sortValue) {
-         const params = new URLSearchParams(window.location.search);
-         params.set('sort', sortValue);
-         
-         const newUrl = window.location.pathname + '?' + params.toString();
-         window.history.pushState({}, '', newUrl);
-         window.location.reload();
-     }
-     </script>
-
-     <!-- Mobile Navigation JavaScript -->
-     <script>
-     document.addEventListener('DOMContentLoaded', function() {
-         const hamburgerMenu = document.querySelector('.hamburger-menu');
-         const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
-         const mobileNavClose = document.getElementById('mobile-nav-close');
-         const body = document.body;
-
-         // Open mobile navigation
-         if (hamburgerMenu) {
-             hamburgerMenu.addEventListener('click', function() {
-                 mobileNavOverlay.classList.add('active');
-                 body.classList.add('mobile-nav-open');
-                 hamburgerMenu.classList.add('active');
-             });
-         }
-
-         // Close mobile navigation
-         if (mobileNavClose) {
-             mobileNavClose.addEventListener('click', function() {
-                 mobileNavOverlay.classList.remove('active');
-                 body.classList.remove('mobile-nav-open');
-                 if (hamburgerMenu) {
-                     hamburgerMenu.classList.remove('active');
-                 }
-             });
-         }
-
-         // Close mobile navigation when clicking overlay
-         if (mobileNavOverlay) {
-             mobileNavOverlay.addEventListener('click', function(e) {
-                 if (e.target === mobileNavOverlay) {
-                     mobileNavOverlay.classList.remove('active');
-                     body.classList.remove('mobile-nav-open');
-                     if (hamburgerMenu) {
-                         hamburgerMenu.classList.remove('active');
-                     }
-                 }
-             });
-         }
-
-         // Close mobile navigation when clicking on a link
-         const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-         mobileNavLinks.forEach(link => {
-             link.addEventListener('click', function() {
-                 mobileNavOverlay.classList.remove('active');
-                 body.classList.remove('mobile-nav-open');
-                 if (hamburgerMenu) {
-                     hamburgerMenu.classList.remove('active');
-                 }
-             });
-         });
-
-         // Handle window resize
-         window.addEventListener('resize', function() {
-             if (window.innerWidth > 768) {
-                 mobileNavOverlay.classList.remove('active');
-                 body.classList.remove('mobile-nav-open');
-                 if (hamburgerMenu) {
-                     hamburgerMenu.classList.remove('active');
-                 }
-             }
-         });
-     });
-     </script>
      
      <!-- Quick View Functionality -->
 <script src="scripts/quickview-manager.js"></script>
@@ -1574,99 +1375,7 @@ session_start();
      <!-- Include Cart Notification System -->
      <?php include 'includes/cart-notification-include.php'; ?>
      
-     <!-- Cart Functionality -->
-     <script>
-         // Load cart count on page load
-         document.addEventListener('DOMContentLoaded', function() {
-             // Use the unified cart notification manager if available
-             if (window.cartNotificationManager) {
-                 window.cartNotificationManager.loadCartCount();
-             } else {
-                 loadCartCount();
-             }
-         });
-
-         function updateCartCount(count) {
-             try {
-                 const cartIcons = document.querySelectorAll('.fa-shopping-cart');
-
-                 cartIcons.forEach((icon, index) => {
-                     try {
-                         const parent = icon.parentElement;
-                         if (parent && parent.tagName) {
-                             // Remove existing badge
-                             const existingBadge = parent.querySelector('.cart-badge');
-                             if (existingBadge) {
-                                 existingBadge.remove();
-                             }
-                             
-                             // Add new badge if count > 0
-                             if (count > 0) {
-                                 const badge = document.createElement('span');
-                                 badge.className = 'cart-badge';
-                                 badge.textContent = count;
-                                 badge.style.cssText = `
-                                     position: absolute;
-                                     top: -8px;
-                                     right: -8px;
-                                     background: #e53e3e;
-                                     color: white;
-                                     border-radius: 50%;
-                                     width: 20px;
-                                     height: 20px;
-                                     font-size: 12px;
-                                     display: flex;
-                                     align-items: center;
-                                     justify-content: center;
-                                     font-weight: bold;
-                                     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                     animation: cartCountBounce 0.3s ease-in-out;
-                                 `;
-                                 parent.style.position = 'relative';
-                                 parent.appendChild(badge);
-                             }
-                         }
-                     } catch (error) {
-                         console.error('Error updating cart icon', index, ':', error);
-                     }
-                 });
-             } catch (error) {
-                 console.error('Error in updateCartCount:', error);
-             }
-         }
-
-         function loadCartCount() {
-             fetch('cart-api.php', {
-                 method: 'POST',
-                 headers: {
-                     'Content-Type': 'application/x-www-form-urlencoded',
-                 },
-                 body: 'action=get_cart_count'
-             })
-             .then(response => {
-                 if (!response.ok) {
-                     throw new Error('HTTP error! status: ' + response.status);
-                 }
-                 return response.text();
-             })
-             .then(text => {
-                 try {
-                     const data = JSON.parse(text);
-                     if (data.success) {
-                         updateCartCount(data.cart_count);
-                     } else {
-                         console.error('Cart API error:', data.message);
-                     }
-                 } catch (e) {
-                     console.error('JSON parse error:', e);
-                     console.error('Response text:', text);
-                 }
-             })
-             .catch(error => {
-                 console.error('Error loading cart count:', error);
-             });
-         }
-     </script>
+     <!-- Cart Functionality is handled by home-header.php -->
 
      <!-- Bootstrap JavaScript -->
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

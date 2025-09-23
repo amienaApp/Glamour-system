@@ -1,8 +1,9 @@
 <?php
-session_start();
-include '../heading/header.php';
+// Start session before any HTML output
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,7 @@ include '../heading/header.php';
     <title>About Us - Glamour</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../heading/home-header.css">
     <style>
         * {
             margin: 0;
@@ -405,6 +407,8 @@ include '../heading/header.php';
     </style>
 </head>
 <body>
+    <?php include '../heading/home-header.php'; ?>
+    
     <!-- Hero Section -->
     <section class="about-hero">
         <div class="hero-content">
@@ -624,4 +628,3 @@ include '../heading/header.php';
 </body>
 </html>
 
-<?php include '../includes/footer.php'; ?>
