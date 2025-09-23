@@ -413,7 +413,7 @@ if (isset($_SESSION['user_id'])) {
                 hideMessage();
                 
                 // Send login request
-                const response = await fetch('login-handler.php', {
+                const response = await fetch('/Glamour-system/auth/login-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

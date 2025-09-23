@@ -14,8 +14,8 @@ session_start();
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
-    <!-- Include the home header CSS -->
-    <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
+    <!-- Include the header CSS -->
+    <link rel="stylesheet" href="heading/header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
@@ -656,8 +656,8 @@ session_start();
 </head>
 <body>
     
-    <!-- Include the home header -->
-    <?php include 'heading/home-header.php'; ?>
+    <!-- Include the header with complete authentication system -->
+    <?php include 'heading/header.php'; ?>
 
     <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay">

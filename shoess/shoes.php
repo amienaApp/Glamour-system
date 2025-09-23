@@ -1,4 +1,9 @@
 <?php
+// Add cache-busting headers to prevent stale product data
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 $page_title = 'Galamor palace';
 
 // Get subcategory from URL parameter
@@ -27,6 +32,7 @@ if ($subcategory) {
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>

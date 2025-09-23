@@ -10,6 +10,7 @@ class SoldOutManager {
     init() {
         this.initializeSoldOutStates();
         this.bindEvents();
+        this.startPeriodicRefresh();
     }
     
     /**
@@ -33,14 +34,17 @@ class SoldOutManager {
      */
     updateProductCardState(card) {
         const stock = parseInt(card.getAttribute('data-product-stock')) || 0;
-        const available = card.getAttribute('data-product-available') === 'true';
+        const availableAttr = card.getAttribute('data-product-available');
         const productId = card.getAttribute('data-product-id');
+        
+        // Use robust availability check (same as PHP logic)
+        const isAvailable = (availableAttr === 'true' || availableAttr === true || availableAttr === '1' || availableAttr === 1);
         
         // Remove existing sold-out class
         card.classList.remove('sold-out');
         
         // Check if product is sold out
-        if (stock <= 0 || !available) {
+        if (stock <= 0 || !isAvailable) {
             this.makeProductSoldOut(card, productId);
         } else {
             this.makeProductAvailable(card, productId, stock);
@@ -73,6 +77,9 @@ class SoldOutManager {
         availabilityDiv.textContent = 'SOLD OUT';
         availabilityDiv.className = 'product-availability sold-out-text';
         availabilityDiv.style.display = 'block';
+        availabilityDiv.style.color = '#e53e3e';
+        availabilityDiv.style.fontSize = '0.75rem';
+        availabilityDiv.style.fontWeight = '600';
         
         // Disable heart button
         const heartBtn = card.querySelector('.heart-button');
@@ -110,14 +117,19 @@ class SoldOutManager {
             card.querySelector('.product-info').appendChild(availabilityDiv);
         }
         
+        // Clear all sold-out styling first
+        availabilityDiv.className = 'product-availability';
+        availabilityDiv.style.color = '';
+        availabilityDiv.style.fontSize = '';
+        availabilityDiv.style.fontWeight = '';
+        
         // Show stock status based on quantity
         if (stock <= 2) {
             availabilityDiv.textContent = `⚠️ Only ${stock} left in stock!`;
             availabilityDiv.className = 'product-availability low-stock';
             availabilityDiv.style.display = 'block';
         } else {
-            availabilityDiv.textContent = 'In Stock';
-            availabilityDiv.className = 'product-availability';
+            availabilityDiv.textContent = '';
             availabilityDiv.style.display = 'none';
         }
         
@@ -133,6 +145,20 @@ class SoldOutManager {
         card.setAttribute('data-product-stock', stock.toString());
     }
     
+    /**
+     * Start periodic refresh to check for product updates
+     */
+    startPeriodicRefresh() {
+        // TEMPORARILY COMMENTED OUT FOR DEBUGGING
+        // Refresh every 30 seconds to check for product updates
+        // setInterval(() => {
+        //     console.log('SoldOutManager: Starting periodic refresh...');
+        //     this.refreshAllProductsFromServer();
+        // }, 30000); // 30 seconds
+        
+        console.log('SoldOutManager: Periodic refresh TEMPORARILY DISABLED FOR DEBUGGING');
+    }
+
     /**
      * Bind event listeners
      */
@@ -298,8 +324,10 @@ class SoldOutManager {
 
 // Initialize sold out manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.soldOutManager = new SoldOutManager();
-    console.log('SoldOutManager: Initialized successfully');
+    // TEMPORARILY DISABLED - was overriding available products
+    // window.soldOutManager = new SoldOutManager();
+    // console.log('SoldOutManager: Initialized successfully');
+    console.log('SoldOutManager: TEMPORARILY DISABLED - was overriding available products');
 });
 
 // Global function to refresh sold out status (can be called from anywhere)
@@ -315,3 +343,4 @@ window.refreshSoldOutStatus = function() {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = SoldOutManager;
 }
+

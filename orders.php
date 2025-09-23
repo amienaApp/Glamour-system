@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Orders Page
@@ -355,6 +356,8 @@ if ($paymentSuccess) {
     </style>
 </head>
 <body>
+    <!-- Header removed as requested -->
+    
     <div class="container">
                         <a href="womenF/women.php" class="back-btn">
             <i class="fas fa-arrow-left"></i>

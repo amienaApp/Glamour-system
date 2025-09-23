@@ -1,12 +1,62 @@
 // Unified Women's Fashion Script
 document.addEventListener('DOMContentLoaded', function() {
-    // Beauty script loaded successfully
+    // WomenF script loaded successfully
     
     // Initialize all functionality
     initializeCategoryModals();
     initializeHeaderModals();
     initializeFilters();
     initializeQuickView();
+    
+    // Store original products for clear filters functionality
+    let originalProducts = [];
+    let isFiltered = false;
+    
+    // Store original products on page load
+    function storeOriginalProducts() {
+        const productGrid = document.getElementById('all-products-grid') || 
+                           document.getElementById('filtered-products-grid') ||
+                           document.querySelector('.product-grid');
+        
+        if (productGrid) {
+            const productCards = productGrid.querySelectorAll('.product-card');
+            originalProducts = Array.from(productCards).map(card => {
+                return {
+                    id: card.getAttribute('data-product-id'),
+                    name: card.getAttribute('data-product-name'),
+                    price: parseFloat(card.getAttribute('data-product-price')),
+                    salePrice: card.getAttribute('data-product-sale-price'),
+                    description: card.getAttribute('data-product-description'),
+                    category: card.getAttribute('data-product-category'),
+                    subcategory: card.getAttribute('data-product-subcategory'),
+                    featured: card.getAttribute('data-product-featured') === 'true',
+                    onSale: card.getAttribute('data-product-on-sale') === 'true',
+                    stock: parseInt(card.getAttribute('data-product-stock')),
+                    rating: parseFloat(card.getAttribute('data-product-rating')),
+                    review_count: parseInt(card.getAttribute('data-product-review-count')),
+                    front_image: card.getAttribute('data-product-front-image'),
+                    back_image: card.getAttribute('data-product-back-image'),
+                    color: card.getAttribute('data-product-color'),
+                    images: JSON.parse(card.getAttribute('data-product-images') || '[]'),
+                    color_variants: JSON.parse(card.getAttribute('data-product-color-variants') || '[]'),
+                    sizes: JSON.parse(card.getAttribute('data-product-sizes') || '[]'),
+                    size_category: card.getAttribute('data-product-size-category'),
+                    selected_sizes: JSON.parse(card.getAttribute('data-product-selected-sizes') || '[]'),
+                    variants: JSON.parse(card.getAttribute('data-product-variants') || '[]'),
+                    product_variants: JSON.parse(card.getAttribute('data-product-product-variants') || '[]'),
+                    options: JSON.parse(card.getAttribute('data-product-options') || '[]'),
+                    product_options: JSON.parse(card.getAttribute('data-product-product-options') || '[]'),
+                    image_front: card.getAttribute('data-product-image-front'),
+                    image_back: card.getAttribute('data-product-image-back'),
+                    available: card.querySelector('.add-to-bag:not([disabled])') ? true : false
+                };
+            });
+            // Stored original products
+        }
+    }
+    
+    // Call this after page loads
+    setTimeout(storeOriginalProducts, 100);
     
     // Global variables to track selected variants in quick view
     let selectedQuickViewColor = '';
@@ -17,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('quick-view-overlay');
         const closeBtn = document.getElementById('close-quick-view');
         
-        // Quick view elements found
+        console.log('Quick view elements found:', {
             sidebar: !!sidebar,
             overlay: !!overlay,
             closeBtn: !!closeBtn
@@ -1060,19 +1110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 addToCartFromQuickView(productId, productName, selectedQuickViewColor, selectedQuickViewSize);
             }
         }
-        
-        // Quick view wishlist functionality
-        if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
-            e.preventDefault();
-            const button = e.target.id === 'add-to-wishlist-quick' ? e.target : e.target.closest('#add-to-wishlist-quick');
-            
-            if (button.disabled) return;
-            
-            const productId = document.getElementById('quick-view-title')?.getAttribute('data-product-id');
-            if (productId && window.wishlistManager) {
-                window.wishlistManager.toggleWishlist(productId, button);
-            }
-        }
     });
     
     function addToCart(productId, productName) {
@@ -1202,8 +1239,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // console.log('Cart API response:', data);
             
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 
@@ -1357,8 +1396,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 
@@ -1504,8 +1545,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // console.log('Cart API response:', data);
             
             if (data.success) {
-                // Update cart count in header
-                if (typeof addToCartCount === 'function') {
+                // Update cart count using unified system
+                if (window.cartNotificationManager) {
+                    window.cartNotificationManager.handleCartUpdate(data);
+                } else if (typeof addToCartCount === 'function') {
                     addToCartCount();
                 }
                 
@@ -1728,11 +1771,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Flag Container Click - Disabled (Coming Soon)
+        // Flag Container Click - Disabled (Decorative Only)
         if (flagContainer) {
             flagContainer.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Region settings coming soon!');
+                // Flag is decorative only - no action needed
             });
         }
         
@@ -2034,7 +2077,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi'],
                 'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow'],
                 'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe'],
-                'mudug': ['Galkayo', 'Hobyo', 'Garoowe'],
+                'mudug': ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
                 'nugaal': ['Garowe', 'Eyl', 'Burtinle'],
                 'sanaag': ['Erigavo', 'Badhan', 'Las Khorey'],
                 'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
@@ -2172,16 +2215,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentSubcategory = urlParams.get('subcategory') || '';
         
-    // Filter state
-    let filterState = {
-        sizes: [],
-        colors: [],
-        price_ranges: [],
-        beauty_categories: [],
-        beauty_types: [],
-        sub_subcategories: []
-    };
-    
+        // Filter state
+        let filterState = {
+            sizes: [],
+            colors: [],
+            price_ranges: [],
+            categories: [],
+            lengths: [],
+            availabilities: []
+        };
         
         // Add event listeners to all filter checkboxes
         document.addEventListener('change', function(e) {
@@ -2192,25 +2234,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // console.log(`Filter changed: ${filterType} = ${filterValue}, checked: ${isChecked}`);
                 
-                // Update filter state
+                // Update filter state with proper mapping
+                let filterArrayKey = filterType + 's';
+                
+                // Handle special cases for filter type mapping
+                if (filterType === 'price_range') {
+                    filterArrayKey = 'price_ranges';
+                } else if (filterType === 'category') {
+                    filterArrayKey = 'categories';
+                } else if (filterType === 'availability') {
+                    filterArrayKey = 'availabilities';
+                }
+                
                 if (isChecked) {
-                    if (!filterState[filterType].includes(filterValue)) {
-                        filterState[filterType].push(filterValue);
+                    if (!filterState[filterArrayKey].includes(filterValue)) {
+                        filterState[filterArrayKey].push(filterValue);
                     }
                 } else {
-                    const index = filterState[filterType].indexOf(filterValue);
+                    const index = filterState[filterArrayKey].indexOf(filterValue);
                     if (index > -1) {
-                        filterState[filterType].splice(index, 1);
+                        filterState[filterArrayKey].splice(index, 1);
                     }
                 }
                 
-                // Handle hierarchical filter visibility
-                handleFilterVisibility(filterType, filterValue, isChecked);
-                
                 // console.log('Current filter state:', filterState);
-                
-                // Update active filter count
-                updateActiveFilterCount();
                 
                 // Apply filters
                 applyFilters();
@@ -2222,113 +2269,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (clearFiltersBtn) {
             clearFiltersBtn.addEventListener('click', function() {
                 clearAllFilters();
-            });
-        }
-        
-        // Handle hierarchical filter visibility
-        function handleFilterVisibility(filterType, filterValue, isChecked) {
-            const beautyTypeGroup = document.getElementById('beauty-type-group');
-            const subSubcategoryGroup = document.getElementById('sub-subcategory-filter-group');
-            
-            if (filterType === 'beauty_categories') {
-                if (isChecked) {
-                    // Show beauty type filter when any beauty category is selected
-                    if (beautyTypeGroup) {
-                        beautyTypeGroup.style.display = 'block';
-                        updateBeautyTypeTitle(filterValue);
-                        showBeautyTypeOptions(filterValue);
-                    }
-                } else {
-                    // Hide beauty type and product type filters when category is deselected
-                    if (beautyTypeGroup) {
-                        beautyTypeGroup.style.display = 'none';
-                        // Clear beauty type selections
-                        clearBeautyTypeSelections();
-                    }
-                    if (subSubcategoryGroup) {
-                        subSubcategoryGroup.style.display = 'none';
-                        // Clear product type selections
-                        clearProductTypeSelections();
-                    }
-                }
-            } else if (filterType === 'beauty_types') {
-                if (isChecked) {
-                    // Show product type filter when beauty type is selected (only for makeup)
-                    const selectedCategories = filterState.beauty_categories;
-                    if (selectedCategories.includes('makeup') && subSubcategoryGroup) {
-                        subSubcategoryGroup.style.display = 'block';
-                    }
-                } else {
-                    // Check if any beauty types are still selected
-                    const hasSelectedBeautyTypes = filterState.beauty_types.length > 0;
-                    if (!hasSelectedBeautyTypes && subSubcategoryGroup) {
-                        subSubcategoryGroup.style.display = 'none';
-                        // Clear product type selections
-                        clearProductTypeSelections();
-                    }
-                }
-            }
-        }
-        
-        // Update beauty type title based on selected category
-        function updateBeautyTypeTitle(category) {
-            const titleElement = document.getElementById('beauty-type-title');
-            if (titleElement) {
-                const titles = {
-                    'makeup': 'Makeup Type',
-                    'skincare': 'Skincare Type',
-                    'hair': 'Hair Care Type',
-                    'bath-body': 'Bath & Body Type',
-                    'tools': 'Beauty Tools Type'
-                };
-                titleElement.textContent = titles[category] || 'Category Type';
-            }
-        }
-        
-        // Show appropriate beauty type options based on selected category
-        function showBeautyTypeOptions(category) {
-            // Hide all beauty type grids
-            const allTypeGrids = document.querySelectorAll('.beauty-type-grid');
-            allTypeGrids.forEach(grid => {
-                grid.style.display = 'none';
-            });
-            
-            // Show the appropriate grid
-            const categoryGrids = {
-                'makeup': 'makeup-types',
-                'skincare': 'skincare-types',
-                'hair': 'hair-care-types',
-                'bath-body': 'bath-body-types',
-                'tools': 'beauty-tools-types'
-            };
-            
-            const targetGrid = document.getElementById(categoryGrids[category]);
-            if (targetGrid) {
-                targetGrid.style.display = 'block';
-            }
-        }
-        
-        // Clear beauty type selections
-        function clearBeautyTypeSelections() {
-            const beautyTypeCheckboxes = document.querySelectorAll('input[data-filter="beauty_types"]');
-            beautyTypeCheckboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                const index = filterState.beauty_types.indexOf(checkbox.value);
-                if (index > -1) {
-                    filterState.beauty_types.splice(index, 1);
-                }
-            });
-        }
-        
-        // Clear product type selections
-        function clearProductTypeSelections() {
-            const productTypeCheckboxes = document.querySelectorAll('input[data-filter="sub_subcategories"]');
-            productTypeCheckboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                const index = filterState.sub_subcategories.indexOf(checkbox.value);
-                if (index > -1) {
-                    filterState.sub_subcategories.splice(index, 1);
-                }
             });
         }
         
@@ -2345,12 +2285,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 sizes: filterState.sizes,
                 colors: filterState.colors,
                 price_ranges: filterState.price_ranges,
-                beauty_categories: filterState.beauty_categories,
-                beauty_types: filterState.beauty_types,
-                sub_subcategories: filterState.sub_subcategories
+                categories: filterState.categories,
+                category: filterState.categories, // Also send as 'category' for compatibility
+                lengths: filterState.lengths,
+                availabilities: filterState.availabilities
             };
             
-            // console.log('Sending filter data:', filterData);
+            console.log('Sending filter data:', filterData);
             
             // Send filter request
             fetch('filter-api.php', {
@@ -2362,9 +2303,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                // console.log('Filter response:', data);
+                console.log('Filter response:', data);
                 
                 if (data.success) {
+                    console.log('Products returned:', data.data.products.length);
+                    console.log('Product subcategories:', data.data.products.map(p => p.subcategory));
                     updateProductGrid(data.data.products);
                     updateStyleCount(data.data.total_count);
                     hideFilterLoading();
@@ -2382,49 +2325,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function clearAllFilters() {
-            // console.log('Clearing all filters...');
+            console.log('Clearing all filters...');
             
             // Uncheck all filter checkboxes
             document.querySelectorAll('input[data-filter]').forEach(checkbox => {
                 checkbox.checked = false;
             });
             
-            // Hide hierarchical filter groups
-            const beautyTypeGroup = document.getElementById('beauty-type-group');
-            const subSubcategoryGroup = document.getElementById('sub-subcategory-filter-group');
-            
-            if (beautyTypeGroup) {
-                beautyTypeGroup.style.display = 'none';
-            }
-            if (subSubcategoryGroup) {
-                subSubcategoryGroup.style.display = 'none';
-            }
-            
             // Reset filter state
             filterState = {
                 sizes: [],
                 colors: [],
                 price_ranges: [],
-                beauty_categories: [],
-                beauty_types: [],
-                sub_subcategories: []
+                categories: [],
+                lengths: [],
+                availabilities: []
             };
             
-            // Update active filter count
-            updateActiveFilterCount();
-            
-            // Show success notification
-            showNotification('All filters cleared', 'success');
-            
-            // Apply filters (will show all products)
-            applyFilters();
+            // Restore original products instead of making API call
+            if (originalProducts.length > 0) {
+                console.log('Restoring original products:', originalProducts.length);
+                updateProductGrid(originalProducts);
+                updateStyleCount(originalProducts.length);
+                isFiltered = false;
+            } else {
+                // Fallback: reload page if no original products stored
+                console.log('No original products stored, reloading page...');
+                window.location.reload();
+            }
         }
         
         // Make clearAllFilters globally accessible
         window.clearAllFilters = clearAllFilters;
         
         function updateProductGrid(products) {
-            // console.log(`Updating product grid with ${products.length} products`);
+            console.log(`Updating product grid with ${products.length} products`);
             
             // Get the appropriate product grid based on current subcategory
             let productGrid;
@@ -2437,10 +2372,22 @@ document.addEventListener('DOMContentLoaded', function() {
                              document.querySelector('.product-grid');
             }
             
+            // Mark as filtered if we're updating with filtered results
+            if (products !== originalProducts) {
+                isFiltered = true;
+            }
+            
             if (!productGrid) {
                 console.error('Product grid not found');
+                console.log('Available grids:', {
+                    'all-products-grid': !!document.getElementById('all-products-grid'),
+                    'filtered-products-grid': !!document.getElementById('filtered-products-grid'),
+                    'product-grids': document.querySelectorAll('.product-grid').length
+                });
                 return;
             }
+            
+            console.log('Found product grid:', productGrid.id);
             
             // Clear existing products
             productGrid.innerHTML = '';
@@ -2448,120 +2395,126 @@ document.addEventListener('DOMContentLoaded', function() {
             if (products.length === 0) {
                 productGrid.innerHTML = `
                     <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                        <h3>No products found</h3>
-                        <p>No products match your current filter selection.</p>
-                        <button onclick="clearAllFilters()" class="clear-filters-btn" style="
-                            background: #f7fafc;
-                            color: #2d3748;
-                            border: 1px solid #e2e8f0;
-                            padding: 12px 20px;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            margin-top: 10px;
-                        ">Clear All Filters</button>
+                        <p>No products found matching your filters.</p>
+                        <button onclick="clearAllFilters()" class="clear-filters-btn">Clear Filters</button>
                     </div>
                 `;
                 return;
             }
             
-            // Create product cards for filtered results
+            // Generate product cards for filtered results
             products.forEach(product => {
-                const productCard = createProductCard(product);
+                const productCard = generateProductCard(product);
                 productGrid.appendChild(productCard);
             });
         }
         
-        function createProductCard(product) {
+        function generateProductCard(product) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.setAttribute('data-product-id', product.id);
+            card.setAttribute('data-product-name', product.name);
+            card.setAttribute('data-product-price', product.price);
+            card.setAttribute('data-product-sale-price', product.salePrice || '');
+            card.setAttribute('data-product-description', product.description || '');
+            card.setAttribute('data-product-category', product.category || '');
+            card.setAttribute('data-product-subcategory', product.subcategory || '');
+            card.setAttribute('data-product-featured', product.featured ? 'true' : 'false');
+            card.setAttribute('data-product-on-sale', product.sale ? 'true' : 'false');
+            card.setAttribute('data-product-stock', product.stock || 0);
+            card.setAttribute('data-product-rating', product.rating || 0);
+            card.setAttribute('data-product-review-count', product.review_count || 0);
+            card.setAttribute('data-product-front-image', product.front_image || '');
+            card.setAttribute('data-product-back-image', product.back_image || '');
+            card.setAttribute('data-product-color', product.color || '');
+            card.setAttribute('data-product-images', JSON.stringify(product.images || []));
+            card.setAttribute('data-product-color-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-sizes', JSON.stringify(product.sizes || []));
+            card.setAttribute('data-product-size-category', product.size_category || '');
+            card.setAttribute('data-product-selected-sizes', JSON.stringify(product.selected_sizes || []));
+            card.setAttribute('data-product-variants', JSON.stringify(product.color_variants || []));
+            card.setAttribute('data-product-product-variants', JSON.stringify(product.product_variants || []));
+            card.setAttribute('data-product-options', JSON.stringify(product.options || []));
+            card.setAttribute('data-product-product-options', JSON.stringify(product.product_options || []));
+            card.setAttribute('data-product-image-front', product.image_front || '');
+            card.setAttribute('data-product-image-back', product.image_back || '');
             
-            // Get the first available image
+            // Generate the product card HTML
             const frontImage = product.front_image || product.image_front || '';
             const backImage = product.back_image || product.image_back || frontImage;
+            const isVideo = frontImage && (frontImage.includes('.mp4') || frontImage.includes('.webm') || frontImage.includes('.mov'));
             
             card.innerHTML = `
                 <div class="product-image">
                     <div class="image-slider">
-                        ${frontImage ? `
-                            <img src="../${frontImage}" 
-                                 alt="${product.name} - Front" 
-                                 class="active" 
-                                 data-color="${product.color || ''}">
-                        ` : ''}
-                        ${backImage && backImage !== frontImage ? `
-                            <img src="../${backImage}" 
-                                 alt="${product.name} - Back" 
-                                 data-color="${product.color || ''}">
-                        ` : ''}
+                        ${frontImage ? (isVideo ? 
+                            `<video src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${frontImage}" alt="${product.name} - Front" class="active" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${backImage && backImage !== frontImage ? (backImage.includes('.mp4') || backImage.includes('.webm') || backImage.includes('.mov') ? 
+                            `<video src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}" muted loop></video>` :
+                            `<img src="../${backImage}" alt="${product.name} - Back" data-color="${product.color || ''}">`
+                        ) : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => {
+                            const variantFrontImage = variant.front_image || '';
+                            const variantBackImage = variant.back_image || variantFrontImage;
+                            const isVariantVideo = variantFrontImage && (variantFrontImage.includes('.mp4') || variantFrontImage.includes('.webm') || variantFrontImage.includes('.mov'));
+                            
+                            return `
+                                ${variantFrontImage ? (isVariantVideo ? 
+                                    `<video src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantFrontImage}" alt="${product.name} - ${variant.name} - Front" data-color="${variant.color || ''}">`
+                                ) : ''}
+                                ${variantBackImage && variantBackImage !== variantFrontImage ? (variantBackImage.includes('.mp4') || variantBackImage.includes('.webm') || variantBackImage.includes('.mov') ? 
+                                    `<video src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}" muted loop></video>` :
+                                    `<img src="../${variantBackImage}" alt="${product.name} - ${variant.name} - Back" data-color="${variant.color || ''}">`
+                                ) : ''}
+                            `;
+                        }).join('') : ''}
                     </div>
                     <button class="heart-button" data-product-id="${product.id}">
                         <i class="fas fa-heart"></i>
                     </button>
                     <div class="product-actions">
                         <button class="quick-view" data-product-id="${product.id}">Quick View</button>
-                        ${product.available !== false ? `
-                            <button class="add-to-bag">Add To Bag</button>
-                        ` : `
-                            <button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>
-                        `}
+                        ${product.available === false ? 
+                            '<button class="add-to-bag" disabled style="opacity: 0.5; cursor: not-allowed;">Sold Out</button>' :
+                            '<button class="add-to-bag">Add To Bag</button>'
+                        }
                     </div>
                 </div>
                 <div class="product-info">
                     <div class="color-options">
-                        ${product.color ? `
-                            <span class="color-circle active" 
-                                  style="background-color: ${product.color};" 
-                                  title="${product.color}" 
-                                  data-color="${product.color}"></span>
-                        ` : ''}
-                        ${product.color_variants ? product.color_variants.map(variant => `
-                            <span class="color-circle" 
-                                  style="background-color: ${variant.color};" 
-                                  title="${variant.name}" 
-                                  data-color="${variant.color}"></span>
-                        `).join('') : ''}
+                        ${product.color ? `<span class="color-circle active" style="background-color: ${product.color};" title="${product.color}" data-color="${product.color}"></span>` : ''}
+                        ${product.color_variants ? product.color_variants.map(variant => 
+                            variant.color ? `<span class="color-circle" style="background-color: ${variant.color};" title="${variant.name}" data-color="${variant.color}"></span>` : ''
+                        ).join('') : ''}
                     </div>
                     <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${product.price.toFixed(0)}</div>
-                    ${product.available === false ? `
-                        <div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>
-                    ` : product.stock <= 5 && product.stock > 0 ? `
-                        <div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>
-                    ` : ''}
+                    <div class="product-price">$${Math.round(product.price)}</div>
+                    ${product.available === false ? 
+                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.75rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
+                        (product.stock && product.stock <= 5 && product.stock > 0 ? 
+                            `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : ''
+                        )
+                    }
                 </div>
             `;
             
             return card;
         }
         
-        
-        
         function updateStyleCount(count) {
             const styleCountElement = document.getElementById('style-count');
             if (styleCountElement) {
-                styleCountElement.textContent = `${count} Beauty Products`;
-            }
-        }
-        
-        function updateActiveFilterCount() {
-            const totalFilters = Object.values(filterState).reduce((sum, arr) => sum + arr.length, 0);
-            const clearBtn = document.getElementById('clear-filters');
-            if (clearBtn) {
-                if (totalFilters > 0) {
-                    clearBtn.textContent = `Clear ${totalFilters} Filter${totalFilters > 1 ? 's' : ''}`;
-                    clearBtn.style.display = 'block';
-                } else {
-                    clearBtn.textContent = 'Clear All Filters';
-                    clearBtn.style.display = 'none';
-                }
+                styleCountElement.textContent = `${count} Styles`;
             }
         }
         
         function showFilterLoading() {
             // Add loading overlay to product grid
             const productGrid = document.getElementById('filtered-products-grid') || 
-                               document.getElementById('dresses-grid') ||
+                               document.getElementById('all-products-grid') ||
                                document.querySelector('.product-grid');
             if (productGrid) {
                 const loadingOverlay = document.createElement('div');
@@ -2703,109 +2656,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-weight: 400;
             }
             
-            /* Color Filter Styles */
-            .color-option {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 0;
-                cursor: pointer;
-            }
-            
-            .color-option .color-circle {
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                border: 2px solid #ddd;
-                display: inline-block;
-                flex-shrink: 0;
-            }
-            
-            .color-option .color-name {
-                font-size: 14px;
-                color: #333;
-            }
-            
-            .color-option input[type="checkbox"]:checked + .checkmark + .color-circle {
-                border-color: #333;
-                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-            }
-            
-            .loading-colors {
-                text-align: center;
-                padding: 20px;
-                color: #666;
-                font-style: italic;
-            }
-            
-            /* Clear Filters Button */
-            .clear-filters-btn {
-                background: #f7fafc;
-                color: #2d3748;
-                border: 1px solid #e2e8f0;
-                padding: 12px 20px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 12px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                margin-top: 10px;
-                width: 100%;
-            }
-            
-            .clear-filters-btn:hover {
-                background: #e55a8a;
-                transform: translateY(-1px);
-            }
-            
-            .clear-filters-btn:active {
-                transform: translateY(0);
-            }
-            
-            /* Filter Group Styling */
-            .filter-group {
-                margin-bottom: 20px;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 15px;
-            }
-            
-            .filter-group:last-child {
-                border-bottom: none;
-            }
-            
-            .filter-header h4 {
-                margin: 0 0 10px 0;
-                font-size: 14px;
-                font-weight: 600;
-                color: #333;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            
-            .filter-options {
-                max-height: 200px;
-                overflow-y: auto;
-                padding-right: 5px;
-            }
-            
-            .filter-options::-webkit-scrollbar {
-                width: 4px;
-            }
-            
-            .filter-options::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 2px;
-            }
-            
-            .filter-options::-webkit-scrollbar-thumb {
-                background: #ccc;
-                border-radius: 2px;
-            }
-            
-            .filter-options::-webkit-scrollbar-thumb:hover {
-                background: #999;
-            }
-            
             /* Responsive adjustments */
             @media (max-width: 768px) {
                 .size-option {
@@ -2818,30 +2668,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     padding: 5px 10px;
                     font-size: 10px;
                 }
-                
-                .color-option .color-circle {
-                    width: 18px;
-                    height: 18px;
-                }
-                
-                .color-option .color-name {
-                    font-size: 13px;
-                }
             }
             
             @media (max-width: 480px) {
                 .size-option {
                     min-width: 32px;
                     padding: 5px 8px;
-                    font-size: 12px;
-                }
-                
-                .color-option .color-circle {
-                    width: 16px;
-                    height: 16px;
-                }
-                
-                .color-option .color-name {
                     font-size: 12px;
                 }
             }
@@ -3010,8 +2842,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSizeCount();
     };
     
-    
-
     // Global function to convert size codes to full names
     window.getSizeName = function(sizeCode) {
         const sizeMap = {

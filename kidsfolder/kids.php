@@ -1,9 +1,52 @@
 <?php
+session_start();
 $page_title = 'Glamour Palace';
 
-// Handle subcategory parameter
+// Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
-$page_title = $subcategory ? ucfirst($subcategory) . ' Kids - ' . $page_title : 'Kids\' Clothing - ' . $page_title;
+
+// Set page title based on subcategory
+if ($subcategory) {
+    $page_title = ucfirst($subcategory) . ' - ' . $page_title;
+}
+
+// Load categories and subcategories from database
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+
+$categoryModel = new Category();
+$kidsCategory = $categoryModel->getByName("Kids' Clothing");
+$subcategories = [];
+
+if ($kidsCategory && isset($kidsCategory['subcategories'])) {
+    // Convert BSONArray to regular array if needed
+    $allSubcategories = [];
+    foreach ($kidsCategory['subcategories'] as $sub) {
+        if (is_array($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } elseif (is_object($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } else {
+            $allSubcategories[] = $sub;
+        }
+    }
+    
+    // Filter out unwanted subcategories if needed
+    $excludedSubcategories = [];
+    $subcategories = array_filter($allSubcategories, function($subcategory) use ($excludedSubcategories) {
+        return !in_array($subcategory, $excludedSubcategories);
+    });
+}
+
+// Define image mapping for subcategories
+$subcategoryImages = [
+    'Boys' => '../img/child/1.webp',
+    'Girls' => '../img/child/2.webp',
+    'Baby' => '../img/child/3.webp',
+    'Toddler' => '../img/child/4.webp',
+    'Accessories' => '../img/child/5.webp',
+    'Shoes' => '../img/child/6.webp'
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +69,7 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Kids - ' . $page_title : 
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <script src="cart-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
@@ -44,6 +88,34 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Kids - ' . $page_title : 
                     }
                     ?>
 
+                <!-- Mobile Navigation Overlay -->
+                <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+                    <div class="mobile-nav-content">
+                        <div class="mobile-nav-header">
+                            <div class="mobile-nav-logo">
+                                <div class="logo-main">Glamour Palace</div>
+                                <div class="logo-accent">FASHION & LIFESTYLE</div>
+                            </div>
+                            <button class="mobile-nav-close" id="mobile-nav-close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mobile-nav-menu">
+                            <ul class="mobile-nav-list">
+                                <li><a href="../index.php" class="mobile-nav-link">Home</a></li>
+                                <li><a href="../womenF/women.php" class="mobile-nav-link">Women</a></li>
+                                <li><a href="../menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                                <li><a href="kids.php" class="mobile-nav-link">Kids</a></li>
+                                <li><a href="../beautyfolder/beauty.php" class="mobile-nav-link">Beauty</a></li>
+                                <li><a href="../bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                                <li><a href="../shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                                <li><a href="../accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                                <li><a href="../perfumes/index.php" class="mobile-nav-link">Perfumes</a></li>
+                                <li><a href="../homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Image Bar Section -->
                 <div class="image-bar">
@@ -292,6 +364,41 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Kids - ' . $page_title : 
                         // Close filter menu
                         mobileFilterOverlay.classList.remove('active');
                         body.classList.remove('mobile-filter-open');
+                    });
+                }
+
+                // Function to update category filter
+                function updateCategoryFilter(category, isChecked) {
+                    console.log('Category filter updated:', category, isChecked);
+                    // This function can be expanded to handle category filtering
+                    // For now, it just logs the change
+                }
+
+                // Function to clear all filters
+                function clearAllFiltersSimple() {
+                    console.log('Clearing all filters');
+                    // Clear all checkboxes
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+
+                // Function to select all sizes
+                function selectAllSizes() {
+                    console.log('Selecting all sizes');
+                    const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                    sizeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = true;
+                    });
+                }
+
+                // Function to clear size filters
+                function clearSizeFilters() {
+                    console.log('Clearing size filters');
+                    const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
+                    sizeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
                     });
                 }
 

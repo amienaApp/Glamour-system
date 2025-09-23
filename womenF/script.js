@@ -1771,11 +1771,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Flag Container Click - Disabled (Coming Soon)
+        // Flag Container Click - Disabled (Decorative Only)
         if (flagContainer) {
             flagContainer.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Region settings coming soon!');
+                // Flag is decorative only - no action needed
             });
         }
         
@@ -2077,7 +2077,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi'],
                 'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow'],
                 'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe'],
-                'mudug': ['Galkayo', 'Hobyo', 'Garoowe'],
+                'mudug': ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
                 'nugaal': ['Garowe', 'Eyl', 'Burtinle'],
                 'sanaag': ['Erigavo', 'Badhan', 'Las Khorey'],
                 'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
@@ -2493,7 +2493,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="product-name">${product.name}</h3>
                     <div class="product-price">$${Math.round(product.price)}</div>
                     ${product.available === false ? 
-                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
+                        '<div class="product-availability" style="color: #e53e3e; font-size: 0.75rem; font-weight: 600; margin-top: 5px;">SOLD OUT</div>' :
                         (product.stock && product.stock <= 5 && product.stock > 0 ? 
                             `<div class="product-availability" style="color: #d69e2e; font-size: 0.9rem; font-weight: 600; margin-top: 5px;">Only ${product.stock} left</div>` : ''
                         )

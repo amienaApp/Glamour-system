@@ -249,8 +249,8 @@ $regionOptions = [
             </div>
         </div>
 
-        <!-- Somalia Flag - Compact (Disabled) -->
-        <div class="flag-container" title="Region Settings (Coming Soon)">
+        <!-- Somalia Flag - Compact (Decorative) -->
+        <div class="flag-container" title="Somalia Flag">
             <img src="<?php echo getAssetPath('img/flag.jpg'); ?>" alt="Somalia Flag" class="flag" id="somalia-flag">
         </div>
     </div>

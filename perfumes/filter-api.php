@@ -40,6 +40,16 @@ try {
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($input['action'])) {
         switch ($input['action']) {
+            case 'get_all_products':
+                $subcategory = $input['subcategory'] ?? '';
+                $filters = ['category' => "Perfumes"];
+                if ($subcategory) {
+                    $filters['subcategory'] = ucfirst($subcategory);
+                }
+                $products = $productModel->getAll($filters);
+                $response = ['success' => true, 'products' => $products];
+                break;
+                
             case 'filter_products':
                 $filters = [];
                 $andConditions = [];

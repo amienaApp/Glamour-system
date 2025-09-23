@@ -336,8 +336,14 @@ if (isset($_SESSION['user_id'])) {
 
                 <div class="form-group">
                     <label for="contact_number" class="required">Contact Number</label>
-                    <input type="tel" id="contact_number" name="contact_number" class="form-input" 
-                           placeholder="+252 xxx xxxx" required>
+                    <div class="contact-input-container" style="display: flex; align-items: center; border: 2px solid #e9ecef; border-radius: 8px; overflow: hidden;">
+                        <div class="flag-prefix" style="display: flex; align-items: center; background: #f8f9fa; padding: 12px; border-right: 2px solid #e9ecef;">
+                            <img src="/Glamour-system/img/flag.jpg" alt="Somali Flag" style="width: 20px; height: 15px; margin-right: 8px; border-radius: 2px;">
+                            <span class="country-code" style="color: #666; font-weight: 500;">+252</span>
+                        </div>
+                        <input type="tel" id="contact_number" name="contact_number" class="form-input" 
+                               placeholder="XXX XXX XXXX" maxlength="10" pattern="[0-9]{10}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required style="flex: 1; border: none; padding: 12px; outline: none;">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -515,22 +521,24 @@ if (isset($_SESSION['user_id'])) {
 
         // Cities for each region
         const citiesByRegion = {
-            'banadir': ['Mogadishu', 'Afgooye', 'Marka', 'Wanlaweyn'],
-            'bari': ['Bosaso', 'Qardho', 'Caluula', 'Iskushuban', 'Bandarbeyla'],
-            'bay': ['Baidoa', 'Burdhubo', 'Dinsor', 'Qansaxdheere'],
-            'galguduud': ['Dhusamareb', 'Adado', 'Abudwaq', 'Galgadud'],
-            'gedo': ['Garbahaarrey', 'Bardhere', 'Luuq', 'El Wak', 'Dolow'],
-            'hiran': ['Beledweyne', 'Buloburde', 'Jalalaqsi', 'Mahas'],
-            'jubbada-dhexe': ['Bu\'aale', 'Jilib', 'Sakow', 'Dujuma'],
-            'jubbada-hoose': ['Kismayo', 'Jamame', 'Badhaadhe', 'Afmadow'],
-            'mudug': ['Galkayo', 'Hobyo', 'Harardhere', 'Jariiban'],
-            'nugaal': ['Garowe', 'Eyl', 'Burtinle', 'Dangorayo'],
-            'sanaag': ['Erigavo', 'Badhan', 'Laasqoray', 'Dhahar'],
-            'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Adale', 'Warsheikh'],
-            'shabeellaha-hoose': ['Merca', 'Baraawe', 'Kurtunwaarey', 'Qoryooley'],
-            'sool': ['Laascaanood', 'Taleex', 'Xudun', 'Caynabo'],
-            'togdheer': ['Burao', 'Oodweyne', 'Sheikh', 'Buhoodle'],
-            'woqooyi-galbeed': ['Hargeisa', 'Berbera', 'Borama', 'Gabiley', 'Baki']
+            'awdal': ['Borama', 'Zeila', 'Lughaya'],
+            'woqooyi-galbeed': ['Hargeisa', 'Berbera', 'Gabiley'],
+            'togdheer': ['Burao', 'Oodweyne', 'Balidhiig'],
+            'sanaag': ['Erigavo', 'Badhan', 'Las Qoray'],
+            'sool': ['Las Anod', 'Taleh', 'Hudun'],
+            'bari': ['Bosaso', 'Qandala', 'Iskushuban'],
+            'nugaal': ['Garowe', 'Burtinle', 'Eyl'],
+            'mudug': ['Galkayo', 'Hobyo', 'Jariban', 'Garacad', 'Goldogob', 'Bacaadwayn'],
+            'galguduud': ['Dhusamareb', 'Guriceel', 'Cadaado', 'Balanbale'],
+            'hiran': ['Beledweyne', 'Bulo Burte', 'Jalalaqsi'],
+            'shabeellaha-dhexe': ['Jowhar', 'Balcad', 'Mahaday'],
+            'banadir': ['Abdiaziz', 'Bondhere', 'Daynile', 'Dharkenley', 'Hamar-Jajab', 'Hamar-Weyne', 'Hodan', 'Howlwadag', 'Karaan', 'Kaxda', 'Shangani', 'Shibis', 'Waberi', 'Wadajir', 'Wardhigley', 'Yaqshid'],
+            'shabeellaha-hoose': ['Marka', 'Afgoye', 'Qoryoley', 'Barawe'],
+            'bay': ['Baidoa', 'Burhakaba', 'Dinsoor'],
+            'bakool': ['Hudur', 'Tayeeglow', 'Wajid', 'El Barde'],
+            'gedo': ['Garbahaarreey', 'Bardera', 'Luuq', 'Beled Hawo', 'Dolow'],
+            'jubbada-dhexe': ['Bu\'aale', 'Sakow', 'Jilib'],
+            'jubbada-hoose': ['Kismayo', 'Afmadow', 'Dhobley', 'Jamaame']
         };
 
         regionSelect.addEventListener('change', function() {
@@ -577,7 +585,7 @@ if (isset($_SESSION['user_id'])) {
                 hideMessage();
                 
                 // Send registration request
-                const response = await fetch('register-handler.php', {
+                const response = await fetch('/Glamour-system/auth/register-handler.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

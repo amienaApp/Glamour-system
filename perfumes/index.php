@@ -1,4 +1,5 @@
 <?php
+session_start();
 $page_title = 'Galamor palace';
 
 // Get subcategory from URL parameter
@@ -8,6 +9,44 @@ $subcategory = $_GET['subcategory'] ?? '';
 if ($subcategory) {
     $page_title = ucfirst($subcategory) . ' - ' . $page_title;
 }
+
+// Load categories and subcategories from database
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+
+$categoryModel = new Category();
+$perfumesCategory = $categoryModel->getByName("Perfumes");
+$subcategories = [];
+
+if ($perfumesCategory && isset($perfumesCategory['subcategories'])) {
+    // Convert BSONArray to regular array if needed
+    $allSubcategories = [];
+    foreach ($perfumesCategory['subcategories'] as $sub) {
+        if (is_array($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } elseif (is_object($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } else {
+            $allSubcategories[] = $sub;
+        }
+    }
+    
+    // Filter out unwanted subcategories if needed
+    $excludedSubcategories = [];
+    $subcategories = array_filter($allSubcategories, function($subcategory) use ($excludedSubcategories) {
+        return !in_array($subcategory, $excludedSubcategories);
+    });
+}
+
+// Define image mapping for subcategories
+$subcategoryImages = [
+    'Men\'s Perfumes' => '../img/perfumes/1.jpg',
+    'Women\'s Perfumes' => '../img/perfumes/2.jpg',
+    'Unisex Perfumes' => '../img/perfumes/3.jpg',
+    'Luxury Perfumes' => '../img/perfumes/4.jpg',
+    'Designer Perfumes' => '../img/perfumes/5.jpg',
+    'Celebrity Perfumes' => '../img/perfumes/6.jpg'
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,13 +67,41 @@ if ($subcategory) {
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <script src="search.js?v=<?php echo time(); ?>" defer></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
                     <?php include '../heading/header.php'; ?>
 
-                
+                <!-- Mobile Navigation Overlay -->
+                <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+                    <div class="mobile-nav-content">
+                        <div class="mobile-nav-header">
+                            <div class="mobile-nav-logo">
+                                <div class="logo-main">Glamour Palace</div>
+                                <div class="logo-accent">FASHION & LIFESTYLE</div>
+                            </div>
+                            <button class="mobile-nav-close" id="mobile-nav-close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mobile-nav-menu">
+                            <ul class="mobile-nav-list">
+                                <li><a href="../index.php" class="mobile-nav-link">Home</a></li>
+                                <li><a href="../womenF/women.php" class="mobile-nav-link">Women</a></li>
+                                <li><a href="../menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                                <li><a href="../kidsfolder/kids.php" class="mobile-nav-link">Kids</a></li>
+                                <li><a href="../beautyfolder/beauty.php" class="mobile-nav-link">Beauty</a></li>
+                                <li><a href="../bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                                <li><a href="../shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                                <li><a href="../accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                                <li><a href="index.php" class="mobile-nav-link">Perfumes</a></li>
+                                <li><a href="../homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="page-layout">
                     <?php include 'includes/sidebar.php'; ?>

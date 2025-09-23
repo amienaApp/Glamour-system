@@ -2,9 +2,51 @@
 session_start();
 $page_title = 'Galamor palace';
 
-// Handle subcategory parameter
+// Get subcategory from URL parameter
 $subcategory = $_GET['subcategory'] ?? '';
-$page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title : 'Beauty & Cosmetics - ' . $page_title;
+
+// Set page title based on subcategory
+if ($subcategory) {
+    $page_title = ucfirst($subcategory) . ' - ' . $page_title;
+}
+
+// Load categories and subcategories from database
+require_once '../config1/mongodb.php';
+require_once '../models/Category.php';
+
+$categoryModel = new Category();
+$beautyCategory = $categoryModel->getByName("Beauty & Cosmetics");
+$subcategories = [];
+
+if ($beautyCategory && isset($beautyCategory['subcategories'])) {
+    // Convert BSONArray to regular array if needed
+    $allSubcategories = [];
+    foreach ($beautyCategory['subcategories'] as $sub) {
+        if (is_array($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } elseif (is_object($sub) && isset($sub['name'])) {
+            $allSubcategories[] = $sub['name'];
+        } else {
+            $allSubcategories[] = $sub;
+        }
+    }
+    
+    // Filter out unwanted subcategories if needed
+    $excludedSubcategories = [];
+    $subcategories = array_filter($allSubcategories, function($subcategory) use ($excludedSubcategories) {
+        return !in_array($subcategory, $excludedSubcategories);
+    });
+}
+
+// Define image mapping for subcategories
+$subcategoryImages = [
+    'Makeup' => '../img/beauty/1.png',
+    'Skincare' => '../img/beauty/2.png',
+    'Hair Care' => '../img/beauty/3.png',
+    'Fragrance' => '../img/beauty/4.png',
+    'Tools & Brushes' => '../img/beauty/5.png',
+    'Nail Care' => '../img/beauty/6.png'
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +67,7 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
 <body>
@@ -41,6 +84,35 @@ $page_title = $subcategory ? ucfirst($subcategory) . ' Beauty - ' . $page_title 
                         echo '<style>.simple-header { background: #ff6b9d; color: white; padding: 20px; text-align: center; } .simple-header nav a { color: white; text-decoration: none; margin: 0 10px; }</style>';
                     }
                     ?>
+
+                <!-- Mobile Navigation Overlay -->
+                <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+                    <div class="mobile-nav-content">
+                        <div class="mobile-nav-header">
+                            <div class="mobile-nav-logo">
+                                <div class="logo-main">Glamour Palace</div>
+                                <div class="logo-accent">FASHION & LIFESTYLE</div>
+                            </div>
+                            <button class="mobile-nav-close" id="mobile-nav-close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mobile-nav-menu">
+                            <ul class="mobile-nav-list">
+                                <li><a href="../index.php" class="mobile-nav-link">Home</a></li>
+                                <li><a href="../womenF/women.php" class="mobile-nav-link">Women</a></li>
+                                <li><a href="../menfolder/men.php" class="mobile-nav-link">Men</a></li>
+                                <li><a href="../kidsfolder/kids.php" class="mobile-nav-link">Kids</a></li>
+                                <li><a href="beauty.php" class="mobile-nav-link">Beauty</a></li>
+                                <li><a href="../bagsfolder/bags.php" class="mobile-nav-link">Bags</a></li>
+                                <li><a href="../shoess/shoes.php" class="mobile-nav-link">Shoes</a></li>
+                                <li><a href="../accessories/accessories.php" class="mobile-nav-link">Accessories</a></li>
+                                <li><a href="../perfumes/index.php" class="mobile-nav-link">Perfumes</a></li>
+                                <li><a href="../homedecor/homedecor.php" class="mobile-nav-link">Home Decor</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Image Bar Section -->
                 <div class="image-bar">
