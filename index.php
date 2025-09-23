@@ -506,9 +506,153 @@ session_start();
                 0 0 20px rgba(102, 126, 234, 0.6),
                 0 0 40px rgba(102, 126, 234, 0.4),
                 0 0 60px rgba(102, 126, 234, 0.2);
+      }
+    </style>
+    
+    <!-- Compact Footer Styles -->
+    <style>
+        .custom-footer {
+            background:rgb(173, 175, 176);
+            color: #000000;
+            padding: 10px 0 5px;
+            margin-top: 15px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .footer-col {
+            padding: 5px;
+        }
+        
+        .footer-col h3 {
+            color: #000000;
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 2px;
+        }
+        
+        .footer-col a {
+            color: #000000 !important;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700 !important;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .custom-footer .footer-col ul li a {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+        
+        .footer-col a:hover {
+            color: #ff6b9d;
+        }
+        
+        .footer-col a i {
+            width: 16px;
+            text-align: center;
+            color: #000000 !important;
+        }
+        
+        .footer-col h3 i {
+            margin-right: 8px;
+            color: #000000 !important;
+        }
+        
+        .footer-col p {
+            color: #000000;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .footer-contact {
+            margin: 0;
+        }
+        
+        .footer-contact li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #000000;
+        }
+        
+        .footer-icon {
+            margin-right: 8px;
+            width: 16px;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social a:hover {
+            background: #ff6b9d;
+            transform: translateY(-2px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 5px 10px 0;
+            margin-top: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            color: #000000;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 15px;
+            }
+            
+            .custom-footer {
+                padding: 25px 0 15px;
+            }
         }
     </style>
-   
+    
 </head>
 <body>
     
@@ -1040,26 +1184,29 @@ session_start();
     <footer class="custom-footer">
         <div class="footer-container">
         <div class="footer-col">
-            <h3>Useful Links</h3>
+            <h3><i class="fas fa-shopping-bag"></i> Shop Categories</h3>
             <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">About us</a></li>
-            <li><a href="#">pagedetails</a></li>
-            <li><a href="#">Contact us</a></li>
+            <li><a href="beautyfolder/beauty.php"><i class="fas fa-palette"></i> Beauty</a></li>
+            <li><a href="womenF/women.php"><i class="fas fa-female"></i> Women's Fashion</a></li>
+            <li><a href="menfolder/men.php"><i class="fas fa-male"></i> Men's Fashion</a></li>
+            <li><a href="kidsfolder/kids.php"><i class="fas fa-child"></i> Kids</a></li>
+            <li><a href="shoess/shoes.php"><i class="fas fa-shoe-prints"></i> Shoes</a></li>
+            <li><a href="bagsfolder/bags.php"><i class="fas fa-shopping-bag"></i> Bags</a></li>
+            <li><a href="accessories/accessories.php"><i class="fas fa-gem"></i> Accessories</a></li>
+            <li><a href="perfumes/index.php"><i class="fas fa-spray-can"></i> Perfumes</a></li>
+            <li><a href="homedecor/homedecor.php"><i class="fas fa-home"></i> Home Decor</a></li>
             </ul>
         </div>
         <div class="footer-col">
-            <h3>About us</h3>
-            <p>We are a team of passionate people whose goal is to improve everyone's life through disruptive products. We build great products to solve your business problems.</p>
-            <p>Our products are designed for small to medium size companies willing to optimize their performance.</p>
+            <h3><i class="fas fa-crown"></i> Glamour Palace</h3>
+            <p>Your premier destination for fashion, beauty, and lifestyle products. We bring you the latest trends with exceptional quality and service.</p>
         </div>
         <div class="footer-col">
-            <h3>Connect with us</h3>
+            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
             <ul class="footer-contact">
-            <li><span class="footer-icon">💬</span> Contact us</li>
-            <li><span class="footer-icon">✉</span> Glamor@gmail.com</li>
-            <li><span class="footer-icon">📞</span> +252907166125 $252906041037 </li>
+            <li><span class="footer-icon"><i class="fas fa-envelope"></i></span> Glamor@gmail.com</li>
+            <li><span class="footer-icon"><i class="fas fa-phone"></i></span> +252 907 166 125</li>
+            <li><span class="footer-icon"><i class="fas fa-map-marker-alt"></i></span> Shaariqa Road, Garowe, Somalia</li>
             </ul>
             <div class="footer-social">
             <a href="https://wa.me/252907166125" target="_blank" title="WhatsApp">
@@ -1080,20 +1227,6 @@ session_start();
             </div>
         </div>
          
-    <!-- Newsletter -->
-    <div style="flex:1 1 250px; margin-bottom:20px;">
-      <h3 style="margin-bottom:15px; font-weight:bold;">Newsletter</h3>
-      <p style="margin-bottom:10px;">Subscribe to our newsletter for latest updates and offers.</p>
-      <form action="#" method="post" style="display:flex;">
-        <input type="email" placeholder="Your email" style="flex:1; padding:10px; border:none; border-radius:3px 0 0 3px;">
-        <button type="submit" style="padding:10px 20px; background-color:#ff6600; border:none; border-radius:0 3px 3px 0; color:#fff; cursor:pointer;">Subscribe</button>
-      </form></div>
-        </div>
-        <div class="last-images"> 
-        <img src="./img/pay.jpg">
-        <img src="./img/play.jpg">
-            <img src="./img/app.jpg">
-
         </div>
         <div class="footer-bottom">
         Copyright © Glamor palaca
