@@ -19,6 +19,7 @@ session_start();
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="footer/footer.css?v=<?php echo time(); ?>">
     
     <!-- Hide mobile elements on desktop for index page -->
     <style>
@@ -256,6 +257,7 @@ session_start();
             opacity: 0;
             transition: opacity 0.4s ease;
             z-index: 1;
+            pointer-events: none;
         }
         
         .category5:hover::before {
@@ -509,149 +511,6 @@ session_start();
       }
     </style>
     
-    <!-- Compact Footer Styles -->
-    <style>
-        .custom-footer {
-            background:rgb(173, 175, 176);
-            color: #000000;
-            padding: 10px 0 5px;
-            margin-top: 15px;
-        }
-        
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 10px;
-        }
-        
-        .footer-col {
-            padding: 5px;
-        }
-        
-        .footer-col h3 {
-            color: #000000;
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .footer-col ul li {
-            margin-bottom: 2px;
-        }
-        
-        .footer-col a {
-            color: #000000 !important;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 700 !important;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .custom-footer .footer-col ul li a {
-            color: #000000 !important;
-            font-weight: 700 !important;
-        }
-        
-        .footer-col a:hover {
-            color: #ff6b9d;
-        }
-        
-        .footer-col a i {
-            width: 16px;
-            text-align: center;
-            color: #000000 !important;
-        }
-        
-        .footer-col h3 i {
-            margin-right: 8px;
-            color: #000000 !important;
-        }
-        
-        .footer-col p {
-            color: #000000;
-            font-size: 0.9rem;
-            font-weight: 600;
-            line-height: 1.4;
-            margin: 0;
-        }
-        
-        .footer-contact {
-            margin: 0;
-        }
-        
-        .footer-contact li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #000000;
-        }
-        
-        .footer-icon {
-            margin-right: 8px;
-            width: 16px;
-        }
-        
-        .footer-social {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .footer-social a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 35px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .footer-social a:hover {
-            background: #ff6b9d;
-            transform: translateY(-2px);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding: 5px 10px 0;
-            margin-top: 8px;
-            border-top: 1px solid rgba(0, 0, 0, 0.2);
-            color: #000000;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 0 15px;
-            }
-            
-            .custom-footer {
-                padding: 25px 0 15px;
-            }
-        }
-    </style>
     
 </head>
 <body>
@@ -971,8 +830,9 @@ session_start();
            <!-- section contains only pictures and some videos -->
    <section>
    <div class="container5" >
+    
        <div class="category5 animate__animated animate__zoomIn">
-         <a href="menfolder/men.php?subcategory=suits">
+         <a href="womenF/women.php">
            <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
          </a>
        </div>
@@ -990,26 +850,26 @@ session_start();
        </div>
        
        <div class="category5">
-         <a href="beautyfolder/beauty.php?subcategory=makeup">
+         <a href="beautyfolder/beauty.php">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
-         <a href="bagsfolder/bags.php?category=handbags">
+         <a href="bagsfolder/bags.php">
            <img src="./img/sawiro/handbag1.jpg" alt="Handbags">
          </a>
        </div>
 
        <div class="category5">
-         <a href="womenF/women.php?subcategory=dresses">
+         <a href="womenF/women.php">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
   
 
        <div class="category5">
-        <a href="shoess/shoes.php?category=casual">
+        <a href="shoess/shoes.php">
          <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
         </a>
        </div>
@@ -1199,13 +1059,17 @@ session_start();
         </div>
         <div class="footer-col">
             <h3><i class="fas fa-crown"></i> Glamour Palace</h3>
-            <p>Your premier destination for fashion, beauty, and lifestyle products. We bring you the latest trends with exceptional quality and service.</p>
+            <p>✨ Welcome to Glamor ✨<br>
+            Glamor is your destination for beauty, fashion, and lifestyle essentials—all in one place. <Br>
+            From chic outfits and timeless accessories to fragrances and home décor, we bring you curated collections that inspire confidence, style, and elegance.<br>
+             At Glamor, shopping is more than a purchase—it’s an experience of living beautifully, every day.
+            </p>
         </div>
         <div class="footer-col">
             <h3><i class="fas fa-address-book"></i> Contact Information</h3>
             <ul class="footer-contact">
             <li><span class="footer-icon"><i class="fas fa-envelope"></i></span> Glamor@gmail.com</li>
-            <li><span class="footer-icon"><i class="fas fa-phone"></i></span> +252 907 166 125</li>
+            <li><span class="footer-icon"><i class="fas fa-phone"></i></span> +252 907 166 125 / +252 906041037</li>
             <li><span class="footer-icon"><i class="fas fa-map-marker-alt"></i></span> Shaariqa Road, Garowe, Somalia</li>
             </ul>
             <div class="footer-social">
@@ -1233,6 +1097,9 @@ session_start();
         </div>
     </footer>
   <!-- Footer End -->
+  
+  <!-- Include Footer -->
+  <?php include 'footer/footer.php'; ?>
   
     
       
