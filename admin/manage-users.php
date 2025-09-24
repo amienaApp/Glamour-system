@@ -1185,6 +1185,12 @@ $users = $userModel->getAllUsers();
             });
         });
     </script>
+
+    <!-- Username Validation CSS -->
+    <link rel="stylesheet" href="../styles/username-validation.css">
+
+    <!-- Username Validation JavaScript -->
+    <script src="../scripts/username-validation.js"></script>
 </body>
 </html>
 

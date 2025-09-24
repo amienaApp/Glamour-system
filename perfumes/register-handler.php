@@ -36,6 +36,11 @@ try {
         }
     }
 
+    // Validate username format (letters only)
+    if (!preg_match('/^[a-zA-Z]+$/', trim($input['username']))) {
+        throw new Exception("Username can only contain letters (A-Z, a-z). Numbers and symbols are not allowed.");
+    }
+
     // Validate email format
     if (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
         throw new Exception("Invalid email format");

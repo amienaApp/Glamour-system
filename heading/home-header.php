@@ -1499,4 +1499,10 @@ $regionOptions = [
         height: 50px;
     }
 }
-</style> 
+</style>
+
+<!-- Username Validation CSS -->
+<link rel="stylesheet" href="<?php echo $pathPrefix; ?>styles/username-validation.css">
+
+<!-- Username Validation JavaScript -->
+<script src="<?php echo $pathPrefix; ?>scripts/username-validation.js"></script> 

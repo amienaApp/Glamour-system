@@ -37,6 +37,11 @@ try {
                 'success' => false,
                 'message' => 'All fields are required'
             ];
+        } elseif (!preg_match('/^[a-zA-Z]+$/', trim($name))) {
+            $response = [
+                'success' => false,
+                'message' => 'Username can only contain letters (A-Z, a-z). Numbers and symbols are not allowed.'
+            ];
         } elseif ($password !== $confirmPassword) {
             $response = [
                 'success' => false,

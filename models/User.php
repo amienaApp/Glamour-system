@@ -28,6 +28,11 @@ class User {
             }
         }
 
+        // Validate username format (letters only)
+        if (!$this->validateUsername($userData['username'])) {
+            throw new Exception("Username can only contain letters (A-Z, a-z). Numbers and symbols are not allowed.");
+        }
+
         // Check if email already exists
         $existingEmail = $this->collection->findOne(['email' => $userData['email']]);
         if ($existingEmail) {
@@ -74,10 +79,21 @@ class User {
             }
         }
 
+        // Validate username format (letters only)
+        if (!$this->validateUsername($userData['username'])) {
+            throw new Exception("Username can only contain letters (A-Z, a-z). Numbers and symbols are not allowed.");
+        }
+
         // Check if email already exists
         $existingEmail = $this->collection->findOne(['email' => $userData['email']]);
         if ($existingEmail) {
             throw new Exception("Email already registered");
+        }
+
+        // Check if username already exists
+        $existingUsername = $this->collection->findOne(['username' => $userData['username']]);
+        if ($existingUsername) {
+            throw new Exception("Username already taken");
         }
 
         // Hash password
@@ -322,6 +338,23 @@ class User {
      */
     public function validateEmail($email) {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Validate username format (letters only)
+     */
+    public function validateUsername($username) {
+        // Check if username contains only letters (A-Z, a-z)
+        if (!preg_match('/^[a-zA-Z]+$/', $username)) {
+            return false;
+        }
+        
+        // Check if username is not empty
+        if (strlen(trim($username)) === 0) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

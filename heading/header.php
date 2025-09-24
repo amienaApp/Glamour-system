@@ -2048,4 +2048,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 });
-</script> 
+</script>
+
+<!-- Username Validation CSS -->
+<link rel="stylesheet" href="<?php echo getAssetPath('styles/username-validation.css'); ?>">
+
+<!-- Username Validation JavaScript -->
+<script src="<?php echo getAssetPath('scripts/username-validation.js'); ?>"></script> 

@@ -1,0 +1,42 @@
+FEEDBACK MANAGEMENT SYSTEM - INSTALLATION INSTRUCTIONS
+========================================================
+
+This package contains a complete feedback management system that you can use
+to prevent crashes when your friend pushes content.
+
+FILES INCLUDED:
+- manage-feedback.php: Main feedback management interface
+- contact-handler.php: Handles contact form submissions
+- mongodb.php: Database connection configuration
+- setup.php: Quick setup script
+- feedback_complete_[timestamp].json: Complete backup of feedback data
+- feedback_complete_[timestamp].csv: CSV format backup
+- feedback_complete_[timestamp].sql: SQL format backup
+
+INSTALLATION STEPS:
+1. Upload all files to your web server
+2. Update the MongoDB connection details in mongodb.php
+3. Ensure your MongoDB Atlas IP whitelist includes your server's IP
+4. Run setup.php to test the connection
+5. Access manage-feedback.php to view and manage feedback
+
+CONFIGURATION:
+- Update MongoDB connection string in mongodb.php
+- Ensure proper file permissions (755 for directories, 644 for files)
+- Set up proper error logging
+
+CRASH PREVENTION TIPS:
+- Always create backups before major updates
+- Monitor database connection status
+- Implement proper error handling
+- Use pagination for large datasets
+- Keep MongoDB Atlas IP whitelist updated
+
+SUPPORT:
+If you encounter any issues, check:
+1. MongoDB connection settings
+2. IP whitelist configuration
+3. File permissions
+4. PHP error logs
+
+Generated on: 2025-09-24 03:55:01

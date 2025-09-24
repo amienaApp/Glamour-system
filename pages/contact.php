@@ -94,19 +94,61 @@
       <h2>Get In Touch</h2>
       <p>Have a Question? We've Got Solutions!.</p>
 
-      <form id="form-id">
-        <input type="text" placeholder="Name" required />
-        <input type="email" placeholder="Email" required />
-        <input type="text" placeholder="Subject" />
-        <textarea placeholder="Message" required></textarea>
+      <form id="form-id" action="../contact-handler.php" method="POST">
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <textarea name="message" placeholder="Message" required></textarea>
         <button type="submit" class="send-btn">Send Now</button>
       </form>
+      
+      <!-- Success/Error Message Display -->
+      <div id="messageDiv" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
     </div>
 
   </div>
   </section>
 
   <script src="../scripts/main.js"></script>
+  
+  <script>
+    // Handle contact form submission
+    document.getElementById('form-id').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const messageDiv = document.getElementById('messageDiv');
+      
+      // Show loading state
+      messageDiv.style.display = 'block';
+      messageDiv.style.backgroundColor = '#e3f2fd';
+      messageDiv.style.color = '#1976d2';
+      messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending your message...';
+      
+      fetch('../contact-handler.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          messageDiv.style.backgroundColor = '#e8f5e8';
+          messageDiv.style.color = '#2e7d32';
+          messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+          this.reset(); // Clear the form
+        } else {
+          messageDiv.style.backgroundColor = '#ffebee';
+          messageDiv.style.color = '#c62828';
+          messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+        }
+      })
+      .catch(error => {
+        messageDiv.style.backgroundColor = '#ffebee';
+        messageDiv.style.color = '#c62828';
+        messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> An error occurred. Please try again.';
+        console.error('Error:', error);
+      });
+    });
+  </script>
   
   <!-- Header JavaScript Functionality -->
   <script>

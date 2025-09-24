@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Username Validation Test</title>
+    <link rel="stylesheet" href="styles/username-validation.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+        }
+        .test-case.pass {
+            border-left: 4px solid #28a745;
+        }
+        .test-case.fail {
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Username Validation Test</h1>
+        <p>This page tests the username validation functionality. Try entering different usernames to see the validation in action.</p>
+        
+        <div class="form-group">
+            <label for="test-username">Test Username:</label>
+            <input type="text" id="test-username" class="form-input" placeholder="Enter username to test">
+        </div>
+        
+        <button class="test-button" onclick="runTests()">Run All Tests</button>
+        <button class="test-button" onclick="clearResults()">Clear Results</button>
+        
+        <div id="test-results" class="test-results" style="display: none;">
+            <h3>Test Results:</h3>
+            <div id="test-output"></div>
+        </div>
+    </div>
+
+    <script src="scripts/username-validation.js"></script>
+    <script>
+        // Test cases
+        const testCases = [
+            { input: 'john', expected: true, description: 'Valid username with letters only' },
+            { input: 'JohnDoe', expected: true, description: 'Valid username with mixed case' },
+            { input: 'john123', expected: false, description: 'Invalid username with numbers' },
+            { input: 'john_doe', expected: false, description: 'Invalid username with underscore' },
+            { input: 'john-doe', expected: false, description: 'Invalid username with hyphen' },
+            { input: 'john.doe', expected: false, description: 'Invalid username with dot' },
+            { input: 'john@doe', expected: false, description: 'Invalid username with @ symbol' },
+            { input: '123john', expected: false, description: 'Invalid username starting with number' },
+            { input: '', expected: false, description: 'Empty username' },
+            { input: '   ', expected: false, description: 'Username with only spaces' },
+            { input: 'a', expected: true, description: 'Single letter username' },
+            { input: 'VeryLongUsernameWithManyLetters', expected: true, description: 'Long valid username' }
+        ];
+
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            const outputDiv = document.getElementById('test-output');
+            
+            resultsDiv.style.display = 'block';
+            outputDiv.innerHTML = '';
+            
+            let passed = 0;
+            let failed = 0;
+            
+            testCases.forEach((testCase, index) => {
+                const validation = UsernameValidation.validate(testCase.input);
+                const passed = validation.isValid === testCase.expected;
+                
+                if (passed) {
+                    passed++;
+                } else {
+                    failed++;
+                }
+                
+                const testDiv = document.createElement('div');
+                testDiv.className = `test-case ${passed ? 'pass' : 'fail'}`;
+                testDiv.innerHTML = `
+                    <strong>Test ${index + 1}:</strong> ${testCase.description}<br>
+                    <strong>Input:</strong> "${testCase.input}"<br>
+                    <strong>Expected:</strong> ${testCase.expected ? 'Valid' : 'Invalid'}<br>
+                    <strong>Actual:</strong> ${validation.isValid ? 'Valid' : 'Invalid'}<br>
+                    <strong>Result:</strong> ${passed ? '✅ PASS' : '❌ FAIL'}
+                    ${!validation.isValid && validation.message ? `<br><strong>Message:</strong> ${validation.message}` : ''}
+                `;
+                
+                outputDiv.appendChild(testDiv);
+            });
+            
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'test-case';
+            summaryDiv.style.borderLeft = '4px solid #007bff';
+            summaryDiv.innerHTML = `
+                <strong>Summary:</strong> ${passed} passed, ${failed} failed out of ${testCases.length} tests
+            `;
+            outputDiv.appendChild(summaryDiv);
+        }
+        
+        function clearResults() {
+            document.getElementById('test-results').style.display = 'none';
+            document.getElementById('test-username').value = '';
+        }
+        
+        // Test real-time validation
+        document.getElementById('test-username').addEventListener('input', function() {
+            const validation = UsernameValidation.validate(this.value);
+            console.log('Real-time validation:', validation);
+        });
+    </script>
+</body>
+</html>

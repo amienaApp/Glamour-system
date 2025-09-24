@@ -33,15 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $feedbackCollection->deleteOne(['_id' => new MongoDB\BSON\ObjectId($feedbackId)]);
         $message = "Feedback deleted successfully";
     }
-    
-    // Redirect to prevent form resubmission and refresh the page
-    $redirectUrl = $_SERVER['PHP_SELF'];
-    $queryParams = $_GET;
-    $queryParams['message'] = urlencode($message);
-    $queryParams['type'] = 'success';
-    $redirectUrl .= '?' . http_build_query($queryParams);
-    header('Location: ' . $redirectUrl);
-    exit;
 }
 
 // Get filter parameters
@@ -79,7 +70,7 @@ $feedback = $feedbackCollection->find($query, [
 $stats = [
     'total' => $feedbackCollection->countDocuments([]),
     'unread' => $feedbackCollection->countDocuments(['status' => 'unread']),
-    'read' => $feedbackCollection->countDocuments(['$or' => [['status' => 'read'], ['status' => 'replied']]]), // Include both 'read' and 'replied' in read count
+    'read' => $feedbackCollection->countDocuments(['status' => 'read']),
     'replied' => $feedbackCollection->countDocuments(['status' => 'replied'])
 ];
 ?>
@@ -432,10 +423,9 @@ $stats = [
             <p>View and manage customer feedback from the contact form</p>
         </div>
 
-        <?php if (isset($_GET['message']) && isset($_GET['type'])): ?>
-            <div class="alert alert-<?php echo $_GET['type'] === 'success' ? 'success' : 'danger'; ?>">
-                <i class="fas fa-<?php echo $_GET['type'] === 'success' ? 'check-circle' : 'exclamation-circle'; ?>"></i> 
-                <?php echo htmlspecialchars(urldecode($_GET['message'])); ?>
+        <?php if (isset($message)): ?>
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
 
@@ -569,21 +559,5 @@ $stats = [
     </div>
     
     <script src="includes/admin-sidebar.js"></script>
-    
-    <script>
-        // Auto-hide success messages after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alert = document.querySelector('.alert');
-            if (alert) {
-                setTimeout(function() {
-                    alert.style.opacity = '0';
-                    alert.style.transition = 'opacity 0.5s ease';
-                    setTimeout(function() {
-                        alert.remove();
-                    }, 500);
-                }, 5000);
-            }
-        });
-    </script>
 </body>
 </html>
