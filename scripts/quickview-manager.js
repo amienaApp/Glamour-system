@@ -50,6 +50,9 @@ class QuickviewManager {
             }
             if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
                 console.log('QuickviewManager: Add to wishlist button clicked');
+                console.log('QuickviewManager: Current product:', this.currentProduct);
+                console.log('QuickviewManager: Selected color:', this.selectedColor);
+                console.log('QuickviewManager: Selected size:', this.selectedSize);
                 this.addToWishlist();
             }
         });

@@ -37,8 +37,11 @@ if (typeof WishlistManager === 'undefined') {
                 e.preventDefault();
                 e.stopPropagation();
                 const productId = this.getQuickViewProductId();
+                console.log('WishlistManager: Quickview wishlist button clicked, productId:', productId);
                 if (productId) {
                     this.toggleQuickViewWishlist(productId, e.target);
+                } else {
+                    console.warn('WishlistManager: No product ID found for quickview wishlist button');
                 }
             }
         });
@@ -87,15 +90,20 @@ if (typeof WishlistManager === 'undefined') {
         // Get product ID from quick view modal
         const quickViewTitle = document.getElementById('quick-view-title');
         if (quickViewTitle) {
-            return quickViewTitle.getAttribute('data-product-id');
+            const productId = quickViewTitle.getAttribute('data-product-id');
+            console.log('WishlistManager: Found product ID from quick-view-title:', productId);
+            return productId;
         }
         
         // Try to get from quick view container
         const quickView = document.getElementById('quick-view-sidebar');
         if (quickView) {
-            return quickView.getAttribute('data-product-id');
+            const productId = quickView.getAttribute('data-product-id');
+            console.log('WishlistManager: Found product ID from quick-view-sidebar:', productId);
+            return productId;
         }
         
+        console.log('WishlistManager: No product ID found in quickview elements');
         return null;
     }
     
