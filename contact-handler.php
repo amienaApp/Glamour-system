@@ -50,7 +50,8 @@ try {
         'name' => $name,
         'email' => $email,
         'message' => $message,
-        'status' => 'unread', // unread, read, replied
+        'is_read' => false,
+        'is_replied' => false,
         'created_at' => date('Y-m-d H:i:s'),
         'updated_at' => date('Y-m-d H:i:s'),
         'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '',

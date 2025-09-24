@@ -40,7 +40,7 @@
 - **MongoDB PHP Library**: Official MongoDB driver for PHP
 
 ### Frontend Technologies
-- **HTML5**: Semantic markup structure
+- **HTML5**: Semantic markup structure 
 - **CSS3**: Advanced styling with Flexbox and Grid
 - **JavaScript (ES6+)**: Client-side interactivity
 - **Bootstrap 5.3.0**: Responsive framework

@@ -190,7 +190,7 @@ $regionOptions = [
                         
                         <!-- Menu Items for Logged In Users -->
                         <div class="menu-items">
-                            <a href="#" class="menu-item" id="dashboard-link">
+                            <a href="<?php echo getAssetPath('dashboard.php'); ?>" class="menu-item" id="dashboard-link">
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -969,17 +969,17 @@ $regionOptions = [
 
 
 
-        // Menu item click handlers (placeholder functionality)
-        const menuItems = ['dashboard-link', 'my-info-link', 'notifications-link', 'notify-me-link', 'gift-cards-link'];
-        menuItems.forEach(itemId => {
-            const element = document.getElementById(itemId);
-            if (element) {
-                element.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Feature coming soon
-                });
-            }
-        });
+               // Menu item click handlers (placeholder functionality)
+               const menuItems = ['my-info-link', 'notifications-link', 'notify-me-link', 'gift-cards-link'];
+               menuItems.forEach(itemId => {
+                   const element = document.getElementById(itemId);
+                   if (element) {
+                       element.addEventListener('click', function(e) {
+                           e.preventDefault();
+                           // Feature coming soon
+                       });
+                   }
+               });
 
         // Prevent form submission for now (placeholder)
         const loginFormElement = document.querySelector('.login-form');
@@ -1009,7 +1009,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                 
                 // Send login request
-                fetch('<?php echo $pathPrefix; ?>login-handler.php', {
+                fetch('<?php echo getAssetPath('auth/login-handler.php'); ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1087,7 +1087,7 @@ $regionOptions = [
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
                 
                 // Send registration request
-                fetch('<?php echo $pathPrefix; ?>register-handler.php', {
+                fetch('<?php echo getAssetPath('auth/register-handler.php'); ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1227,7 +1227,7 @@ $regionOptions = [
 
         // Logout function
         window.logout = function() {
-            fetch('<?php echo $pathPrefix; ?>logout-handler.php', {
+            fetch('<?php echo getAssetPath('auth/logout-handler.php'); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

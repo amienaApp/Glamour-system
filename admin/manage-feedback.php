@@ -20,13 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'mark_read' && $feedbackId) {
         $feedbackCollection->updateOne(
             ['_id' => new MongoDB\BSON\ObjectId($feedbackId)],
-            ['$set' => ['status' => 'read', 'updated_at' => date('Y-m-d H:i:s')]]
+            ['$set' => ['is_read' => true, 'updated_at' => date('Y-m-d H:i:s')]]
         );
         $message = "Feedback marked as read";
     } elseif ($action === 'mark_replied' && $feedbackId) {
         $feedbackCollection->updateOne(
             ['_id' => new MongoDB\BSON\ObjectId($feedbackId)],
-            ['$set' => ['status' => 'replied', 'updated_at' => date('Y-m-d H:i:s')]]
+            ['$set' => ['is_replied' => true, 'updated_at' => date('Y-m-d H:i:s')]]
         );
         $message = "Feedback marked as replied";
     } elseif ($action === 'delete' && $feedbackId) {
@@ -42,7 +42,13 @@ $searchQuery = $_GET['search'] ?? '';
 // Build query
 $query = [];
 if ($statusFilter !== 'all') {
-    $query['status'] = $statusFilter;
+    if ($statusFilter === 'unread') {
+        $query['is_read'] = ['$ne' => true];
+    } elseif ($statusFilter === 'read') {
+        $query['is_read'] = true;
+    } elseif ($statusFilter === 'replied') {
+        $query['is_replied'] = true;
+    }
 }
 if (!empty($searchQuery)) {
     $query['$or'] = [
@@ -69,9 +75,9 @@ $feedback = $feedbackCollection->find($query, [
 // Get statistics
 $stats = [
     'total' => $feedbackCollection->countDocuments([]),
-    'unread' => $feedbackCollection->countDocuments(['status' => 'unread']),
-    'read' => $feedbackCollection->countDocuments(['status' => 'read']),
-    'replied' => $feedbackCollection->countDocuments(['status' => 'replied'])
+    'unread' => $feedbackCollection->countDocuments(['is_read' => ['$ne' => true]]),
+    'read' => $feedbackCollection->countDocuments(['is_read' => true]),
+    'replied' => $feedbackCollection->countDocuments(['is_replied' => true])
 ];
 ?>
 
@@ -482,15 +488,26 @@ $stats = [
                             <div class="feedback-meta">
                                 <strong><?php echo htmlspecialchars($item['name']); ?></strong>
                                 <span style="color: #666;"><?php echo htmlspecialchars($item['email']); ?></span>
-                                <span class="status-badge status-<?php echo $item['status']; ?>">
-                                    <?php echo ucfirst($item['status']); ?>
+                                <?php 
+                                $statusClass = 'status-unread';
+                                $statusText = 'Unread';
+                                if (isset($item['is_replied']) && $item['is_replied']) {
+                                    $statusClass = 'status-replied';
+                                    $statusText = 'Replied';
+                                } elseif (isset($item['is_read']) && $item['is_read']) {
+                                    $statusClass = 'status-read';
+                                    $statusText = 'Read';
+                                }
+                                ?>
+                                <span class="status-badge <?php echo $statusClass; ?>">
+                                    <?php echo $statusText; ?>
                                 </span>
                                 <small style="color: #999;">
                                     <?php echo date('M j, Y g:i A', strtotime($item['created_at'])); ?>
                                 </small>
                             </div>
                             <div class="feedback-actions">
-                                <?php if ($item['status'] === 'unread'): ?>
+                                <?php if (!isset($item['is_read']) || !$item['is_read']): ?>
                                     <form method="POST" style="display: inline;">
                                         <input type="hidden" name="action" value="mark_read">
                                         <input type="hidden" name="feedback_id" value="<?php echo $item['_id']; ?>">
@@ -500,7 +517,7 @@ $stats = [
                                     </form>
                                 <?php endif; ?>
                                 
-                                <?php if ($item['status'] !== 'replied'): ?>
+                                <?php if (!isset($item['is_replied']) || !$item['is_replied']): ?>
                                     <form method="POST" style="display: inline;">
                                         <input type="hidden" name="action" value="mark_replied">
                                         <input type="hidden" name="feedback_id" value="<?php echo $item['_id']; ?>">
