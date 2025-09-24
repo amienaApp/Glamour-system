@@ -104,6 +104,9 @@ class QuickViewSidebar {
         document.getElementById('quick-view-price').textContent = `$${parseFloat(productData.price).toLocaleString()}`;
         document.getElementById('quick-view-description').innerHTML = `<p>${productData.description || 'No description available.'}</p>`;
         
+        // Initialize wishlist button state
+        this.initializeWishlistButton(productData.id || productData._id);
+        
         // Update Add to Bag button data attributes and sold out state
         const addToBagBtn = document.getElementById('add-to-bag-quick');
         console.log('Quick View: Button found:', addToBagBtn);
@@ -335,8 +338,44 @@ class QuickViewSidebar {
         if (sizeSelection) {
             sizeSelection.innerHTML = '';
             
-            // Default sizes for home & living products
-            const sizes = ['Small', 'Medium', 'Large', 'Extra Large'];
+            // Get sizes from product data or use subcategory-specific sizes
+            let sizes = [];
+            
+            // First, try to get sizes from product data attributes
+            const productElement = document.querySelector(`[data-product-id="${productData.id}"]`);
+            if (productElement) {
+                const productSizesData = productElement.getAttribute('data-product-sizes');
+                if (productSizesData) {
+                    try {
+                        const parsedSizes = JSON.parse(productSizesData);
+                        if (Array.isArray(parsedSizes) && parsedSizes.length > 0) {
+                            sizes = parsedSizes;
+                        }
+                    } catch (e) {
+                        console.log('Error parsing product sizes:', e);
+                    }
+                }
+            }
+            
+            // If no sizes from product data, use subcategory-specific sizes
+            if (sizes.length === 0) {
+                const subcategory = (productData.subcategory || '').toLowerCase();
+                const homeDecorSubcategorySizes = {
+                    'bedding': ['Single', 'Double', 'Queen', 'King', 'Super King'],
+                    'living room': ['Small', 'Medium', 'Large', 'Extra Large', 'Sectional'],
+                    'dinning room': ['2 Seater', '4 Seater', '6 Seater', '8 Seater', '10 Seater'],
+                    'kitchen': ['Compact', 'Standard', 'Large', 'Commercial'],
+                    'artwork': ['8x10', '11x14', '16x20', '18x24', '24x36', '30x40'],
+                    'lightinning': ['Small', 'Medium', 'Large', 'Extra Large']
+                };
+                
+                if (homeDecorSubcategorySizes[subcategory]) {
+                    sizes = homeDecorSubcategorySizes[subcategory];
+                } else {
+                    // Final fallback
+                    sizes = ['Small', 'Medium', 'Large', 'Extra Large'];
+                }
+            }
             
             sizes.forEach((size, index) => {
                 const sizeBtn = document.createElement('div');
@@ -560,8 +599,110 @@ class QuickViewSidebar {
     addToWishlist() {
         if (!this.currentProduct) return;
         
-        // Here you would implement the actual add to wishlist functionality
-        alert(`Added ${this.currentProduct.name} to wishlist!`);
+        const productId = this.currentProduct.id || this.currentProduct._id;
+        if (!productId) {
+            console.error('No product ID available for wishlist');
+            return;
+        }
+        
+        // Use the global wishlist manager if available
+        if (window.wishlistManager) {
+            const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+            window.wishlistManager.toggleQuickViewWishlist(productId, wishlistBtn);
+        } else {
+            // Fallback - simple localStorage approach
+            const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const existingIndex = wishlist.findIndex(item => item.id === productId);
+            
+            if (existingIndex > -1) {
+                // Remove from wishlist
+                wishlist.splice(existingIndex, 1);
+                this.updateWishlistButtonState(false);
+                this.showNotification('Removed from wishlist!', 'info');
+            } else {
+                // Add to wishlist
+                const productDetails = {
+                    id: productId,
+                    name: this.currentProduct.name || 'Product',
+                    price: this.currentProduct.price || '0',
+                    image: this.currentProduct.front_image || this.currentProduct.images?.[0] || '',
+                    category: this.currentProduct.category || 'General',
+                    addedAt: new Date().toISOString()
+                };
+                wishlist.push(productDetails);
+                this.updateWishlistButtonState(true);
+                this.showNotification('Added to wishlist!', 'success');
+            }
+            
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            
+            // Update wishlist count if function exists
+            if (typeof updateWishlistCount === 'function') {
+                updateWishlistCount();
+            }
+        }
+    }
+    
+    initializeWishlistButton(productId) {
+        if (!productId) return;
+        
+        // Check if product is in wishlist
+        let isInWishlist = false;
+        
+        if (window.wishlistManager) {
+            isInWishlist = window.wishlistManager.isInWishlist(productId);
+        } else {
+            // Fallback - check localStorage
+            const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            isInWishlist = wishlist.some(item => item.id === productId);
+        }
+        
+        this.updateWishlistButtonState(isInWishlist);
+    }
+    
+    updateWishlistButtonState(isInWishlist) {
+        const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+        if (wishlistBtn) {
+            if (isInWishlist) {
+                wishlistBtn.classList.add('active');
+                wishlistBtn.innerHTML = '<i class="fas fa-heart"></i> In Wishlist';
+            } else {
+                wishlistBtn.classList.remove('active');
+                wishlistBtn.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+            }
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 10000;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: opacity 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
     }
 }
 

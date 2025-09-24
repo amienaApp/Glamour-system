@@ -92,6 +92,7 @@ error_log('Bags dynamic colors found: ' . json_encode($allColors));
     <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/quickview-wishlist-fix.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>

@@ -47,8 +47,67 @@ foreach ($allHomeDecorProducts as $product) {
 $allColors = array_unique($allColors);
 sort($allColors);
 
-// Debug: Log the colors found
-error_log('Home Decor dynamic colors found: ' . json_encode($allColors));
+// Define home decor subcategory sizes based on admin panel structure
+$homeDecorSubcategorySizes = [
+    'bedding' => ['Single', 'Double', 'Queen', 'King', 'Super King'],
+    'living room' => ['Small', 'Medium', 'Large', 'Extra Large', 'Sectional'],
+    'dinning room' => ['2 Seater', '4 Seater', '6 Seater', '8 Seater', '10 Seater'],
+    'kitchen' => ['Compact', 'Standard', 'Large', 'Commercial'],
+    'artwork' => ['8x10', '11x14', '16x20', '18x24', '24x36', '30x40'],
+    'lightinning' => ['Small', 'Medium', 'Large', 'Extra Large']
+];
+
+// Extract actual sizes from products that have them in the database
+$databaseSizes = [];
+foreach ($allHomeDecorProducts as $product) {
+    // Get sizes from main sizes field
+    if (!empty($product['sizes'])) {
+        $sizes = is_string($product['sizes']) ? 
+            json_decode($product['sizes'], true) : $product['sizes'];
+        if (is_array($sizes)) {
+            foreach ($sizes as $size) {
+                if (!empty($size)) {
+                    $databaseSizes[] = $size;
+                }
+            }
+        }
+    }
+    
+    // Get sizes from selected_sizes field
+    if (!empty($product['selected_sizes'])) {
+        $selectedSizes = is_string($product['selected_sizes']) ? 
+            json_decode($product['selected_sizes'], true) : $product['selected_sizes'];
+        if (is_array($selectedSizes)) {
+            foreach ($selectedSizes as $size) {
+                if (!empty($size)) {
+                    $databaseSizes[] = $size;
+                }
+            }
+        }
+    }
+}
+
+// Get all unique sizes from database
+$databaseSizes = array_unique($databaseSizes);
+
+// If we have database sizes, use them. Otherwise, use subcategory-specific sizes
+if (!empty($databaseSizes)) {
+    $allSizes = $databaseSizes;
+} else {
+    // Combine all subcategory sizes as fallback
+    $allSizes = [];
+    foreach ($homeDecorSubcategorySizes as $subcategory => $sizes) {
+        $allSizes = array_merge($allSizes, $sizes);
+    }
+    $allSizes = array_unique($allSizes);
+}
+
+sort($allSizes);
+
+// Debug: Log the sizes found
+error_log('Home Decor subcategory sizes: ' . json_encode($homeDecorSubcategorySizes));
+error_log('Home Decor database sizes: ' . json_encode($databaseSizes));
+error_log('Home Decor final sizes: ' . json_encode($allSizes));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,6 +131,7 @@ error_log('Home Decor dynamic colors found: ' . json_encode($allColors));
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/quickview-manager.js?v=<?php echo time(); ?>"></script>
+    <script src="../scripts/quickview-wishlist-fix.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
 </head>
@@ -88,7 +148,11 @@ error_log('Home Decor dynamic colors found: ' . json_encode($allColors));
                         <img src="../img/home-decor/bedroom/7.jpg" alt="Bedding">
                         <h3>Bedding</h3>
                     </a>
-                    <a href="homedecor.php?subcategory=dinningroom" class="image-item">
+                    <a href="homedecor.php?subcategory=living room" class="image-item">
+                        <img src="../img/home-decor/livingroom/1.jpg" alt="Living Room">
+                        <h3>Living Room</h3>
+                    </a>
+                    <a href="homedecor.php?subcategory=dinning room" class="image-item">
                         <img src="../img/home-decor/diningarea/4.jpg" alt="Dining Room">
                         <h3>Dining Room</h3>
                     </a>
@@ -96,7 +160,7 @@ error_log('Home Decor dynamic colors found: ' . json_encode($allColors));
                         <img src="../img/home-decor/kitchen/8.jpg" alt="Kitchen">
                         <h3>Kitchen</h3>
                     </a>
-                    <a href="homedecor.php?subcategory=lightinnig" class="image-item">
+                    <a href="homedecor.php?subcategory=lightinning" class="image-item">
                         <img src="../img/home-decor/light/3.webp" alt="Lighting">
                         <h3>Lighting</h3>
                     </a>
@@ -341,8 +405,26 @@ error_log('Home Decor dynamic colors found: ' . json_encode($allColors));
                 });
         }
         
-        // Check for new colors every 10 seconds
+        // Dynamic size updates - check for new sizes every 10 seconds
+        let currentSizeCount = <?php echo count($allSizes); ?>;
+        
+        function checkForNewSizes() {
+            fetch('get-sizes-api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.count > currentSizeCount) {
+                        console.log('New sizes detected! Refreshing page...');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.log('Error checking for new sizes:', error);
+                });
+        }
+        
+        // Check for new colors and sizes every 10 seconds
         setInterval(checkForNewColors, 10000);
+        setInterval(checkForNewSizes, 10000);
         </script>
 
 </body>

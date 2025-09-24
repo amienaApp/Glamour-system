@@ -3,7 +3,6 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count"><?php echo $filterData['productCount']; ?> Shoes</span>
-        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">

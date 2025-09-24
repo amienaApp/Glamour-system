@@ -210,6 +210,44 @@ if (empty($featuredProducts)) {
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+                
+                // Use database sizes if available, otherwise use subcategory-specific sizes from admin panel
+                $productSizes = [];
+                
+                // Get sizes from database fields
+                if (!empty($product['sizes'])) {
+                    $sizes = is_string($product['sizes']) ? 
+                        json_decode($product['sizes'], true) : $product['sizes'];
+                    if (is_array($sizes) && !empty($sizes)) {
+                        $productSizes = $sizes;
+                    }
+                }
+                
+                // If no sizes from main field, try selected_sizes
+                if (empty($productSizes) && !empty($product['selected_sizes'])) {
+                    $selectedSizes = is_string($product['selected_sizes']) ? 
+                        json_decode($product['selected_sizes'], true) : $product['selected_sizes'];
+                    if (is_array($selectedSizes) && !empty($selectedSizes)) {
+                        $productSizes = $selectedSizes;
+                    }
+                }
+                
+                // If still no sizes, use subcategory-specific sizes from admin panel
+                if (empty($productSizes)) {
+                    $subcategory = strtolower($product['subcategory'] ?? '');
+                    $homeDecorSubcategorySizes = [
+                        'bedding' => ['Single', 'Double', 'Queen', 'King', 'Super King'],
+                        'living room' => ['Small', 'Medium', 'Large', 'Extra Large', 'Sectional'],
+                        'dinning room' => ['2 Seater', '4 Seater', '6 Seater', '8 Seater', '10 Seater'],
+                        'kitchen' => ['Compact', 'Standard', 'Large', 'Commercial'],
+                        'artwork' => ['8x10', '11x14', '16x20', '18x24', '24x36', '30x40'],
+                        'lightinning' => ['Small', 'Medium', 'Large', 'Extra Large']
+                    ];
+                    
+                    if (isset($homeDecorSubcategorySizes[$subcategory])) {
+                        $productSizes = $homeDecorSubcategorySizes[$subcategory];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
@@ -221,8 +259,8 @@ if (empty($featuredProducts)) {
                      data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-material="<?php echo htmlspecialchars($product['material'] ?? ''); ?>"
@@ -416,6 +454,44 @@ if (empty($featuredProducts)) {
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+                
+                // Use database sizes if available, otherwise use subcategory-specific sizes from admin panel
+                $productSizes = [];
+                
+                // Get sizes from database fields
+                if (!empty($product['sizes'])) {
+                    $sizes = is_string($product['sizes']) ? 
+                        json_decode($product['sizes'], true) : $product['sizes'];
+                    if (is_array($sizes) && !empty($sizes)) {
+                        $productSizes = $sizes;
+                    }
+                }
+                
+                // If no sizes from main field, try selected_sizes
+                if (empty($productSizes) && !empty($product['selected_sizes'])) {
+                    $selectedSizes = is_string($product['selected_sizes']) ? 
+                        json_decode($product['selected_sizes'], true) : $product['selected_sizes'];
+                    if (is_array($selectedSizes) && !empty($selectedSizes)) {
+                        $productSizes = $selectedSizes;
+                    }
+                }
+                
+                // If still no sizes, use subcategory-specific sizes from admin panel
+                if (empty($productSizes)) {
+                    $subcategory = strtolower($product['subcategory'] ?? '');
+                    $homeDecorSubcategorySizes = [
+                        'bedding' => ['Single', 'Double', 'Queen', 'King', 'Super King'],
+                        'living room' => ['Small', 'Medium', 'Large', 'Extra Large', 'Sectional'],
+                        'dinning room' => ['2 Seater', '4 Seater', '6 Seater', '8 Seater', '10 Seater'],
+                        'kitchen' => ['Compact', 'Standard', 'Large', 'Commercial'],
+                        'artwork' => ['8x10', '11x14', '16x20', '18x24', '24x36', '30x40'],
+                        'lightinning' => ['Small', 'Medium', 'Large', 'Extra Large']
+                    ];
+                    
+                    if (isset($homeDecorSubcategorySizes[$subcategory])) {
+                        $productSizes = $homeDecorSubcategorySizes[$subcategory];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
@@ -427,8 +503,8 @@ if (empty($featuredProducts)) {
                      data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
                      data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($productSizes)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-material="<?php echo htmlspecialchars($product['material'] ?? ''); ?>"

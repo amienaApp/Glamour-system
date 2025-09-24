@@ -1113,7 +1113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                       $isVideo = isVideoFile($image['src']);
                                       
                                       if ($isVideo) {
-                                          echo '<video controls class="product-image ' . $isActive . '" ' .
+                                          echo '<video controls muted loop autoplay playsinline class="product-image ' . $isActive . '" ' .
                                                     'data-color="' . htmlspecialchars($image['color']) . '" ' .
                                                     'data-type="' . htmlspecialchars($image['type']) . '" ' .
                                                     'style="max-width: 100%; height: auto;" ' .
@@ -1825,7 +1825,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (frontImagePath) {
                     if (isVideoFile(frontImagePath)) {
                         const extension = frontImagePath.split('.').pop().toLowerCase();
-                        imagesHTML += `<video controls class="product-image-modal active" data-color="default" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal active\\'>'"><source src="${frontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                        imagesHTML += `<video controls muted loop autoplay playsinline class="product-image-modal active" data-color="default" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal active\\'>'"><source src="${frontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
                     } else {
                         imagesHTML += `<img src="${frontImagePath}" alt="${product.name}" class="product-image-modal active" data-color="default" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
                     }
@@ -1836,7 +1836,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (backImagePath) {
                     if (isVideoFile(backImagePath)) {
                         const extension = backImagePath.split('.').pop().toLowerCase();
-                        imagesHTML += `<video controls class="product-image-modal" data-color="default" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${backImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                        imagesHTML += `<video controls muted loop autoplay playsinline class="product-image-modal" data-color="default" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${backImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
                     } else {
                         imagesHTML += `<img src="${backImagePath}" alt="${product.name}" class="product-image-modal" data-color="default" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
                     }
@@ -1851,7 +1851,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (variantFrontImagePath) {
                             if (isVideoFile(variantFrontImagePath)) {
                                 const extension = variantFrontImagePath.split('.').pop().toLowerCase();
-                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantFrontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                                imagesHTML += `<video controls muted loop autoplay playsinline class="product-image-modal" data-color="${variant.color}" data-type="front" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantFrontImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
                             } else {
                                 imagesHTML += `<img src="${variantFrontImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="front" onerror="this.src='../img/placeholder.jpg'">`;
                             }
@@ -1862,7 +1862,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (variantBackImagePath) {
                             if (isVideoFile(variantBackImagePath)) {
                                 const extension = variantBackImagePath.split('.').pop().toLowerCase();
-                                imagesHTML += `<video controls class="product-image-modal" data-color="${variant.color}" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantBackImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
+                                imagesHTML += `<video controls muted loop autoplay playsinline class="product-image-modal" data-color="${variant.color}" data-type="back" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<img src=\\'../img/placeholder.jpg\\' alt=\\'Video Error\\' class=\\'product-image-modal\\'>'"><source src="${variantBackImagePath}" type="video/${extension}">Your browser does not support the video tag.</video>`;
                             } else {
                                 imagesHTML += `<img src="${variantBackImagePath}" alt="${product.name} - ${variant.name || variant.color}" class="product-image-modal" data-color="${variant.color}" data-type="back" onerror="this.src='../img/placeholder.jpg'">`;
                             }

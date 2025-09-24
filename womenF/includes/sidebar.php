@@ -3,7 +3,6 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count"><?php echo $filterData['productCount']; ?> Women's Products</span>
-               <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">
@@ -104,6 +103,9 @@
             <div class="filter-group">
                 <div class="filter-header">
                     <h4>Color</h4>
+                    <small style="color: #666; font-size: 10px;">
+                        <?php echo count($allColors); ?> colors available
+                    </small>
                 </div>
                 <div class="filter-options">
                     <div class="color-grid" id="color-filter">

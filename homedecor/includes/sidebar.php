@@ -3,9 +3,6 @@
     <div class="sidebar-header">
         <h3>Refine By</h3>
         <span class="style-count" id="style-count">0 Styles</span>
-        <button type="button" class="clear-all-filters-btn" id="clear-filters" onclick="clearAllFilters()">
-            Clear All Filters
-        </button>
     </div>
 
     <!-- Category Filter -->
@@ -21,7 +18,7 @@
                     Bedding
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="Living Room" onchange="filterByCategory('Living Room', this.checked)">
+                    <input type="checkbox" name="category[]" value="living room" onchange="filterByCategory('living room', this.checked)">
                     <span class="checkmark"></span>
                     Living Room
                 </label>
@@ -31,17 +28,17 @@
                     Kitchen
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="Artwork" onchange="filterByCategory('Artwork', this.checked)">
+                    <input type="checkbox" name="category[]" value="artwork" onchange="filterByCategory('artwork', this.checked)">
                     <span class="checkmark"></span>
                     Artwork
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="Dining Room" onchange="filterByCategory('Dining Room', this.checked)">
+                    <input type="checkbox" name="category[]" value="dinning room" onchange="filterByCategory('dinning room', this.checked)">
                     <span class="checkmark"></span>
                     Dining Room
                 </label>
                 <label class="filter-option">
-                    <input type="checkbox" name="category[]" value="Lighting" onchange="filterByCategory('Lighting', this.checked)">
+                    <input type="checkbox" name="category[]" value="lightinning" onchange="filterByCategory('lightinning', this.checked)">
                     <span class="checkmark"></span>
                     Lighting
                 </label>
@@ -54,40 +51,38 @@
         <div class="filter-group">
             <div class="filter-header">
                 <h4>Size</h4>
-                <span class="size-count" id="size-count"></span>
+                <small style="color: #666; font-size: 10px;">
+                    <?php echo count($allSizes); ?> sizes available
+                </small>
             </div>
             <div class="filter-options">
                 <div class="size-grid" id="size-filter">
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="S" onchange="filterBySize('S', this.checked)">
-                        <span class="checkmark"></span>
-                        S
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="M" onchange="filterBySize('M', this.checked)">
-                        <span class="checkmark"></span>
-                        M
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="L" onchange="filterBySize('L', this.checked)">
-                        <span class="checkmark"></span>
-                        L
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="X" onchange="filterBySize('X', this.checked)">
-                        <span class="checkmark"></span>
-                        X
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="XL" onchange="filterBySize('XL', this.checked)">
-                        <span class="checkmark"></span>
-                        XL
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="XXL" onchange="filterBySize('XXL', this.checked)">
-                        <span class="checkmark"></span>
-                        XXL
-                    </label>
+                    <?php if (!empty($allSizes)): ?>
+                        <?php foreach ($allSizes as $size): ?>
+                            <label class="filter-option">
+                                <input type="checkbox" name="size[]" value="<?php echo htmlspecialchars($size); ?>" onchange="filterBySize('<?php echo htmlspecialchars($size); ?>', this.checked)">
+                                <span class="checkmark"></span>
+                                <?php echo htmlspecialchars($size); ?>
+                            </label>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback sizes if no sizes found in database -->
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="Small" onchange="filterBySize('Small', this.checked)">
+                            <span class="checkmark"></span>
+                            Small
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="Medium" onchange="filterBySize('Medium', this.checked)">
+                            <span class="checkmark"></span>
+                            Medium
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size[]" value="Large" onchange="filterBySize('Large', this.checked)">
+                            <span class="checkmark"></span>
+                            Large
+                        </label>
+                    <?php endif; ?>
                 </div>
                 <div class="size-actions">
                     <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>

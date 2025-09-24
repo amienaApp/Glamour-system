@@ -3,7 +3,6 @@
     <div class="sidebar-header">
         <h3>Filters</h3>
         <span class="style-count" id="style-count">4146 Styles</span>
-        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
     </div>
      <div class="side">
     <div class="filter-section">

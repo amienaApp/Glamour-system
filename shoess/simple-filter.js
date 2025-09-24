@@ -214,34 +214,6 @@ function applyFilters() {
     updateProductCount(visibleCount);
 }
 
-// Clear All Filters
-function clearAllFilters() {
-    // Reset arrays
-    selectedCategories = [];
-    selectedSizes = [];
-    selectedColors = [];
-    selectedPrice = null;
-    
-    // Uncheck all checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // Show all products
-    const productGrid = document.getElementById('shoes-products-grid') || 
-                       document.getElementById('all-products-grid') || 
-                       document.querySelector('.product-grid');
-    
-    if (productGrid) {
-        const products = productGrid.querySelectorAll('.product-card');
-        products.forEach(product => {
-            product.style.display = 'block';
-        });
-        
-        // Update count
-        updateProductCount(products.length);
-    }
-}
 
 // Update Product Count Display
 function updateProductCount(count) {

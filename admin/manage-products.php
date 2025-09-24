@@ -768,7 +768,7 @@ $totalProducts = count($products);
                                     }
                                 ?>
                                     <?php if ($isVideo): ?>
-                                        <video controls style="max-width: 100%; height: auto; max-height: 80px;" 
+                                        <video controls muted loop autoplay playsinline style="max-width: 100%; height: auto; max-height: 80px;" 
                                                onerror="this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-video\'></i><br><small>Video Error</small></div>'">
                                             <source src="<?php echo htmlspecialchars($imagePath); ?>" type="video/<?php echo $fileExtension; ?>">
                                             Your browser does not support the video tag.

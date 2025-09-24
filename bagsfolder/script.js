@@ -6,7 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCategoryModals();
     initializeHeaderModals();
     initializeFilters();
-    initializeQuickView();
+    
+    // Initialize quick view with a small delay to ensure DOM is fully rendered
+    setTimeout(() => {
+        initializeQuickView();
+    }, 100);
     
     // Store original products for clear filters functionality
     let originalProducts = [];
@@ -66,6 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('quick-view-sidebar');
         const overlay = document.getElementById('quick-view-overlay');
         const closeBtn = document.getElementById('close-quick-view');
+        
+        if (!sidebar || !overlay) {
+            console.warn('Quick view elements not found');
+            return;
+        }
         
         console.log('Quick view elements found:', {
             sidebar: !!sidebar,
@@ -184,6 +193,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Handle images
         const mainImage = document.getElementById('quick-view-main-image');
         const thumbnailsContainer = document.getElementById('quick-view-thumbnails');
+        if (!thumbnailsContainer) {
+            console.warn('quick-view-thumbnails element not found');
+            return;
+        }
         
         if (mainImage && thumbnailsContainer) {
             // Get all media from the product card (both images and videos)
@@ -213,7 +226,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Clear and populate thumbnails
-                thumbnailsContainer.innerHTML = '';
+                if (thumbnailsContainer) {
+                    thumbnailsContainer.innerHTML = '';
+                }
                 
                 mediaElements.forEach((media, index) => {
                     const thumbnail = document.createElement('div');
@@ -255,7 +270,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (mainVideo) mainVideo.style.display = 'none';
                         }
                         
-                        thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                        if (thumbnailsContainer) {
+                            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                        }
                         thumbnail.classList.add('active');
                     });
                     
@@ -342,7 +359,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                             
                             // Update thumbnails
-                            thumbnailsContainer.innerHTML = '';
+                            if (thumbnailsContainer) {
+                    thumbnailsContainer.innerHTML = '';
+                }
                             mediaForColor.forEach((media, index) => {
                                 const thumbnail = document.createElement('div');
                                 thumbnail.className = `thumbnail-item ${index === 0 ? 'active' : ''}`;
@@ -383,7 +402,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                         if (mainVideo) mainVideo.style.display = 'none';
                                     }
                                     
-                                    thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                                    if (thumbnailsContainer) {
+                            thumbnailsContainer.querySelectorAll('.thumbnail-item').forEach(t => t.classList.remove('active'));
+                        }
                                     thumbnail.classList.add('active');
                                 });
                                 

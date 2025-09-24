@@ -3,12 +3,10 @@
 // 
 // FILTER BEHAVIOR:
 // - Categories: Only ONE can be selected at a time (like radio buttons)
-// - Sizes: MULTIPLE can be selected (like checkboxes)
 // - Colors: MULTIPLE can be selected (like checkboxes)
 // - Price: Only ONE can be selected at a time (like radio buttons)
 
 let selectedCategories = [];
-let selectedSizes = [];
 let selectedColors = [];
 let selectedPrice = null;
 
@@ -32,19 +30,6 @@ function filterByCategory(category, isChecked) {
     applyFilters();
 }
 
-// Size Filter Function - Multiple sizes allowed
-function filterBySize(size, isChecked) {
-    if (isChecked) {
-        if (!selectedSizes.includes(size)) {
-            selectedSizes.push(size);
-        }
-    } else {
-        selectedSizes = selectedSizes.filter(s => s !== size);
-    }
-    
-    console.log('Size filter:', size, isChecked, 'Selected sizes:', selectedSizes);
-    applyFilters();
-}
 
 // Color Filter Function
 function filterByColor(color, isChecked) {
@@ -96,24 +81,9 @@ function applyFilters() {
     
     console.log('Applying filters to', products.length, 'products');
     console.log('Selected categories:', selectedCategories);
-    console.log('Selected sizes:', selectedSizes);
     console.log('Selected colors:', selectedColors);
     console.log('Selected price:', selectedPrice);
     
-    // Debug: Show size data for first few products
-    if (products.length > 0) {
-        console.log('Sample product size data:');
-        for (let i = 0; i < Math.min(3, products.length); i++) {
-            const product = products[i];
-            const sizes = product.getAttribute('data-product-sizes');
-            const selectedSizes = product.getAttribute('data-product-selected-sizes');
-            console.log(`Product ${i + 1}:`, {
-                name: product.getAttribute('data-product-name'),
-                sizes: sizes,
-                selectedSizes: selectedSizes
-            });
-        }
-    }
     
     products.forEach(product => {
         let shouldShow = true;
@@ -126,49 +96,6 @@ function applyFilters() {
             }
         }
         
-        // Check size filter
-        if (selectedSizes.length > 0 && shouldShow) {
-            // Try both data-product-sizes and data-product-selected-sizes
-            const productSizes = product.getAttribute('data-product-sizes');
-            const productSelectedSizes = product.getAttribute('data-product-selected-sizes');
-            
-            let sizes = [];
-            let hasSelectedSize = false;
-            
-            // Try data-product-sizes first
-            if (productSizes && productSizes !== '[]' && productSizes !== 'null') {
-                try {
-                    sizes = JSON.parse(productSizes);
-                    hasSelectedSize = selectedSizes.some(size => sizes.includes(size));
-                } catch (e) {
-                    // If JSON parsing fails, try comma-separated values
-                    sizes = productSizes.split(',');
-                    hasSelectedSize = selectedSizes.some(size => sizes.includes(size));
-                }
-            }
-            
-            // If no sizes found or no match, try data-product-selected-sizes
-            if (!hasSelectedSize && productSelectedSizes && productSelectedSizes !== '[]' && productSelectedSizes !== 'null') {
-                try {
-                    sizes = JSON.parse(productSelectedSizes);
-                    hasSelectedSize = selectedSizes.some(size => sizes.includes(size));
-                } catch (e) {
-                    // If JSON parsing fails, try comma-separated values
-                    sizes = productSelectedSizes.split(',');
-                    hasSelectedSize = selectedSizes.some(size => sizes.includes(size));
-                }
-            }
-            
-            // If no size data is available for any products, show all products
-            // This handles the case where products don't have size information in the database
-            if (sizes.length === 0) {
-                hasSelectedSize = true; // Show all products when no size data is available
-            }
-            
-            if (!hasSelectedSize) {
-                shouldShow = false;
-            }
-        }
         
         // Check color filter
         if (selectedColors.length > 0 && shouldShow) {
@@ -214,34 +141,6 @@ function applyFilters() {
     updateProductCount(visibleCount);
 }
 
-// Clear All Filters
-function clearAllFilters() {
-    // Reset arrays
-    selectedCategories = [];
-    selectedSizes = [];
-    selectedColors = [];
-    selectedPrice = null;
-    
-    // Uncheck all checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // Show all products
-    const productGrid = document.getElementById('bags-products-grid') || 
-                       document.getElementById('all-products-grid') || 
-                       document.querySelector('.product-grid');
-    
-    if (productGrid) {
-        const products = productGrid.querySelectorAll('.product-card');
-        products.forEach(product => {
-            product.style.display = 'block';
-        });
-        
-        // Update count
-        updateProductCount(products.length);
-    }
-}
 
 // Update Product Count Display
 function updateProductCount(count) {
@@ -251,23 +150,6 @@ function updateProductCount(count) {
     }
 }
 
-// Size Helper Functions
-function selectAllSizes() {
-    const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-    sizeCheckboxes.forEach(checkbox => {
-        checkbox.checked = true;
-        filterBySize(checkbox.value, true);
-    });
-}
-
-function clearSizeFilters() {
-    const sizeCheckboxes = document.querySelectorAll('#size-filter input[type="checkbox"]');
-    sizeCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    selectedSizes = [];
-    applyFilters();
-}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {

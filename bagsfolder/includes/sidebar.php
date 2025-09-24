@@ -3,7 +3,6 @@
     <div class="sidebar-header">
         <h3>Refine By</h3>
         <span class="style-count" id="style-count">Bags</span>
-        <button id="clear-filters" class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
     </div>
     <div class="side">
         <div class="filter-section">
@@ -64,51 +63,6 @@
             </div>
         </div>  
 
-        <!-- Size Filter -->
-        <div class="filter-group">
-            <div class="filter-header">
-                <h4>Size</h4>
-                <span class="size-count" id="size-count"></span>
-            </div>
-            <div class="filter-options">
-                <div class="size-grid" id="size-filter">
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="S" onchange="filterBySize('S', this.checked)">
-                        <span class="checkmark"></span>
-                        S
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="M" onchange="filterBySize('M', this.checked)">
-                        <span class="checkmark"></span>
-                        M
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="L" onchange="filterBySize('L', this.checked)">
-                        <span class="checkmark"></span>
-                        L
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="X" onchange="filterBySize('X', this.checked)">
-                        <span class="checkmark"></span>
-                        X
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="XL" onchange="filterBySize('XL', this.checked)">
-                        <span class="checkmark"></span>
-                        XL
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="size[]" value="XXL" onchange="filterBySize('XXL', this.checked)">
-                        <span class="checkmark"></span>
-                        XXL
-                    </label>
-                </div>
-                <div class="size-actions">
-                    <button type="button" class="size-action-btn" onclick="selectAllSizes()">Select All</button>
-                    <button type="button" class="size-action-btn" onclick="clearSizeFilters()">Clear</button>
-                </div>
-            </div>
-        </div>
 
         <!-- Color Filter -->
         <div class="filter-section">
