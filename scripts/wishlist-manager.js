@@ -113,17 +113,35 @@ if (typeof WishlistManager === 'undefined') {
         
         // Get the currently displayed image/video in quickview
         let variantImage = '';
-        if (quickViewMainImage && quickViewMainImage.style.display !== 'none') {
-            variantImage = quickViewMainImage.src;
-        } else if (quickViewMainVideo && quickViewMainVideo.style.display !== 'none') {
-            variantImage = quickViewMainVideo.src;
+        const mainImageContainer = document.querySelector('.main-image-container');
+        if (mainImageContainer) {
+            const activeImage = mainImageContainer.querySelector('img, video');
+            if (activeImage) {
+                variantImage = activeImage.src;
+            }
+        }
+        
+        // Fallback to main image if no variant image found
+        if (!variantImage) {
+            if (quickViewMainImage && quickViewMainImage.src) {
+                variantImage = quickViewMainImage.src;
+            } else if (quickViewMainVideo && quickViewMainVideo.src) {
+                variantImage = quickViewMainVideo.src;
+            }
         }
         
         // Get selected color from quickview
         let selectedColor = '';
-        const activeColorOption = document.querySelector('#quick-view-color-selection .color-option.active');
-        if (activeColorOption) {
-            selectedColor = activeColorOption.getAttribute('data-color') || '';
+        const activeColorCircle = document.querySelector('#quick-view-color-selection .quick-view-color-circle.active');
+        if (activeColorCircle) {
+            selectedColor = activeColorCircle.getAttribute('data-color') || '';
+        }
+        
+        // Get selected size from quickview
+        let selectedSize = '';
+        const activeSizeBtn = document.querySelector('#quick-view-size-selection .quick-view-size-btn.active');
+        if (activeSizeBtn) {
+            selectedSize = activeSizeBtn.textContent.replace(' (Out of Stock)', '').trim();
         }
         
         return {
@@ -133,6 +151,7 @@ if (typeof WishlistManager === 'undefined') {
             image: variantImage,
             category: 'General',
             selectedColor: selectedColor,
+            selectedSize: selectedSize,
             addedAt: new Date().toISOString()
         };
     }

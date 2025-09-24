@@ -198,6 +198,20 @@ class QuickviewManager {
             // First, restore the proper content structure if it was replaced by loading state
             this.restoreContentStructure();
             
+            // Set product ID on quickview elements for wishlist functionality
+            const productId = product.id || product._id;
+            if (productId) {
+                const quickViewTitle = document.getElementById('quick-view-title');
+                const quickViewSidebar = document.getElementById('quick-view-sidebar');
+                if (quickViewTitle) {
+                    quickViewTitle.setAttribute('data-product-id', productId);
+                }
+                if (quickViewSidebar) {
+                    quickViewSidebar.setAttribute('data-product-id', productId);
+                }
+                console.log('QuickviewManager: Set product ID on quickview elements:', productId);
+            }
+            
             // Set product title and price
             console.log('QuickviewManager: Setting title and price');
             this.setElementText('quick-view-title', product.name);
@@ -797,6 +811,10 @@ class QuickviewManager {
         const content = document.querySelector('.quick-view-content');
         if (content && content.innerHTML.includes('loading-state')) {
             console.log('QuickviewManager: Restoring content structure');
+            
+            // Preserve product ID if it exists
+            const existingProductId = this.currentProduct ? (this.currentProduct.id || this.currentProduct._id) : null;
+            
             content.innerHTML = `
                 <!-- Product Media -->
                 <div class="quick-view-images">
@@ -811,7 +829,7 @@ class QuickviewManager {
                 
                 <!-- Product Details -->
                 <div class="quick-view-details">
-                    <h2 id="quick-view-title"></h2>
+                    <h2 id="quick-view-title"${existingProductId ? ` data-product-id="${existingProductId}"` : ''}></h2>
                     <div class="quick-view-price" id="quick-view-price"></div>
                     <div class="quick-view-reviews">
                         <span class="stars" id="quick-view-stars"></span>
@@ -857,6 +875,14 @@ class QuickviewManager {
                     </div>
                 </div>
             `;
+            
+            // Also set product ID on sidebar if it exists
+            if (existingProductId) {
+                const quickViewSidebar = document.getElementById('quick-view-sidebar');
+                if (quickViewSidebar) {
+                    quickViewSidebar.setAttribute('data-product-id', existingProductId);
+                }
+            }
         }
     }
 
