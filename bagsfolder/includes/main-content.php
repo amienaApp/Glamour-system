@@ -128,11 +128,25 @@ $clutches = $productModel->getBySubcategory('Clutches');
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price']; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -298,11 +312,25 @@ $clutches = $productModel->getBySubcategory('Clutches');
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price']; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images

@@ -151,6 +151,48 @@ if (!empty($filters)) {
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+
+                // Extract size data from database
+                $productSizes = [];
+
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes'])) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes'])) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+
+                // If still no sizes, provide default sizes for accessories
+                if (empty($productSizes)) {
+                    $productSizes = ['S', 'M', 'L', 'X', 'XL', 'XXL'];
+                }
+
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
@@ -160,7 +202,10 @@ if (!empty($filters)) {
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
 <<<<<<< HEAD
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
                      data-product-available="<?php 
                      $available = $product['available'] ?? true;
@@ -186,6 +231,12 @@ if (!empty($filters)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -324,7 +375,14 @@ if (!empty($filters)) {
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <div class="product-price">
+                            <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                                <span class="sale-price">$<?php echo number_format($product['salePrice'] ?? $product['sale_price'], 0); ?></span>
+                                <span class="original-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php else: ?>
+                                <span class="regular-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php endif; ?>
+                        </div>
                         <?php 
                         // Redefine variables for this section
                         $stock = (int)($product['stock'] ?? 0);
@@ -365,6 +423,12 @@ if (!empty($filters)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -517,7 +581,14 @@ if (!empty($filters)) {
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <div class="product-price">
+                            <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                                <span class="sale-price">$<?php echo number_format($product['salePrice'] ?? $product['sale_price'], 0); ?></span>
+                                <span class="original-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php else: ?>
+                                <span class="regular-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php endif; ?>
+                        </div>
                         <?php 
                         $stock = (int)($product['stock'] ?? 0);
                         ?>

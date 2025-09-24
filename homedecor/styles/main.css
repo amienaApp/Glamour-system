@@ -115,6 +115,23 @@
     animation: featuredGlow 2s ease-in-out infinite alternate;
 }
 
+/* Sale Badge */
+.product-image .sale-badge {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    background: linear-gradient(135deg, #ff4444, #ff6666);
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.4);
+    z-index: 15;
+    border-radius: 0;
+}
+
 /* View indicator */
 .view-indicator {
     position: absolute;

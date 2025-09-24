@@ -18,6 +18,38 @@ require_once '../includes/filter-data-helper.php';
 // Get dynamic filter data for sidebar
 $filterData = getFilterData('Women\'s Clothing');
 
+// Extract all unique colors from ALL women's products for dynamic color filter
+require_once '../models/Product.php';
+$productModel = new Product();
+$allWomenProducts = $productModel->getByCategory('Women\'s Clothing');
+
+$allColors = [];
+
+foreach ($allWomenProducts as $product) {
+    // Get color from main color field
+    if (!empty($product['color'])) {
+        $allColors[] = $product['color'];
+    }
+
+    // Get colors from color_variants
+    if (!empty($product['color_variants'])) {
+        $colorVariants = is_string($product['color_variants']) ?
+            json_decode($product['color_variants'], true) : $product['color_variants'];
+
+        if (is_array($colorVariants)) {
+            foreach ($colorVariants as $variant) {
+                if (!empty($variant['color'])) {
+                    $allColors[] = $variant['color'];
+                }
+            }
+        }
+    }
+}
+
+// Remove duplicates and sort colors
+$allColors = array_unique($allColors);
+sort($allColors);
+
 $categoryModel = new Category();
 $womenCategory = $categoryModel->getByName("Women's Clothing");
 $subcategories = [];
@@ -561,6 +593,28 @@ $defaultImage = '../img/women/dresses/12.webp';
                     }
                 });
             });
+        </script>
+
+        <script>
+        // Dynamic color updates - check for new colors every 10 seconds
+        let currentColorCount = <?php echo count($allColors); ?>;
+        
+        function checkForNewColors() {
+            fetch('get-colors-api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.count > currentColorCount) {
+                        console.log('New colors detected! Refreshing page...');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.log('Error checking for new colors:', error);
+                });
+        }
+        
+        // Check for new colors every 10 seconds
+        setInterval(checkForNewColors, 10000);
         </script>
 
 </body>

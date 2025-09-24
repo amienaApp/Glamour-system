@@ -101,6 +101,7 @@ if (!empty($filters)) {
     $products = $productModel->getByCategory("Women's Clothing", $sortOptions);
     $pageTitle = "Women's Clothing";
 }
+
 ?>
 
 <!-- Main Content Section -->
@@ -138,6 +139,48 @@ if (!empty($filters)) {
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+                
+                // Extract size data from database
+                $productSizes = [];
+                
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes'])) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+                
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes'])) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+                
+                // If still no sizes, provide default sizes for women's clothing
+                if (empty($productSizes)) {
+                    $productSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                }
+                
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
@@ -145,9 +188,9 @@ if (!empty($filters)) {
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-<<<<<<< HEAD
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
                      data-product-available="<?php 
                      $available = $product['available'] ?? true;
@@ -161,18 +204,23 @@ if (!empty($filters)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
                      data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
                      data-product-product-options="<?php echo htmlspecialchars(json_encode($product['product_options'] ?? [])); ?>"
                      data-product-image-front="<?php echo htmlspecialchars($product['image_front'] ?? ''); ?>"
                      data-product-image-back="<?php echo htmlspecialchars($product['image_back'] ?? ''); ?>"
-                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -209,7 +257,10 @@ if (!empty($filters)) {
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           playsinline
+                                           preload="metadata"
+                                           style="width: 100%; height: 100%; object-fit: cover;">
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -237,7 +288,10 @@ if (!empty($filters)) {
                                                    alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
-                                                   loop>
+                                                   loop
+                                                   playsinline
+                                                   preload="metadata"
+                                                   style="width: 100%; height: 100%; object-fit: cover;">
                                             </video>
                                         <?php else: ?>
                                             <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
@@ -253,7 +307,10 @@ if (!empty($filters)) {
                                                    alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
-                                                   loop>
+                                                   loop
+                                                   playsinline
+                                                   preload="metadata"
+                                                   style="width: 100%; height: 100%; object-fit: cover;">
                                             </video>
                                         <?php else: ?>
                                             <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
@@ -311,7 +368,14 @@ if (!empty($filters)) {
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <div class="product-price">
+                            <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                                <span class="sale-price">$<?php echo number_format($product['salePrice'] ?? $product['sale_price'], 0); ?></span>
+                                <span class="original-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php else: ?>
+                                <span class="regular-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php endif; ?>
+                        </div>
                         <?php if ($isLowStock): ?>
                             <div class="product-availability low-stock-text">
                                 ⚠️ Only <?php echo $stock; ?> left in stock!
@@ -333,15 +397,68 @@ if (!empty($filters)) {
         <?php if (!empty($products)): ?>
             
             <?php foreach ($products as $index => $product): ?>
+                <?php
+                // Extract size data from database (same logic as above)
+                $productSizes = [];
+                
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes'])) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+                
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes'])) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+                
+                // If still no sizes, provide default sizes for women's clothing
+                if (empty($productSizes)) {
+                    $productSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                }
+                
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
-                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
+                     data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -361,16 +478,13 @@ if (!empty($filters)) {
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop
-                                           onerror="console.error('Failed to load video:', this.src);"
->
+                                           loop>
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
                                          alt="<?php echo htmlspecialchars($product['name']); ?> - Front" 
                                          class="active" 
                                          data-color="<?php echo htmlspecialchars($product['color']); ?>"
-                                         onerror="console.error('Failed to load image:', this.src);"
 >
                                 <?php endif; ?>
                             <?php endif; ?>
@@ -382,7 +496,10 @@ if (!empty($filters)) {
                                            alt="<?php echo htmlspecialchars($product['name']); ?> - Back" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           playsinline
+                                           preload="metadata"
+                                           style="width: 100%; height: 100%; object-fit: cover;">
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($backImage); ?>" 
@@ -411,14 +528,12 @@ if (!empty($filters)) {
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
                                                    loop
-                                                   onerror="console.error('Failed to load variant video:', this.src);"
 >
                                             </video>
                                         <?php else: ?>
                                             <img src="../<?php echo htmlspecialchars($variantFrontImage); ?>" 
                                                  alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Front" 
                                                  data-color="<?php echo htmlspecialchars($variant['color']); ?>"
-                                                 onerror="console.error('Failed to load variant image:', this.src);"
 >
                                         <?php endif; ?>
                                     <?php endif; ?>
@@ -430,7 +545,10 @@ if (!empty($filters)) {
                                                    alt="<?php echo htmlspecialchars($product['name']); ?> - <?php echo htmlspecialchars($variant['name']); ?> - Back" 
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
-                                                   loop>
+                                                   loop
+                                                   playsinline
+                                                   preload="metadata"
+                                                   style="width: 100%; height: 100%; object-fit: cover;">
                                             </video>
                                         <?php else: ?>
                                             <img src="../<?php echo htmlspecialchars($variantBackImage); ?>" 
@@ -494,7 +612,14 @@ if (!empty($filters)) {
                             <?php endif; ?>
                         </div>
                         <h3 class="product-name"><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <div class="product-price">$<?php echo number_format($product['price'], 0); ?></div>
+                        <div class="product-price">
+                            <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                                <span class="sale-price">$<?php echo number_format($product['salePrice'] ?? $product['sale_price'], 0); ?></span>
+                                <span class="original-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php else: ?>
+                                <span class="regular-price">$<?php echo number_format($product['price'], 0); ?></span>
+                            <?php endif; ?>
+                        </div>
                         <?php 
                         $stock = (int)($product['stock'] ?? 0);
                         $available = $product['available'] ?? true;

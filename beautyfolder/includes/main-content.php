@@ -151,23 +151,139 @@ if (!empty($filters)) {
     <!-- Specific Subcategory Products Grid -->
     <div class="product-grid" id="women-products-grid">
         <?php if (!empty($products)): ?>
+            <?php 
+            // Debug: Log total products count
+            error_log('Total products to display: ' . count($products));
+            ?>
             <?php foreach ($products as $index => $product): ?>
                 <?php 
+                // Debug: Log actual product being processed
+                error_log('Processing product ' . ($index + 1) . ': "' . ($product['name'] ?? 'NO_NAME') . '" (ID: ' . ($product['_id'] ?? 'NO_ID') . ')');
+                
                 $stock = (int)($product['stock'] ?? 0);
                 $available = $product['available'] ?? true;
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
-                ?>
+
+                // First try to get sizes from database
+                $productSizes = [];
+                
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes']) && $product['selected_sizes'] !== null) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes) && !empty($sizes)) {
+                            $productSizes = $sizes;
+                            error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" using database selected_sizes: ' . json_encode($sizes));
+                        }
+                    } elseif (is_array($product['selected_sizes']) && !empty($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                        error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" using database selected_sizes array: ' . json_encode($product['selected_sizes']));
+                    }
+                }
+                
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes']) && $product['sizes'] !== null) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes) && !empty($sizes)) {
+                            $productSizes = $sizes;
+                            error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" using database sizes: ' . json_encode($sizes));
+                        }
+                    } elseif (is_array($product['sizes']) && !empty($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                        error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" using database sizes array: ' . json_encode($product['sizes']));
+                    }
+                }
+                
+                // Only use fallback if NO sizes found in database
+                if (empty($productSizes)) {
+                    error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" has no database sizes, using fallback');
+                    $subcategory = strtolower($product['subcategory'] ?? '');
+                    $availableSizes = [];
+                    
+                    // Define size categories based on subcategory - using simple sizes
+                    switch ($subcategory) {
+                        case 'makeup':
+                            $availableSizes = ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'];
+                            break;
+                        case 'skincare':
+                            $availableSizes = ['Mini', 'Small', 'Medium', 'Large', 'Family'];
+                            break;
+                        case 'hair care':
+                            $availableSizes = ['Travel', 'Regular', 'Family'];
+                            break;
+                        case 'bath & body':
+                            $availableSizes = ['Travel', 'Regular', 'Large', 'Jumbo'];
+                            break;
+                        case 'tools & accessories':
+                            $availableSizes = ['Small', 'Medium', 'Large'];
+                            break;
+                        case 'fragrance':
+                            $availableSizes = ['Sample', 'Travel', 'Regular'];
+                            break;
+                        default:
+                            // Default to makeup sizes if subcategory not recognized
+                            $availableSizes = ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo'];
+                            break;
+                    }
+                    
+                    // Randomly select 1-3 sizes from available sizes
+                    $numSizes = rand(1, 3);
+                    $selectedSizes = [];
+                    
+                    if (count($availableSizes) >= $numSizes) {
+                        $randomKeys = array_rand($availableSizes, $numSizes);
+                        if (!is_array($randomKeys)) {
+                            $randomKeys = [$randomKeys];
+                        }
+                        foreach ($randomKeys as $key) {
+                            $selectedSizes[] = $availableSizes[$key];
+                        }
+                    } else {
+                        $selectedSizes = $availableSizes;
+                    }
+                    
+                    $productSizes = $selectedSizes;
+                    error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" fallback assigned sizes: ' . json_encode($selectedSizes));
+                }
+                
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
+                
+                // Final fallback: if still no sizes, assign simple beauty sizes
+                if (empty($sizeNames)) {
+                    // Simple beauty sizes that match the sidebar
+                    $sizeNames = ['Sample', 'Travel', 'Regular'];
+                    error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" using final fallback sizes: ' . json_encode($sizeNames));
+                }
+                
+                // Debug: Log the final sizeNames array
+                error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" final sizeNames: ' . json_encode($sizeNames));
+                
+                // Debug: Log what will be output in HTML
+                $sizesJson = json_encode($sizeNames);
+                error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" HTML output sizes: ' . $sizesJson);
+        ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
-<<<<<<< HEAD
                      data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
-                     data-product-on-sale="<?php echo ($product['on_sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
                      data-product-available="<?php 
                      $available = $product['available'] ?? true;
@@ -181,9 +297,7 @@ if (!empty($filters)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-images="<?php echo htmlspecialchars(json_encode($product['images'] ?? [])); ?>"
                      data-product-color-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
                      data-product-size-category="<?php echo htmlspecialchars($product['size_category'] ?? ''); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? $product['variants'] ?? [])); ?>"
                      data-product-product-variants="<?php echo htmlspecialchars(json_encode($product['product_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>"
@@ -193,6 +307,12 @@ if (!empty($filters)) {
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -355,15 +475,94 @@ if (!empty($filters)) {
         <?php if (!empty($products)): ?>
             
             <?php foreach ($products as $index => $product): ?>
+                <?php 
+                // First try to get sizes from database for second grid too
+                $productSizes = [];
+                
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes']) && $product['selected_sizes'] !== null) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes) && !empty($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes']) && !empty($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+                
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes']) && $product['sizes'] !== null) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes) && !empty($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes']) && !empty($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+                
+                // Only use fallback if NO sizes found in database
+                if (empty($productSizes)) {
+                    $subcategory = strtolower($product['subcategory'] ?? '');
+                    $availableSizes = [];
+                    
+                    switch ($subcategory) {
+                        case 'makeup': $availableSizes = ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo']; break;
+                        case 'skincare': $availableSizes = ['Mini', 'Small', 'Medium', 'Large', 'Family']; break;
+                        case 'hair care': $availableSizes = ['Travel', 'Regular', 'Family']; break;
+                        case 'bath & body': $availableSizes = ['Travel', 'Regular', 'Large', 'Jumbo']; break;
+                        case 'tools & accessories': $availableSizes = ['Small', 'Medium', 'Large']; break;
+                        case 'fragrance': $availableSizes = ['Sample', 'Travel', 'Regular']; break;
+                        default: $availableSizes = ['Sample', 'Travel', 'Regular', 'Large', 'Jumbo']; break;
+                    }
+                    
+                    $numSizes = rand(1, 3);
+                    $selectedSizes = [];
+                    if (count($availableSizes) >= $numSizes) {
+                        $randomKeys = array_rand($availableSizes, $numSizes);
+                        if (!is_array($randomKeys)) $randomKeys = [$randomKeys];
+                        foreach ($randomKeys as $key) $selectedSizes[] = $availableSizes[$key];
+                    } else {
+                        $selectedSizes = $availableSizes;
+                    }
+                    
+                    $productSizes = $selectedSizes;
+                }
+                
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
+                
+                // Final fallback: if still no sizes, assign simple beauty sizes
+                if (empty($sizeNames)) {
+                    $sizeNames = ['Sample', 'Travel', 'Regular'];
+                }
+                ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
                      data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images

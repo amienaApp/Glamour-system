@@ -18,6 +18,38 @@ require_once '../includes/filter-data-helper.php';
 // Get dynamic filter data for sidebar
 $filterData = getFilterData('Kids\' Clothing');
 
+// Extract all unique colors from ALL kids products for dynamic color filter
+require_once '../models/Product.php';
+$productModel = new Product();
+$allKidsProducts = $productModel->getByCategory('Kids\' Clothing');
+
+$allColors = [];
+
+foreach ($allKidsProducts as $product) {
+    // Get color from main color field
+    if (!empty($product['color'])) {
+        $allColors[] = $product['color'];
+    }
+
+    // Get colors from color_variants
+    if (!empty($product['color_variants'])) {
+        $colorVariants = is_string($product['color_variants']) ?
+            json_decode($product['color_variants'], true) : $product['color_variants'];
+
+        if (is_array($colorVariants)) {
+            foreach ($colorVariants as $variant) {
+                if (!empty($variant['color'])) {
+                    $allColors[] = $variant['color'];
+                }
+            }
+        }
+    }
+}
+
+// Remove duplicates and sort colors
+$allColors = array_unique($allColors);
+sort($allColors);
+
 $categoryModel = new Category();
 $kidsCategory = $categoryModel->getByName("Kids' Clothing");
 $subcategories = [];
@@ -51,6 +83,40 @@ $subcategoryImages = [
     'Accessories' => '../img/child/5.webp',
     'Shoes' => '../img/child/6.webp'
 ];
+
+// Extract all unique colors from ALL kids products for dynamic color filter
+require_once '../models/Product.php';
+$productModel = new Product();
+$allKidsProducts = $productModel->getByCategory("Kids' Clothing");
+$allColors = [];
+
+foreach ($allKidsProducts as $product) {
+    // Get color from main color field
+    if (!empty($product['color'])) {
+        $allColors[] = $product['color'];
+    }
+
+    // Get colors from color_variants
+    if (!empty($product['color_variants'])) {
+        $colorVariants = is_string($product['color_variants']) ?
+            json_decode($product['color_variants'], true) : $product['color_variants'];
+
+        if (is_array($colorVariants)) {
+            foreach ($colorVariants as $variant) {
+                if (!empty($variant['color'])) {
+                    $allColors[] = $variant['color'];
+                }
+            }
+        }
+    }
+}
+
+// Remove duplicates and sort colors
+$allColors = array_unique($allColors);
+sort($allColors);
+
+// Debug: Log the colors found
+error_log('Kids dynamic colors found: ' . json_encode($allColors));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,6 +135,7 @@ $subcategoryImages = [
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="../reviews-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../related-products.js?v=<?php echo time(); ?>"></script>
+    <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
@@ -471,6 +538,28 @@ $subcategoryImages = [
                     }
                 });
             });
+        </script>
+
+        <script>
+        // Dynamic color updates - check for new colors every 10 seconds
+        let currentColorCount = <?php echo count($allColors); ?>;
+        
+        function checkForNewColors() {
+            fetch('get-colors-api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.count > currentColorCount) {
+                        console.log('New colors detected! Refreshing page...');
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.log('Error checking for new colors:', error);
+                });
+        }
+        
+        // Check for new colors every 10 seconds
+        setInterval(checkForNewColors, 10000);
         </script>
 
 </body>

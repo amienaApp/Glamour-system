@@ -51,6 +51,116 @@ $subcategoryImages = [
     'Tools & Brushes' => '../img/beauty/5.png',
     'Nail Care' => '../img/beauty/6.png'
 ];
+
+// Extract all unique colors from ALL beauty products for dynamic color filter
+require_once '../models/Product.php';
+$productModel = new Product();
+$allBeautyProducts = $productModel->getByCategory("Beauty & Cosmetics");
+
+// Debug: Check if products are being fetched
+error_log('Beauty products fetched: ' . count($allBeautyProducts) . ' products');
+if (count($allBeautyProducts) > 0) {
+    error_log('First product data: ' . json_encode($allBeautyProducts[0]));
+    
+    // Debug: Check what fields are available in the first product
+    $firstProduct = $allBeautyProducts[0];
+    // Convert BSONDocument to array for array_keys
+    $firstProductArray = iterator_to_array($firstProduct);
+    error_log('Available fields in first product: ' . implode(', ', array_keys($firstProductArray)));
+    
+    // Check for any size-related fields
+    $sizeFields = [];
+    foreach ($firstProductArray as $key => $value) {
+        if (stripos($key, 'size') !== false) {
+            $sizeFields[$key] = $value;
+        }
+    }
+    error_log('Size-related fields: ' . json_encode($sizeFields));
+    
+    // Check for any fields that might contain size data
+    $allFields = [];
+    foreach ($firstProductArray as $key => $value) {
+        $allFields[$key] = is_string($value) ? substr($value, 0, 100) : gettype($value);
+    }
+    error_log('All fields in first product: ' . json_encode($allFields));
+}
+$allColors = [];
+
+foreach ($allBeautyProducts as $product) {
+    // Debug: Log product color data
+    error_log('Product "' . ($product['name'] ?? 'NO_NAME') . '" color data:');
+    error_log('  main color: ' . json_encode($product['color'] ?? 'NOT_SET'));
+    error_log('  color_variants: ' . json_encode($product['color_variants'] ?? 'NOT_SET'));
+    
+    // Get color from main color field
+    if (!empty($product['color'])) {
+        $allColors[] = $product['color'];
+        error_log('  Added main color: ' . $product['color']);
+    }
+
+    // Get colors from color_variants
+    if (!empty($product['color_variants'])) {
+        $colorVariants = is_string($product['color_variants']) ?
+            json_decode($product['color_variants'], true) : $product['color_variants'];
+
+        if (is_array($colorVariants)) {
+            foreach ($colorVariants as $variant) {
+                if (!empty($variant['color'])) {
+                    $allColors[] = $variant['color'];
+                    error_log('  Added variant color: ' . $variant['color']);
+                }
+            }
+        }
+    }
+}
+
+// Remove duplicates and sort colors
+$allColors = array_unique($allColors);
+sort($allColors);
+
+// Debug: Log the colors found
+error_log('Beauty dynamic colors found: ' . json_encode($allColors));
+error_log('Total unique colors found: ' . count($allColors));
+
+// Debug: Show which products contributed colors
+error_log('Products that contributed colors:');
+foreach ($allBeautyProducts as $product) {
+    $hasColor = !empty($product['color']) || !empty($product['color_variants']);
+    if ($hasColor) {
+        error_log('  - ' . ($product['name'] ?? 'NO_NAME') . ' (has color data)');
+    }
+}
+
+// Get all available beauty sizes from the admin system (same as add/edit product pages)
+$allSizes = [
+    // Makeup Sizes
+    'Sample', 'Travel', 'Regular', 'Large', 'Jumbo',
+    
+    // Makeup Tools
+    'Foundation_Brush', 'Concealer_Brush', 'Eyeshadow_Brush', 'Blush_Brush', 'Lip_Brush', 'Makeup_Remover', 'Brush_Set',
+    
+    // Skincare Sizes
+    'Mini', 'Small', 'Medium', 'Large_skincare', 'Family',
+    
+    // Call Who Sizes
+    'Personal', 'Travel_Kit', 'Sample',
+    
+    // Hair Sizes
+    'Travel_Size', 'Regular_Size', 'Family_Size',
+    
+    // Hair Tools
+    'Small_Brush', 'Medium_Brush', 'Large_Brush', 'Wide_Tooth_Comb', 'Fine_Tooth_Comb', 'Detangling_Brush',
+    
+    // Bath & Body Sizes
+    'Travel_Size', 'Regular_Size', 'Family_Size', 'Jumbo_Size'
+];
+
+// Remove duplicates and sort sizes
+$allSizes = array_unique($allSizes);
+sort($allSizes);
+
+// Debug: Log the available sizes
+error_log('Beauty available sizes from admin system: ' . json_encode($allSizes));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,6 +170,7 @@ $subcategoryImages = [
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- Dynamic color updates -->
     <title><?php echo isset($page_title) ? $page_title : 'Lulus - Women\'s Clothing & Fashion'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../heading/header.css?v=<?php echo time(); ?>">
@@ -68,11 +179,34 @@ $subcategoryImages = [
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
+    <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/wishlist-integration.js?v=<?php echo time(); ?>"></script>
     <script src="../scripts/sold-out-manager.js?v=<?php echo time(); ?>"></script>
     <?php include '../includes/cart-notification-include.php'; ?>
+    
+    <script>
+    // Dynamic color updates - check for new colors every 10 seconds
+    let currentColorCount = <?php echo count($allColors); ?>;
+    
+    function checkForNewColors() {
+        fetch('get-colors-api.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.count > currentColorCount) {
+                    console.log('New colors detected! Refreshing page...');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.log('Error checking for new colors:', error);
+            });
+    }
+    
+    // Check for new colors every 10 seconds
+    setInterval(checkForNewColors, 10000);
+    </script>
 </head>
 <body>
                     <?php 

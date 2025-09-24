@@ -2080,10 +2080,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
             } else if (sizeCategory === 'beauty') {
-                // Get current subcategory and sub-subcategory selections
-                const subcategory = document.getElementById('subcategory').value;
-                const subSubcategory = document.getElementById('sub_subcategory').value;
-                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
+                // For beauty products, always show all sizes by default
+                // The filtering can be done later when subcategories are properly loaded
+                sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
             }
             
             // Event listeners are handled by onclick attributes in the HTML
@@ -2547,13 +2546,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Add event listeners to category headers and select all buttons
             setTimeout(() => {
-                sizeDropdownContent.querySelectorAll('.size-category-header').forEach(header => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
+                // Event listeners are handled by onclick attributes in the HTML
                 
                 // Add event listeners for select all buttons in variants
                 sizeDropdownContent.querySelectorAll('.select-all-option').forEach(option => {
@@ -5690,10 +5683,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
             } else if (sizeCategory === 'beauty') {
-                // Get current subcategory and sub-subcategory selections
-                const subcategory = document.getElementById('subcategory').value;
-                const subSubcategory = document.getElementById('sub_subcategory').value;
-                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
+                // For beauty products, always show all sizes by default
+                // The filtering can be done later when subcategories are properly loaded
+                sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
             }
             
             // Event listeners are handled by onclick attributes in the HTML
@@ -6649,13 +6641,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Add event listeners to category headers and select all buttons
             setTimeout(() => {
-                sizeDropdownContent.querySelectorAll('.size-category-header').forEach(header => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
+                // Event listeners are handled by onclick attributes in the HTML
                 
                 // Add event listeners for select all buttons in variants
                 sizeDropdownContent.querySelectorAll('.select-all-option').forEach(option => {
@@ -8305,13 +8291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setTimeout(() => {
                 const headers = sizeDropdownContent.querySelectorAll('.size-category-header');
                 
-                headers.forEach((header, index) => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
+                // Event listeners are handled by onclick attributes in the HTML
             }, 100);
         }
 
@@ -9151,13 +9131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Add event listeners to category headers
             setTimeout(() => {
-                sizeDropdownContent.querySelectorAll('.size-category-header').forEach(header => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
+                // Event listeners are handled by onclick attributes in the HTML
             }, 100);
         }
 

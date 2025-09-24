@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category' => $_POST['category'] ?? '',
             'subcategory' => $_POST['subcategory'] ?? '',
             'sub_subcategory' => $_POST['sub_subcategory'] ?? '',
+            'deeper_sub_subcategory' => $_POST['deeper_sub_subcategory'] ?? '',
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
@@ -244,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'category' => $productPost['category'] ?? '',
                 'subcategory' => $productPost['subcategory'] ?? '',
                 'sub_subcategory' => $productPost['sub_subcategory'] ?? '',
+                'deeper_sub_subcategory' => $productPost['deeper_sub_subcategory'] ?? '',
                 'description' => $productPost['description'] ?? '',
                 'featured' => isset($productPost['featured']),
                 'sale' => isset($productPost['sale']),
@@ -461,6 +463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category' => $_POST['category'] ?? '',
             'subcategory' => $_POST['subcategory'] ?? '',
             'sub_subcategory' => $_POST['sub_subcategory'] ?? '',
+            'deeper_sub_subcategory' => $_POST['deeper_sub_subcategory'] ?? '',
             'description' => $_POST['description'] ?? '',
             'featured' => isset($_POST['featured']),
             'sale' => isset($_POST['sale']),
@@ -1716,10 +1719,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Beauty & Cosmetics sub-subcategory field -->
             <div class="form-group" id="sub-subcategory-group" style="display: none;">
                 <label for="sub_subcategory">Sub-Subcategory</label>
-                <select id="sub_subcategory" name="sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                <select id="sub_subcategory" name="sub_subcategory" onchange="loadDeeperSubSubcategories(); refreshSizeOptions(); refreshAllVariantSizeOptions();">
                     <option value="">Select Sub-Subcategory</option>
                 </select>
                         </div>
+            
+            <!-- Deeper Sub-subcategory field (Makeup only) -->
+            <div class="form-group" id="deeper-sub-subcategory-group" style="display: none;">
+                <label for="deeper_sub_subcategory">Deeper Sub-Subcategory</label>
+                <select id="deeper_sub_subcategory" name="deeper_sub_subcategory" onchange="refreshSizeOptions(); refreshAllVariantSizeOptions();">
+                    <option value="">Select Deeper Sub-Subcategory</option>
+                </select>
+            </div>
             
             <!-- Home & Living specific fields -->
             <div class="form-group" id="home-living-fields" style="display: none;">
@@ -2159,6 +2170,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
         }
 
+        // Function to load deeper sub-subcategories for Beauty & Cosmetics > Makeup
+        function loadDeeperSubSubcategories() {
+            const categorySelect = document.getElementById('category');
+            const subcategorySelect = document.getElementById('subcategory');
+            const subSubcategorySelect = document.getElementById('sub_subcategory');
+            const deeperSubSubcategorySelect = document.getElementById('deeper_sub_subcategory');
+            const deeperSubSubcategoryGroup = document.getElementById('deeper-sub-subcategory-group');
+            
+            const category = categorySelect.value;
+            const subcategory = subcategorySelect.value;
+            const subSubcategory = subSubcategorySelect.value;
+            
+            // Hide deeper sub-subcategory field by default
+            if (deeperSubSubcategoryGroup) {
+                deeperSubSubcategoryGroup.style.display = 'none';
+            }
+            
+            // Show deeper sub-subcategory only for Beauty & Cosmetics > Makeup
+            if (category !== 'Beauty & Cosmetics' || subcategory !== 'Makeup' || !subSubcategory) {
+                return;
+            }
+            
+            // Show deeper sub-subcategory field for makeup
+            if (deeperSubSubcategoryGroup) {
+                deeperSubSubcategoryGroup.style.display = 'block';
+            }
+            
+            // Reset deeper sub-subcategory options
+            if (deeperSubSubcategorySelect) {
+                deeperSubSubcategorySelect.innerHTML = '<option value="">Select Deeper Sub-Subcategory</option>';
+            }
+            
+            // Load deeper sub-subcategories from database
+            fetch(`get-deeper-sub-subcategories.php?category=${encodeURIComponent(category)}&subcategory=${encodeURIComponent(subcategory)}&sub_subcategory=${encodeURIComponent(subSubcategory)}`)
+                .then(response => response.text().then(text => {
+                    if (text.trim() === '') {
+                        throw new Error('Empty response received');
+                    }
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        throw new Error('Invalid JSON: ' + e.message);
+                    }
+                }))
+                .then(data => {
+                    if (data.success && data.deeper_sub_subcategories) {
+                        data.deeper_sub_subcategories.forEach(deeperSubSubcategory => {
+                            const option = document.createElement('option');
+                            option.value = deeperSubSubcategory;
+                            option.textContent = deeperSubSubcategory;
+                            deeperSubSubcategorySelect.appendChild(option);
+                        });
+                    } else {
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading deeper sub-subcategories:', error);
+                });
+        }
+
         function togglePerfumeFields(category) {
             const brandGroup = document.getElementById('brand-group');
             const genderGroup = document.getElementById('gender-group');
@@ -2429,22 +2501,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else if (sizeCategory === 'shoes') {
                 sizeDropdownContent.innerHTML = generateShoeSizes(false, null);
             } else if (sizeCategory === 'beauty') {
-                // Get current subcategory and sub-subcategory selections
-                const subcategory = document.getElementById('subcategory').value;
-                const subSubcategory = document.getElementById('sub_subcategory').value;
-                sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory);
+                // For beauty products, always show all sizes by default
+                // The filtering can be done later when subcategories are properly loaded
+                sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
             }
             
-            // Add event listeners to category headers
-            setTimeout(() => {
-                document.querySelectorAll('.size-category-header').forEach(header => {
-                    header.addEventListener('click', function() {
-                        this.classList.toggle('expanded');
-                        const options = this.nextElementSibling;
-                        options.classList.toggle('show');
-                    });
-                });
-            }, 100);
+            // Event listeners are handled by onclick attributes in the HTML
         }
 
         function generateBeautySizes(isVariant = false, variantIndex = null) {
@@ -2687,8 +2749,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Generate filtered beauty sizes based on subcategory and sub-subcategory
-        function generateFilteredBeautySizes(isVariant = false, variantIndex = null, subcategory = '', subSubcategory = '') {
+        function generateFilteredBeautySizes(isVariant = false, variantIndex = null, subcategory = '', subSubcategory = '', deeperSubSubcategory = '') {
             let html = '';
+            
+            // Debug logging
+            console.log('generateFilteredBeautySizes called with:', { subcategory, subSubcategory, deeperSubSubcategory });
             
             // Define size categories and their relevance to subcategories
             const sizeCategories = {
@@ -2739,19 +2804,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Filter size categories based on subcategory and sub-subcategory
             const relevantCategories = Object.entries(sizeCategories).filter(([key, category]) => {
                 // If no subcategory is selected, show all categories
-                if (!subcategory) return true;
+                if (!subcategory) {
+                    console.log('No subcategory selected, showing all categories');
+                    return true;
+                }
                 
-                // Check if subcategory matches
-                const subcategoryMatch = category.relevantSubcategories.includes(subcategory);
+                // Check if subcategory matches (case-insensitive)
+                const subcategoryMatch = category.relevantSubcategories.some(relSub => 
+                    relSub.toLowerCase() === subcategory.toLowerCase()
+                );
+                
+                console.log(`Checking subcategory "${subcategory}" against [${category.relevantSubcategories.join(', ')}]: ${subcategoryMatch}`);
                 
                 // If sub-subcategory is selected, also check that
                 if (subSubcategory) {
-                    const subSubcategoryMatch = category.relevantSubSubcategories.includes(subSubcategory);
+                    const subSubcategoryMatch = category.relevantSubSubcategories.some(relSubSub => 
+                        relSubSub.toLowerCase() === subSubcategory.toLowerCase()
+                    );
+                    console.log(`Checking sub-subcategory "${subSubcategory}" against [${category.relevantSubSubcategories.join(', ')}]: ${subSubcategoryMatch}`);
+                    
+                    // If deeper sub-subcategory is selected, be more flexible with matching
+                    if (deeperSubSubcategory) {
+                        console.log(`Deeper sub-subcategory "${deeperSubSubcategory}" selected - using flexible matching`);
+                        // For deeper sub-subcategory, if subcategory matches, show the category
+                        // This allows for more specific filtering while still showing relevant sizes
+                        return subcategoryMatch;
+                    }
+                    
+                    // If no exact match found, but subcategory matches, show the category
+                    // This handles cases where sub-subcategory values don't match exactly
+                    if (subcategoryMatch && !subSubcategoryMatch) {
+                        console.log(`No exact sub-subcategory match, but subcategory matches - showing category`);
+                        return true;
+                    }
+                    
                     return subcategoryMatch && subSubcategoryMatch;
                 }
                 
                 return subcategoryMatch;
             });
+            
+            console.log('Relevant categories found:', relevantCategories.length);
             
             // Generate HTML for relevant categories only
             relevantCategories.forEach(([categoryKey, category]) => {
@@ -2797,7 +2890,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function refreshSizeOptions() {
             const sizeCategory = document.getElementById('size_category').value;
             if (sizeCategory === 'beauty') {
-                loadSizeOptions();
+                // Get current subcategory, sub-subcategory, and deeper sub-subcategory selections
+                const subcategory = document.getElementById('subcategory').value;
+                const subSubcategory = document.getElementById('sub_subcategory').value;
+                const deeperSubSubcategory = document.getElementById('deeper_sub_subcategory').value;
+                const sizeDropdownContent = document.getElementById('size-dropdown-content');
+                
+                console.log('Refreshing size options - Subcategory:', subcategory, 'Sub-subcategory:', subSubcategory, 'Deeper sub-subcategory:', deeperSubSubcategory);
+                
+                // If no subcategory is selected, show all beauty sizes
+                if (!subcategory) {
+                    console.log('No subcategory selected, showing all beauty sizes');
+                    sizeDropdownContent.innerHTML = generateBeautySizes(false, null);
+                } else {
+                    // Show filtered sizes based on subcategory, sub-subcategory, and deeper sub-subcategory
+                    console.log('Subcategory selected, showing filtered sizes');
+                    sizeDropdownContent.innerHTML = generateFilteredBeautySizes(false, null, subcategory, subSubcategory, deeperSubSubcategory);
+                }
             }
         }
 
@@ -3694,6 +3803,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     const subSubcategorySelect = document.getElementById('sub_subcategory');
                                     if (subSubcategorySelect) {
                                         subSubcategorySelect.value = '<?php echo htmlspecialchars($product['sub_subcategory']); ?>';
+                                        
+                                        // Set deeper sub-subcategory value if it exists
+                                        const deeperSubSubcategorySelect = document.getElementById('deeper_sub_subcategory');
+                                        if (deeperSubSubcategorySelect) {
+                                            deeperSubSubcategorySelect.value = '<?php echo htmlspecialchars($product['deeper_sub_subcategory'] ?? ''); ?>';
+                                        }
                                     }
                                 }, 1000);
                             <?php endif; ?>

@@ -232,14 +232,70 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+
+                // Extract size data from database
+                $productSizes = [];
+
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes'])) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes'])) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+
+                // If still no sizes, provide default sizes for shoes
+                if (empty($productSizes)) {
+                    $productSizes = ['5', '6', '7', '8', '9', '10'];
+                }
+
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price'] ?? 0; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
@@ -413,14 +469,70 @@ $childrensShoes = $productModel->getBySubcategory("Kids' shoes");
                 $isAvailable = ($available === true || $available === 'true' || $available === 1 || $available === '1');
                 $isSoldOut = $stock <= 0 || !$isAvailable;
                 $isLowStock = $stock > 0 && $stock <= 5;
+
+                // Extract size data from database
+                $productSizes = [];
+
+                // Try to get sizes from selected_sizes field
+                if (!empty($product['selected_sizes'])) {
+                    if (is_string($product['selected_sizes'])) {
+                        $sizes = json_decode($product['selected_sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['selected_sizes'])) {
+                        $productSizes = $product['selected_sizes'];
+                    }
+                }
+
+                // If no sizes found, try sizes field
+                if (empty($productSizes) && !empty($product['sizes'])) {
+                    if (is_string($product['sizes'])) {
+                        $sizes = json_decode($product['sizes'], true);
+                        if (is_array($sizes)) {
+                            $productSizes = $sizes;
+                        }
+                    } elseif (is_array($product['sizes'])) {
+                        $productSizes = $product['sizes'];
+                    }
+                }
+
+                // If still no sizes, provide default sizes for shoes
+                if (empty($productSizes)) {
+                    $productSizes = ['5', '6', '7', '8', '9', '10'];
+                }
+
+                // Convert to simple array of size names for filtering
+                $sizeNames = [];
+                foreach ($productSizes as $size) {
+                    if (is_string($size)) {
+                        $sizeNames[] = $size;
+                    } elseif (is_array($size) && isset($size['name'])) {
+                        $sizeNames[] = $size['name'];
+                    }
+                }
                 ?>
                 <div class="product-card" 
                      data-product-id="<?php echo $product['_id']; ?>"
-                     data-product-sizes="<?php echo htmlspecialchars(json_encode($product['sizes'] ?? $product['selected_sizes'] ?? [])); ?>"
-                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($product['selected_sizes'] ?? [])); ?>"
+                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
+                     data-product-price="<?php echo $product['price'] ?? 0; ?>"
+                     data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
+                     data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-featured="<?php echo ($product['featured'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale="<?php echo ($product['sale'] ?? false) ? 'true' : 'false'; ?>"
+                     data-product-sale-price="<?php echo htmlspecialchars($product['salePrice'] ?? $product['sale_price'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
+                     data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
+                     data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-variants="<?php echo htmlspecialchars(json_encode($product['color_variants'] ?? [])); ?>"
                      data-product-options="<?php echo htmlspecialchars(json_encode($product['options'] ?? [])); ?>">
                     <div class="product-image">
+                        <?php if ($product['featured'] ?? false): ?>
+                            <div class="featured-badge">Featured</div>
+                        <?php endif; ?>
+                        <?php if (($product['sale'] ?? false) && !empty($product['salePrice'] ?? $product['sale_price'] ?? '')): ?>
+                            <div class="sale-badge">Sale</div>
+                        <?php endif; ?>
                         <div class="image-slider">
                             <?php 
                             // Main product images
