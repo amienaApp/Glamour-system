@@ -412,12 +412,34 @@ class QuickviewManager {
         this.updateColorSelection();
         this.updateImagesForColor(colorValue);
         this.updateAvailability();
+        
+        // Update wishlist button state when color changes
+        if (this.currentProduct && window.wishlistManager) {
+            const productId = this.currentProduct.id || this.currentProduct._id;
+            const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+            if (productId && wishlistBtn) {
+                const selectedSize = this.selectedSize || '';
+                const isInWishlist = window.wishlistManager.isInWishlist(productId, colorValue, selectedSize);
+                window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
+            }
+        }
     }
 
     selectSize(sizeName) {
         this.selectedSize = sizeName;
         this.updateSizeSelection();
         this.updateAvailability();
+        
+        // Update wishlist button state when size changes
+        if (this.currentProduct && window.wishlistManager) {
+            const productId = this.currentProduct.id || this.currentProduct._id;
+            const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+            if (productId && wishlistBtn) {
+                const selectedColor = this.selectedColor || '';
+                const isInWishlist = window.wishlistManager.isInWishlist(productId, selectedColor, sizeName);
+                window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
+            }
+        }
     }
 
     selectImage(imageIndex) {
@@ -581,9 +603,12 @@ class QuickviewManager {
         const wishlistBtn = document.getElementById('add-to-wishlist-quick');
         const productId = product.id || product._id;
         if (wishlistBtn && window.wishlistManager && productId) {
-            const isInWishlist = window.wishlistManager.isInWishlist(productId);
+            // Check if this specific product variant is in wishlist
+            const selectedColor = this.selectedColor || '';
+            const selectedSize = this.selectedSize || '';
+            const isInWishlist = window.wishlistManager.isInWishlist(productId, selectedColor, selectedSize);
             window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
-            console.log('QuickviewManager: Wishlist button initialized, isInWishlist:', isInWishlist);
+            console.log('QuickviewManager: Wishlist button initialized, isInWishlist:', isInWishlist, 'for product:', productId, 'color:', selectedColor, 'size:', selectedSize);
         }
     }
 

@@ -276,7 +276,20 @@ if (typeof WishlistManager === 'undefined') {
     
     toggleQuickViewWishlist(productId, button) {
         const wishlist = this.getWishlist();
-        const existingIndex = wishlist.findIndex(item => item.id === productId);
+        
+        // Get product details from quickview
+        const productDetails = this.getQuickViewProductDetails(productId);
+        if (!productDetails) {
+            this.showNotification('Could not get product details', 'error');
+            return;
+        }
+        
+        // Check for existing item with same ID and selected color/size
+        const existingIndex = wishlist.findIndex(item => 
+            item.id === productId && 
+            item.selectedColor === productDetails.selectedColor &&
+            item.selectedSize === productDetails.selectedSize
+        );
         
         if (existingIndex > -1) {
             // Remove from wishlist
@@ -284,19 +297,22 @@ if (typeof WishlistManager === 'undefined') {
             this.saveWishlist(wishlist);
             this.updateButtonState(button, false);
             this.showNotification('Removed from wishlist', 'info');
+            this.triggerWishlistEvent('removed', { productId, wishlist });
         } else {
-            // Add to wishlist with quickview details
-            const productDetails = this.getQuickViewProductDetails(productId);
-            if (productDetails) {
-                wishlist.push(productDetails);
-                this.saveWishlist(wishlist);
-                this.updateButtonState(button, true);
-                const colorInfo = productDetails.selectedColor ? ` (${productDetails.selectedColor})` : '';
-                this.showNotification(`Added to wishlist${colorInfo}`, 'success');
-            } else {
-                this.showNotification('Could not add to wishlist', 'error');
+            // Check if wishlist is full
+            if (wishlist.length >= this.maxItems) {
+                this.showNotification(`Wishlist is full (max ${this.maxItems} items). Remove some items first.`, 'warning');
                 return;
             }
+            
+            // Add to wishlist with quickview details
+            wishlist.push(productDetails);
+            this.saveWishlist(wishlist);
+            this.updateButtonState(button, true);
+            const colorInfo = productDetails.selectedColor ? ` (${productDetails.selectedColor})` : '';
+            const sizeInfo = productDetails.selectedSize ? ` - Size ${productDetails.selectedSize}` : '';
+            this.showNotification(`Added to wishlist${colorInfo}${sizeInfo}`, 'success');
+            this.triggerWishlistEvent('added', { productId, product: productDetails, wishlist });
         }
         
         this.updateWishlistCount();
@@ -725,11 +741,12 @@ if (typeof WishlistManager === 'undefined') {
     }
     
     // Check if product is in wishlist
-    isInWishlist(productId, selectedColor = '') {
+    isInWishlist(productId, selectedColor = '', selectedSize = '') {
         const wishlist = this.getWishlist();
         return wishlist.some(item => 
             item.id === productId && 
-            (selectedColor === '' || item.selectedColor === selectedColor)
+            (selectedColor === '' || item.selectedColor === selectedColor) &&
+            (selectedSize === '' || item.selectedSize === selectedSize)
         );
     }
     
