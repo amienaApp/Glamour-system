@@ -240,7 +240,9 @@ if (!empty($filters)) {
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           playsinline
+                                           onloadeddata="this.play().catch(e => console.log('Video autoplay blocked:', e))">
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
@@ -258,6 +260,7 @@ if (!empty($filters)) {
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
                                            loop
+                                           autoplay
                                            playsinline
                                            preload="metadata"
                                            style="width: 100%; height: 100%; object-fit: cover;">
@@ -289,6 +292,8 @@ if (!empty($filters)) {
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
                                                    loop
+                                                   autoplay
+                                                   playsinline
                                                    playsinline
                                                    preload="metadata"
                                                    style="width: 100%; height: 100%; object-fit: cover;">
@@ -308,6 +313,8 @@ if (!empty($filters)) {
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
                                                    loop
+                                                   autoplay
+                                                   playsinline
                                                    playsinline
                                                    preload="metadata"
                                                    style="width: 100%; height: 100%; object-fit: cover;">
@@ -446,6 +453,7 @@ if (!empty($filters)) {
                      data-product-price="<?php echo $product['price']; ?>"
                      data-product-category="<?php echo htmlspecialchars($product['category'] ?? ''); ?>"
                      data-product-subcategory="<?php echo htmlspecialchars($product['subcategory'] ?? ''); ?>"
+                     data-product-color="<?php echo htmlspecialchars($product['color'] ?? ''); ?>"
                      data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
                      data-product-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
                      data-product-selected-sizes="<?php echo htmlspecialchars(json_encode($sizeNames)); ?>"
@@ -478,7 +486,9 @@ if (!empty($filters)) {
                                            class="active" 
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
-                                           loop>
+                                           loop
+                                           playsinline
+                                           onloadeddata="this.play().catch(e => console.log('Video autoplay blocked:', e))">
                                     </video>
                                 <?php else: ?>
                                     <img src="../<?php echo htmlspecialchars($frontImage); ?>" 
@@ -497,6 +507,7 @@ if (!empty($filters)) {
                                            data-color="<?php echo htmlspecialchars($product['color']); ?>"
                                            muted
                                            loop
+                                           autoplay
                                            playsinline
                                            preload="metadata"
                                            style="width: 100%; height: 100%; object-fit: cover;">
@@ -528,6 +539,9 @@ if (!empty($filters)) {
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
                                                    loop
+                                                   autoplay
+                                                   playsinline
+                                                   playsinline
 >
                                             </video>
                                         <?php else: ?>
@@ -546,6 +560,8 @@ if (!empty($filters)) {
                                                    data-color="<?php echo htmlspecialchars($variant['color']); ?>"
                                                    muted
                                                    loop
+                                                   autoplay
+                                                   playsinline
                                                    playsinline
                                                    preload="metadata"
                                                    style="width: 100%; height: 100%; object-fit: cover;">
