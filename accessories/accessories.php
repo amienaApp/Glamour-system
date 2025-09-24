@@ -146,6 +146,7 @@ error_log('Accessories dynamic colors found: ' . json_encode($allColors));
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/mobile-filter-responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>

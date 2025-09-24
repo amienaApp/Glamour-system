@@ -1,0 +1,162 @@
+/* Universal Mobile Filter Responsive Styles */
+/* This file contains responsive styles for sidebar content when displayed in mobile filter overlays */
+
+/* Mobile styles (up to 768px) */
+@media (max-width: 768px) {
+    /* Make sidebar responsive when inside mobile filter overlay */
+    .mobile-filter-body .sidebar {
+        display: block !important;
+        width: 100% !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+    
+    .mobile-filter-body .sidebar .filter-section {
+        margin-bottom: 20px;
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-filter-body .sidebar .filter-header h4 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .mobile-filter-body .sidebar .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .mobile-filter-body .sidebar .filter-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+    
+    .mobile-filter-body .sidebar .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .mobile-filter-body .sidebar .color-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .mobile-filter-body .sidebar .color-swatch {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+    }
+    
+    .mobile-filter-body .sidebar .size-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .mobile-filter-body .sidebar .size-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .mobile-filter-body .sidebar .size-action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 12px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+}
+
+/* Tablet styles (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Make sidebar responsive when inside mobile filter overlay - tablet */
+    .mobile-filter-body .sidebar .filter-section {
+        margin-bottom: 15px;
+        padding: 12px;
+    }
+    
+    .mobile-filter-body .sidebar .filter-header h4 {
+        font-size: 15px;
+    }
+    
+    .mobile-filter-body .sidebar .filter-option {
+        padding: 6px 0;
+        font-size: 13px;
+    }
+    
+    .mobile-filter-body .sidebar .color-grid {
+        grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+        gap: 8px;
+    }
+    
+    .mobile-filter-body .sidebar .color-swatch {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .mobile-filter-body .sidebar .size-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
+    }
+}
+
+/* Large tablet styles (1025px to 1200px) */
+@media (min-width: 1025px) and (max-width: 1200px) {
+    .mobile-filter-body .sidebar .filter-section {
+        margin-bottom: 12px;
+        padding: 10px;
+    }
+    
+    .mobile-filter-body .sidebar .filter-header h4 {
+        font-size: 14px;
+    }
+    
+    .mobile-filter-body .sidebar .filter-option {
+        padding: 5px 0;
+        font-size: 12px;
+    }
+    
+    .mobile-filter-body .sidebar .color-grid {
+        grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+        gap: 6px;
+    }
+    
+    .mobile-filter-body .sidebar .color-swatch {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .mobile-filter-body .sidebar .size-grid {
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+        gap: 5px;
+    }
+}
+
+/* Desktop styles (1201px and above) */
+@media (min-width: 1201px) {
+    /* Hide mobile filter elements on desktop */
+    .mobile-filter-btn,
+    .mobile-filter-overlay,
+    .mobile-filter-content {
+        display: none !important;
+    }
+}

@@ -89,6 +89,7 @@ error_log('Bags dynamic colors found: ' . json_encode($allColors));
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/mobile-filter-responsive.css?v=<?php echo time(); ?>">
     <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
     <script src="script.js?v=<?php echo time(); ?>" defer></script>
     <script src="../scripts/wishlist-manager.js?v=<?php echo time(); ?>"></script>
@@ -206,94 +207,33 @@ error_log('Bags dynamic colors found: ' . json_encode($allColors));
                 });
             }
 
-            // Clear all filters
+            // Clear all filters - use simple-filter.js function
             if (mobileClearFilters) {
                 mobileClearFilters.addEventListener('click', function() {
+                    // Clear all checkboxes in the mobile overlay (which contains the same sidebar content)
                     const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => {
                         checkbox.checked = false;
                     });
+                    
+                    // Reset the simple-filter.js state
+                    if (typeof selectedCategories !== 'undefined') selectedCategories = [];
+                    if (typeof selectedColors !== 'undefined') selectedColors = [];
+                    if (typeof selectedPrice !== 'undefined') selectedPrice = null;
+                    
+                    // Apply the cleared filters
+                    if (typeof applyFilters === 'function') {
+                        applyFilters();
+                    }
                 });
             }
 
-            // Apply filters
+            // Apply filters - close the mobile overlay (filters are already applied via simple-filter.js)
             if (mobileApplyFilters) {
                 mobileApplyFilters.addEventListener('click', function() {
-                    // Get selected filters
-                    const selectedFilters = {};
-                    const checkboxes = mobileFilterOverlay.querySelectorAll('input[type="checkbox"]:checked');
-                    
-                    checkboxes.forEach(checkbox => {
-                        const filterType = checkbox.getAttribute('data-filter');
-                        if (!selectedFilters[filterType]) {
-                            selectedFilters[filterType] = [];
-                        }
-                        selectedFilters[filterType].push(checkbox.value);
-                    });
-
-                    // Apply filters to products
-                    applyFilters(selectedFilters);
-                    
-                    // Close filter menu
+                    // Close filter menu - filters are already applied via simple-filter.js event handlers
                     mobileFilterOverlay.classList.remove('active');
                     body.classList.remove('mobile-filter-open');
-                });
-            }
-
-            // Function to apply filters
-            function applyFilters(filters) {
-                const productCards = document.querySelectorAll('.product-card');
-                
-                productCards.forEach(card => {
-                    let shouldShow = true;
-                    
-                    // Check category filters
-                    if (filters.category && filters.category.length > 0) {
-                        const productCategory = card.getAttribute('data-product-subcategory');
-                        const categoryMatch = filters.category.some(filter => {
-                            return productCategory && productCategory.toLowerCase().includes(filter.toLowerCase());
-                        });
-                        if (!categoryMatch) shouldShow = false;
-                    }
-                    
-                    // Check color filters
-                    if (filters.color && filters.color.length > 0) {
-                        const productColor = card.getAttribute('data-product-color');
-                        const colorMatch = filters.color.some(filter => {
-                            return productColor && productColor.toLowerCase() === filter.toLowerCase();
-                        });
-                        if (!colorMatch) shouldShow = false;
-                    }
-                    
-                    // Check price filters
-                    if (filters.price_range && filters.price_range.length > 0) {
-                        const productPrice = parseFloat(card.getAttribute('data-product-price'));
-                        const priceMatch = filters.price_range.some(filter => {
-                            switch(filter) {
-                                case '0-100':
-                                    return productPrice >= 0 && productPrice <= 100;
-                                case '100-200':
-                                    return productPrice > 100 && productPrice <= 200;
-                                case '200-400':
-                                    return productPrice > 200 && productPrice <= 400;
-                                case '400+':
-                                    return productPrice > 400;
-                                case 'on-sale':
-                                    // You can add sale logic here
-                                    return false;
-                                default:
-                                    return true;
-                            }
-                        });
-                        if (!priceMatch) shouldShow = false;
-                    }
-                    
-                    // Show or hide product card
-                    if (shouldShow) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
                 });
             }
 

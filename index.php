@@ -14,11 +14,12 @@ session_start();
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
-    <!-- Include the header CSS -->
-    <link rel="stylesheet" href="heading/header.css?v=<?php echo time(); ?>">
+    <!-- Include the home header CSS -->
+    <link rel="stylesheet" href="heading/home-header.css?v=<?php echo time(); ?>">
      
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="bagsfolder/styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="footer/footer.css?v=<?php echo time(); ?>">
     
     <!-- Hide mobile elements on desktop for index page -->
     <style>
@@ -256,6 +257,7 @@ session_start();
             opacity: 0;
             transition: opacity 0.4s ease;
             z-index: 1;
+            pointer-events: none;
         }
         
         .category5:hover::before {
@@ -509,155 +511,12 @@ session_start();
       }
     </style>
     
-    <!-- Compact Footer Styles -->
-    <style>
-        .custom-footer {
-            background:rgb(173, 175, 176);
-            color: #000000;
-            padding: 10px 0 5px;
-            margin-top: 15px;
-        }
-        
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 10px;
-        }
-        
-        .footer-col {
-            padding: 5px;
-        }
-        
-        .footer-col h3 {
-            color: #000000;
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .footer-col ul li {
-            margin-bottom: 2px;
-        }
-        
-        .footer-col a {
-            color: #000000 !important;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 700 !important;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .custom-footer .footer-col ul li a {
-            color: #000000 !important;
-            font-weight: 700 !important;
-        }
-        
-        .footer-col a:hover {
-            color: #ff6b9d;
-        }
-        
-        .footer-col a i {
-            width: 16px;
-            text-align: center;
-            color: #000000 !important;
-        }
-        
-        .footer-col h3 i {
-            margin-right: 8px;
-            color: #000000 !important;
-        }
-        
-        .footer-col p {
-            color: #000000;
-            font-size: 0.9rem;
-            font-weight: 600;
-            line-height: 1.4;
-            margin: 0;
-        }
-        
-        .footer-contact {
-            margin: 0;
-        }
-        
-        .footer-contact li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #000000;
-        }
-        
-        .footer-icon {
-            margin-right: 8px;
-            width: 16px;
-        }
-        
-        .footer-social {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .footer-social a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 35px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .footer-social a:hover {
-            background: #ff6b9d;
-            transform: translateY(-2px);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding: 5px 10px 0;
-            margin-top: 8px;
-            border-top: 1px solid rgba(0, 0, 0, 0.2);
-            color: #000000;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 0 15px;
-            }
-            
-            .custom-footer {
-                padding: 25px 0 15px;
-            }
-        }
-    </style>
     
 </head>
 <body>
     
-    <!-- Include the header with complete authentication system -->
-    <?php include 'heading/header.php'; ?>
+    <!-- Include the home header -->
+    <?php include 'heading/home-header.php'; ?>
 
     <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav-overlay" id="mobile-nav-overlay">
@@ -696,36 +555,36 @@ session_start();
         <div class="swiper banner-swiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="img/banner9.webp" alt="Banner 3" class="animate__animated animate__fadeIn">
+                    <img src="img/banner9.webp" alt="Banner 3" class="animate_animated animate_fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner14.webp" alt="Banner 4" class="animate__animated animate__fadeIn">
+                    <img src="img/banner14.webp" alt="Banner 4" class="animate_animated animate_fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner5.png" alt="Banner 5" class="animate__animated animate__fadeIn">
+                    <img src="img/banner5.png" alt="Banner 5" class="animate_animated animate_fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner6.jpg" alt="Banner 6" class="animate__animated animate__fadeIn">
+                    <img src="img/banner6.jpg" alt="Banner 6" class="animate_animated animate_fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner7.jpg" alt="Banner 7" class="animate__animated animate__fadeIn">
+                    <img src="img/banner7.jpg" alt="Banner 7" class="animate_animated animate_fadeIn">
                 </div>
                 
                 <div class="swiper-slide">
-                    <img src="img/banner8.jpg" alt="Banner 8" class="animate__animated animate__fadeIn">
+                    <img src="img/banner8.jpg" alt="Banner 8" class="animate_animated animate_fadeIn">
                 </div>
             </div>
             
             <!-- Navigation arrows -->
-            <div class="swiper-button-next animate__animated animate__bounceInRight"></div>
-            <div class="swiper-button-prev animate__animated animate__bounceInLeft"></div>
+            <div class="swiper-button-next animate_animated animate_bounceInRight"></div>
+            <div class="swiper-button-prev animate_animated animate_bounceInLeft"></div>
             
             <!-- Pagination dots -->
-            <div class="swiper-pagination animate__animated animate__fadeInUp"></div>
+            <div class="swiper-pagination animate_animated animate_fadeInUp"></div>
         </div>
     </section>
     
@@ -736,7 +595,7 @@ session_start();
 
          <!-- Shop by category -->
     <section  class="product container spacing">
-      <div class="title animate__animated animate__fadeInDown"> 
+      <div class="title animate_animated animate_fadeInDown"> 
          <h2 class="glow-on-hover">Shop by category</h2>
         <P>Explore our curated collections designed for every style and occasion</P>
     </div>
@@ -746,7 +605,7 @@ session_start();
 
         <div class="pro-container container">
 
-        <div class="card animate__animated animate__fadeInUp animate__delay-1s glow-on-hover">
+        <div class="card animate_animated animatefadeInUp animate_delay-1s glow-on-hover">
                  <img src="img/menn/men.jpg" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Men's Collection</h3>
@@ -759,7 +618,7 @@ session_start();
 
 
 
-                             <div class="card animate__animated animate__fadeInUp animate__delay-2s">
+                             <div class="card animate_animated animatefadeInUp animate_delay-2s">
                  <img src="img/women/1.jpg" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Women's Collection</h3>
@@ -773,7 +632,7 @@ session_start();
            
 
 
-                               <div class="card animate__animated animate__fadeInUp animate__delay-3s">
+                               <div class="card animate_animated animatefadeInUp animate_delay-3s">
                  <img src="img/child/1.webp" cover / center no-repeat>
                  <div class="card-content">
                     <h3>Children's Collection</h3>
@@ -971,45 +830,46 @@ session_start();
            <!-- section contains only pictures and some videos -->
    <section>
    <div class="container5" >
-       <div class="category5 animate__animated animate__zoomIn">
-         <a href="menfolder/men.php?subcategory=suits">
+    
+       <div class="category5 animate_animated animate_zoomIn">
+         <a href="womenF/women.php">
            <video src="./img/sawiro/suitvideo.mp4" autoplay loop muted controls> </video>
          </a>
        </div>
       
-       <div class="category5 animate__animated animate__zoomIn animate__delay-1s">
+       <div class="category5 animate_animated animatezoomIn animate_delay-1s">
          <a href="womenF/women.php?subcategory=dresses">
            <img src="./img/sawiro/22.webp" alt="Formal Dresses">
          </a>
        </div>
 
          <div class="category5">
-       <a href="womenF/women.php?subcategory=dresses">
+       <a href="womenF/women.php">
          <video src="./img/sawiro/taash.mp4" autoplay loop muted controls> </video>
        </a>
        </div>
        
        <div class="category5">
-         <a href="beautyfolder/beauty.php?subcategory=makeup">
+         <a href="beautyfolder/beauty.php">
            <video src="./img/sawiro/makupvideo.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
-         <a href="bagsfolder/bags.php?category=handbags">
+         <a href="bagsfolder/bags.php">
            <img src="./img/sawiro/handbag1.jpg" alt="Handbags">
          </a>
        </div>
 
        <div class="category5">
-         <a href="womenF/women.php?subcategory=dresses">
+         <a href="womenF/women.php">
            <video src="./img/sawiro/dressvideo2.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
   
 
        <div class="category5">
-        <a href="shoess/shoes.php?category=casual">
+        <a href="shoess/shoes.php">
          <video src="./img/sawiro/shoesvideo.mp4" autoplay loop muted controls ></video>
         </a>
        </div>
@@ -1049,61 +909,61 @@ session_start();
        </div>
 
        <div class="category5">
-         <a href="womenF/women.php?subcategory=tops">
+         <a href="womenF/women.php?subcategory=dresses">
            <video src="./img/sawiro/abaya.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
-         <a href="bagsfolder/bags.php?category=handbags">
+         <a href="bagsfolder/bags.php">
            <img src="./img/sawiro/bag.jpg" alt="Designer Handbags">
          </a>
        </div>
 
        <div class="category5">
-         <a href="shoess/shoes.php?category=heels">
+         <a href="shoess/shoes.php">
            <img src="./img/sawiro/heel.jpg" alt="High Heels">
          </a>
        </div>
 
        <div class="category5">
-         <a href="beautyfolder/beauty.php?subcategory=skincare">
+         <a href="beautyfolder/beauty.php">
            <img src="./img/sawiro/skin.jpg" alt="Skincare Products">
          </a>
        </div>
 
        <div class="category5">
-         <a href="accessories/accessories.php?category=belts">
+         <a href="accessories/accessories.php">
            <img src="./img/sawiro/belt.jpg" alt="Fashion Belts">
          </a>
        </div>
 
        <div class="category5">
-         <a href="homedecor/homedecor.php?category=decor">
+         <a href="homedecor/homedecor.php">
            <img src="./img/sawiro/homedecor.jpg" alt="Home Decor Items">
          </a>
        </div>
 
        <div class="category5">
-         <a href="kidsfolder/kids.php?subcategory=boys">
+         <a href="kidsfolder/kids.php">
            <img src="./img/sawiro/boy.jpg" alt="Boys Clothing">
          </a>
        </div>
 
        <div class="category5">
-         <a href="kidsfolder/kids.php?subcategory=girls">
+         <a href="kidsfolder/kids.php">
            <img src="./img/sawiro/girl.jpg" alt="Girls Clothing">
          </a>
        </div>
 
        <div class="category5">
-         <a href="accessories/accessories.php?category=women">
+         <a href="accessories/accessories.php">
            <video src="./img/sawiro/accessories.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
 
        <div class="category5">
-         <a href="accessories/accessories.php?category=men">
+         <a href="accessories/accessories.php">
            <video src="./img/sawiro/watchvideo.mp4" autoplay loop muted controls ></video>
          </a>
        </div>
@@ -1180,59 +1040,9 @@ session_start();
 <!-- Quick View Overlay -->
 <div class="quick-view-overlay" id="quick-view-overlay"></div> 
 
-  <!-- Footer Start -->
-    <footer class="custom-footer">
-        <div class="footer-container">
-        <div class="footer-col">
-            <h3><i class="fas fa-shopping-bag"></i> Shop Categories</h3>
-            <ul>
-            <li><a href="beautyfolder/beauty.php"><i class="fas fa-palette"></i> Beauty</a></li>
-            <li><a href="womenF/women.php"><i class="fas fa-female"></i> Women's Fashion</a></li>
-            <li><a href="menfolder/men.php"><i class="fas fa-male"></i> Men's Fashion</a></li>
-            <li><a href="kidsfolder/kids.php"><i class="fas fa-child"></i> Kids</a></li>
-            <li><a href="shoess/shoes.php"><i class="fas fa-shoe-prints"></i> Shoes</a></li>
-            <li><a href="bagsfolder/bags.php"><i class="fas fa-shopping-bag"></i> Bags</a></li>
-            <li><a href="accessories/accessories.php"><i class="fas fa-gem"></i> Accessories</a></li>
-            <li><a href="perfumes/index.php"><i class="fas fa-spray-can"></i> Perfumes</a></li>
-            <li><a href="homedecor/homedecor.php"><i class="fas fa-home"></i> Home Decor</a></li>
-            </ul>
-        </div>
-        <div class="footer-col">
-            <h3><i class="fas fa-crown"></i> Glamour Palace</h3>
-            <p>Your premier destination for fashion, beauty, and lifestyle products. We bring you the latest trends with exceptional quality and service.</p>
-        </div>
-        <div class="footer-col">
-            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
-            <ul class="footer-contact">
-            <li><span class="footer-icon"><i class="fas fa-envelope"></i></span> Glamor@gmail.com</li>
-            <li><span class="footer-icon"><i class="fas fa-phone"></i></span> +252 907 166 125</li>
-            <li><span class="footer-icon"><i class="fas fa-map-marker-alt"></i></span> Shaariqa Road, Garowe, Somalia</li>
-            </ul>
-            <div class="footer-social">
-            <a href="https://wa.me/252907166125" target="_blank" title="WhatsApp">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.447-.52.151-.174.2-.298.3-.497.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.008-.372-.01-.571-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.077 4.363.709.306 1.262.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.288.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.617h-.001a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374A9.86 9.86 0 012.1 12.045C2.073 6.507 6.659 2 12.207 2c2.654 0 5.151 1.037 7.032 2.918a9.825 9.825 0 012.929 7.029c-.003 5.538-4.589 10.045-10.147 10.045m8.413-18.457A11.815 11.815 0 0012.207 0C5.475 0 .073 5.373.1 12.06c.021 2.13.557 4.21 1.611 6.077L.057 24l6.084-1.602a11.888 11.888 0 005.408 1.378h.005c6.729 0 12.207-5.373 12.234-12.06a11.82 11.82 0 00-3.48-8.456"/></svg>
-            </a>
-            <a href="https://instagram.com/" target="_blank" title="Instagram">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608C4.515 2.567 5.782 2.295 7.148 2.233 8.414 2.175 8.794 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.771.131 4.659.363 3.678 1.344c-.98.98-1.213 2.092-1.272 3.373C2.013 5.668 2 6.077 2 12c0 5.923.013 6.332.072 7.613.059 1.281.292 2.393 1.272 3.373.98.98 2.092 1.213 3.373 1.272C8.332 23.987 8.741 24 12 24s3.668-.013 4.948-.072c1.281-.059 2.393-.292 3.373-1.272.98-.98 1.213-2.092 1.272-3.373.059-1.281.072-1.69.072-7.613 0-5.923-.013-6.332-.072-7.613-.059-1.281-.292-2.393-1.272-3.373-.98-.98-2.092-1.213-3.373-1.272C15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
-            </a>
-            <a href="https://twitter.com/" target="_blank" title="Twitter">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 01-2.828.775 4.932 4.932 0 002.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 00-8.38 4.482C7.691 8.095 4.066 6.13 1.64 3.161c-.542.929-.856 2.01-.857 3.17 0 2.188 1.115 4.117 2.823 5.254a4.904 4.904 0 01-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 01-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 010 21.543a13.94 13.94 0 007.548 2.209c9.142 0 14.307-7.721 13.995-14.646A9.936 9.936 0 0024 4.557z"/></svg>
-            </a>
-            <a href="https://www.tiktok.com/" target="_blank" title="TikTok">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12.004 2.003c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V2.003zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm-12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.004zm6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V6.005zm-6.001 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm-6.001 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm12.002 0c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001z"/></svg>
-            </a>
-            <a href="https://facebook.com/" target="_blank" title="Facebook">
-                <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.326 24H12.82v-9.294H9.692v-3.622h3.127V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
-            </a>
-            </div>
-        </div>
-         
-        </div>
-        <div class="footer-bottom">
-        Copyright © Glamor palaca
-        </div>
-    </footer>
-  <!-- Footer End -->
+  
+  <!-- Include Footer -->
+  <?php include 'footer/footer.php'; ?>
   
     
       
@@ -1405,7 +1215,7 @@ session_start();
              // Add staggered animations to cards
              const cards = document.querySelectorAll('.card');
              cards.forEach((card, index) => {
-                 card.style.animationDelay = `${index * 0.1}s`;
+                 card.style.animationDelay = ${index * 0.1}s;
              });
              
              // Add enhanced hover effects to category items

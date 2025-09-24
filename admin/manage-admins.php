@@ -759,7 +759,7 @@ $admins = $adminModel->getAllAdmins();
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Username *</label>
-                        <input type="text" name="username" class="form-input" required>
+                        <input type="text" name="username" class="form-input" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email *</label>
@@ -809,7 +809,7 @@ $admins = $adminModel->getAllAdmins();
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Username *</label>
-                        <input type="text" name="username" id="editUsername" class="form-input" required>
+                        <input type="text" name="username" id="editUsername" class="form-input" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email *</label>
@@ -885,6 +885,43 @@ $admins = $adminModel->getAllAdmins();
     </div>
 
     <script>
+        // Username validation - only allow letters and spaces
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add validation to create admin form
+            const createUsernameInput = document.querySelector('#createAdminModal input[name="username"]');
+            if (createUsernameInput) {
+                createUsernameInput.addEventListener('input', function(e) {
+                    // Remove any non-alphabetic characters and spaces
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                // Prevent pasting non-alphabetic characters
+                createUsernameInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanPaste = paste.replace(/[^a-zA-Z\s]/g, '');
+                    this.value = cleanPaste;
+                });
+            }
+            
+            // Add validation to edit admin form
+            const editUsernameInput = document.querySelector('#editAdminModal input[name="username"]');
+            if (editUsernameInput) {
+                editUsernameInput.addEventListener('input', function(e) {
+                    // Remove any non-alphabetic characters and spaces
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                // Prevent pasting non-alphabetic characters
+                editUsernameInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanPaste = paste.replace(/[^a-zA-Z\s]/g, '');
+                    this.value = cleanPaste;
+                });
+            }
+        });
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('open');

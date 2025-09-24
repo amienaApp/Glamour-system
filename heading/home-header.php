@@ -345,7 +345,7 @@ $regionOptions = [
             <div class="modal-body">
                 <form class="user-registration-form">
                     <div class="form-group">
-                        <input type="text" id="username" class="form-input" placeholder="Username *" required>
+                        <input type="text" id="username" class="form-input" placeholder="Username *" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <input type="email" id="email" class="form-input" placeholder="Email Address *" required>
@@ -1068,6 +1068,12 @@ $regionOptions = [
                     return;
                 }
                 
+                // Username validation - only letters and spaces
+                if (!/^[a-zA-Z\s]+$/.test(formData.username)) {
+                    showNotification('Username must contain only letters and spaces (for names)', 'error');
+                    return;
+                }
+                
                 if (formData.password !== formData.confirm_password) {
                     return;
                 }
@@ -1141,6 +1147,24 @@ $regionOptions = [
         }
 
 
+
+        // Username validation - only allow letters and spaces
+        document.addEventListener('input', function(e) {
+            if (e.target.id === 'username') {
+                const usernameInput = e.target;
+                const value = usernameInput.value;
+                // Remove any characters that are not letters or spaces
+                const cleanValue = value.replace(/[^a-zA-Z\s]/g, '');
+                if (value !== cleanValue) {
+                    usernameInput.value = cleanValue;
+                    // Show a brief warning
+                    usernameInput.style.borderColor = '#dc3545';
+                    setTimeout(() => {
+                        usernameInput.style.borderColor = '';
+                    }, 2000);
+                }
+            }
+        });
 
         // Password visibility toggle functionality
         document.addEventListener('click', function(e) {

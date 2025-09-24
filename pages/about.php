@@ -36,6 +36,35 @@ if (session_status() === PHP_SESSION_NONE) {
             overflow: hidden;
         }
 
+        .hero-gallery {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 3;
+        }
+
+        .hero-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .about-hero::before {
             content: '';
             position: absolute;
@@ -101,6 +130,127 @@ if (session_status() === PHP_SESSION_NONE) {
         .about-content {
             padding: 80px 0;
             background: white;
+        }
+
+        .gallery-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8fbff 0%, #e6f3ff 100%);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .gallery-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .video-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .video-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .video-item video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .video-item:hover .video-overlay {
+            transform: translateY(0);
+        }
+
+        .video-overlay h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .video-overlay p {
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
         .container {
@@ -265,13 +415,19 @@ if (session_status() === PHP_SESSION_NONE) {
         .member-image {
             width: 100%;
             height: 300px;
-            background: linear-gradient(135deg, #0066cc 0%, #0099ff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
-            opacity: 0.8;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .member-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover .member-image img {
+            transform: scale(1.1);
         }
 
         .member-info {
@@ -382,6 +538,17 @@ if (session_status() === PHP_SESSION_NONE) {
                 gap: 30px;
             }
 
+            .hero-gallery {
+                flex-direction: column;
+                gap: 15px;
+                bottom: -100px;
+            }
+
+            .hero-image {
+                width: 80px;
+                height: 80px;
+            }
+
             .story-grid {
                 grid-template-columns: 1fr;
                 gap: 40px;
@@ -389,6 +556,16 @@ if (session_status() === PHP_SESSION_NONE) {
 
             .story-text {
                 padding-right: 0;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
             }
 
             .values-grid {
@@ -416,17 +593,30 @@ if (session_status() === PHP_SESSION_NONE) {
             <p class="hero-subtitle">Discover the passion behind Glamour - where fashion meets elegance and style meets sophistication</p>
             <div class="hero-stats">
                 <div class="stat-item">
-                    <span class="stat-number">10+</span>
-                    <span class="stat-label">Years of Excellence</span>
+                    <span class="stat-number">1</span>
+                    <span class="stat-label">Year of Excellence</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">50K+</span>
+                    <span class="stat-number">500+</span>
                     <span class="stat-label">Happy Customers</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">1000+</span>
+                    <span class="stat-number">200+</span>
                     <span class="stat-label">Products</span>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Hero Image Gallery -->
+        <div class="hero-gallery">
+            <div class="hero-image">
+                <img src="../img/sawiro/21.webp" alt="Fashion Collection">
+            </div>
+            <div class="hero-image">
+                <img src="../img/sawiro/22.webp" alt="Elegant Style">
+            </div>
+            <div class="hero-image">
+                <img src="../img/sawiro/24.jpg" alt="Modern Fashion">
             </div>
         </div>
     </section>
@@ -440,22 +630,75 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="story-grid">
                 <div class="story-text">
                     <h3>A Vision of Elegance</h3>
-                    <p>Founded in 2014, Glamour began as a dream to create a fashion destination that celebrates individuality and empowers people to express their unique style. What started as a small boutique has grown into a comprehensive fashion empire, offering everything from trendy accessories to timeless classics.</p>
-                    <p>Our commitment to quality, innovation, and customer satisfaction has been the cornerstone of our success. We believe that fashion is not just about clothing—it's about confidence, self-expression, and feeling beautiful in your own skin.</p>
+                    <p>Founded in 2023, Glamour began as a dream to create a fashion destination that celebrates individuality and empowers people to express their unique style. In just one year, we've grown from a small boutique into a comprehensive fashion destination, offering everything from trendy accessories to timeless classics.</p>
+                    <p>Our commitment to quality, innovation, and customer satisfaction has been the cornerstone of our rapid growth. We believe that fashion is not just about clothing—it's about confidence, self-expression, and feeling beautiful in your own skin.</p>
                 </div>
                 <div class="story-image">
-                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Glamour Store">
+                    <img src="../img/sawiro/7.jpg" alt="Glamour Store">
                 </div>
             </div>
 
             <div class="story-grid">
                 <div class="story-image">
-                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Fashion Collection">
+                    <img src="../img/sawiro/8.jpg" alt="Fashion Collection">
                 </div>
                 <div class="story-text">
                     <h3>Innovation Meets Tradition</h3>
                     <p>At Glamour, we blend cutting-edge fashion trends with timeless elegance. Our curated collections feature the latest styles from international designers alongside carefully selected pieces that stand the test of time.</p>
                     <p>We've embraced technology to enhance the shopping experience, offering seamless online shopping, virtual try-ons, and personalized recommendations. Yet, we never forget the human touch that makes fashion personal and meaningful.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Showcase Gallery -->
+    <section class="gallery-section">
+        <div class="container">
+            <h2 class="section-title">Our Beautiful Collections</h2>
+            <p class="section-subtitle">Discover the stunning pieces that make Glamour your go-to fashion destination</p>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="../img/sawiro/9.jpg" alt="Elegant Dresses">
+                    <div class="gallery-overlay">
+                        <h3>Elegant Dresses</h3>
+                        <p>Timeless beauty for every occasion</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="../img/sawiro/10.jpg" alt="Men's Fashion">
+                    <div class="gallery-overlay">
+                        <h3>Men's Fashion</h3>
+                        <p>Sophisticated style for the modern man</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="../img/sawiro/12.jpg" alt="Accessories">
+                    <div class="gallery-overlay">
+                        <h3>Luxury Accessories</h3>
+                        <p>Perfect finishing touches</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="../img/sawiro/13.jpg" alt="Home Decor">
+                    <div class="gallery-overlay">
+                        <h3>Home Decor</h3>
+                        <p>Beautiful spaces, beautiful life</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="../img/sawiro/20.webp" alt="Beauty Products">
+                    <div class="gallery-overlay">
+                        <h3>Beauty Products</h3>
+                        <p>Enhance your natural beauty</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="../img/sawiro/barca.jpg" alt="Barca Collection">
+                    <div class="gallery-overlay">
+                        <h3>Barca Collection</h3>
+                        <p>Exclusive sports-inspired fashion</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -519,6 +762,44 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </section>
 
+    <!-- Video Showcase Section -->
+    <section class="video-section">
+        <div class="container">
+            <h2 class="section-title">See Glamour in Action</h2>
+            <p class="section-subtitle">Watch our beautiful collections come to life</p>
+            
+            <div class="video-grid">
+                <div class="video-item">
+                    <video autoplay loop muted>
+                        <source src="../img/sawiro/dressvideo.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-overlay">
+                        <h3>Elegant Dresses</h3>
+                        <p>Timeless beauty in motion</p>
+                    </div>
+                </div>
+                <div class="video-item">
+                    <video autoplay loop muted>
+                        <source src="../img/sawiro/manvideo.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-overlay">
+                        <h3>Men's Fashion</h3>
+                        <p>Sophisticated style</p>
+                    </div>
+                </div>
+                <div class="video-item">
+                    <video autoplay loop muted>
+                        <source src="../img/sawiro/makupvideo.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-overlay">
+                        <h3>Beauty Products</h3>
+                        <p>Enhance your natural glow</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Team Section -->
     <section class="team-section">
         <div class="container">
@@ -528,23 +809,23 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-image">
-                        <i class="fas fa-user"></i>
+                        <img src="../img/sawiro/girl.jpg" alt="Amina abdiqafar">
                     </div>
                     <div class="member-info">
                         <h3 class="member-name">Amina abdiqafar</h3>
                         <p class="member-role">Founder & CEO</p>
-                        <p class="member-bio">With over 15 years in the fashion industry, Sarah's vision and leadership have been instrumental in making Glamour the success it is today.</p>
+                        <p class="member-bio">With a passion for fashion and entrepreneurial spirit, Amina's vision and leadership have been instrumental in making Glamour the success it is today.</p>
                     </div>
                 </div>
                 
                 <div class="team-member">
                     <div class="member-image">
-                        <i class="fas fa-user"></i>
+                        <img src="../img/sawiro/boy.jpg" alt="Fatima mohamud">
                     </div>
                     <div class="member-info">
                         <h3 class="member-name">Fatima mohamud</h3>
                         <p class="member-role">Creative Director</p>
-                        <p class="member-bio">fatima's keen eye for trends and passion for design ensures that every collection we offer is both stylish and accessible.</p>
+                        <p class="member-bio">Fatima's keen eye for trends and passion for design ensures that every collection we offer is both stylish and accessible.</p>
                     </div>
                 </div>
                 
@@ -627,4 +908,3 @@ if (session_status() === PHP_SESSION_NONE) {
     </script>
 </body>
 </html>
-

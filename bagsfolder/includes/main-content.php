@@ -102,6 +102,12 @@ $clutches = $productModel->getBySubcategory('Clutches');
     <div class="content-header" id="products-section">
         <h1 class="page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
         <div class="content-controls">
+            <!-- Mobile Filter Button -->
+            <button class="mobile-filter-btn" id="mobile-filter-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            
             <div class="sort-control">
                 <label for="sort-select-bags">Sort:</label>
                 <select id="sort-select-bags" class="sort-select" onchange="updateSort(this.value)">
@@ -632,4 +638,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- Mobile Filter Overlay -->
+<div class="mobile-filter-overlay" id="mobile-filter-overlay">
+    <div class="mobile-filter-content">
+        <div class="mobile-filter-header">
+            <button class="mobile-filter-close" id="mobile-filter-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-filter-body">
+            <!-- Copy the entire desktop sidebar content -->
+            <?php include 'includes/sidebar.php'; ?>
+        </div>
+        
+        <div class="mobile-filter-footer">
+            <button class="mobile-clear-filters-btn" id="mobile-clear-filters">Clear All</button>
+            <button class="mobile-apply-filters-btn" id="mobile-apply-filters">Apply Filters</button>
+        </div>
+    </div>
+</div>
+
 <div class="quick-view-overlay" id="quick-view-overlay"></div> 

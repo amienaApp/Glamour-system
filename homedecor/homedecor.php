@@ -123,6 +123,7 @@ error_log('Home Decor final sizes: ' . json_encode($allSizes));
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/mobile-filter-responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/featured-products.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/quick-view.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">

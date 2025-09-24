@@ -835,7 +835,7 @@ $users = $userModel->getAllUsers();
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Username *</label>
-                        <input type="text" name="username" class="form-input" required>
+                        <input type="text" name="username" class="form-input" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email *</label>
@@ -893,7 +893,7 @@ $users = $userModel->getAllUsers();
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Username *</label>
-                        <input type="text" name="username" id="editUsername" class="form-input" required>
+                        <input type="text" name="username" id="editUsername" class="form-input" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email *</label>
@@ -939,6 +939,43 @@ $users = $userModel->getAllUsers();
 
     <script src="includes/admin-sidebar.js"></script>
     <script>
+        // Username validation - only allow letters and spaces
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add validation to create user form
+            const createUsernameInput = document.querySelector('#createUserModal input[name="username"]');
+            if (createUsernameInput) {
+                createUsernameInput.addEventListener('input', function(e) {
+                    // Remove any non-alphabetic characters and spaces
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                // Prevent pasting non-alphabetic characters
+                createUsernameInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanPaste = paste.replace(/[^a-zA-Z\s]/g, '');
+                    this.value = cleanPaste;
+                });
+            }
+            
+            // Add validation to edit user form
+            const editUsernameInput = document.querySelector('#editUserModal input[name="username"]');
+            if (editUsernameInput) {
+                editUsernameInput.addEventListener('input', function(e) {
+                    // Remove any non-alphabetic characters and spaces
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                // Prevent pasting non-alphabetic characters
+                editUsernameInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanPaste = paste.replace(/[^a-zA-Z\s]/g, '');
+                    this.value = cleanPaste;
+                });
+            }
+        });
+
         // Search functionality
         document.getElementById('userSearch').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();

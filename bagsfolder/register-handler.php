@@ -52,6 +52,20 @@ try {
         throw new Exception("Password is required");
     }
 
+    // Validate username - only alphabetic characters and spaces (for names)
+    if (!preg_match('/^[a-zA-Z\s]+$/', $input['username'])) {
+        throw new Exception("Username must contain only letters and spaces (for names)");
+    }
+    
+    // Validate username length
+    if (strlen(trim($input['username'])) < 2) {
+        throw new Exception("Username must be at least 2 characters long");
+    }
+    
+    if (strlen(trim($input['username'])) > 50) {
+        throw new Exception("Username must be less than 50 characters long");
+    }
+
     // Validate gender
     if (!in_array($input['gender'], ['male', 'female'])) {
         throw new Exception("Invalid gender selection");

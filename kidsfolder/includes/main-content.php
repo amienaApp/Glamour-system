@@ -655,65 +655,8 @@ if (!empty($filters)) {
         </div>
         
         <div class="mobile-filter-body">
-            <!-- Category Filter -->
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Category</h4>
-                    </div>
-                    <div class="mobile-filter-options" id="mobile-category-filter">
-                        <!-- Category filter options will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Color Filter -->
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Color</h4>
-                    </div>
-                    <div class="mobile-color-grid" id="mobile-color-filter">
-                        <!-- Color filter options will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Price Filter -->
-            <div class="mobile-filter-section">
-                <div class="mobile-filter-group">
-                    <div class="mobile-filter-header">
-                        <h4>Price Range</h4>
-                    </div>
-                    <div class="mobile-filter-options" id="mobile-price-filter">
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="price-0-100" value="0-100" data-filter="price_range">
-                            <label for="price-0-100">$0 - $100</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="price-100-200" value="100-200" data-filter="price_range">
-                            <label for="price-100-200">$100 - $200</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="price-200-400" value="200-400" data-filter="price_range">
-                            <label for="price-200-400">$200 - $400</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="price-400-plus" value="400+" data-filter="price_range">
-                            <label for="price-400-plus">$400+</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                        <div class="mobile-filter-option">
-                            <input type="checkbox" id="price-on-sale" value="on-sale" data-filter="price_range">
-                            <label for="price-on-sale">On Sale</label>
-                            <i class="fas fa-check mobile-checkmark"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Copy the entire desktop sidebar content -->
+            <?php include 'includes/sidebar.php'; ?>
         </div>
         
         <div class="mobile-filter-footer">

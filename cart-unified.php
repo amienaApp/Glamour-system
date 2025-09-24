@@ -1024,7 +1024,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 <form id="checkoutLoginForm">
                     <div class="form-group">
                         <label for="checkoutUsername">Username or Email *</label>
-                        <input type="text" id="checkoutUsername" name="username" required>
+                        <input type="text" id="checkoutUsername" name="username" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label for="checkoutPassword">Password *</label>
@@ -1047,7 +1047,7 @@ function getProductImage($product, $itemColor = '', $variantImage = '') {
                 <form id="checkoutRegisterForm">
                     <div class="form-group">
                         <label for="checkoutRegUsername">Username *</label>
-                        <input type="text" id="checkoutRegUsername" name="username" required>
+                        <input type="text" id="checkoutRegUsername" name="username" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                     </div>
                     <div class="form-group">
                         <label for="checkoutRegEmail">Email Address *</label>

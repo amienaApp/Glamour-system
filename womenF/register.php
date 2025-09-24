@@ -427,7 +427,7 @@ ini_set('display_errors', 0);
                 <div class="form-group">
                     <label for="username" class="required">Username</label>
                     <input type="text" id="username" name="username" class="form-input" 
-                           placeholder="Choose a username" required>
+                           placeholder="Choose a username" pattern="[a-zA-Z\s]+" title="Username must contain only letters and spaces (for names)" required>
                 </div>
 
                 <div class="form-group">
@@ -532,6 +532,25 @@ ini_set('display_errors', 0);
     </div>
 
     <script>
+        // Username input validation - only allow letters and spaces
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.getElementById('username');
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function(e) {
+                    // Remove any non-alphabetic characters and spaces
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                // Prevent pasting non-alphabetic characters
+                usernameInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanPaste = paste.replace(/[^a-zA-Z\s]/g, '');
+                    this.value = cleanPaste;
+                });
+            }
+        });
+
         function togglePassword(fieldId) {
             const passwordInput = document.getElementById(fieldId);
             const toggleBtn = passwordInput.parentElement.querySelector('.toggle-password i');

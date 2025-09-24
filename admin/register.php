@@ -253,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="name">Full Name</label>
                 <div class="input-icon">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="name" name="name" required placeholder="Enter your full name" value="<?php echo htmlspecialchars($name ?? ''); ?>">
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name" pattern="[a-zA-Z\s]+" title="Name must contain only letters and spaces" value="<?php echo htmlspecialchars($name ?? ''); ?>">
                 </div>
             </div>
             

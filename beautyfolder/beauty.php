@@ -177,6 +177,7 @@ error_log('Beauty available sizes from admin system: ' . json_encode($allSizes))
     <link rel="stylesheet" href="styles/sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/main.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/responsive.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../styles/mobile-filter-responsive.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/filter-styles.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../enhanced-features.css?v=<?php echo time(); ?>">
     <script src="simple-filter.js?v=<?php echo time(); ?>"></script>
