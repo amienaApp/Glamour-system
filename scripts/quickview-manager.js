@@ -50,9 +50,6 @@ class QuickviewManager {
             }
             if (e.target.id === 'add-to-wishlist-quick' || e.target.closest('#add-to-wishlist-quick')) {
                 console.log('QuickviewManager: Add to wishlist button clicked');
-                console.log('QuickviewManager: Current product:', this.currentProduct);
-                console.log('QuickviewManager: Selected color:', this.selectedColor);
-                console.log('QuickviewManager: Selected size:', this.selectedSize);
                 this.addToWishlist();
             }
         });
@@ -200,20 +197,6 @@ class QuickviewManager {
         try {
             // First, restore the proper content structure if it was replaced by loading state
             this.restoreContentStructure();
-            
-            // Set product ID on quickview elements for wishlist functionality
-            const productId = product.id || product._id;
-            if (productId) {
-                const quickViewTitle = document.getElementById('quick-view-title');
-                const quickViewSidebar = document.getElementById('quick-view-sidebar');
-                if (quickViewTitle) {
-                    quickViewTitle.setAttribute('data-product-id', productId);
-                }
-                if (quickViewSidebar) {
-                    quickViewSidebar.setAttribute('data-product-id', productId);
-                }
-                console.log('QuickviewManager: Set product ID on quickview elements:', productId);
-            }
             
             // Set product title and price
             console.log('QuickviewManager: Setting title and price');
@@ -415,34 +398,12 @@ class QuickviewManager {
         this.updateColorSelection();
         this.updateImagesForColor(colorValue);
         this.updateAvailability();
-        
-        // Update wishlist button state when color changes
-        if (this.currentProduct && window.wishlistManager) {
-            const productId = this.currentProduct.id || this.currentProduct._id;
-            const wishlistBtn = document.getElementById('add-to-wishlist-quick');
-            if (productId && wishlistBtn) {
-                const selectedSize = this.selectedSize || '';
-                const isInWishlist = window.wishlistManager.isInWishlist(productId, colorValue, selectedSize);
-                window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
-            }
-        }
     }
 
     selectSize(sizeName) {
         this.selectedSize = sizeName;
         this.updateSizeSelection();
         this.updateAvailability();
-        
-        // Update wishlist button state when size changes
-        if (this.currentProduct && window.wishlistManager) {
-            const productId = this.currentProduct.id || this.currentProduct._id;
-            const wishlistBtn = document.getElementById('add-to-wishlist-quick');
-            if (productId && wishlistBtn) {
-                const selectedColor = this.selectedColor || '';
-                const isInWishlist = window.wishlistManager.isInWishlist(productId, selectedColor, sizeName);
-                window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
-            }
-        }
     }
 
     selectImage(imageIndex) {
@@ -606,12 +567,22 @@ class QuickviewManager {
         const wishlistBtn = document.getElementById('add-to-wishlist-quick');
         const productId = product.id || product._id;
         if (wishlistBtn && window.wishlistManager && productId) {
-            // Check if this specific product variant is in wishlist
-            const selectedColor = this.selectedColor || '';
-            const selectedSize = this.selectedSize || '';
-            const isInWishlist = window.wishlistManager.isInWishlist(productId, selectedColor, selectedSize);
+            const isInWishlist = window.wishlistManager.isInWishlist(productId);
             window.wishlistManager.updateButtonState(wishlistBtn, isInWishlist);
-            console.log('QuickviewManager: Wishlist button initialized, isInWishlist:', isInWishlist, 'for product:', productId, 'color:', selectedColor, 'size:', selectedSize);
+            console.log('QuickviewManager: Wishlist button initialized, isInWishlist:', isInWishlist);
+            
+            // Store product ID in the button for easy access
+            wishlistBtn.setAttribute('data-product-id', productId);
+            
+            // Store product details in the quickview container for wishlist manager access
+            const quickViewContainer = document.getElementById('quick-view-sidebar');
+            if (quickViewContainer) {
+                quickViewContainer.setAttribute('data-product-id', productId);
+                quickViewContainer.setAttribute('data-product-name', product.name || 'Product');
+                quickViewContainer.setAttribute('data-product-price', product.price || '0');
+                quickViewContainer.setAttribute('data-product-image', product.front_image || product.images?.[0]?.src || '');
+                quickViewContainer.setAttribute('data-product-category', product.category || 'General');
+            }
         }
     }
 
@@ -700,7 +671,8 @@ class QuickviewManager {
             }
             
             if (window.wishlistManager) {
-                window.wishlistManager.toggleWishlist(productId, document.getElementById('add-to-wishlist-quick'));
+                // Use the wishlist manager's quickview method
+                window.wishlistManager.toggleQuickViewWishlist(productId, document.getElementById('add-to-wishlist-quick'));
             } else {
                 // Fallback - simple localStorage approach
                 const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
@@ -714,8 +686,9 @@ class QuickviewManager {
                         id: productId,
                         name: this.currentProduct.name || 'Product',
                         price: this.currentProduct.price || '0',
-                        image: this.currentProduct.front_image || this.currentProduct.images?.[0] || '',
+                        image: this.currentProduct.front_image || this.currentProduct.images?.[0]?.src || '',
                         category: this.currentProduct.category || 'General',
+                        selectedColor: this.selectedColor || '',
                         addedAt: new Date().toISOString()
                     };
                     wishlist.push(productDetails);
@@ -839,10 +812,6 @@ class QuickviewManager {
         const content = document.querySelector('.quick-view-content');
         if (content && content.innerHTML.includes('loading-state')) {
             console.log('QuickviewManager: Restoring content structure');
-            
-            // Preserve product ID if it exists
-            const existingProductId = this.currentProduct ? (this.currentProduct.id || this.currentProduct._id) : null;
-            
             content.innerHTML = `
                 <!-- Product Media -->
                 <div class="quick-view-images">
@@ -857,7 +826,7 @@ class QuickviewManager {
                 
                 <!-- Product Details -->
                 <div class="quick-view-details">
-                    <h2 id="quick-view-title"${existingProductId ? ` data-product-id="${existingProductId}"` : ''}></h2>
+                    <h2 id="quick-view-title"></h2>
                     <div class="quick-view-price" id="quick-view-price"></div>
                     <div class="quick-view-reviews">
                         <span class="stars" id="quick-view-stars"></span>
@@ -903,14 +872,6 @@ class QuickviewManager {
                     </div>
                 </div>
             `;
-            
-            // Also set product ID on sidebar if it exists
-            if (existingProductId) {
-                const quickViewSidebar = document.getElementById('quick-view-sidebar');
-                if (quickViewSidebar) {
-                    quickViewSidebar.setAttribute('data-product-id', existingProductId);
-                }
-            }
         }
     }
 

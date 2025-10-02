@@ -37,11 +37,8 @@ if (typeof WishlistManager === 'undefined') {
                 e.preventDefault();
                 e.stopPropagation();
                 const productId = this.getQuickViewProductId();
-                console.log('WishlistManager: Quickview wishlist button clicked, productId:', productId);
                 if (productId) {
                     this.toggleQuickViewWishlist(productId, e.target);
-                } else {
-                    console.warn('WishlistManager: No product ID found for quickview wishlist button');
                 }
             }
         });
@@ -87,28 +84,59 @@ if (typeof WishlistManager === 'undefined') {
     }
     
     getQuickViewProductId() {
-        // Get product ID from quick view modal
-        const quickViewTitle = document.getElementById('quick-view-title');
-        if (quickViewTitle) {
-            const productId = quickViewTitle.getAttribute('data-product-id');
-            console.log('WishlistManager: Found product ID from quick-view-title:', productId);
-            return productId;
-        }
-        
-        // Try to get from quick view container
+        // Try to get from quick view container first (most reliable)
         const quickView = document.getElementById('quick-view-sidebar');
         if (quickView) {
             const productId = quickView.getAttribute('data-product-id');
-            console.log('WishlistManager: Found product ID from quick-view-sidebar:', productId);
-            return productId;
+            if (productId) return productId;
         }
         
-        console.log('WishlistManager: No product ID found in quickview elements');
+        // Try to get from wishlist button
+        const wishlistBtn = document.getElementById('add-to-wishlist-quick');
+        if (wishlistBtn) {
+            const productId = wishlistBtn.getAttribute('data-product-id');
+            if (productId) return productId;
+        }
+        
+        // Fallback: get from quick view title
+        const quickViewTitle = document.getElementById('quick-view-title');
+        if (quickViewTitle) {
+            return quickViewTitle.getAttribute('data-product-id');
+        }
+        
         return null;
     }
     
     getQuickViewProductDetails(productId) {
-        // Get product details from quickview
+        // First try to get from stored data in quickview container
+        const quickView = document.getElementById('quick-view-sidebar');
+        if (quickView) {
+            const storedName = quickView.getAttribute('data-product-name');
+            const storedPrice = quickView.getAttribute('data-product-price');
+            const storedImage = quickView.getAttribute('data-product-image');
+            const storedCategory = quickView.getAttribute('data-product-category');
+            
+            if (storedName && storedPrice) {
+                // Get selected color from quickview
+                let selectedColor = '';
+                const activeColorCircle = document.querySelector('#quick-view-color-selection .quick-view-color-circle.active');
+                if (activeColorCircle) {
+                    selectedColor = activeColorCircle.getAttribute('data-color') || '';
+                }
+                
+                return {
+                    id: productId,
+                    name: storedName,
+                    price: storedPrice.replace(/[^0-9.]/g, '') || '0',
+                    image: storedImage,
+                    category: storedCategory || 'General',
+                    selectedColor: selectedColor,
+                    addedAt: new Date().toISOString()
+                };
+            }
+        }
+        
+        // Fallback: Get product details from quickview elements
         const quickViewTitle = document.getElementById('quick-view-title');
         const quickViewPrice = document.getElementById('quick-view-price');
         const quickViewMainImage = document.getElementById('quick-view-main-image');
@@ -121,21 +149,10 @@ if (typeof WishlistManager === 'undefined') {
         
         // Get the currently displayed image/video in quickview
         let variantImage = '';
-        const mainImageContainer = document.querySelector('.main-image-container');
-        if (mainImageContainer) {
-            const activeImage = mainImageContainer.querySelector('img, video');
-            if (activeImage) {
-                variantImage = activeImage.src;
-            }
-        }
-        
-        // Fallback to main image if no variant image found
-        if (!variantImage) {
-            if (quickViewMainImage && quickViewMainImage.src) {
-                variantImage = quickViewMainImage.src;
-            } else if (quickViewMainVideo && quickViewMainVideo.src) {
-                variantImage = quickViewMainVideo.src;
-            }
+        if (quickViewMainImage && quickViewMainImage.style.display !== 'none') {
+            variantImage = quickViewMainImage.src;
+        } else if (quickViewMainVideo && quickViewMainVideo.style.display !== 'none') {
+            variantImage = quickViewMainVideo.src;
         }
         
         // Get selected color from quickview
@@ -145,13 +162,6 @@ if (typeof WishlistManager === 'undefined') {
             selectedColor = activeColorCircle.getAttribute('data-color') || '';
         }
         
-        // Get selected size from quickview
-        let selectedSize = '';
-        const activeSizeBtn = document.querySelector('#quick-view-size-selection .quick-view-size-btn.active');
-        if (activeSizeBtn) {
-            selectedSize = activeSizeBtn.textContent.replace(' (Out of Stock)', '').trim();
-        }
-        
         return {
             id: productId,
             name: name,
@@ -159,7 +169,6 @@ if (typeof WishlistManager === 'undefined') {
             image: variantImage,
             category: 'General',
             selectedColor: selectedColor,
-            selectedSize: selectedSize,
             addedAt: new Date().toISOString()
         };
     }
@@ -285,18 +294,15 @@ if (typeof WishlistManager === 'undefined') {
     toggleQuickViewWishlist(productId, button) {
         const wishlist = this.getWishlist();
         
-        // Get product details from quickview
+        // Check for duplicates by ID and selected color
         const productDetails = this.getQuickViewProductDetails(productId);
         if (!productDetails) {
-            this.showNotification('Could not get product details', 'error');
+            this.showNotification('Could not add to wishlist', 'error');
             return;
         }
         
-        // Check for existing item with same ID and selected color/size
         const existingIndex = wishlist.findIndex(item => 
-            item.id === productId && 
-            item.selectedColor === productDetails.selectedColor &&
-            item.selectedSize === productDetails.selectedSize
+            item.id === productId && item.selectedColor === productDetails.selectedColor
         );
         
         if (existingIndex > -1) {
@@ -318,8 +324,7 @@ if (typeof WishlistManager === 'undefined') {
             this.saveWishlist(wishlist);
             this.updateButtonState(button, true);
             const colorInfo = productDetails.selectedColor ? ` (${productDetails.selectedColor})` : '';
-            const sizeInfo = productDetails.selectedSize ? ` - Size ${productDetails.selectedSize}` : '';
-            this.showNotification(`Added to wishlist${colorInfo}${sizeInfo}`, 'success');
+            this.showNotification(`Added to wishlist${colorInfo}`, 'success');
             this.triggerWishlistEvent('added', { productId, product: productDetails, wishlist });
         }
         
@@ -749,12 +754,11 @@ if (typeof WishlistManager === 'undefined') {
     }
     
     // Check if product is in wishlist
-    isInWishlist(productId, selectedColor = '', selectedSize = '') {
+    isInWishlist(productId, selectedColor = '') {
         const wishlist = this.getWishlist();
         return wishlist.some(item => 
             item.id === productId && 
-            (selectedColor === '' || item.selectedColor === selectedColor) &&
-            (selectedSize === '' || item.selectedSize === selectedSize)
+            (selectedColor === '' || item.selectedColor === selectedColor)
         );
     }
     
